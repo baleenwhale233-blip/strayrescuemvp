@@ -34,7 +34,7 @@ import {
   type RescueCreateDraftStatus,
   type RescueCreateEntryTone,
   type RescueCreateTimelineEntry,
-} from "../../../data/rescueCreateStore.ts";
+} from "./localDraftPersistence.ts";
 import {
   legacyRescueProjectDetails as rescueProjectDetails,
 } from "../fixtures/legacyRescueProjectDetails.ts";

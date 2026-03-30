@@ -1,7 +1,7 @@
 import type {
   RescueCreateEntryTone,
   RescueCreateTimelineEntry,
-} from "../../../data/rescueCreateStore.ts";
+} from "./localDraftPersistence.ts";
 
 export type BundleSourceKind = "seed" | "local";
 
