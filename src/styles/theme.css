@@ -1,0 +1,241 @@
+:root,
+page {
+  --color-brand-primary: #f76808;
+  --color-brand-primary-hover: #e55e07;
+  --color-brand-primary-soft: #fff1e8;
+  --color-brand-primary-border: #f7c5a7;
+  --color-brand-on-primary: #ffffff;
+
+  --color-bg-canvas: #f7f5f4;
+  --color-bg-page: #f5f4f3;
+  --color-bg-card: #ffffff;
+  --color-bg-subtle: #f2f4f7;
+  --color-bg-muted: #eef1f4;
+
+  --color-border-light: #e6eaf0;
+  --color-border-default: #d9dfe7;
+  --color-border-strong: #c7cfd9;
+
+  --color-text-primary: #1f2a37;
+  --color-text-secondary: #667085;
+  --color-text-tertiary: #98a2b3;
+  --color-text-disabled: #b7c0cc;
+
+  --color-success: #16a34a;
+  --color-success-soft: #eaf8ee;
+  --color-warning: #f59e0b;
+  --color-warning-soft: #fff5db;
+  --color-danger: #e5484d;
+  --color-danger-soft: #fdecec;
+  --color-info: #4c7eff;
+  --color-info-soft: #eaf1ff;
+
+  --color-status-urgent-bg: #ffe6d6;
+  --color-status-urgent-text: #d9480f;
+  --color-status-active-bg: #fff1e8;
+  --color-status-active-text: #f76808;
+  --color-status-progress-bg: #eef4ff;
+  --color-status-progress-text: #5272c7;
+  --color-status-done-bg: #eef1f5;
+  --color-status-done-text: #667085;
+  --color-status-draft-bg: #fff1e8;
+  --color-status-draft-text: #e55e07;
+
+  --color-ledger-spent: #f76808;
+  --color-ledger-balance: #f7b27a;
+  --color-ledger-pending: #d9dfe7;
+  --color-ledger-track: #eceff3;
+
+  --font-family-base: "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-numeric: "SF Pro Display", "PingFang SC", sans-serif;
+
+  --font-size-display-sm: 28px;
+  --font-size-heading-lg: 24px;
+  --font-size-heading-md: 20px;
+  --font-size-heading-sm: 18px;
+  --font-size-body-lg: 16px;
+  --font-size-body-md: 15px;
+  --font-size-body-sm: 14px;
+  --font-size-caption: 12px;
+  --font-size-micro: 11px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-display-sm: 36px;
+  --line-height-heading-lg: 32px;
+  --line-height-heading-md: 28px;
+  --line-height-heading-sm: 26px;
+  --line-height-body-lg: 24px;
+  --line-height-body-md: 22px;
+  --line-height-body-sm: 20px;
+  --line-height-caption: 18px;
+
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --radius-circle: 9999px;
+
+  --shadow-none: none;
+  --shadow-card: 0 2px 8px rgba(16, 24, 40, 0.06);
+  --shadow-card-strong: 0 6px 18px rgba(16, 24, 40, 0.08);
+  --shadow-cta: 0 8px 20px rgba(247, 104, 8, 0.22);
+  --shadow-bottom-bar: 0 -2px 12px rgba(16, 24, 40, 0.06);
+
+  --size-icon-xs: 12px;
+  --size-icon-sm: 16px;
+  --size-icon-md: 20px;
+  --size-icon-lg: 24px;
+  --size-icon-xl: 28px;
+
+  --size-avatar-sm: 40px;
+  --size-avatar-md: 56px;
+  --size-avatar-lg: 64px;
+
+  --size-button-sm: 36px;
+  --size-button-md: 44px;
+  --size-button-lg: 56px;
+  --size-button-xl: 60px;
+
+  --size-input-md: 48px;
+  --size-input-lg: 56px;
+  --size-input-xl: 64px;
+
+  --size-tabbar: 65px;
+  --size-navbar: 98px;
+
+  --layout-page-padding-x: 16px;
+  --layout-page-padding-top: 8px;
+  --layout-section-gap: 16px;
+  --layout-card-gap: 16px;
+  --layout-form-gap: 24px;
+}
+
+page {
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
+}
+
+.theme-page {
+  min-height: 100vh;
+  padding: var(--layout-page-padding-top) var(--layout-page-padding-x);
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+}
+
+.theme-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.theme-button-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--size-button-lg);
+  padding: 0 var(--space-6);
+  color: var(--color-brand-on-primary);
+  background: var(--color-brand-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-cta);
+}
+
+.theme-button-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--size-button-lg);
+  padding: 0 var(--space-6);
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+}
+
+.theme-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--size-button-sm);
+  padding: 0 var(--space-4);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body-sm);
+}
+
+.theme-chip--active {
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
+  border-color: var(--color-brand-primary-border);
+}
+
+.theme-text-page-title {
+  font-size: var(--font-size-heading-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading-lg);
+}
+
+.theme-text-section-title {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading-md);
+}
+
+.theme-text-card-title {
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading-sm);
+}
+
+.theme-text-body-secondary {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+  line-height: var(--line-height-body-md);
+}
+
+.theme-progress-track {
+  overflow: hidden;
+  width: 100%;
+  height: 8px;
+  background: var(--color-ledger-track);
+  border-radius: var(--radius-pill);
+}
+
+.theme-progress-segment--spent {
+  background: var(--color-ledger-spent);
+}
+
+.theme-progress-segment--balance {
+  background: var(--color-ledger-balance);
+}
+
+.theme-progress-segment--pending {
+  background: var(--color-ledger-pending);
+}

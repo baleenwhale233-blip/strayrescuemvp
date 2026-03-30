@@ -1,0 +1,164 @@
+{
+  "rescuer": {
+    "id": "rescuer_001",
+    "name": "阿青",
+    "avatarAssetId": "asset_avatar_001",
+    "avatarUrl": "https://example.com/assets/rescuer-avatar.png",
+    "verifiedLevel": "realname",
+    "joinedAt": "2026-03-01T10:00:00Z",
+    "wechatId": "aqing_rescue",
+    "alipayAccount": "",
+    "paymentQrAssetId": "asset_qr_001",
+    "stats": {
+      "publishedCaseCount": 3,
+      "verifiedReceiptCount": 12
+    }
+  },
+  "case": {
+    "id": "case_001",
+    "rescuerId": "rescuer_001",
+    "animalName": "口炎大橘",
+    "species": "cat",
+    "coverAssetId": "asset_cover_001",
+    "faceIdAssetId": "asset_face_001",
+    "foundAt": "2026-03-28T08:30:00Z",
+    "foundLocationText": "xx小区草丛",
+    "initialSummary": "发现时流口水严重，疑似口炎，精神差",
+    "currentStatus": "medical",
+    "currentStatusLabel": "医疗救助中",
+    "targetAmount": 4200,
+    "visibility": "published",
+    "createdAt": "2026-03-28T08:35:00Z",
+    "updatedAt": "2026-03-30T12:00:00Z"
+  },
+  "events": [
+    {
+      "id": "evt_001",
+      "caseId": "case_001",
+      "type": "case_created",
+      "occurredAt": "2026-03-28T08:35:00Z",
+      "text": "在xx小区草丛发现，流口水严重，先带去医院检查",
+      "statusLabel": "刚发现",
+      "assetIds": ["asset_face_001"],
+      "visibility": "public"
+    },
+    {
+      "id": "evt_002",
+      "caseId": "case_001",
+      "type": "expense",
+      "occurredAt": "2026-03-28T10:10:00Z",
+      "amount": 280,
+      "currency": "CNY",
+      "merchantName": "xx宠物医院",
+      "expenseItemsText": "挂号、血常规、消炎针",
+      "assetIds": ["asset_receipt_001"],
+      "verificationStatus": "confirmed",
+      "visibility": "public"
+    },
+    {
+      "id": "evt_003",
+      "caseId": "case_001",
+      "type": "progress_update",
+      "occurredAt": "2026-03-29T09:00:00Z",
+      "statusLabel": "等待复查",
+      "text": "精神比昨天好一点，开始愿意吃罐头",
+      "assetIds": ["asset_progress_001"],
+      "visibility": "public"
+    },
+    {
+      "id": "evt_004",
+      "caseId": "case_001",
+      "type": "support",
+      "occurredAt": "2026-03-29T12:00:00Z",
+      "amount": 100,
+      "currency": "CNY",
+      "supportSource": "donor_claim",
+      "supporterNameMasked": "王**",
+      "message": "给大橘买点好吃的",
+      "verificationStatus": "confirmed",
+      "assetIds": ["asset_support_001"],
+      "visibility": "public"
+    },
+    {
+      "id": "evt_005",
+      "caseId": "case_001",
+      "type": "support",
+      "occurredAt": "2026-03-29T13:30:00Z",
+      "amount": 60,
+      "currency": "CNY",
+      "supportSource": "donor_claim",
+      "supporterNameMasked": "李**",
+      "message": "先认领一下，等救助人确认",
+      "verificationStatus": "pending",
+      "assetIds": ["asset_support_002"],
+      "visibility": "private"
+    },
+    {
+      "id": "evt_006",
+      "caseId": "case_001",
+      "type": "budget_adjustment",
+      "occurredAt": "2026-03-30T11:30:00Z",
+      "previousTargetAmount": 3000,
+      "newTargetAmount": 4200,
+      "reason": "复查后需要进一步治疗，增加药费预算",
+      "assetIds": [],
+      "visibility": "public"
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset_avatar_001",
+      "kind": "avatar",
+      "originalUrl": "https://example.com/assets/rescuer-avatar.png",
+      "thumbnailUrl": "https://example.com/assets/rescuer-avatar-thumb.png"
+    },
+    {
+      "id": "asset_cover_001",
+      "kind": "case_cover",
+      "originalUrl": "https://example.com/assets/case-cover.png",
+      "watermarkedUrl": "https://example.com/assets/case-cover-watermarked.png",
+      "thumbnailUrl": "https://example.com/assets/case-cover-thumb.png"
+    },
+    {
+      "id": "asset_face_001",
+      "kind": "animal_face",
+      "originalUrl": "https://example.com/assets/animal-face.png",
+      "watermarkedUrl": "https://example.com/assets/animal-face-watermarked.png",
+      "thumbnailUrl": "https://example.com/assets/animal-face-thumb.png"
+    },
+    {
+      "id": "asset_receipt_001",
+      "kind": "receipt",
+      "originalUrl": "https://example.com/assets/receipt-001.png",
+      "watermarkedUrl": "https://example.com/assets/receipt-001-watermarked.png",
+      "thumbnailUrl": "https://example.com/assets/receipt-001-thumb.png"
+    },
+    {
+      "id": "asset_progress_001",
+      "kind": "progress_photo",
+      "originalUrl": "https://example.com/assets/progress-001.png",
+      "watermarkedUrl": "https://example.com/assets/progress-001-watermarked.png",
+      "thumbnailUrl": "https://example.com/assets/progress-001-thumb.png"
+    },
+    {
+      "id": "asset_support_001",
+      "kind": "support_proof",
+      "originalUrl": "https://example.com/assets/support-proof-001.png",
+      "watermarkedUrl": "https://example.com/assets/support-proof-001-watermarked.png",
+      "thumbnailUrl": "https://example.com/assets/support-proof-001-thumb.png"
+    },
+    {
+      "id": "asset_support_002",
+      "kind": "support_proof",
+      "originalUrl": "https://example.com/assets/support-proof-002.png",
+      "watermarkedUrl": "https://example.com/assets/support-proof-002-watermarked.png",
+      "thumbnailUrl": "https://example.com/assets/support-proof-002-thumb.png"
+    },
+    {
+      "id": "asset_qr_001",
+      "kind": "payment_qr",
+      "originalUrl": "https://example.com/assets/payment-qr.png",
+      "thumbnailUrl": "https://example.com/assets/payment-qr-thumb.png"
+    }
+  ]
+}
