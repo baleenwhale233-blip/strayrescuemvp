@@ -1,5 +1,5 @@
-import type { CanonicalCaseBundle, DiscoverCardVM } from "../types.ts";
-import { getPublicDetailVM } from "./getPublicDetailVM.ts";
+import type { CanonicalCaseBundle, DiscoverCardVM } from "../types";
+import { getPublicDetailVM } from "./getPublicDetailVM";
 
 export function getDiscoverCardVM(bundle: CanonicalCaseBundle): DiscoverCardVM {
   const publicDetail = getPublicDetailVM(bundle);

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { sampleCaseBundle } from "../fixtures/sampleCaseBundle.ts";
-import type { CanonicalCaseBundle } from "../types.ts";
+import { sampleCaseBundle } from "../fixtures/sampleCaseBundle";
+import type { CanonicalCaseBundle } from "../types";
 import {
   getCanonicalBundleByCaseIdFromBundles,
   getDiscoverCardVMsFromBundles,
@@ -9,7 +9,7 @@ import {
   getPublicDetailVMByCaseIdFromBundles,
   getSupportSheetDataByCaseIdFromBundles,
   getWorkbenchVMFromBundles,
-} from "./canonicalReadRepositoryCore.ts";
+} from "./canonicalReadRepositoryCore";
 
 const publishedBundle = sampleCaseBundle as CanonicalCaseBundle;
 const draftBundle: CanonicalCaseBundle = {

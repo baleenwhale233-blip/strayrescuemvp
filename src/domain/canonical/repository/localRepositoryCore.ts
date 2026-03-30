@@ -1,7 +1,7 @@
 import type {
   RescueCreateEntryTone,
   RescueCreateTimelineEntry,
-} from "./localDraftPersistence.ts";
+} from "./localDraftPersistence";
 
 export type OwnerDetailActionKey =
   | "receipt"

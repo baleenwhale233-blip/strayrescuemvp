@@ -6,10 +6,10 @@ import {
   getSupportSheetDataByCaseIdFromBundles,
   getWorkbenchVMFromBundles,
   type OwnerDetailVM,
-} from "./canonicalReadRepositoryCore.ts";
-import { getSeedBundles, getLocalBundles } from "./legacyCompat.ts";
+} from "./canonicalReadRepositoryCore";
+import { getSeedBundles, getLocalBundles } from "./legacyCompat";
 
-export type { OwnerDetailVM } from "./canonicalReadRepositoryCore.ts";
+export type { OwnerDetailVM } from "./canonicalReadRepositoryCore";
 
 export function getCanonicalBundles() {
   return [...getSeedBundles(), ...getLocalBundles()];

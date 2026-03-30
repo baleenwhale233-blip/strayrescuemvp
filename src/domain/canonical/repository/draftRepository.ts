@@ -13,13 +13,13 @@ import {
   type RescueCreateDraftStatus,
   type RescueCreateEntryTone,
   type RescueCreateTimelineEntry,
-} from "./localDraftPersistence.ts";
+} from "./localDraftPersistence";
 import {
   caseIdToDraftId,
   draftIdToCaseId,
   toOwnerActionTimelineEntry,
   type OwnerDetailActionKey,
-} from "./localRepositoryCore.ts";
+} from "./localRepositoryCore";
 
 export type {
   RescueCreateDraft,
@@ -29,7 +29,7 @@ export type {
 };
 
 export { calculateDraftLedger, formatTimelineTimestamp, draftIdToCaseId, caseIdToDraftId };
-export { toOwnerActionTimelineEntry, type OwnerDetailActionKey } from "./localRepositoryCore.ts";
+export { toOwnerActionTimelineEntry, type OwnerDetailActionKey } from "./localRepositoryCore";
 
 export function listSavedDrafts() {
   return getSavedDrafts();

@@ -1,10 +1,10 @@
 import {
   adaptLocalDraftToCanonical,
   adaptRescueProjectDetailMockToCanonical,
-} from "../adapters/mockToCanonical.ts";
-import { legacySampleBundle, legacyRescueProjectDetails } from "../fixtures/legacyRescueProjectDetails.ts";
-import type { CanonicalCaseBundle } from "../types.ts";
-import { listSavedDrafts } from "./draftRepository.ts";
+} from "../adapters/mockToCanonical";
+import { legacySampleBundle, legacyRescueProjectDetails } from "../fixtures/legacyRescueProjectDetails";
+import type { CanonicalCaseBundle } from "../types";
+import { listSavedDrafts } from "./draftRepository";
 
 export function getSeedBundles(): CanonicalCaseBundle[] {
   const legacyBundles = legacyRescueProjectDetails.map((detail, index) =>

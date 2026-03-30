@@ -1,4 +1,4 @@
-import { Image, Input, Text, Textarea, View } from "@tarojs/components";
+import { Button, Image, Input, Text, Textarea, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
@@ -551,13 +551,13 @@ export default function RescueCreatePreviewPage() {
       <Timeline draft={draft} />
 
       <View className="rescue-preview__footer">
-        <View
+        <Button
           className="theme-button-secondary rescue-preview__footer-secondary"
           onTap={handleSaveDraft}
         >
           <Text>保存草稿</Text>
-        </View>
-        <View
+        </Button>
+        <Button
           className="theme-button-primary rescue-preview__footer-primary"
           onTap={handlePublish}
         >
@@ -565,7 +565,7 @@ export default function RescueCreatePreviewPage() {
           <View className="rescue-preview__footer-arrow">
             <AppIcon name="plusCircle" size={24} variant="inverse" />
           </View>
-        </View>
+        </Button>
       </View>
 
       {activeAction && activeAction !== "copy" ? (

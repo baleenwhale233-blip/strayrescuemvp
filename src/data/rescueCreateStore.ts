@@ -10,7 +10,7 @@ export type {
   RescueCreateDraftStatus,
   RescueCreateEntryTone,
   RescueCreateTimelineEntry,
-} from "../domain/canonical/repository/localDraftPersistence.ts";
+} from "../domain/canonical/repository/localDraftPersistence";
 
 export {
   appendEntryToDraft,
@@ -27,4 +27,4 @@ export {
   setCurrentDraftSession,
   startNewDraftSession,
   upsertSavedDraft,
-} from "../domain/canonical/repository/localDraftPersistence.ts";
+} from "../domain/canonical/repository/localDraftPersistence";

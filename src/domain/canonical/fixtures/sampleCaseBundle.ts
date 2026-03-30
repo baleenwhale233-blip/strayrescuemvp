@@ -1,4 +1,4 @@
-import type { CanonicalCaseBundle } from "../types.ts";
+import type { CanonicalCaseBundle } from "../types";
 
 export const sampleCaseBundle: CanonicalCaseBundle = {
   sourceKind: "seed",
