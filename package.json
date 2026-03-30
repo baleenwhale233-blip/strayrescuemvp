@@ -6,7 +6,8 @@
   "scripts": {
     "dev:weapp": "taro build --type weapp --watch",
     "build:weapp": "taro build --type weapp",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:domain": "node --experimental-specifier-resolution=node --test src/domain/canonical/selectors/*.test.ts src/domain/canonical/repository/*.test.ts"
   },
   "dependencies": {
     "@tarojs/components": "4.1.11",

@@ -7,6 +7,7 @@ import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
   calculateDraftLedger,
   appendDraftEntry,
+  formatTimelineTimestamp,
   getCurrentDraft,
   getDraftById,
   persistDraft,
@@ -377,6 +378,7 @@ export default function RescueCreatePreviewPage() {
         description: values.description.trim(),
         previousTargetAmount: draft.budget,
         currentTargetAmount: numericAmount,
+        timestampLabel: formatTimelineTimestamp(),
       });
 
       nextDraft = appendDraftEntry(nextDraft, entry);
@@ -390,6 +392,7 @@ export default function RescueCreatePreviewPage() {
               : "update",
         title: values.title.trim(),
         description: values.description.trim(),
+        timestampLabel: formatTimelineTimestamp(),
         amount:
           activeAction === "expense" || activeAction === "income"
             ? numericAmount

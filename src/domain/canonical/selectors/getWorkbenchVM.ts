@@ -3,8 +3,8 @@ import type {
   CanonicalRescuer,
   WorkbenchCaseCardVM,
   WorkbenchVM,
-} from "../types";
-import { getPublicDetailVM } from "./getPublicDetailVM";
+} from "../types.ts";
+import { getPublicDetailVM } from "./getPublicDetailVM.ts";
 
 function toWorkbenchCardVM(
   bundle: CanonicalCaseBundle,
