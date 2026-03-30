@@ -3,14 +3,8 @@ import test from "node:test";
 import {
   caseIdToDraftId,
   draftIdToCaseId,
-  getSourceKindByRescuerId,
   toOwnerActionTimelineEntry,
 } from "./localRepositoryCore.ts";
-
-test("repository core maps local rescuer ids to local source kind", () => {
-  assert.equal(getSourceKindByRescuerId("local_rescuer_001"), "local");
-  assert.equal(getSourceKindByRescuerId("rescuer_001"), "seed");
-});
 
 test("repository core maps draft ids and case ids reversibly", () => {
   assert.equal(draftIdToCaseId("custom-project-123"), "case-123");

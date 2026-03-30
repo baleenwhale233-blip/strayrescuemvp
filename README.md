@@ -163,13 +163,29 @@ src/
 - `draftStorage.ts`
   storage adapter，当前底层仍然使用 Taro storage。
 - `localDraftPersistence.ts`
-  本地 draft persistence 实现。
+  repository 内部使用的本地 draft persistence 实现。
 - `legacyCompat.ts`
-  legacy fixture / compatibility wiring。
+  repository 内部使用的 legacy fixture / compatibility wiring。
 - `index.ts`
-  repository 对外统一出口。
+  repository 对外统一出口，推荐新代码从这里或 read/draft repository 明确入口读取。
 - `localRepository.ts`
   deprecated facade，仅用于兼容旧 import。
+
+### 推荐公共入口
+
+新代码优先使用：
+
+- `src/domain/canonical/repository/canonicalReadRepository.ts`
+- `src/domain/canonical/repository/draftRepository.ts`
+- `src/domain/canonical/repository/draftStorage.ts`
+- 或 `src/domain/canonical/repository/index.ts`
+
+以下不建议作为页面或新业务代码的主入口：
+
+- `src/domain/canonical/repository/localDraftPersistence.ts`
+- `src/domain/canonical/repository/localRepositoryCore.ts`
+- `src/domain/canonical/repository/legacyCompat.ts`
+- `src/domain/canonical/repository/localRepository.ts`
 
 ## 兼容层说明
 
