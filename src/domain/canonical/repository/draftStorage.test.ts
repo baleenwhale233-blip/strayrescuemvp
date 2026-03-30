@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createDraftStorage } from "./draftStorageCore.ts";
-import type { RescueCreateDraft } from "./localDraftPersistence.ts";
+import { createDraftStorage } from "./draftStorageCore";
+import type { RescueCreateDraft } from "./localDraftPersistence";
 
 const draft: RescueCreateDraft = {
   id: "custom-project-1",

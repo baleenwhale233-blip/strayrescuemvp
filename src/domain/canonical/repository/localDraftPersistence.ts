@@ -1,4 +1,4 @@
-import { draftStorage } from "./draftStorage.ts";
+import { draftStorage } from "./draftStorage";
 
 export type RescueCreateEntryTone = "expense" | "status" | "income" | "budget";
 
@@ -120,7 +120,7 @@ export function getSavedDraftById(id?: string) {
 }
 
 export function upsertSavedDraft(draft: RescueCreateDraft) {
-  const drafts = getSavedDrafts();
+  const drafts = [...getSavedDrafts()];
   const nextDraft = {
     ...draft,
     updatedAt: nowIso(),

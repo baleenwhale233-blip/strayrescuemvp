@@ -228,10 +228,19 @@
   background: rgba(255, 255, 255, 0.96);
 }
 
+.rescue-budget-page__secondary,
 .rescue-budget-page__button {
-  gap: 6px;
+  width: 100%;
   min-height: 48px;
   border-radius: 12px;
+}
+
+.rescue-budget-page__secondary {
+  margin-bottom: 12px;
+}
+
+.rescue-budget-page__button {
+  gap: 6px;
   box-shadow: 0 10px 15px -3px rgba(236, 91, 19, 0.2),
     0 4px 6px -4px rgba(236, 91, 19, 0.2);
 }

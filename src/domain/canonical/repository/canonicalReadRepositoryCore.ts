@@ -1,9 +1,9 @@
-import { getDiscoverCardVM } from "../selectors/getDiscoverCardVM.ts";
+import { getDiscoverCardVM } from "../selectors/getDiscoverCardVM";
 import {
   buildLedgerSnapshotFromEvents,
   getPublicDetailVM,
-} from "../selectors/getPublicDetailVM.ts";
-import { getWorkbenchVM } from "../selectors/getWorkbenchVM.ts";
+} from "../selectors/getPublicDetailVM";
+import { getWorkbenchVM } from "../selectors/getWorkbenchVM";
 import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
@@ -11,8 +11,8 @@ import type {
   PublicDetailVM,
   SupportSheetData,
   WorkbenchVM,
-} from "../types.ts";
-import { caseIdToDraftId, type OwnerDetailActionKey } from "./localRepositoryCore.ts";
+} from "../types";
+import { caseIdToDraftId, type OwnerDetailActionKey } from "./localRepositoryCore";
 
 export type OwnerDetailVM = {
   caseId: string;

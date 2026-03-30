@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { sampleCaseBundle } from "../fixtures/sampleCaseBundle.ts";
-import { getDiscoverCardVM } from "./getDiscoverCardVM.ts";
-import { getPublicDetailVM } from "./getPublicDetailVM.ts";
-import { getWorkbenchVM } from "./getWorkbenchVM.ts";
+import { sampleCaseBundle } from "../fixtures/sampleCaseBundle";
+import { getDiscoverCardVM } from "./getDiscoverCardVM";
+import { getPublicDetailVM } from "./getPublicDetailVM";
+import { getWorkbenchVM } from "./getWorkbenchVM";
 import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
-} from "../types.ts";
+} from "../types";
 
 const bundle = sampleCaseBundle as CanonicalCaseBundle;
 

@@ -4,7 +4,7 @@ import {
   caseIdToDraftId,
   draftIdToCaseId,
   toOwnerActionTimelineEntry,
-} from "./localRepositoryCore.ts";
+} from "./localRepositoryCore";
 
 test("repository core maps draft ids and case ids reversibly", () => {
   assert.equal(draftIdToCaseId("custom-project-123"), "case-123");

@@ -1,5 +1,5 @@
-import type { CanonicalCaseBundle } from "../types.ts";
-import { sampleCaseBundle } from "./sampleCaseBundle.ts";
+import type { CanonicalCaseBundle } from "../types";
+import { sampleCaseBundle } from "./sampleCaseBundle";
 
 export type LegacyStatusTone = "urgent" | "active" | "progress" | "done" | "draft";
 

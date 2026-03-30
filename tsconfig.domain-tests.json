@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": ".tmp/domain-tests",
+    "rootDir": ".",
+    "noEmit": false
+  },
+  "include": [
+    "src/domain/canonical/**/*.ts",
+    "types/assets.d.ts"
+  ]
+}

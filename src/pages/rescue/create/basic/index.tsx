@@ -5,6 +5,7 @@ import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
+  persistDraft,
   startDraftSession,
   updateCurrentDraft,
 } from "../../../../domain/canonical/repository/localRepository";
@@ -67,6 +68,27 @@ export default function RescueCreateBasicPage() {
     Taro.navigateTo({
       url: "/pages/rescue/create/budget/index",
     });
+  };
+
+  const handleSaveDraft = () => {
+    updateCurrentDraft({
+      coverPath,
+      name: name.trim(),
+      summary: summary.trim(),
+    });
+
+    persistDraft("draft");
+
+    Taro.showToast({
+      title: "草稿已保存",
+      icon: "none",
+    });
+
+    setTimeout(() => {
+      Taro.switchTab({
+        url: "/pages/rescue/index",
+      });
+    }, 300);
   };
 
   return (
@@ -142,6 +164,12 @@ export default function RescueCreateBasicPage() {
       </View>
 
       <View className="rescue-create-page__footer">
+        <View
+          className="theme-button-secondary rescue-create-page__secondary"
+          onTap={handleSaveDraft}
+        >
+          <Text>保存草稿</Text>
+        </View>
         <View className="theme-button-primary rescue-create-page__primary" onTap={handleNext}>
           <Text>下一步：设定目标</Text>
           <Text className="rescue-create-page__primary-arrow">→</Text>

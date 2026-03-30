@@ -6,6 +6,7 @@ import { NavBar } from "../../../../components/NavBar";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
   getCurrentDraft,
+  persistDraft,
   updateCurrentDraft,
 } from "../../../../domain/canonical/repository/localRepository";
 import "./index.scss";
@@ -59,6 +60,26 @@ export default function RescueCreateBudgetPage() {
     Taro.navigateTo({
       url: "/pages/rescue/create/preview/index",
     });
+  };
+
+  const handleSaveDraft = () => {
+    updateCurrentDraft({
+      budget: Number(budget || 0),
+      budgetNote: budgetNote.trim(),
+    });
+
+    persistDraft("draft");
+
+    Taro.showToast({
+      title: "草稿已保存",
+      icon: "none",
+    });
+
+    setTimeout(() => {
+      Taro.switchTab({
+        url: "/pages/rescue/index",
+      });
+    }, 300);
   };
 
   return (
@@ -147,6 +168,12 @@ export default function RescueCreateBudgetPage() {
       </View>
 
       <View className="rescue-budget-page__footer">
+        <View
+          className="theme-button-secondary rescue-budget-page__secondary"
+          onTap={handleSaveDraft}
+        >
+          <Text>保存草稿</Text>
+        </View>
         <View className="theme-button-primary rescue-budget-page__button" onTap={handleNext}>
           <Text>进入救助页面</Text>
           <View className="rescue-budget-page__button-icon">

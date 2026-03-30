@@ -4,4 +4,4 @@
  * `src/domain/canonical/repository/index.ts`.
  */
 
-export * from "./index.ts";
+export * from "./index";

@@ -6,7 +6,7 @@ import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import {
   getSavedDrafts,
   type RescueCreateDraft,
-} from "../repository/localDraftPersistence.ts";
+} from "../repository/localDraftPersistence";
 import type {
   CanonicalAsset,
   CanonicalCase,
@@ -22,12 +22,12 @@ import type {
   CurrencyCode,
   VerificationStatus,
   Visibility,
-} from "../types.ts";
+} from "../types";
 import {
   legacyRescueProjectDetails as rescueProjectDetails,
   type LegacyRescueProjectDetail as RescueProjectDetail,
   type LegacyStatusTone as StatusTone,
-} from "../fixtures/legacyRescueProjectDetails.ts";
+} from "../fixtures/legacyRescueProjectDetails";
 
 function formatIndex(index: number) {
   return `${index + 1}`.padStart(3, "0");
