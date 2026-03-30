@@ -5,9 +5,9 @@ import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
-  getCurrentDraftSession,
-  patchCurrentDraftSession,
-} from "../../../../data/rescueCreateStore";
+  getCurrentDraft,
+  updateCurrentDraft,
+} from "../../../../domain/canonical/repository/localRepository";
 import "./index.scss";
 
 function formatBudgetText(value: string) {
@@ -25,7 +25,7 @@ export default function RescueCreateBudgetPage() {
   const [budgetNote, setBudgetNote] = useState("");
 
   useEffect(() => {
-    const draft = getCurrentDraftSession();
+    const draft = getCurrentDraft();
 
     if (!draft) {
       Taro.redirectTo({
@@ -51,7 +51,7 @@ export default function RescueCreateBudgetPage() {
       return;
     }
 
-    patchCurrentDraftSession({
+    updateCurrentDraft({
       budget: numericBudget,
       budgetNote: budgetNote.trim(),
     });

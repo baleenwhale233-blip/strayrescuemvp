@@ -224,6 +224,7 @@ export type PublicDetailVM = {
 export type DiscoverCardVM = {
   caseId: Id;
   rescuerId: Id;
+  sourceKind: "seed" | "local";
   title: string;
   statusLabel: string;
   statusTone: StatusTone;
@@ -237,6 +238,7 @@ export type DiscoverCardVM = {
 
 export type WorkbenchCaseCardVM = {
   caseId: Id;
+  sourceKind: "seed" | "local";
   title: string;
   statusLabel: string;
   statusTone: StatusTone;
@@ -245,6 +247,7 @@ export type WorkbenchCaseCardVM = {
   currentStatus: CaseCurrentStatus;
   coverImageUrl?: string;
   targetAmountLabel: string;
+  draftId?: Id;
 };
 
 export type WorkbenchVM = {
@@ -262,4 +265,13 @@ export type WorkbenchVM = {
   activeCases: WorkbenchCaseCardVM[];
   draftCases: WorkbenchCaseCardVM[];
   archivedCases: WorkbenchCaseCardVM[];
+};
+
+export type SupportSheetData = {
+  wechatId?: string;
+  contactHint: string;
+  directHint: string;
+  contactTip: string;
+  directTip: string;
+  paymentQrUrl?: string;
 };

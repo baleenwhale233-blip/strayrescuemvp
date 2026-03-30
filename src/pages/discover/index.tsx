@@ -1,17 +1,25 @@
-import { View, Text } from "@tarojs/components";
+import { Image, View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { NavBar } from "../../components/NavBar";
 import { StatusChip } from "../../components/StatusChip";
 import {
-  discoverCases,
-  discoverCategories,
-} from "../../data/mock";
+  getDiscoverCardVMs,
+} from "../../domain/canonical/repository/localRepository";
 import "./index.scss";
 
+const discoverCategories = [
+  { key: "all", label: "全部", active: true },
+  { key: "urgent", label: "紧急", active: false },
+  { key: "active", label: "进行中", active: false },
+  { key: "done", label: "完成", active: false },
+] as const;
+
 export default function DiscoverPage() {
-  const handleNavigateToGuestDetail = (detailId: string) => {
+  const discoverCards = getDiscoverCardVMs();
+
+  const handleNavigateToGuestDetail = (caseId: string) => {
     Taro.navigateTo({
-      url: `/pages/rescue/detail/index?id=${detailId}&mode=guest`,
+      url: `/pages/rescue/detail/index?id=${caseId}&mode=guest`,
     });
   };
 
@@ -31,31 +39,37 @@ export default function DiscoverPage() {
       </View>
 
       <View className="discover-page__list">
-        {discoverCases.map((item) => (
+        {discoverCards.map((item) => (
           <View
-            key={item.id}
+            key={item.caseId}
             className="discover-card theme-card"
-            onTap={() => handleNavigateToGuestDetail(item.detailId)}
+            onTap={() => handleNavigateToGuestDetail(item.caseId)}
           >
-            <View
-              className="discover-card__cover"
-              style={{
-                background: `linear-gradient(135deg, ${item.coverStart}, ${item.coverEnd})`,
-              }}
-            >
+            <View className="discover-card__cover">
+              {item.coverImageUrl ? (
+                <Image
+                  className="discover-card__cover-image"
+                  mode="aspectFill"
+                  src={item.coverImageUrl}
+                />
+              ) : null}
               <StatusChip label={item.statusLabel} tone={item.statusTone} />
-              <Text className="discover-card__cover-label">{item.coverLabel}</Text>
+              {!item.coverImageUrl ? (
+                <Text className="discover-card__cover-label">
+                  {item.title.slice(0, 2)}
+                </Text>
+              ) : null}
             </View>
 
             <View className="discover-card__body">
               <View className="discover-card__title-row">
                 <Text className="theme-text-card-title">{item.title}</Text>
-                <Text className="discover-card__updated-at">{item.updatedAt}</Text>
+                <Text className="discover-card__updated-at">{item.updatedAtLabel}</Text>
               </View>
 
               <View className="discover-card__meta-row">
                 <Text className="discover-card__meta">{item.subtitle}</Text>
-                <Text className="discover-card__amount">{item.amountText}</Text>
+                <Text className="discover-card__amount">{item.amountLabel}</Text>
               </View>
 
               <View className="discover-card__progress">
@@ -63,14 +77,16 @@ export default function DiscoverPage() {
                   <View
                     className="progress__segment"
                     style={{
-                      width: `${item.progress}%`,
+                      width: `${item.progressPercent}%`,
                       background: "var(--color-ledger-spent)",
                     }}
                   />
                 </View>
               </View>
 
-              <Text className="discover-card__latest">{item.latest}</Text>
+              <Text className="discover-card__latest">
+                {item.latestTimelineSummary || "暂无公开动态"}
+              </Text>
             </View>
           </View>
         ))}

@@ -4,11 +4,8 @@ import { useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import { NavBar } from "../../components/NavBar";
 import { SectionHeader } from "../../components/SectionHeader";
-import { getSavedDrafts } from "../../data/rescueCreateStore";
-import {
-  draftProjects,
-  rescueProjects,
-} from "../../data/mock";
+import { getWorkbenchVMForCurrentUser } from "../../domain/canonical/repository/localRepository";
+import type { WorkbenchCaseCardVM } from "../../domain/canonical/types";
 import "./index.scss";
 
 function ProjectListItem({
@@ -52,78 +49,27 @@ function ProjectListItem({
 }
 
 export default function RescuePage() {
-  const [customPublishedProjects, setCustomPublishedProjects] = useState<
-    Array<{
-      id: string;
-      status: "published";
-      name: string;
-      state: string;
-      avatarLabel: string;
-      avatarStart: string;
-      avatarEnd: string;
-    }>
-  >([]);
-  const [customDraftProjects, setCustomDraftProjects] = useState<
-    Array<{
-      id: string;
-      status: "draft";
-      name: string;
-      state: string;
-      avatarLabel: string;
-      avatarStart: string;
-      avatarEnd: string;
-    }>
-  >([]);
+  const [activeCases, setActiveCases] = useState<WorkbenchCaseCardVM[]>([]);
+  const [draftCases, setDraftCases] = useState<WorkbenchCaseCardVM[]>([]);
 
   useDidShow(() => {
-    const drafts = getSavedDrafts();
-    const published = drafts
-      .filter((draft) => draft.status === "published")
-      .map((draft) => ({
-        id: draft.id,
-        status: "published" as const,
-        name: draft.name || "未命名救助",
-        state: "救助中 • 刚刚",
-        avatarLabel: (draft.name || "救助").slice(0, 2),
-        avatarStart: "#F5C08B",
-        avatarEnd: "#A7621D",
-      }));
-    const draftList = drafts
-      .filter((draft) => draft.status === "draft")
-      .map((draft) => ({
-        id: draft.id,
-        status: "draft" as const,
-        name: draft.name || "未命名草稿",
-        state: "草稿中 • 刚刚",
-        avatarLabel: (draft.name || "草稿").slice(0, 2),
-        avatarStart: "#E0E3E8",
-        avatarEnd: "#9298A4",
-      }));
-
-    setCustomPublishedProjects(published);
-    setCustomDraftProjects(draftList);
+    const vm = getWorkbenchVMForCurrentUser();
+    setActiveCases(vm?.activeCases ?? []);
+    setDraftCases(vm?.draftCases ?? []);
   });
 
   const handleNavigateToDetail = (
-    projectId: string,
-    status?: "draft" | "published",
+    card: WorkbenchCaseCardVM,
   ) => {
-    if (projectId.startsWith("custom-project-") && status === "draft") {
+    if (card.sourceKind === "local" && card.visibility === "draft" && card.draftId) {
       Taro.navigateTo({
-        url: `/pages/rescue/create/preview/index?id=${projectId}`,
-      });
-      return;
-    }
-
-    if (projectId.startsWith("custom-project-") && status === "published") {
-      Taro.navigateTo({
-        url: `/pages/rescue/detail/index?id=${projectId}&mode=owner&source=custom`,
+        url: `/pages/rescue/create/preview/index?id=${card.draftId}`,
       });
       return;
     }
 
     Taro.navigateTo({
-      url: `/pages/rescue/detail/index?id=${projectId}&mode=owner`,
+      url: `/pages/rescue/detail/index?id=${card.caseId}&mode=owner`,
     });
   };
 
@@ -133,8 +79,8 @@ export default function RescuePage() {
     });
   };
 
-  const activeBadge = `${customPublishedProjects.length + rescueProjects.length} 进行中`;
-  const draftBadge = `${customDraftProjects.length + draftProjects.length} 草稿`;
+  const activeBadge = `${activeCases.length} 进行中`;
+  const draftBadge = `${draftCases.length} 草稿`;
 
   return (
     <View className="page-shell rescue-page">
@@ -151,16 +97,16 @@ export default function RescuePage() {
         <SectionHeader title="进行中的项目" badge={activeBadge} />
 
         <View className="rescue-page__list">
-          {[...customPublishedProjects, ...rescueProjects].map((project) => (
+          {activeCases.map((project) => (
             <ProjectListItem
-              key={project.id}
-              {...project}
-              onTap={(id) =>
-                handleNavigateToDetail(
-                  id,
-                  "status" in project ? project.status : undefined,
-                )
-              }
+              key={project.caseId}
+              id={project.caseId}
+              name={project.title}
+              state={project.statusLabel}
+              avatarLabel={project.title.slice(0, 2)}
+              avatarStart="#F5C08B"
+              avatarEnd="#A7621D"
+              onTap={() => handleNavigateToDetail(project)}
             />
           ))}
         </View>
@@ -169,16 +115,16 @@ export default function RescuePage() {
       <View className="rescue-page__section">
         <SectionHeader title="草稿箱" badge={draftBadge} />
         <View className="rescue-page__list">
-          {[...customDraftProjects, ...draftProjects].map((project) => (
+          {draftCases.map((project) => (
             <ProjectListItem
-              key={project.id}
-              {...project}
-              onTap={(id) =>
-                handleNavigateToDetail(
-                  id,
-                  "status" in project ? project.status : undefined,
-                )
-              }
+              key={project.caseId}
+              id={project.caseId}
+              name={project.title}
+              state={project.statusLabel}
+              avatarLabel={project.title.slice(0, 2)}
+              avatarStart="#E0E3E8"
+              avatarEnd="#9298A4"
+              onTap={() => handleNavigateToDetail(project)}
             />
           ))}
         </View>
