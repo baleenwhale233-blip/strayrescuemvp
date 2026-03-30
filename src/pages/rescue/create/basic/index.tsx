@@ -5,9 +5,9 @@ import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
-  patchCurrentDraftSession,
-  startNewDraftSession,
-} from "../../../../data/rescueCreateStore";
+  startDraftSession,
+  updateCurrentDraft,
+} from "../../../../domain/canonical/repository/localRepository";
 import "./index.scss";
 
 export default function RescueCreateBasicPage() {
@@ -16,7 +16,7 @@ export default function RescueCreateBasicPage() {
   const [summary, setSummary] = useState("");
 
   useEffect(() => {
-    const draft = startNewDraftSession();
+    const draft = startDraftSession();
     setCoverPath(draft.coverPath);
     setName(draft.name);
     setSummary(draft.summary);
@@ -58,7 +58,7 @@ export default function RescueCreateBasicPage() {
       return;
     }
 
-    patchCurrentDraftSession({
+    updateCurrentDraft({
       coverPath,
       name: name.trim(),
       summary: summary.trim(),

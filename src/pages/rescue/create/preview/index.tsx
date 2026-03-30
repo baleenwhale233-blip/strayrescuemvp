@@ -5,17 +5,17 @@ import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
-  appendEntryToDraft,
   calculateDraftLedger,
-  formatTimelineTimestamp,
-  getCurrentDraftSession,
-  getSavedDraftById,
-  replaceDraftById,
-  saveCurrentDraft,
-  setCurrentDraftSession,
+  appendDraftEntry,
+  getCurrentDraft,
+  getDraftById,
+  persistDraft,
+  replaceDraft,
+  syncCurrentDraft,
+  toOwnerActionTimelineEntry,
   type RescueCreateDraft,
   type RescueCreateEntryTone,
-} from "../../../../data/rescueCreateStore";
+} from "../../../../domain/canonical/repository/localRepository";
 import "./index.scss";
 
 type ActionType = RescueCreateEntryTone | "copy" | null;
@@ -270,8 +270,8 @@ export default function RescueCreatePreviewPage() {
   const [activeAction, setActiveAction] = useState<ActionType>(null);
 
   useEffect(() => {
-    const savedDraft = getSavedDraftById(router.params?.id);
-    const currentDraft = getCurrentDraftSession();
+    const savedDraft = getDraftById(router.params?.id);
+    const currentDraft = getCurrentDraft();
     const nextDraft = savedDraft ?? currentDraft;
 
     if (!nextDraft) {
@@ -288,7 +288,7 @@ export default function RescueCreatePreviewPage() {
       return;
     }
 
-    setCurrentDraftSession(nextDraft);
+    syncCurrentDraft(nextDraft);
     setDraft(nextDraft);
   }, [router.params?.id]);
 
@@ -366,47 +366,41 @@ export default function RescueCreatePreviewPage() {
     let nextDraft = draft;
 
     if (activeAction === "budget") {
-      nextDraft = replaceDraftById({
+      nextDraft = replaceDraft({
         ...draft,
         budget: numericAmount,
       });
 
-      const entry = {
-        id: `entry-${Date.now()}`,
-        tone: "budget" as const,
-        label: "预算调整",
+      const entry = toOwnerActionTimelineEntry({
+        action: "budget",
         title: values.title.trim(),
         description: values.description.trim(),
-        timestamp: formatTimelineTimestamp(),
-        budgetPrevious: draft.budget,
-        budgetCurrent: numericAmount,
-      };
+        previousTargetAmount: draft.budget,
+        currentTargetAmount: numericAmount,
+      });
 
-      nextDraft = appendEntryToDraft(nextDraft, entry);
+      nextDraft = appendDraftEntry(nextDraft, entry);
     } else {
-      const entry = {
-        id: `entry-${Date.now()}`,
-        tone: activeAction,
-        label:
+      const entry = toOwnerActionTimelineEntry({
+        action:
           activeAction === "expense"
-            ? "支出记录"
+            ? "receipt"
             : activeAction === "income"
-              ? "场外收入"
-              : "状态更新",
+              ? "income"
+              : "update",
         title: values.title.trim(),
         description: values.description.trim(),
-        timestamp: formatTimelineTimestamp(),
         amount:
           activeAction === "expense" || activeAction === "income"
             ? numericAmount
             : undefined,
-        images:
+        imageUrls:
           activeAction === "status" || activeAction === "expense"
             ? [draft.coverPath || coverFallback]
             : undefined,
-      };
+      });
 
-      nextDraft = appendEntryToDraft(draft, entry);
+      nextDraft = appendDraftEntry(draft, entry);
     }
 
     setDraft(nextDraft);
@@ -418,7 +412,7 @@ export default function RescueCreatePreviewPage() {
   };
 
   const handleSaveDraft = () => {
-    const saved = saveCurrentDraft("draft");
+    const saved = persistDraft("draft");
     setDraft(saved);
 
     Taro.showToast({
@@ -434,7 +428,7 @@ export default function RescueCreatePreviewPage() {
   };
 
   const handlePublish = () => {
-    const saved = saveCurrentDraft("published");
+    const saved = persistDraft("published");
     setDraft(saved);
 
     Taro.showToast({

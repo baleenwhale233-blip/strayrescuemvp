@@ -1,146 +1,321 @@
 import { Image, Input, Text, Textarea, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
 import { NavBar } from "../../../components/NavBar";
 import { SupportSheet } from "../../../components/SupportSheet";
-import coverFallback from "../../../assets/detail/guest-hero-cat.png";
 import {
-  appendEntryToDraft,
-  calculateDraftLedger,
-  formatTimelineTimestamp,
-  getSavedDraftById,
-  replaceDraftById,
-  saveCurrentDraft,
-  setCurrentDraftSession,
+  appendDraftEntry,
+  getDraftByCaseId,
+  getOwnerDetailVMByCaseId,
+  getPublicDetailVMByCaseId,
+  getSupportSheetDataByCaseId,
+  persistDraft,
+  replaceDraft,
+  syncCurrentDraft,
+  toOwnerActionTimelineEntry,
+  type OwnerDetailActionKey,
+  type OwnerDetailVM,
   type RescueCreateDraft,
-  type RescueCreateEntryTone,
-} from "../../../data/rescueCreateStore";
+} from "../../../domain/canonical/repository/localRepository";
+import type {
+  PublicDetailVM,
+  PublicTimelineItemVM,
+} from "../../../domain/canonical/types";
 import { StatusChip } from "../../../components/StatusChip";
-import {
-  getGuestRescueDetail,
-  getOwnerRescueDetail,
-  type RescueGuestDetail,
-  type RescueOwnerDetail,
-  type RescueTimelineEntry,
-} from "../../../data/rescueDetails";
 import "./index.scss";
 
-type OwnerActionType = RescueCreateEntryTone | "copy" | null;
+type ActiveOwnerAction = Exclude<OwnerDetailActionKey, "copy"> | null;
 
-function formatCurrency(value: number) {
-  return `¥${value.toLocaleString("zh-CN")}`;
+function formatCurrency(valueLabel: string) {
+  return valueLabel;
 }
 
-function buildLedgerSegments(ledger: {
-  supported: number;
-  verifiedGap: number;
-  pending: number;
-}, labels = ["已获支持", "已核验票据缺口", "预估后续缺口"]) {
-  const total = ledger.supported + ledger.verifiedGap + ledger.pending || 1;
+function buildOwnerSegments(detail: OwnerDetailVM) {
+  const total = detail.ledger.supported + detail.ledger.verifiedGap + detail.ledger.pending || 1;
 
-  return [
-    {
-      key: "supported",
-      label: labels[0],
-      value: ledger.supported,
-      width: `${(ledger.supported / total) * 100}%`,
-      color: "var(--color-ledger-spent)",
-    },
-    {
-      key: "verifiedGap",
-      label: labels[1],
-      value: ledger.verifiedGap,
-      width: `${(ledger.verifiedGap / total) * 100}%`,
-      color: "var(--color-ledger-balance)",
-    },
-    {
-      key: "pending",
-      label: labels[2],
-      value: ledger.pending,
-      width: `${(ledger.pending / total) * 100}%`,
-      color: "var(--color-ledger-pending)",
-    },
-  ];
-}
-
-function toCustomTimelineEntry(
-  entry: RescueCreateDraft["timeline"][number],
-): RescueTimelineEntry {
   return {
-    id: entry.id,
-    tone: entry.tone === "income" ? "support" : entry.tone,
-    label: entry.label,
-    title: entry.title,
-    description: entry.description,
-    timestamp: entry.timestamp,
-    amount:
-      typeof entry.amount === "number"
-        ? `${entry.tone === "income" ? "+" : "-"} ${formatCurrency(entry.amount)}`
-        : undefined,
-    linkLabel: entry.tone === "expense" ? "查看回执" : undefined,
-    images: entry.images?.map((src, index) => ({
-      id: `${entry.id}-${index}`,
-      src,
-      alt: `custom-entry-${entry.id}-${index}`,
-    })),
-    budgetSummary:
-      typeof entry.budgetPrevious === "number" &&
-      typeof entry.budgetCurrent === "number"
-        ? {
-            previousLabel: "原预算总计",
-            previousValue: formatCurrency(entry.budgetPrevious),
-            currentLabel: "现预算总计",
-            currentValue: formatCurrency(entry.budgetCurrent),
+    supportedWidth: `${(detail.ledger.supported / total) * 100}%`,
+    verifiedGapWidth: `${(detail.ledger.verifiedGap / total) * 100}%`,
+    pendingWidth: `${(detail.ledger.pending / total) * 100}%`,
+  };
+}
+
+function Timeline({
+  entries,
+  hint,
+}: {
+  entries: PublicTimelineItemVM[];
+  hint: string;
+}) {
+  return (
+    <View className="detail-page__section">
+      <View className="detail-page__section-header">
+        <Text className="detail-page__section-title">救助动态</Text>
+        <Text className="detail-page__section-hint">{hint}</Text>
+      </View>
+
+      <View className="detail-page__timeline">
+        <View className="detail-page__timeline-line" />
+
+        {entries.map((entry) => (
+          <View key={entry.id} className="detail-page__timeline-item">
+            <View
+              className={`detail-page__timeline-node detail-page__timeline-node--${entry.tone}`}
+            />
+
+            <View className="detail-page__timeline-card theme-card">
+              <View className="detail-page__timeline-header">
+                <Text
+                  className={`detail-page__timeline-badge detail-page__timeline-badge--${entry.tone}`}
+                >
+                  {entry.label}
+                </Text>
+                <Text className="detail-page__timeline-time">
+                  {entry.timestampLabel}
+                </Text>
+              </View>
+
+              <Text className="detail-page__timeline-title">{entry.title}</Text>
+
+              {entry.description ? (
+                <Text className="detail-page__timeline-description">
+                  {entry.description}
+                </Text>
+              ) : null}
+
+              {entry.amountLabel ? (
+                <View className="detail-page__timeline-meta">
+                  <Text className="detail-page__timeline-amount">
+                    {entry.amountLabel}
+                  </Text>
+
+                  {entry.type === "expense" ? (
+                    <View
+                      className="detail-page__timeline-link"
+                      onTap={() =>
+                        Taro.showToast({
+                          title: "回执预览待接入",
+                          icon: "none",
+                        })
+                      }
+                    >
+                      <Text>查看回执</Text>
+                      <View className="detail-page__timeline-link-arrow">
+                        <AppIcon
+                          name="chevronRight"
+                          size={16}
+                          variant="muted"
+                        />
+                      </View>
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
+
+              {entry.assetUrls.length ? (
+                <View
+                  className={`detail-page__timeline-images ${
+                    entry.assetUrls.length === 1
+                      ? "detail-page__timeline-images--single"
+                      : ""
+                  }`}
+                >
+                  {entry.assetUrls.map((imageUrl) => (
+                    <View
+                      key={imageUrl}
+                      className="detail-page__timeline-image-card"
+                    >
+                      <Image
+                        className="detail-page__timeline-image"
+                        mode="aspectFill"
+                        src={imageUrl}
+                      />
+                      <Text className="detail-page__timeline-watermark">
+                        透明账本·严禁盗用
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : null}
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function GuestDetail({
+  detail,
+  onSupport,
+}: {
+  detail: PublicDetailVM;
+  onSupport: () => void;
+}) {
+  return (
+    <View className="detail-page detail-page--guest">
+      <NavBar showBack title={detail.title} />
+
+      <View className="guest-detail__hero">
+        {detail.heroImageUrl ? (
+          <Image
+            className="guest-detail__hero-image"
+            mode="aspectFill"
+            src={detail.heroImageUrl}
+          />
+        ) : null}
+        <View className="guest-detail__hero-overlay">
+          <StatusChip label={detail.statusLabel} tone={detail.statusTone} />
+          <Text className="guest-detail__hero-summary">{detail.summary}</Text>
+        </View>
+      </View>
+
+      <View className="guest-detail__ledger-card theme-card">
+        <View className="guest-detail__ledger-header">
+          <Text className="guest-detail__ledger-title">资金筹集进度</Text>
+          <Text className="guest-detail__ledger-help">?</Text>
+        </View>
+
+        <View className="detail-page__segmented-bar">
+          <View
+            className="detail-page__segmented-bar-item"
+            style={{
+              width: `${detail.ledger.supportedAmount ? (detail.ledger.supportedAmount / detail.ledger.targetAmount) * 100 : 0}%`,
+              background: "var(--color-ledger-spent)",
+            }}
+          />
+          <View
+            className="detail-page__segmented-bar-item"
+            style={{
+              width: `${detail.ledger.verifiedGapAmount ? (detail.ledger.verifiedGapAmount / detail.ledger.targetAmount) * 100 : 0}%`,
+              background: "var(--color-ledger-balance)",
+            }}
+          />
+          <View
+            className="detail-page__segmented-bar-item"
+            style={{
+              width: `${detail.ledger.remainingTargetAmount ? (detail.ledger.remainingTargetAmount / detail.ledger.targetAmount) * 100 : 100}%`,
+              background: "var(--color-ledger-pending)",
+            }}
+          />
+        </View>
+
+        <View className="guest-detail__ledger-list">
+          <View className="guest-detail__ledger-row">
+            <View className="guest-detail__ledger-row-left">
+              <View
+                className="guest-detail__ledger-dot"
+                style={{ background: "var(--color-ledger-spent)" }}
+              />
+              <Text className="guest-detail__ledger-label">已获支持</Text>
+            </View>
+            <Text className="guest-detail__ledger-value">
+              {detail.ledger.supportedAmountLabel}
+            </Text>
+          </View>
+          <View className="guest-detail__ledger-row">
+            <View className="guest-detail__ledger-row-left">
+              <View
+                className="guest-detail__ledger-dot"
+                style={{ background: "var(--color-ledger-balance)" }}
+              />
+              <Text className="guest-detail__ledger-label">已核验票据缺口</Text>
+            </View>
+            <Text className="guest-detail__ledger-value">
+              {detail.ledger.verifiedGapAmountLabel}
+            </Text>
+          </View>
+          <View className="guest-detail__ledger-row">
+            <View className="guest-detail__ledger-row-left">
+              <View
+                className="guest-detail__ledger-dot"
+                style={{ background: "var(--color-ledger-pending)" }}
+              />
+              <Text className="guest-detail__ledger-label">预估后续缺口</Text>
+            </View>
+            <Text className="guest-detail__ledger-value">
+              {detail.ledger.remainingTargetAmountLabel}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <View className="guest-detail__rescuer-card theme-card">
+        {detail.rescuer.avatarUrl ? (
+          <Image
+            className="guest-detail__rescuer-avatar"
+            mode="aspectFill"
+            src={detail.rescuer.avatarUrl}
+          />
+        ) : null}
+        <View className="guest-detail__rescuer-copy">
+          <View className="guest-detail__rescuer-name-row">
+            <Text className="guest-detail__rescuer-name">
+              {detail.rescuer.name}
+            </Text>
+            <Text className="guest-detail__rescuer-badge">
+              {detail.rescuer.verifiedLabel}
+            </Text>
+          </View>
+          <Text className="guest-detail__rescuer-meta">
+            已建立 {detail.rescuer.stats.publishedCaseCount} 份透明账本 ·
+            已核验 {detail.rescuer.stats.verifiedReceiptCount} 张票据
+          </Text>
+          <Text className="guest-detail__rescuer-meta">
+            注册于 {detail.rescuer.joinedAtLabel}
+          </Text>
+        </View>
+        <View
+          className="guest-detail__rescuer-link"
+          onTap={() =>
+            Taro.showToast({
+              title: "救助人主页待接入",
+              icon: "none",
+            })
           }
-        : undefined,
-  };
-}
+        >
+          <Text>查看主页</Text>
+        </View>
+      </View>
 
-function buildCustomOwnerDetail(draft: RescueCreateDraft): RescueOwnerDetail {
-  const ledger = calculateDraftLedger(draft);
+      <Timeline entries={detail.timeline} hint="数据实时更新" />
 
-  return {
-    id: draft.id,
-    title: draft.name || "未命名救助",
-    navTitle: "救助记录管理",
-    state: "医疗救助中",
-    coverImage: draft.coverPath || coverFallback,
-    statusLabel: "医疗救助中",
-    statusTone: "active",
-    goalAmount: draft.budget > 0 ? formatCurrency(draft.budget) : "待设定",
-    currentAmount: formatCurrency(ledger.income),
-    progressPercent: ledger.progress,
-    ledger: {
-      supported: ledger.expense,
-      verifiedGap: ledger.balance,
-      pending: ledger.pending,
-    },
-    rescuer: {
-      name: "当前救助人",
-      credential: "本地草稿转正式救助",
-      stats: "后续可接入真实身份与凭证数",
-      avatarSrc: "",
-      badge: "已发布",
-    },
-    timeline: draft.timeline.map(toCustomTimelineEntry),
-    support: {
-      wechatId: "wxid_rescuer_99",
-      contactHint: "长按图片保存到相册，打开微信扫一扫添加好友",
-      directHint: "长按图片保存到相册，打开微信/支付宝扫码转账",
-      contactTip: "添加救助人后，可通过微信直接沟通救助细节。",
-      directTip:
-        "支持完成后，请回到页面点击“我已支持，去认领”以更新透明账本。",
-    },
-    timelineHint: "数据实时更新",
-    quickActions: [
-      { key: "receipt", label: "记一笔支出", icon: "camera" },
-      { key: "update", label: "写进展更新", icon: "fileText" },
-      { key: "income", label: "记场外收入", icon: "handCoins" },
-      { key: "budget", label: "追加预算", icon: "plusCircle" },
-      { key: "copy", label: "生成文案", icon: "sparkles" },
-    ],
-  };
+      <View className="guest-detail__sticky-bar">
+        <View
+          className="guest-detail__share"
+          onTap={() =>
+            Taro.showToast({
+              title: "分享链路待接入",
+              icon: "none",
+            })
+          }
+        >
+          <Text className="guest-detail__share-icon">↗</Text>
+          <Text className="guest-detail__share-text">分享</Text>
+        </View>
+
+        <View
+          className="theme-button-secondary guest-detail__claim-button"
+          onTap={() =>
+            Taro.showToast({
+              title: "认领支持流程待接入",
+              icon: "none",
+            })
+          }
+        >
+          <Text>认领支持</Text>
+        </View>
+
+        <View
+          className="theme-button-primary guest-detail__support-button"
+          onTap={onSupport}
+        >
+          <Text>我要支持</Text>
+        </View>
+      </View>
+    </View>
+  );
 }
 
 function OwnerActionSheet({
@@ -148,7 +323,7 @@ function OwnerActionSheet({
   onClose,
   onSave,
 }: {
-  action: Exclude<OwnerActionType, "copy" | null>;
+  action: ActiveOwnerAction;
   onClose: () => void;
   onSave: (values: { title: string; description: string; amount: string }) => void;
 }) {
@@ -156,15 +331,19 @@ function OwnerActionSheet({
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
 
+  if (!action) {
+    return null;
+  }
+
   const copy = {
-    expense: {
+    receipt: {
       title: "记一笔支出",
       titlePlaceholder: "如：清创手术费 + 抗生素",
       descriptionPlaceholder: "补充票据说明或支出背景",
       amountPlaceholder: "850.00",
       amountLabel: "支出金额",
     },
-    status: {
+    update: {
       title: "写进展更新",
       titlePlaceholder: "如：完成首次清创，精神状态尚可",
       descriptionPlaceholder: "补充医生建议、恢复情况或下一步安排",
@@ -248,268 +427,14 @@ function OwnerActionSheet({
   );
 }
 
-function Timeline({
-  entries,
-  hint,
-}: {
-  entries: RescueTimelineEntry[];
-  hint: string;
-}) {
-  return (
-    <View className="detail-page__section">
-      <View className="detail-page__section-header">
-        <Text className="detail-page__section-title">救助动态</Text>
-        <Text className="detail-page__section-hint">{hint}</Text>
-      </View>
-
-      <View className="detail-page__timeline">
-        <View className="detail-page__timeline-line" />
-
-        {entries.map((entry) => (
-          <View key={entry.id} className="detail-page__timeline-item">
-            <View
-              className={`detail-page__timeline-node detail-page__timeline-node--${entry.tone}`}
-            />
-
-            <View className="detail-page__timeline-card theme-card">
-              <View className="detail-page__timeline-header">
-                <Text
-                  className={`detail-page__timeline-badge detail-page__timeline-badge--${entry.tone}`}
-                >
-                  {entry.label}
-                </Text>
-                <Text className="detail-page__timeline-time">
-                  {entry.timestamp}
-                </Text>
-              </View>
-
-              <Text className="detail-page__timeline-title">{entry.title}</Text>
-
-              {entry.description ? (
-                <Text className="detail-page__timeline-description">
-                  {entry.description}
-                </Text>
-              ) : null}
-
-              {entry.amount || entry.linkLabel ? (
-                <View className="detail-page__timeline-meta">
-                  {entry.amount ? (
-                    <Text className="detail-page__timeline-amount">
-                      {entry.amount}
-                    </Text>
-                  ) : (
-                    <View />
-                  )}
-
-                  {entry.linkLabel ? (
-                    <View
-                      className="detail-page__timeline-link"
-                      onTap={() =>
-                        Taro.showToast({
-                          title: "回执预览待接入",
-                          icon: "none",
-                        })
-                      }
-                    >
-                      <Text>{entry.linkLabel}</Text>
-                      <View className="detail-page__timeline-link-arrow">
-                        <AppIcon
-                          name="chevronRight"
-                          size={16}
-                          variant="muted"
-                        />
-                      </View>
-                    </View>
-                  ) : null}
-                </View>
-              ) : null}
-
-              {entry.images?.length ? (
-                <View
-                  className={`detail-page__timeline-images ${
-                    entry.images.length === 1
-                      ? "detail-page__timeline-images--single"
-                      : ""
-                  }`}
-                >
-                  {entry.images.map((image) => (
-                    <View
-                      key={image.id}
-                      className="detail-page__timeline-image-card"
-                    >
-                      <Image
-                        className="detail-page__timeline-image"
-                        mode="aspectFill"
-                        src={image.src}
-                      />
-                      <Text className="detail-page__timeline-watermark">
-                        透明账本·严禁盗用
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ) : null}
-
-              {entry.budgetSummary ? (
-                <View className="detail-page__timeline-budget-card">
-                  <View className="detail-page__timeline-budget-row">
-                    <Text className="detail-page__timeline-budget-label">
-                      {entry.budgetSummary.previousLabel}
-                    </Text>
-                    <Text className="detail-page__timeline-budget-label">
-                      {entry.budgetSummary.currentLabel}
-                    </Text>
-                  </View>
-                  <View className="detail-page__timeline-budget-row">
-                    <Text className="detail-page__timeline-budget-previous">
-                      {entry.budgetSummary.previousValue}
-                    </Text>
-                    <Text className="detail-page__timeline-budget-current">
-                      {entry.budgetSummary.currentValue}
-                    </Text>
-                  </View>
-                </View>
-              ) : null}
-            </View>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-}
-
-function GuestDetail({
-  detail,
-  onSupport,
-}: {
-  detail: RescueGuestDetail;
-  onSupport: () => void;
-}) {
-  const ledgerSegments = buildLedgerSegments(detail.ledger);
-
-  return (
-    <View className="detail-page detail-page--guest">
-      <NavBar showBack title={detail.navTitle} />
-
-      <View className="guest-detail__hero">
-        <Image className="guest-detail__hero-image" mode="aspectFill" src={detail.heroImage} />
-        <View className="guest-detail__hero-overlay">
-          <StatusChip label={detail.statusLabel} tone={detail.statusTone} />
-          <Text className="guest-detail__hero-summary">{detail.heroSummary}</Text>
-        </View>
-      </View>
-
-      <View className="guest-detail__ledger-card theme-card">
-        <View className="guest-detail__ledger-header">
-          <Text className="guest-detail__ledger-title">资金筹集进度</Text>
-          <Text className="guest-detail__ledger-help">?</Text>
-        </View>
-
-        <View className="detail-page__segmented-bar">
-          {ledgerSegments.map((segment) => (
-            <View
-              key={segment.key}
-              className="detail-page__segmented-bar-item"
-              style={{
-                width: segment.width,
-                background: segment.color,
-              }}
-            />
-          ))}
-        </View>
-
-        <View className="guest-detail__ledger-list">
-          {ledgerSegments.map((segment) => (
-            <View key={segment.key} className="guest-detail__ledger-row">
-              <View className="guest-detail__ledger-row-left">
-                <View
-                  className="guest-detail__ledger-dot"
-                  style={{ background: segment.color }}
-                />
-                <Text className="guest-detail__ledger-label">{segment.label}</Text>
-              </View>
-              <Text className="guest-detail__ledger-value">
-                {formatCurrency(segment.value)}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      <View className="guest-detail__rescuer-card theme-card">
-        <Image className="guest-detail__rescuer-avatar" mode="aspectFill" src={detail.rescuer.avatarSrc} />
-        <View className="guest-detail__rescuer-copy">
-          <View className="guest-detail__rescuer-name-row">
-            <Text className="guest-detail__rescuer-name">{detail.rescuer.name}</Text>
-            <Text className="guest-detail__rescuer-badge">{detail.rescuer.badge}</Text>
-          </View>
-          <Text className="guest-detail__rescuer-meta">{detail.rescuer.credential}</Text>
-          <Text className="guest-detail__rescuer-meta">{detail.rescuer.stats}</Text>
-        </View>
-        <View
-          className="guest-detail__rescuer-link"
-          onTap={() =>
-            Taro.showToast({
-              title: "救助人主页待接入",
-              icon: "none",
-            })
-          }
-        >
-          <Text>查看主页</Text>
-        </View>
-      </View>
-
-      <Timeline entries={detail.timeline} hint={detail.timelineHint} />
-
-      <View className="guest-detail__sticky-bar">
-        <View
-          className="guest-detail__share"
-          onTap={() =>
-            Taro.showToast({
-              title: "分享链路待接入",
-              icon: "none",
-            })
-          }
-        >
-          <Text className="guest-detail__share-icon">↗</Text>
-          <Text className="guest-detail__share-text">分享</Text>
-        </View>
-
-        <View
-          className="theme-button-secondary guest-detail__claim-button"
-          onTap={() =>
-            Taro.showToast({
-              title: "认领支持流程待接入",
-              icon: "none",
-            })
-          }
-        >
-          <Text>认领支持</Text>
-        </View>
-
-        <View
-          className="theme-button-primary guest-detail__support-button"
-          onTap={onSupport}
-        >
-          <Text>我要支持</Text>
-        </View>
-      </View>
-    </View>
-  );
-}
-
 function OwnerDetail({
   detail,
   onActionTap,
 }: {
-  detail: RescueOwnerDetail;
-  onActionTap?: (actionKey: string, actionLabel: string) => void;
+  detail: OwnerDetailVM;
+  onActionTap?: (action: OwnerDetailActionKey) => void;
 }) {
-  const ledgerSegments = buildLedgerSegments(detail.ledger, [
-    "已支出",
-    "结余",
-    "待筹",
-  ]);
+  const segments = buildOwnerSegments(detail);
 
   return (
     <View className="detail-page detail-page--owner">
@@ -517,7 +442,13 @@ function OwnerDetail({
 
       <View className="owner-detail__summary theme-card">
         <View className="owner-detail__summary-top">
-          <Image className="owner-detail__summary-cover" mode="aspectFill" src={detail.coverImage} />
+          {detail.coverImage ? (
+            <Image
+              className="owner-detail__summary-cover"
+              mode="aspectFill"
+              src={detail.coverImage}
+            />
+          ) : null}
 
           <View className="owner-detail__summary-copy">
             <View className="owner-detail__summary-title-row">
@@ -525,14 +456,14 @@ function OwnerDetail({
               <StatusChip label={detail.statusLabel} tone={detail.statusTone} />
             </View>
             <Text className="owner-detail__summary-goal">
-              预估目标：{detail.goalAmount}
+              预估目标：{detail.goalAmountLabel}
             </Text>
           </View>
         </View>
 
         <View className="owner-detail__summary-progress-head">
           <Text className="owner-detail__summary-current">
-            当前集资: {detail.currentAmount}
+            当前集资: {detail.currentAmountLabel}
           </Text>
           <Text className="owner-detail__summary-percent">
             {detail.progressPercent}%
@@ -540,33 +471,60 @@ function OwnerDetail({
         </View>
 
         <View className="detail-page__segmented-bar">
-          {ledgerSegments.map((segment) => (
-            <View
-              key={segment.key}
-              className="detail-page__segmented-bar-item"
-              style={{
-                width: segment.width,
-                background: segment.color,
-              }}
-            />
-          ))}
+          <View
+            className="detail-page__segmented-bar-item"
+            style={{
+              width: segments.supportedWidth,
+              background: "var(--color-ledger-spent)",
+            }}
+          />
+          <View
+            className="detail-page__segmented-bar-item"
+            style={{
+              width: segments.verifiedGapWidth,
+              background: "var(--color-ledger-balance)",
+            }}
+          />
+          <View
+            className="detail-page__segmented-bar-item"
+            style={{
+              width: segments.pendingWidth,
+              background: "var(--color-ledger-pending)",
+            }}
+          />
         </View>
 
         <View className="owner-detail__legend">
-          {ledgerSegments.map((segment) => (
-            <View key={segment.key} className="owner-detail__legend-item">
-              <View
-                className="owner-detail__legend-dot"
-                style={{ background: segment.color }}
-              />
-              <Text className="owner-detail__legend-label">
-                {segment.label}
-              </Text>
-              <Text className="owner-detail__legend-value">
-                {formatCurrency(segment.value)}
-              </Text>
-            </View>
-          ))}
+          <View className="owner-detail__legend-item">
+            <View
+              className="owner-detail__legend-dot"
+              style={{ background: "var(--color-ledger-spent)" }}
+            />
+            <Text className="owner-detail__legend-label">已支出</Text>
+            <Text className="owner-detail__legend-value">
+              {formatCurrency(`¥${detail.ledger.supported.toLocaleString("zh-CN")}`)}
+            </Text>
+          </View>
+          <View className="owner-detail__legend-item">
+            <View
+              className="owner-detail__legend-dot"
+              style={{ background: "var(--color-ledger-balance)" }}
+            />
+            <Text className="owner-detail__legend-label">结余</Text>
+            <Text className="owner-detail__legend-value">
+              {formatCurrency(`¥${detail.ledger.verifiedGap.toLocaleString("zh-CN")}`)}
+            </Text>
+          </View>
+          <View className="owner-detail__legend-item">
+            <View
+              className="owner-detail__legend-dot"
+              style={{ background: "var(--color-ledger-pending)" }}
+            />
+            <Text className="owner-detail__legend-label">待筹</Text>
+            <Text className="owner-detail__legend-value">
+              {formatCurrency(`¥${detail.ledger.pending.toLocaleString("zh-CN")}`)}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -577,7 +535,7 @@ function OwnerDetail({
             className="owner-detail__action-card theme-card"
             onTap={() => {
               if (onActionTap) {
-                onActionTap(action.key, action.label);
+                onActionTap(action.key);
                 return;
               }
 
@@ -625,7 +583,7 @@ function OwnerDetail({
           <Text className="owner-detail__swipe-text">右滑结束救助</Text>
         </View>
         <Text className="owner-detail__swipe-hint">
-          确认大黄已被领养或救助已完成时，请滑动结束项目
+          确认项目已完成时，请滑动结束项目
         </Text>
       </View>
     </View>
@@ -636,64 +594,53 @@ export default function RescueDetailPage() {
   const router = useRouter();
   const [supportOpen, setSupportOpen] = useState(false);
   const [customDraft, setCustomDraft] = useState<RescueCreateDraft | null>(null);
-  const [activeAction, setActiveAction] = useState<OwnerActionType>(null);
+  const [activeAction, setActiveAction] = useState<ActiveOwnerAction>(null);
   const mode = router.params?.mode === "guest" ? "guest" : "owner";
-  const detailId = router.params?.id;
-  const isCustomOwner = mode === "owner" && router.params?.source === "custom";
+  const caseId = router.params?.id;
+
+  const publicDetail = getPublicDetailVMByCaseId(caseId);
+  const ownerDetail = getOwnerDetailVMByCaseId(caseId);
+  const support = getSupportSheetDataByCaseId(caseId);
 
   useEffect(() => {
-    if (!isCustomOwner) {
+    if (!ownerDetail || ownerDetail.sourceKind !== "local") {
       return;
     }
 
-    const savedDraft = getSavedDraftById(detailId);
-    if (!savedDraft) {
-      Taro.redirectTo({
-        url: "/pages/rescue/index",
-      });
-      return;
+    const draft = getDraftByCaseId(caseId);
+    if (draft) {
+      syncCurrentDraft(draft);
+      setCustomDraft(draft);
+    }
+  }, [caseId, ownerDetail]);
+
+  if (mode === "guest") {
+    if (!publicDetail || !support) {
+      return null;
     }
 
-    setCurrentDraftSession(savedDraft);
-    setCustomDraft(savedDraft);
-  }, [detailId, isCustomOwner]);
+    return (
+      <View className="page-shell detail-page-shell">
+        <GuestDetail detail={publicDetail} onSupport={() => setSupportOpen(true)} />
+        <SupportSheet
+          onClose={() => setSupportOpen(false)}
+          support={support}
+          visible={supportOpen}
+        />
+      </View>
+    );
+  }
 
-  const guestDetail = getGuestRescueDetail(detailId);
-  const ownerDetail = getOwnerRescueDetail(detailId);
-  const customOwnerDetail = useMemo(
-    () => (customDraft ? buildCustomOwnerDetail(customDraft) : null),
-    [customDraft],
-  );
+  if (!ownerDetail) {
+    return null;
+  }
 
-  const handleCustomActionTap = (actionKey: string, actionLabel: string) => {
-    if (actionKey === "copy") {
-      Taro.showToast({
-        title: `${actionLabel}待接入`,
-        icon: "none",
-      });
-      return;
-    }
-
-    const mappedAction =
-      actionKey === "receipt"
-        ? "expense"
-        : actionKey === "update"
-          ? "status"
-          : actionKey === "income"
-            ? "income"
-            : actionKey === "budget"
-              ? "budget"
-              : null;
-
-    setActiveAction(mappedAction);
-  };
-
-  const handleCustomActionSave = (values: {
+  const handleOwnerActionSave = (values: {
     title: string;
     description: string;
     amount: string;
   }) => {
-    if (!customDraft || !activeAction || activeAction === "copy") {
+    if (!customDraft || !activeAction) {
       return;
     }
 
@@ -707,7 +654,7 @@ export default function RescueDetailPage() {
 
     const numericAmount = Number(values.amount || 0);
     if (
-      (activeAction === "expense" ||
+      (activeAction === "receipt" ||
         activeAction === "income" ||
         activeAction === "budget") &&
       (!numericAmount || Number.isNaN(numericAmount))
@@ -722,46 +669,43 @@ export default function RescueDetailPage() {
     let nextDraft = customDraft;
 
     if (activeAction === "budget") {
-      nextDraft = replaceDraftById({
+      nextDraft = replaceDraft({
         ...customDraft,
         budget: numericAmount,
       });
 
-      nextDraft = appendEntryToDraft(nextDraft, {
-        id: `entry-${Date.now()}`,
-        tone: "budget",
-        label: "预算调整",
-        title: values.title.trim(),
-        description: values.description.trim(),
-        timestamp: formatTimelineTimestamp(),
-        budgetPrevious: customDraft.budget,
-        budgetCurrent: numericAmount,
-      });
+      nextDraft = appendDraftEntry(
+        nextDraft,
+        toOwnerActionTimelineEntry({
+          action: "budget",
+          title: values.title.trim(),
+          description: values.description.trim(),
+          previousTargetAmount: customDraft.budget,
+          currentTargetAmount: numericAmount,
+        }),
+      );
     } else {
-      nextDraft = appendEntryToDraft(customDraft, {
-        id: `entry-${Date.now()}`,
-        tone: activeAction,
-        label:
-          activeAction === "expense"
-            ? "支出记录"
-            : activeAction === "income"
-              ? "场外收入"
-              : "状态更新",
-        title: values.title.trim(),
-        description: values.description.trim(),
-        timestamp: formatTimelineTimestamp(),
-        amount:
-          activeAction === "expense" || activeAction === "income"
-            ? numericAmount
-            : undefined,
-        images:
-          activeAction === "expense" || activeAction === "status"
-            ? [customDraft.coverPath || coverFallback]
-            : undefined,
-      });
+      nextDraft = appendDraftEntry(
+        customDraft,
+        toOwnerActionTimelineEntry({
+          action: activeAction,
+          title: values.title.trim(),
+          description: values.description.trim(),
+          amount:
+            activeAction === "receipt" || activeAction === "income"
+              ? numericAmount
+              : undefined,
+          imageUrls:
+            activeAction === "receipt" || activeAction === "update"
+              ? customDraft.coverPath
+                ? [customDraft.coverPath]
+                : []
+              : [],
+        }),
+      );
     }
 
-    const saved = saveCurrentDraft("published");
+    const saved = persistDraft("published");
     setCustomDraft(saved);
     setActiveAction(null);
     Taro.showToast({
@@ -772,53 +716,36 @@ export default function RescueDetailPage() {
 
   return (
     <View className="page-shell detail-page-shell">
-      {mode === "guest" ? (
-        <>
-          <GuestDetail detail={guestDetail} onSupport={() => setSupportOpen(true)} />
-          <SupportSheet
-            onClose={() => setSupportOpen(false)}
-            project={{
-              id: guestDetail.id,
-              name: guestDetail.title,
-              state: guestDetail.statusLabel,
-              avatarLabel: guestDetail.title.slice(0, 2),
-              avatarStart: "#DBD2B8",
-              avatarEnd: "#6E6145",
-              statusLabel: guestDetail.statusLabel,
-              statusTone: guestDetail.statusTone,
-              location: "",
-              updatedAt: "",
-              summary: guestDetail.heroSummary,
-              ledger: guestDetail.ledger,
-              rescuer: {
-                name: guestDetail.rescuer.name,
-                credential: guestDetail.rescuer.credential,
-                stats: guestDetail.rescuer.stats,
-              },
-              timeline: [],
-              proofs: [],
-              support: guestDetail.support,
-            }}
-            visible={supportOpen}
-          />
-        </>
-      ) : isCustomOwner && customOwnerDetail ? (
-        <>
-          <OwnerDetail
-            detail={customOwnerDetail}
-            onActionTap={handleCustomActionTap}
-          />
-          {activeAction && activeAction !== "copy" ? (
-            <OwnerActionSheet
-              action={activeAction}
-              onClose={() => setActiveAction(null)}
-              onSave={handleCustomActionSave}
-            />
-          ) : null}
-        </>
-      ) : (
-        <OwnerDetail detail={ownerDetail} />
-      )}
+      <OwnerDetail
+        detail={ownerDetail}
+        onActionTap={(action) => {
+          if (action === "copy") {
+            Taro.showToast({
+              title: "生成文案能力待接入",
+              icon: "none",
+            });
+            return;
+          }
+
+          if (ownerDetail.sourceKind !== "local") {
+            Taro.showToast({
+              title: "示例数据暂不支持编辑",
+              icon: "none",
+            });
+            return;
+          }
+
+          setActiveAction(action);
+        }}
+      />
+
+      {ownerDetail.sourceKind === "local" && activeAction ? (
+        <OwnerActionSheet
+          action={activeAction}
+          onClose={() => setActiveAction(null)}
+          onSave={handleOwnerActionSave}
+        />
+      ) : null}
     </View>
   );
 }

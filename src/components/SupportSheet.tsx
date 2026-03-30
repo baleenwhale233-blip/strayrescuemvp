@@ -1,7 +1,7 @@
 import { Image, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
-import type { RescueProjectDetail } from "../data/mock";
+import type { SupportSheetData } from "../domain/canonical/types";
 import chevronLight from "../assets/support-sheet/chevron-light.svg";
 import chevronMuted from "../assets/support-sheet/chevron-muted.svg";
 import contactIcon from "../assets/support-sheet/contact.svg";
@@ -14,7 +14,7 @@ type SupportSheetView = "picker" | "contact" | "direct";
 
 type SupportSheetProps = {
   visible: boolean;
-  project: RescueProjectDetail;
+  support: SupportSheetData;
   onClose: () => void;
 };
 
@@ -35,7 +35,7 @@ function QrPlaceholder({ label }: { label: string }) {
 
 export function SupportSheet({
   visible,
-  project,
+  support,
   onClose,
 }: SupportSheetProps) {
   const [view, setView] = useState<SupportSheetView>("picker");
@@ -63,7 +63,7 @@ export function SupportSheet({
 
   const handleCopyWeChat = async () => {
     await Taro.setClipboardData({
-      data: project.support.wechatId,
+      data: support.wechatId || "",
     });
 
     Taro.showToast({
@@ -170,8 +170,8 @@ export function SupportSheet({
 
           <Text className="support-sheet__hint">
             {isContact
-              ? project.support.contactHint
-              : project.support.directHint}
+              ? support.contactHint
+              : support.directHint}
           </Text>
 
           {isContact ? (
@@ -182,7 +182,7 @@ export function SupportSheet({
 
               <View className="support-sheet__wechat-card">
                 <Text className="support-sheet__wechat-id">
-                  {project.support.wechatId}
+                  {support.wechatId}
                 </Text>
 
                 <View
@@ -205,15 +205,11 @@ export function SupportSheet({
             <View className="support-sheet__tip-copy">
               {isContact ? (
                 <Text className="support-sheet__tip-text">
-                  {project.support.contactTip}
+                  {support.contactTip}
                 </Text>
               ) : (
                 <Text className="support-sheet__tip-text">
-                  支持完成后，请回到页面点击
-                  <Text className="support-sheet__tip-highlight">
-                    “我已支持，去认领”
-                  </Text>
-                  以更新透明账本。
+                  {support.directTip}
                 </Text>
               )}
             </View>
