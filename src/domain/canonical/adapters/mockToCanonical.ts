@@ -6,7 +6,7 @@ import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import {
   getSavedDrafts,
   type RescueCreateDraft,
-} from "../../../data/rescueCreateStore.ts";
+} from "../repository/localDraftPersistence.ts";
 import type {
   CanonicalAsset,
   CanonicalCase,
