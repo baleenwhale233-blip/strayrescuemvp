@@ -3,20 +3,12 @@ import type {
   RescueCreateTimelineEntry,
 } from "./localDraftPersistence.ts";
 
-export type BundleSourceKind = "seed" | "local";
-
 export type OwnerDetailActionKey =
   | "receipt"
   | "update"
   | "income"
   | "budget"
   | "copy";
-
-export function getSourceKindByRescuerId(
-  rescuerId: string,
-): BundleSourceKind {
-  return rescuerId.startsWith("local_rescuer_") ? "local" : "seed";
-}
 
 export function draftIdToCaseId(draftId: string) {
   return draftId.replace("custom-project", "case");
