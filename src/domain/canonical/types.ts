@@ -51,6 +51,7 @@ export type AssetKind =
   | "other";
 
 export type StatusTone = "urgent" | "active" | "progress" | "done" | "draft";
+export type BundleSourceKind = "seed" | "local" | "remote";
 
 export type CanonicalRescuerStats = {
   publishedCaseCount: number;
@@ -151,6 +152,7 @@ export type CanonicalAsset = {
 };
 
 export type CanonicalCaseBundle = {
+  sourceKind: BundleSourceKind;
   rescuer: CanonicalRescuer;
   case: CanonicalCase;
   events: CanonicalEvent[];
@@ -224,7 +226,7 @@ export type PublicDetailVM = {
 export type DiscoverCardVM = {
   caseId: Id;
   rescuerId: Id;
-  sourceKind: "seed" | "local";
+  sourceKind: BundleSourceKind;
   title: string;
   statusLabel: string;
   statusTone: StatusTone;
@@ -238,7 +240,7 @@ export type DiscoverCardVM = {
 
 export type WorkbenchCaseCardVM = {
   caseId: Id;
-  sourceKind: "seed" | "local";
+  sourceKind: BundleSourceKind;
   title: string;
   statusLabel: string;
   statusTone: StatusTone;

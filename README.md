@@ -1,11 +1,16 @@
 # stray-rescue-mvp
 
-基于 `Taro + React` 的微信小程序 MVP 骨架，当前已接入：
+基于 `Taro + React + TypeScript` 的微信小程序 MVP。
+
+当前项目已经不是“只有页面骨架”的状态，而是具备了一套本地可跑通的 canonical data layer：
 
 - 发现页
-- 救助工作台首页
-- 主题 token
-- 微信小程序构建配置
+- 救助工作台
+- 客态详情页
+- 主态详情页
+- 三步建档流程
+- canonical schema / selectors / repository / adapters / fixtures
+- 本地 draft 持久化与 domain tests
 
 ## 环境要求
 
@@ -53,7 +58,17 @@ npm run build:weapp
 npm run typecheck
 ```
 
-当前项目已经通过一次 `typecheck`。
+## Domain Tests
+
+```bash
+npm run test:domain
+```
+
+当前项目已经通过：
+
+- `npm run typecheck`
+- `npm run test:domain`
+- `npm run build:weapp`
 
 ## 微信开发者工具预览
 
@@ -97,24 +112,87 @@ npm run dev:weapp
 src/
   components/
   data/
+  domain/
+    canonical/
+      adapters/
+      fixtures/
+      repository/
+      selectors/
+      types.ts
   pages/
     discover/
+    rescue/create/basic/
+    rescue/create/budget/
+    rescue/create/preview/
+    rescue/detail/
     rescue/
     profile/
   styles/
   theme/
 ```
 
+## 当前数据层组织
+
+当前主数据入口不是 `src/data/mock.ts`。
+
+页面层应优先读取：
+
+- `src/domain/canonical/types.ts`
+- `src/domain/canonical/selectors/`
+- `src/domain/canonical/repository/`
+
+### canonical layer
+
+- `types.ts`
+  统一定义 `rescuer / case / event / asset` 四类 canonical 对象与页面 VM 类型。
+- `fixtures/`
+  存放 sample / legacy seed。
+- `adapters/`
+  把 legacy mock / local draft 转成 canonical bundle。
+- `selectors/`
+  从 canonical bundle 推导 discover / public detail / workbench VM。
+- `repository/`
+  统一数据读写入口。
+
+### repository 分层
+
+- `canonicalReadRepository.ts`
+  只负责读取类函数，例如 discover/detail/workbench 的 VM。
+- `draftRepository.ts`
+  只负责 draft 的 command / mutation。
+- `draftStorage.ts`
+  storage adapter，当前底层仍然使用 Taro storage。
+- `localDraftPersistence.ts`
+  本地 draft persistence 实现。
+- `legacyCompat.ts`
+  legacy fixture / compatibility wiring。
+- `index.ts`
+  repository 对外统一出口。
+- `localRepository.ts`
+  deprecated facade，仅用于兼容旧 import。
+
+## 兼容层说明
+
+以下文件仍然存在，但已经是 **deprecated compatibility surface**：
+
+- `src/data/mock.ts`
+- `src/data/rescueDetails.ts`
+- `src/data/rescueCreateStore.ts`
+
+不要再给这些文件继续加业务逻辑。新代码应优先进入 canonical layer。
+
 ## 已验证结果
 
 - `npm install` 成功
 - `npm run typecheck` 成功
+- `npm run test:domain` 成功
 - `npm run build:weapp` 成功
-- `npm run dev:weapp` 成功启动并进入 watch
+- `npm run dev:weapp` 可启动并进入 watch
 
 ## 当前注意事项
 
 - 依赖安装后 npm 会提示一些上游安全告警，这些主要来自 Taro 生态的传递依赖，当前没有影响工程启动和构建
-- 页面数据目前使用的是 `src/data/mock.ts` 里的 mock 数据
-- 当前还是 MVP 骨架，尚未接入真实后端、OCR、AI 文案生成和案例详情时间线页
-
+- 当前仍未接入真实后端，repository 底层数据源还是 `seed + local draft persistence`
+- `src/data/mock.ts` 不再是页面主数据源，只是兼容层
+- 当前仍未接入 OCR、AI 文案生成、真实分享落地页与认领支持完整流程
+- 构建时仍有一条图片体积 warning：`src/assets/detail/timeline-status-cat.png`

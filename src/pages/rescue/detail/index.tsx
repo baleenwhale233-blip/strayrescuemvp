@@ -33,12 +33,15 @@ function formatCurrency(valueLabel: string) {
 }
 
 function buildOwnerSegments(detail: OwnerDetailVM) {
-  const total = detail.ledger.supported + detail.ledger.verifiedGap + detail.ledger.pending || 1;
+  const total =
+    detail.ledger.confirmedExpenseAmount +
+      detail.ledger.verifiedGapAmount +
+      detail.ledger.remainingTargetAmount || 1;
 
   return {
-    supportedWidth: `${(detail.ledger.supported / total) * 100}%`,
-    verifiedGapWidth: `${(detail.ledger.verifiedGap / total) * 100}%`,
-    pendingWidth: `${(detail.ledger.pending / total) * 100}%`,
+    expenseWidth: `${(detail.ledger.confirmedExpenseAmount / total) * 100}%`,
+    gapWidth: `${(detail.ledger.verifiedGapAmount / total) * 100}%`,
+    remainingWidth: `${(detail.ledger.remainingTargetAmount / total) * 100}%`,
   };
 }
 
@@ -475,21 +478,21 @@ function OwnerDetail({
           <View
             className="detail-page__segmented-bar-item"
             style={{
-              width: segments.supportedWidth,
+              width: segments.expenseWidth,
               background: "var(--color-ledger-spent)",
             }}
           />
           <View
             className="detail-page__segmented-bar-item"
             style={{
-              width: segments.verifiedGapWidth,
+              width: segments.gapWidth,
               background: "var(--color-ledger-balance)",
             }}
           />
           <View
             className="detail-page__segmented-bar-item"
             style={{
-              width: segments.pendingWidth,
+              width: segments.remainingWidth,
               background: "var(--color-ledger-pending)",
             }}
           />
@@ -503,7 +506,7 @@ function OwnerDetail({
             />
             <Text className="owner-detail__legend-label">已支出</Text>
             <Text className="owner-detail__legend-value">
-              {formatCurrency(`¥${detail.ledger.supported.toLocaleString("zh-CN")}`)}
+              {detail.ledger.confirmedExpenseAmountLabel}
             </Text>
           </View>
           <View className="owner-detail__legend-item">
@@ -511,9 +514,9 @@ function OwnerDetail({
               className="owner-detail__legend-dot"
               style={{ background: "var(--color-ledger-balance)" }}
             />
-            <Text className="owner-detail__legend-label">结余</Text>
+            <Text className="owner-detail__legend-label">缺口</Text>
             <Text className="owner-detail__legend-value">
-              {formatCurrency(`¥${detail.ledger.verifiedGap.toLocaleString("zh-CN")}`)}
+              {detail.ledger.verifiedGapAmountLabel}
             </Text>
           </View>
           <View className="owner-detail__legend-item">
@@ -523,7 +526,7 @@ function OwnerDetail({
             />
             <Text className="owner-detail__legend-label">待筹</Text>
             <Text className="owner-detail__legend-value">
-              {formatCurrency(`¥${detail.ledger.pending.toLocaleString("zh-CN")}`)}
+              {detail.ledger.remainingTargetAmountLabel}
             </Text>
           </View>
         </View>

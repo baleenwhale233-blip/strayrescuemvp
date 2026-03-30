@@ -286,6 +286,7 @@ export function adaptRescueProjectDetailMockToCanonical(
   });
 
   return {
+    sourceKind: "seed",
     rescuer,
     case: canonicalCase,
     events: [createdEvent, ...timelineEvents],
@@ -447,6 +448,7 @@ export function adaptLocalDraftToCanonical(
   });
 
   return {
+    sourceKind: "local",
     rescuer,
     case: canonicalCase,
     events,

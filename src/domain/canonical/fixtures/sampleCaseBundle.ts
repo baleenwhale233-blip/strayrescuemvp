@@ -1,6 +1,7 @@
 import type { CanonicalCaseBundle } from "../types.ts";
 
 export const sampleCaseBundle: CanonicalCaseBundle = {
+  sourceKind: "seed",
   rescuer: {
     id: "rescuer_001",
     name: "阿青",

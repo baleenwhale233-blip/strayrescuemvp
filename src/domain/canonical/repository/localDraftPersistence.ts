@@ -1,4 +1,4 @@
-import Taro from "@tarojs/taro";
+import { draftStorage } from "./draftStorage.ts";
 
 export type RescueCreateEntryTone = "expense" | "status" | "income" | "budget";
 
@@ -29,9 +29,6 @@ export type RescueCreateDraft = {
   createdAt: string;
   updatedAt: string;
 };
-
-const CURRENT_DRAFT_KEY = "rescue-create-current-draft";
-const SAVED_DRAFTS_KEY = "rescue-create-saved-drafts";
 
 function nowIso() {
   return new Date().toISOString();
@@ -77,13 +74,12 @@ export function createInitialDraft(): RescueCreateDraft {
 
 export function startNewDraftSession() {
   const draft = createInitialDraft();
-  Taro.setStorageSync(CURRENT_DRAFT_KEY, draft);
+  draftStorage.setCurrent(draft);
   return draft;
 }
 
 export function getCurrentDraftSession() {
-  const draft = Taro.getStorageSync(CURRENT_DRAFT_KEY);
-  return draft as RescueCreateDraft | undefined;
+  return draftStorage.getCurrent();
 }
 
 export function setCurrentDraftSession(draft: RescueCreateDraft) {
@@ -92,7 +88,7 @@ export function setCurrentDraftSession(draft: RescueCreateDraft) {
     updatedAt: nowIso(),
   };
 
-  Taro.setStorageSync(CURRENT_DRAFT_KEY, nextDraft);
+  draftStorage.setCurrent(nextDraft);
   return nextDraft;
 }
 
@@ -108,12 +104,11 @@ export function patchCurrentDraftSession(
 }
 
 export function clearCurrentDraftSession() {
-  Taro.removeStorageSync(CURRENT_DRAFT_KEY);
+  draftStorage.clearCurrent();
 }
 
 export function getSavedDrafts() {
-  const drafts = Taro.getStorageSync(SAVED_DRAFTS_KEY);
-  return (drafts as RescueCreateDraft[] | undefined) ?? [];
+  return draftStorage.getSavedList();
 }
 
 export function getSavedDraftById(id?: string) {
@@ -138,7 +133,7 @@ export function upsertSavedDraft(draft: RescueCreateDraft) {
     drafts.unshift(nextDraft);
   }
 
-  Taro.setStorageSync(SAVED_DRAFTS_KEY, drafts);
+  draftStorage.setSavedList(drafts);
   return nextDraft;
 }
 
