@@ -1,17 +1,12 @@
-import coverImage from "@/assets/detail/guest-hero-cat.png";
-import rescuerAvatar from "@/assets/detail/rescuer-avatar.png";
-import timelineReceipt from "@/assets/detail/timeline-receipt.png";
-import timelineStatus from "@/assets/detail/timeline-status-cat.png";
-import timelineTreatment from "@/assets/detail/timeline-treatment.png";
+import coverImage from "../../../assets/detail/guest-hero-cat.png";
+import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
+import timelineReceipt from "../../../assets/detail/timeline-receipt.png";
+import timelineStatus from "../../../assets/detail/timeline-status-cat.png";
+import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import {
   getSavedDrafts,
   type RescueCreateDraft,
-} from "@/data/rescueCreateStore";
-import {
-  rescueProjectDetails,
-  type RescueProjectDetail,
-  type StatusTone,
-} from "@/data/mock";
+} from "../../../data/rescueCreateStore.ts";
 import type {
   CanonicalAsset,
   CanonicalCase,
@@ -27,7 +22,12 @@ import type {
   CurrencyCode,
   VerificationStatus,
   Visibility,
-} from "../types";
+} from "../types.ts";
+import {
+  legacyRescueProjectDetails as rescueProjectDetails,
+  type LegacyRescueProjectDetail as RescueProjectDetail,
+  type LegacyStatusTone as StatusTone,
+} from "../fixtures/legacyRescueProjectDetails.ts";
 
 function formatIndex(index: number) {
   return `${index + 1}`.padStart(3, "0");

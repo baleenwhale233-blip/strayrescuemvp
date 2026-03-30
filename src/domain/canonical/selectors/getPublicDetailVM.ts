@@ -10,7 +10,7 @@ import type {
   PublicDetailVM,
   PublicTimelineItemVM,
   StatusTone,
-} from "../types";
+} from "../types.ts";
 
 function sortEventsDesc(events: CanonicalEvent[]) {
   return [...events].sort((left, right) =>

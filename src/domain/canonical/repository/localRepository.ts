@@ -1,14 +1,14 @@
-import sampleCase from "../fixtures/sampleCase.json";
 import {
   adaptLocalDraftToCanonical,
   adaptRescueProjectDetailMockToCanonical,
-} from "../adapters/mockToCanonical";
-import { getDiscoverCardVM } from "../selectors/getDiscoverCardVM";
+} from "../adapters/mockToCanonical.ts";
+import { sampleCaseBundle } from "../fixtures/sampleCaseBundle.ts";
+import { getDiscoverCardVM } from "../selectors/getDiscoverCardVM.ts";
 import {
   buildLedgerSnapshotFromEvents,
   getPublicDetailVM,
-} from "../selectors/getPublicDetailVM";
-import { getWorkbenchVM } from "../selectors/getWorkbenchVM";
+} from "../selectors/getPublicDetailVM.ts";
+import { getWorkbenchVM } from "../selectors/getWorkbenchVM.ts";
 import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
@@ -17,7 +17,7 @@ import type {
   StatusTone,
   SupportSheetData,
   WorkbenchVM,
-} from "../types";
+} from "../types.ts";
 import {
   appendEntryToDraft as appendEntryToDraftStore,
   calculateDraftLedger,
@@ -34,15 +34,17 @@ import {
   type RescueCreateDraftStatus,
   type RescueCreateEntryTone,
   type RescueCreateTimelineEntry,
-} from "@/data/rescueCreateStore";
-import { rescueProjectDetails } from "@/data/mock";
-
-export type OwnerDetailActionKey =
-  | "receipt"
-  | "update"
-  | "income"
-  | "budget"
-  | "copy";
+} from "../../../data/rescueCreateStore.ts";
+import {
+  legacyRescueProjectDetails as rescueProjectDetails,
+} from "../fixtures/legacyRescueProjectDetails.ts";
+import {
+  caseIdToDraftId,
+  draftIdToCaseId,
+  getSourceKindByRescuerId,
+  toOwnerActionTimelineEntry,
+  type OwnerDetailActionKey,
+} from "./localRepositoryCore.ts";
 
 export type OwnerDetailVM = {
   caseId: string;
@@ -81,7 +83,7 @@ const quickActions: OwnerDetailVM["quickActions"] = [
 ];
 
 function getSourceKind(bundle: CanonicalCaseBundle): "seed" | "local" {
-  return bundle.rescuer.id.startsWith("local_rescuer_") ? "local" : "seed";
+  return getSourceKindByRescuerId(bundle.rescuer.id);
 }
 
 function formatCurrency(value: number) {
@@ -102,23 +104,12 @@ function formatDateLabel(isoDateTime: string) {
   return `${month}-${day} ${hours}:${minutes}`;
 }
 
-function draftIdToCaseId(draftId: string) {
-  return draftId.replace("custom-project", "case");
-}
-
-function caseIdToDraftId(caseId: string) {
-  return caseId.startsWith("case-")
-    ? caseId.replace("case-", "custom-project-")
-    : caseId;
-}
-
 function getSeedBundles(): CanonicalCaseBundle[] {
-  const sampleBundle = sampleCase as CanonicalCaseBundle;
   const legacyBundles = rescueProjectDetails.map((detail, index) =>
     adaptRescueProjectDetailMockToCanonical(detail, index),
   );
 
-  return [sampleBundle, ...legacyBundles];
+  return [sampleCaseBundle, ...legacyBundles];
 }
 
 function getLocalBundles(): CanonicalCaseBundle[] {
@@ -132,7 +123,8 @@ export function getCanonicalBundles(): CanonicalCaseBundle[] {
 }
 
 export type { RescueCreateDraft, RescueCreateEntryTone, RescueCreateTimelineEntry };
-export { calculateDraftLedger };
+export { calculateDraftLedger, formatTimelineTimestamp };
+export { toOwnerActionTimelineEntry, type OwnerDetailActionKey } from "./localRepositoryCore.ts";
 
 export function getCanonicalBundleByCaseId(caseId?: string) {
   if (!caseId) {
@@ -274,41 +266,4 @@ export function replaceDraft(draft: RescueCreateDraft) {
 
 export function syncCurrentDraft(draft: RescueCreateDraft) {
   return setCurrentDraftSession(draft);
-}
-
-export function toOwnerActionTimelineEntry(input: {
-  action: Exclude<OwnerDetailActionKey, "copy">;
-  title: string;
-  description: string;
-  amount?: number;
-  imageUrls?: string[];
-  previousTargetAmount?: number;
-  currentTargetAmount?: number;
-}): RescueCreateTimelineEntry {
-  const labelMap: Record<Exclude<OwnerDetailActionKey, "copy">, string> = {
-    receipt: "支出记录",
-    update: "状态更新",
-    income: "场外收入",
-    budget: "预算调整",
-  };
-
-  return {
-    id: `entry-${Date.now()}`,
-    tone:
-      input.action === "receipt"
-        ? "expense"
-        : input.action === "update"
-          ? "status"
-          : input.action === "income"
-            ? "income"
-            : "budget",
-    label: labelMap[input.action],
-    title: input.title,
-    description: input.description,
-    timestamp: formatTimelineTimestamp(),
-    amount: input.amount,
-    images: input.imageUrls,
-    budgetPrevious: input.previousTargetAmount,
-    budgetCurrent: input.currentTargetAmount,
-  };
 }

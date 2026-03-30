@@ -6,6 +6,7 @@ import { NavBar } from "../../../components/NavBar";
 import { SupportSheet } from "../../../components/SupportSheet";
 import {
   appendDraftEntry,
+  formatTimelineTimestamp,
   getDraftByCaseId,
   getOwnerDetailVMByCaseId,
   getPublicDetailVMByCaseId,
@@ -682,6 +683,7 @@ export default function RescueDetailPage() {
           description: values.description.trim(),
           previousTargetAmount: customDraft.budget,
           currentTargetAmount: numericAmount,
+          timestampLabel: formatTimelineTimestamp(),
         }),
       );
     } else {
@@ -691,6 +693,7 @@ export default function RescueDetailPage() {
           action: activeAction,
           title: values.title.trim(),
           description: values.description.trim(),
+          timestampLabel: formatTimelineTimestamp(),
           amount:
             activeAction === "receipt" || activeAction === "income"
               ? numericAmount
