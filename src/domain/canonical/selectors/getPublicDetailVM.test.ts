@@ -49,7 +49,7 @@ test("getWorkbenchVM groups published and draft cases by visibility", () => {
     rescuer: bundle.rescuer as CanonicalRescuer,
     cases: [bundle, draftBundle],
     includeAllCases: true,
-    getCaseMeta: () => ({ sourceKind: "seed" }),
+    getCaseMeta: () => ({}),
   });
 
   assert.equal(vm.counts.active, 1);

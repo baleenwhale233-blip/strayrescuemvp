@@ -8,13 +8,13 @@ import { getPublicDetailVM } from "./getPublicDetailVM.ts";
 
 function toWorkbenchCardVM(
   bundle: CanonicalCaseBundle,
-  options?: { sourceKind?: "seed" | "local"; draftId?: string },
+  options?: { draftId?: string },
 ): WorkbenchCaseCardVM {
   const publicDetail = getPublicDetailVM(bundle);
 
   return {
     caseId: bundle.case.id,
-    sourceKind: options?.sourceKind ?? "seed",
+    sourceKind: bundle.sourceKind,
     title: bundle.case.animalName,
     statusLabel: bundle.case.currentStatusLabel,
     statusTone: publicDetail.statusTone,
@@ -39,7 +39,7 @@ export function getWorkbenchVM(input: {
   includeAllCases?: boolean;
   getCaseMeta?: (
     bundle: CanonicalCaseBundle,
-  ) => { sourceKind?: "seed" | "local"; draftId?: string };
+  ) => { draftId?: string };
 }): WorkbenchVM {
   const ownedCases = input.includeAllCases
     ? input.cases

@@ -7,7 +7,7 @@ export function getDiscoverCardVM(bundle: CanonicalCaseBundle): DiscoverCardVM {
   return {
     caseId: publicDetail.caseId,
     rescuerId: publicDetail.rescuerId,
-    sourceKind: "seed",
+    sourceKind: bundle.sourceKind,
     title: publicDetail.title,
     statusLabel: publicDetail.statusLabel,
     statusTone: publicDetail.statusTone,
