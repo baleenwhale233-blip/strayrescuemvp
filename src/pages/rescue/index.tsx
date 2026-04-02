@@ -75,7 +75,7 @@ export default function RescuePage() {
 
   const handleCreate = () => {
     Taro.navigateTo({
-      url: "/pages/rescue/create/basic/index",
+      url: "/pages/rescue/create/basic/index?entry=new",
     });
   };
 
