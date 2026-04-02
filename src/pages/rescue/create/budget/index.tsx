@@ -6,7 +6,6 @@ import { NavBar } from "../../../../components/NavBar";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
   getCurrentDraft,
-  persistDraft,
   updateCurrentDraft,
 } from "../../../../domain/canonical/repository/localRepository";
 import "./index.scss";
@@ -62,29 +61,25 @@ export default function RescueCreateBudgetPage() {
     });
   };
 
-  const handleSaveDraft = () => {
+  const handleBack = () => {
     updateCurrentDraft({
       budget: Number(budget || 0),
       budgetNote: budgetNote.trim(),
     });
 
-    persistDraft("draft");
-
     Taro.showToast({
-      title: "草稿已保存",
+      title: "当前内容会暂存在本机，下次可继续编辑",
       icon: "none",
     });
 
     setTimeout(() => {
-      Taro.switchTab({
-        url: "/pages/rescue/index",
-      });
+      Taro.navigateBack();
     }, 300);
   };
 
   return (
     <View className="page-shell rescue-budget-page">
-      <NavBar showBack title="新建救助" />
+      <NavBar showBack title="新建救助" onBack={handleBack} />
 
       <View className="rescue-budget-page__steps">
         <View className="rescue-budget-page__step" />
@@ -168,12 +163,6 @@ export default function RescueCreateBudgetPage() {
       </View>
 
       <View className="rescue-budget-page__footer">
-        <View
-          className="theme-button-secondary rescue-budget-page__secondary"
-          onTap={handleSaveDraft}
-        >
-          <Text>保存草稿</Text>
-        </View>
         <View className="theme-button-primary rescue-budget-page__button" onTap={handleNext}>
           <Text>进入救助页面</Text>
           <View className="rescue-budget-page__button-icon">

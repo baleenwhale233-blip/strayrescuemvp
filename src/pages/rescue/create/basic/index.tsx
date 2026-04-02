@@ -1,27 +1,73 @@
 import { Image, Input, Text, Textarea, View } from "@tarojs/components";
-import Taro from "@tarojs/taro";
+import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import {
-  persistDraft,
+  getCurrentDraft,
   startDraftSession,
   updateCurrentDraft,
 } from "../../../../domain/canonical/repository/localRepository";
 import "./index.scss";
 
 export default function RescueCreateBasicPage() {
+  const router = useRouter();
   const [coverPath, setCoverPath] = useState("");
   const [name, setName] = useState("");
   const [summary, setSummary] = useState("");
 
   useEffect(() => {
-    const draft = startDraftSession();
-    setCoverPath(draft.coverPath);
-    setName(draft.name);
-    setSummary(draft.summary);
-  }, []);
+    let isMounted = true;
+
+    const hydrateFromDraft = async () => {
+      const currentDraft = getCurrentDraft();
+      const hasInProgressDraft = Boolean(
+        currentDraft &&
+          currentDraft.status === "draft" &&
+          (currentDraft.coverPath ||
+            currentDraft.name.trim() ||
+            currentDraft.summary.trim() ||
+            currentDraft.budget > 0 ||
+            currentDraft.budgetNote.trim()),
+      );
+
+      let draft = currentDraft;
+
+      if (router.params?.entry === "new") {
+        if (hasInProgressDraft) {
+          const result = await Taro.showModal({
+            title: "继续上次编辑？",
+            content: "检测到上次未完成的内容，可以继续编辑或重新开始。",
+            confirmText: "继续编辑",
+            cancelText: "重新开始",
+          });
+
+          draft = result.confirm ? currentDraft : startDraftSession();
+        } else {
+          draft = startDraftSession();
+        }
+      }
+
+      if (!draft) {
+        draft = startDraftSession();
+      }
+
+      if (!isMounted) {
+        return;
+      }
+
+      setCoverPath(draft.coverPath);
+      setName(draft.name);
+      setSummary(draft.summary);
+    };
+
+    hydrateFromDraft();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router.params?.entry]);
 
   const handleChooseImage = async (sourceType: Array<"album" | "camera">) => {
     try {
@@ -70,30 +116,26 @@ export default function RescueCreateBasicPage() {
     });
   };
 
-  const handleSaveDraft = () => {
+  const handleBack = async () => {
     updateCurrentDraft({
       coverPath,
       name: name.trim(),
       summary: summary.trim(),
     });
 
-    persistDraft("draft");
-
     Taro.showToast({
-      title: "草稿已保存",
+      title: "当前内容会暂存在本机，下次可继续编辑",
       icon: "none",
     });
 
     setTimeout(() => {
-      Taro.switchTab({
-        url: "/pages/rescue/index",
-      });
+      Taro.navigateBack();
     }, 300);
   };
 
   return (
     <View className="page-shell rescue-create-page">
-      <NavBar showBack title="新建救助" />
+      <NavBar showBack title="新建救助" onBack={handleBack} />
 
       <View className="rescue-create-page__steps">
         <View className="rescue-create-page__step rescue-create-page__step--active" />
@@ -164,12 +206,6 @@ export default function RescueCreateBasicPage() {
       </View>
 
       <View className="rescue-create-page__footer">
-        <View
-          className="theme-button-secondary rescue-create-page__secondary"
-          onTap={handleSaveDraft}
-        >
-          <Text>保存草稿</Text>
-        </View>
         <View className="theme-button-primary rescue-create-page__primary" onTap={handleNext}>
           <Text>下一步：设定目标</Text>
           <Text className="rescue-create-page__primary-arrow">→</Text>
