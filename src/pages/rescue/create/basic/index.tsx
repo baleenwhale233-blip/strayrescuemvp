@@ -122,15 +122,7 @@ export default function RescueCreateBasicPage() {
       name: name.trim(),
       summary: summary.trim(),
     });
-
-    Taro.showToast({
-      title: "当前内容会暂存在本机，下次可继续编辑",
-      icon: "none",
-    });
-
-    setTimeout(() => {
-      Taro.navigateBack();
-    }, 300);
+    Taro.navigateBack();
   };
 
   return (

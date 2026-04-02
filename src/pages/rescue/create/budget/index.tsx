@@ -66,15 +66,7 @@ export default function RescueCreateBudgetPage() {
       budget: Number(budget || 0),
       budgetNote: budgetNote.trim(),
     });
-
-    Taro.showToast({
-      title: "当前内容会暂存在本机，下次可继续编辑",
-      icon: "none",
-    });
-
-    setTimeout(() => {
-      Taro.navigateBack();
-    }, 300);
+    Taro.navigateBack();
   };
 
   return (
