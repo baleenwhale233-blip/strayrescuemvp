@@ -3,10 +3,14 @@ import test from "node:test";
 import { sampleCaseBundle } from "../fixtures/sampleCaseBundle";
 import type { CanonicalCaseBundle } from "../types";
 import {
+  getCaseByPublicIdExactFromBundles,
   getCanonicalBundleByCaseIdFromBundles,
   getDiscoverCardVMsFromBundles,
+  getHomepageCaseCardVMsFromBundles,
+  getMySupportThreadByCaseIdFromBundles,
   getOwnerDetailVMByCaseIdFromBundles,
   getPublicDetailVMByCaseIdFromBundles,
+  getSupportThreadsByCaseIdFromBundles,
   getSupportSheetDataByCaseIdFromBundles,
   getWorkbenchVMFromBundles,
 } from "./canonicalReadRepositoryCore";
@@ -112,4 +116,54 @@ test("support sheet data comes from public detail output", () => {
 
   assert.ok(support);
   assert.equal(support?.wechatId, "aqing_rescue");
+});
+
+test("public case id exact search supports prefixed and digits-only input", () => {
+  const prefixed = getCaseByPublicIdExactFromBundles([publishedBundle], "JM482731");
+  const digitsOnly = getCaseByPublicIdExactFromBundles([publishedBundle], "482731");
+
+  assert.equal(prefixed?.case.id, "case_001");
+  assert.equal(digitsOnly?.case.id, "case_001");
+});
+
+test("homepage richer card vm exposes recommendation and eligibility", () => {
+  const cards = getHomepageCaseCardVMsFromBundles([publishedBundle]);
+  const firstCard = cards[0];
+
+  assert.ok(firstCard);
+  assert.equal(firstCard.publicCaseId, "JM482731");
+  assert.equal(firstCard.homepageEligibilityStatus, "eligible");
+  assert.ok(firstCard.fundingStatusSummary.includes("当前缺口"));
+});
+
+test("support entries are grouped into threads", () => {
+  const threads = getSupportThreadsByCaseIdFromBundles([publishedBundle], "case_001");
+  const wangThread = getMySupportThreadByCaseIdFromBundles(
+    [publishedBundle],
+    "case_001",
+    "supporter_wang_001",
+  );
+
+  assert.equal(threads.length, 2);
+  assert.ok(wangThread);
+  assert.equal(wangThread?.totalConfirmedAmount, 100);
+});
+
+test("public detail exposes support summary from structured support entries", () => {
+  const detail = getPublicDetailVMByCaseIdFromBundles([publishedBundle], "case_001");
+
+  assert.ok(detail);
+  assert.equal(detail?.supportSummary.confirmedSupportAmount, 100);
+  assert.equal(detail?.supportSummary.pendingSupportEntryCount, 1);
+  assert.equal(detail?.supportSummary.unmatchedSupportEntryCount, 0);
+  assert.equal(detail?.supportSummary.threads.length, 2);
+});
+
+test("owner detail exposes homepage eligibility and pending support counts", () => {
+  const ownerVm = getOwnerDetailVMByCaseIdFromBundles([publishedBundle], "case_001");
+
+  assert.ok(ownerVm);
+  assert.equal(ownerVm?.publicCaseId, "JM482731");
+  assert.equal(ownerVm?.homepageEligibilityStatus, "eligible");
+  assert.equal(ownerVm?.pendingSupportEntryCount, 1);
 });
