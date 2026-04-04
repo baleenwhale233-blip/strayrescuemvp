@@ -1,21 +1,33 @@
-import { getDiscoverCardVM } from "../selectors/getDiscoverCardVM";
 import {
-  buildLedgerSnapshotFromEvents,
+  getDiscoverCardVM,
+  getHomepageCaseCardVM,
+} from "../selectors/getDiscoverCardVM";
+import {
   getPublicDetailVM,
 } from "../selectors/getPublicDetailVM";
 import { getWorkbenchVM } from "../selectors/getWorkbenchVM";
 import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
+  CanonicalSupportThread,
   DiscoverCardVM,
+  HomepageCaseCardVM,
   PublicDetailVM,
   SupportSheetData,
   WorkbenchVM,
 } from "../types";
+import {
+  getHomepageEligibility,
+  getMySupportThreadByCaseId,
+  getPublicCaseId,
+  getStructuredSupportThreads,
+  normalizePublicCaseIdInput,
+} from "../modeling";
 import { caseIdToDraftId, type OwnerDetailActionKey } from "./localRepositoryCore";
 
 export type OwnerDetailVM = {
   caseId: string;
+  publicCaseId: string;
   sourceKind: CanonicalCaseBundle["sourceKind"];
   draftId?: string;
   title: string;
@@ -42,6 +54,11 @@ export type OwnerDetailVM = {
   timeline: PublicDetailVM["timeline"];
   timelineHint: string;
   support: SupportSheetData;
+  homepageEligibilityStatus?: HomepageCaseCardVM["homepageEligibilityStatus"];
+  homepageEligibilityReason?: string;
+  pendingSupportEntryCount?: number;
+  unmatchedSupportEntryCount?: number;
+  supportThreads?: CanonicalSupportThread[];
   quickActions: Array<{
     key: OwnerDetailActionKey;
     label: string;
@@ -79,6 +96,39 @@ export function getDiscoverCardVMsFromBundles(
     }));
 }
 
+export function getCaseByPublicIdExactFromBundles(
+  bundles: CanonicalCaseBundle[],
+  input?: string,
+) {
+  const normalized = normalizePublicCaseIdInput(input);
+
+  if (!normalized) {
+    return undefined;
+  }
+
+  return bundles.find(
+    (bundle) =>
+      bundle.case.visibility === "published" &&
+      getPublicCaseId(bundle.case) === normalized,
+  );
+}
+
+export function getHomepageEligibleCasesFromBundles(
+  bundles: CanonicalCaseBundle[],
+) {
+  return bundles
+    .filter((bundle) => getHomepageEligibility(bundle).status === "eligible")
+    .sort((left, right) => right.case.updatedAt.localeCompare(left.case.updatedAt));
+}
+
+export function getHomepageCaseCardVMsFromBundles(
+  bundles: CanonicalCaseBundle[],
+): HomepageCaseCardVM[] {
+  return getHomepageEligibleCasesFromBundles(bundles).map((bundle) =>
+    getHomepageCaseCardVM(bundle),
+  );
+}
+
 export function getPublicDetailVMByCaseIdFromBundles(
   bundles: CanonicalCaseBundle[],
   caseId?: string,
@@ -107,7 +157,7 @@ export function getSupportSheetDataByCaseIdFromBundles(
     directHint: "长按图片保存到相册，打开微信/支付宝扫码转账",
     contactTip: "添加救助人后，可通过微信直接沟通救助细节。",
     directTip:
-      "支持完成后，请回到页面点击“我已支持，去认领”以更新透明账本。",
+      "支持完成后，请回到页面点击“我已支持”以登记支持记录。",
   };
 }
 
@@ -121,10 +171,20 @@ export function getOwnerDetailVMByCaseIdFromBundles(
   }
 
   const publicDetail = getPublicDetailVM(bundle);
-  const ledger = buildLedgerSnapshotFromEvents(bundle.case, bundle.events);
+  const homepageEligibility = getHomepageEligibility(bundle);
+  const supportThreads = getStructuredSupportThreads(bundle);
+  const pendingSupportEntryCount = supportThreads.reduce(
+    (sum, thread) => sum + thread.pendingCount,
+    0,
+  );
+  const unmatchedSupportEntryCount = supportThreads.reduce(
+    (sum, thread) => sum + thread.unmatchedCount,
+    0,
+  );
 
   return {
     caseId: bundle.case.id,
+    publicCaseId: getPublicCaseId(bundle.case),
     sourceKind: bundle.sourceKind,
     draftId: bundle.sourceKind === "local" ? caseIdToDraftId(bundle.case.id) : undefined,
     title: publicDetail.title,
@@ -137,22 +197,54 @@ export function getOwnerDetailVMByCaseIdFromBundles(
     currentAmountLabel: publicDetail.ledger.supportedAmountLabel,
     progressPercent: publicDetail.ledger.progressPercent,
     ledger: {
-      targetAmount: ledger.targetAmount,
+      targetAmount: publicDetail.ledger.targetAmount,
       targetAmountLabel: publicDetail.ledger.targetAmountLabel,
-      supportedAmount: ledger.supportedAmount,
+      supportedAmount: publicDetail.ledger.supportedAmount,
       supportedAmountLabel: publicDetail.ledger.supportedAmountLabel,
-      confirmedExpenseAmount: ledger.confirmedExpenseAmount,
+      confirmedExpenseAmount: publicDetail.ledger.confirmedExpenseAmount,
       confirmedExpenseAmountLabel: publicDetail.ledger.confirmedExpenseAmountLabel,
-      verifiedGapAmount: ledger.verifiedGapAmount,
+      verifiedGapAmount: publicDetail.ledger.verifiedGapAmount,
       verifiedGapAmountLabel: publicDetail.ledger.verifiedGapAmountLabel,
-      remainingTargetAmount: ledger.remainingTargetAmount,
+      remainingTargetAmount: publicDetail.ledger.remainingTargetAmount,
       remainingTargetAmountLabel: publicDetail.ledger.remainingTargetAmountLabel,
     },
     timeline: publicDetail.timeline,
     timelineHint: "数据实时更新",
     support: getSupportSheetDataByCaseIdFromBundles(bundles, caseId)!,
+    homepageEligibilityStatus: homepageEligibility.status,
+    homepageEligibilityReason: homepageEligibility.reason,
+    pendingSupportEntryCount,
+    unmatchedSupportEntryCount,
+    supportThreads: supportThreads,
     quickActions,
   };
+}
+
+export function getSupportThreadsByCaseIdFromBundles(
+  bundles: CanonicalCaseBundle[],
+  caseId?: string,
+): CanonicalSupportThread[] {
+  const bundle = getCanonicalBundleByCaseIdFromBundles(bundles, caseId);
+
+  if (!bundle) {
+    return [];
+  }
+
+  return getStructuredSupportThreads(bundle);
+}
+
+export function getMySupportThreadByCaseIdFromBundles(
+  bundles: CanonicalCaseBundle[],
+  caseId: string | undefined,
+  supporterUserId: string,
+) {
+  const bundle = getCanonicalBundleByCaseIdFromBundles(bundles, caseId);
+
+  if (!bundle) {
+    return undefined;
+  }
+
+  return getMySupportThreadByCaseId(bundle, supporterUserId);
 }
 
 export function getWorkbenchVMFromBundles(

@@ -1,5 +1,6 @@
 export type Id = string;
 export type IsoDateTimeString = string;
+export type CasePublicId = string;
 
 export type VerificationStatus =
   | "pending"
@@ -10,6 +11,33 @@ export type VerificationStatus =
 export type Visibility = "draft" | "private" | "public" | "archived";
 
 export type CurrencyCode = "CNY";
+export type ExpenseCategory =
+  | "medical"
+  | "medication"
+  | "food_supply"
+  | "transport_other";
+export type ExpenseEvidenceKind =
+  | "receipt"
+  | "order_screenshot"
+  | "payment_screenshot"
+  | "item_photo"
+  | "treatment_photo"
+  | "animal_photo"
+  | "animal_item_photo";
+export type EvidenceLevel = "complete" | "basic" | "needs_attention";
+export type HomepageEligibilityStatus =
+  | "eligible"
+  | "missing_update"
+  | "missing_evidence"
+  | "public_but_not_eligible";
+export type SupportEntryStatus = "pending" | "confirmed" | "unmatched";
+export type SupportUnmatchedReason =
+  | "no_transfer_found"
+  | "amount_or_time_mismatch"
+  | "insufficient_screenshot"
+  | "duplicate_submission"
+  | "unrelated_record"
+  | "other";
 
 export type RescuerVerifiedLevel = "none" | "wechat" | "realname";
 
@@ -73,6 +101,7 @@ export type CanonicalRescuer = {
 
 export type CanonicalCase = {
   id: Id;
+  publicCaseId?: CasePublicId;
   rescuerId: Id;
   animalName: string;
   species: CaseSpecies;
@@ -121,6 +150,7 @@ export type CanonicalExpenseEvent = CanonicalBaseEvent & {
 
 export type CanonicalSupportEvent = CanonicalBaseEvent & {
   type: "support";
+  supporterUserId?: Id;
   amount: number;
   currency: CurrencyCode;
   supportSource: SupportSource;
@@ -151,12 +181,87 @@ export type CanonicalAsset = {
   thumbnailUrl?: string;
 };
 
+export type CanonicalEvidenceItem = {
+  id: Id;
+  kind: ExpenseEvidenceKind;
+  assetId?: Id;
+  imageUrl?: string;
+  hash?: string;
+};
+
+export type CanonicalSharedEvidenceGroup = {
+  id: Id;
+  caseId: Id;
+  title?: string;
+  items: CanonicalEvidenceItem[];
+};
+
+export type CanonicalExpenseRecord = {
+  id: Id;
+  caseId: Id;
+  amount: number;
+  currency: CurrencyCode;
+  spentAt: IsoDateTimeString;
+  category: ExpenseCategory;
+  summary: string;
+  note?: string;
+  merchantName?: string;
+  evidenceItems: CanonicalEvidenceItem[];
+  sharedEvidenceGroupId?: Id;
+  evidenceLevel: EvidenceLevel;
+  verificationStatus: VerificationStatus;
+  visibility: Visibility;
+  projectedEventId?: Id;
+};
+
+export type CanonicalSupportThread = {
+  id: Id;
+  caseId: Id;
+  supporterUserId: Id;
+  supporterNameMasked?: string;
+  createdAt: IsoDateTimeString;
+  updatedAt: IsoDateTimeString;
+  totalConfirmedAmount: number;
+  totalPendingAmount: number;
+  totalUnmatchedAmount: number;
+  pendingCount: number;
+  unmatchedCount: number;
+  latestStatusSummary?: string;
+};
+
+export type CanonicalSupportEntry = {
+  id: Id;
+  supportThreadId: Id;
+  caseId: Id;
+  supporterUserId: Id;
+  supporterNameMasked?: string;
+  amount: number;
+  currency: CurrencyCode;
+  supportedAt: IsoDateTimeString;
+  note?: string;
+  screenshotItems: CanonicalEvidenceItem[];
+  screenshotHashes: string[];
+  status: SupportEntryStatus;
+  unmatchedReason?: SupportUnmatchedReason;
+  unmatchedNote?: string;
+  createdAt: IsoDateTimeString;
+  updatedAt: IsoDateTimeString;
+  confirmedAt?: IsoDateTimeString;
+  confirmedByUserId?: Id;
+  visibility: Visibility;
+  projectedEventId?: Id;
+};
+
 export type CanonicalCaseBundle = {
   sourceKind: BundleSourceKind;
   rescuer: CanonicalRescuer;
   case: CanonicalCase;
   events: CanonicalEvent[];
   assets: CanonicalAsset[];
+  sharedEvidenceGroups?: CanonicalSharedEvidenceGroup[];
+  expenseRecords?: CanonicalExpenseRecord[];
+  supportThreads?: CanonicalSupportThread[];
+  supportEntries?: CanonicalSupportEntry[];
 };
 
 export type CanonicalDataset = {
@@ -191,6 +296,7 @@ export type PublicTimelineItemVM = {
 
 export type PublicDetailVM = {
   caseId: Id;
+  publicCaseId: CasePublicId;
   rescuerId: Id;
   title: string;
   species: CaseSpecies;
@@ -219,12 +325,40 @@ export type PublicDetailVM = {
     wechatId?: string;
     paymentQrUrl?: string;
   };
+  supportSummary: {
+    confirmedSupportAmount: number;
+    confirmedSupportAmountLabel: string;
+    pendingSupportEntryCount: number;
+    unmatchedSupportEntryCount: number;
+    threads: SupportThreadSummaryVM[];
+  };
   timeline: PublicTimelineItemVM[];
   latestTimelineSummary?: string;
 };
 
+export type HomepageCaseCardVM = {
+  caseId: Id;
+  publicCaseId: CasePublicId;
+  rescuerId: Id;
+  sourceKind: BundleSourceKind;
+  title: string;
+  statusLabel: string;
+  statusTone: StatusTone;
+  coverImageUrl?: string;
+  updatedAtLabel: string;
+  latestStatusSummary: string;
+  fundingStatusSummary: string;
+  recommendationReason?: string;
+  evidenceLevel: EvidenceLevel;
+  homepageEligibilityStatus: HomepageEligibilityStatus;
+  homepageEligibilityReason: string;
+  progressPercent: number;
+  amountLabel: string;
+};
+
 export type DiscoverCardVM = {
   caseId: Id;
+  publicCaseId?: CasePublicId;
   rescuerId: Id;
   sourceKind: BundleSourceKind;
   title: string;
@@ -240,6 +374,7 @@ export type DiscoverCardVM = {
 
 export type WorkbenchCaseCardVM = {
   caseId: Id;
+  publicCaseId?: CasePublicId;
   sourceKind: BundleSourceKind;
   title: string;
   statusLabel: string;
@@ -249,6 +384,10 @@ export type WorkbenchCaseCardVM = {
   currentStatus: CaseCurrentStatus;
   coverImageUrl?: string;
   targetAmountLabel: string;
+  homepageEligibilityStatus?: HomepageEligibilityStatus;
+  homepageEligibilityReason?: string;
+  pendingSupportEntryCount?: number;
+  unmatchedSupportEntryCount?: number;
   draftId?: Id;
 };
 
@@ -276,4 +415,28 @@ export type SupportSheetData = {
   contactTip: string;
   directTip: string;
   paymentQrUrl?: string;
+};
+
+export type SupportEntrySummaryVM = {
+  id: Id;
+  amount: number;
+  amountLabel: string;
+  status: SupportEntryStatus;
+  statusLabel: string;
+  supportedAtLabel: string;
+  note?: string;
+  hasScreenshot: boolean;
+  unmatchedReasonLabel?: string;
+};
+
+export type SupportThreadSummaryVM = {
+  id: Id;
+  supporterUserId: Id;
+  supporterNameMasked?: string;
+  confirmedAmount: number;
+  confirmedAmountLabel: string;
+  pendingCount: number;
+  unmatchedCount: number;
+  latestEntryAtLabel: string;
+  entries: SupportEntrySummaryVM[];
 };

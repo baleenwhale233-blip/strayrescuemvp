@@ -4,6 +4,11 @@ import type {
   WorkbenchCaseCardVM,
   WorkbenchVM,
 } from "../types";
+import {
+  getHomepageEligibility,
+  getPublicCaseId,
+  getStructuredSupportEntries,
+} from "../modeling";
 import { getPublicDetailVM } from "./getPublicDetailVM";
 
 function toWorkbenchCardVM(
@@ -11,9 +16,18 @@ function toWorkbenchCardVM(
   options?: { draftId?: string },
 ): WorkbenchCaseCardVM {
   const publicDetail = getPublicDetailVM(bundle);
+  const homepageEligibility = getHomepageEligibility(bundle);
+  const supportEntries = getStructuredSupportEntries(bundle);
+  const pendingSupportEntryCount = supportEntries.filter(
+    (entry) => entry.status === "pending",
+  ).length;
+  const unmatchedSupportEntryCount = supportEntries.filter(
+    (entry) => entry.status === "unmatched",
+  ).length;
 
   return {
     caseId: bundle.case.id,
+    publicCaseId: getPublicCaseId(bundle.case),
     sourceKind: bundle.sourceKind,
     title: bundle.case.animalName,
     statusLabel: bundle.case.currentStatusLabel,
@@ -23,6 +37,10 @@ function toWorkbenchCardVM(
     currentStatus: bundle.case.currentStatus,
     coverImageUrl: publicDetail.heroImageUrl,
     targetAmountLabel: `目标 ${publicDetail.ledger.targetAmountLabel} · 已支持 ${publicDetail.ledger.supportedAmountLabel} · 缺口 ${publicDetail.ledger.verifiedGapAmountLabel}`,
+    homepageEligibilityStatus: homepageEligibility.status,
+    homepageEligibilityReason: homepageEligibility.reason,
+    pendingSupportEntryCount,
+    unmatchedSupportEntryCount,
     draftId: options?.draftId,
   };
 }

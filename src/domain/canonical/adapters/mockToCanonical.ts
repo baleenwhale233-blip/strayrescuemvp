@@ -3,6 +3,7 @@ import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
 import timelineReceipt from "../../../assets/detail/timeline-receipt.png";
 import timelineStatus from "../../../assets/detail/timeline-status-cat.png";
 import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
+import { createCasePublicId } from "../modeling";
 import {
   getSavedDrafts,
   type RescueCreateDraft,
@@ -148,6 +149,7 @@ export function adaptRescueProjectDetailMockToCanonical(
 
   const canonicalCase: CanonicalCase = {
     id: caseId,
+    publicCaseId: createCasePublicId(caseId),
     rescuerId: rescuer.id,
     animalName: detail.name,
     species: detail.name.includes("犬") ? "dog" : "cat",
@@ -230,6 +232,7 @@ export function adaptRescueProjectDetailMockToCanonical(
         id: eventId,
         caseId,
         type: "support",
+        supporterUserId: `legacy-supporter:${eventId}`,
         occurredAt,
         amount: parseCurrencyLabel(entry.amount),
         currency: "CNY",
@@ -341,6 +344,7 @@ export function adaptLocalDraftToCanonical(
 
   const canonicalCase: CanonicalCase = {
     id: caseId,
+    publicCaseId: draft.publicCaseId || createCasePublicId(caseId),
     rescuerId,
     animalName: draft.name || "未命名救助",
     species: "cat",
@@ -453,6 +457,10 @@ export function adaptLocalDraftToCanonical(
     case: canonicalCase,
     events,
     assets,
+    sharedEvidenceGroups: draft.sharedEvidenceGroups,
+    expenseRecords: draft.expenseRecords,
+    supportThreads: draft.supportThreads,
+    supportEntries: draft.supportEntries,
   };
 }
 

@@ -1,9 +1,15 @@
 import {
+  addExpenseRecordToDraft,
+  addExpenseRecordsBatchToDraft,
   calculateDraftLedger,
+  confirmSupportEntryOnDraft,
+  createOrGetSupportThreadOnDraft,
+  createSupportEntryOnDraft,
   formatTimelineTimestamp,
   getCurrentDraftSession,
   getSavedDraftById,
   getSavedDrafts,
+  markSupportEntryUnmatchedOnDraft,
   patchCurrentDraftSession,
   replaceDraftById,
   saveCurrentDraft,
@@ -81,4 +87,46 @@ export function replaceDraft(draft: RescueCreateDraft) {
 
 export function syncCurrentDraft(draft: RescueCreateDraft) {
   return setCurrentDraftSession(draft);
+}
+
+export function createOrGetSupportThread(
+  draft: RescueCreateDraft,
+  input: Parameters<typeof createOrGetSupportThreadOnDraft>[1],
+) {
+  return createOrGetSupportThreadOnDraft(draft, input);
+}
+
+export function createSupportEntry(
+  draft: RescueCreateDraft,
+  input: Parameters<typeof createSupportEntryOnDraft>[1],
+) {
+  return createSupportEntryOnDraft(draft, input);
+}
+
+export function confirmSupportEntry(
+  draft: RescueCreateDraft,
+  input: Parameters<typeof confirmSupportEntryOnDraft>[1],
+) {
+  return confirmSupportEntryOnDraft(draft, input);
+}
+
+export function markSupportEntryUnmatched(
+  draft: RescueCreateDraft,
+  input: Parameters<typeof markSupportEntryUnmatchedOnDraft>[1],
+) {
+  return markSupportEntryUnmatchedOnDraft(draft, input);
+}
+
+export function addExpenseRecord(
+  draft: RescueCreateDraft,
+  input: Parameters<typeof addExpenseRecordToDraft>[1],
+) {
+  return addExpenseRecordToDraft(draft, input);
+}
+
+export function addExpenseRecordsBatch(
+  draft: RescueCreateDraft,
+  input: Parameters<typeof addExpenseRecordsBatchToDraft>[1],
+) {
+  return addExpenseRecordsBatchToDraft(draft, input);
 }

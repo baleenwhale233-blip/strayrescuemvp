@@ -11,6 +11,13 @@ import type {
   PublicTimelineItemVM,
   StatusTone,
 } from "../types";
+import {
+  buildLedgerSnapshotFromStructured,
+  getPublicCaseId,
+  getStructuredExpenseRecords,
+  getStructuredSupportEntries,
+  toSupportThreadSummaryVMs,
+} from "../modeling";
 
 function sortEventsDesc(events: CanonicalEvent[]) {
   return [...events].sort((left, right) =>
@@ -232,14 +239,27 @@ function getVerifiedLevelLabel(rescuer: CanonicalRescuer) {
 
 export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
   const assetMap = getAssetMap(bundle.assets);
-  const ledger = buildLedgerSnapshotFromEvents(bundle.case, bundle.events);
+  const ledger = buildLedgerSnapshotFromStructured(bundle.case, {
+    expenseRecords: getStructuredExpenseRecords(bundle),
+    supportEntries: getStructuredSupportEntries(bundle),
+  });
   const timeline = getPublicTimeline(bundle.events, assetMap);
   const heroImageUrl =
     getAssetUrl(assetMap, bundle.case.coverAssetId) ||
     getAssetUrl(assetMap, bundle.case.faceIdAssetId);
+  const supportThreads = toSupportThreadSummaryVMs(bundle);
+  const pendingSupportEntryCount = supportThreads.reduce(
+    (sum, thread) => sum + thread.pendingCount,
+    0,
+  );
+  const unmatchedSupportEntryCount = supportThreads.reduce(
+    (sum, thread) => sum + thread.unmatchedCount,
+    0,
+  );
 
   return {
     caseId: bundle.case.id,
+    publicCaseId: getPublicCaseId(bundle.case),
     rescuerId: bundle.rescuer.id,
     title: bundle.case.animalName,
     species: bundle.case.species,
@@ -270,6 +290,13 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
       stats: bundle.rescuer.stats,
       wechatId: bundle.rescuer.wechatId,
       paymentQrUrl: getAssetUrl(assetMap, bundle.rescuer.paymentQrAssetId),
+    },
+    supportSummary: {
+      confirmedSupportAmount: ledger.supportedAmount,
+      confirmedSupportAmountLabel: formatCurrency(ledger.supportedAmount),
+      pendingSupportEntryCount,
+      unmatchedSupportEntryCount,
+      threads: supportThreads,
     },
     timeline,
     latestTimelineSummary: getLatestTimelineSummary(timeline),
