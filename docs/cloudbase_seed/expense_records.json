@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "expense_cloudbase_demo_001",
+    "recordId": "expense_cloudbase_demo_001",
+    "caseId": "case_cloudbase_demo_001",
+    "amount": 1800,
+    "currency": "CNY",
+    "spentAt": "2026-04-14T10:10:00.000Z",
+    "category": "medical",
+    "summary": "首诊检查、基础化验与住院观察押金",
+    "note": "开发环境示例支出，用于验证首页资金状态和详情账本。",
+    "merchantName": "示例宠物医院",
+    "evidenceItems": [
+      {
+        "id": "expense_cloudbase_demo_receipt",
+        "kind": "receipt",
+        "imageUrl": "",
+        "hash": "expense_cloudbase_demo_receipt"
+      },
+      {
+        "id": "expense_cloudbase_demo_animal_photo",
+        "kind": "animal_photo",
+        "imageUrl": "",
+        "hash": "expense_cloudbase_demo_animal_photo"
+      }
+    ],
+    "evidenceLevel": "complete",
+    "verificationStatus": "confirmed",
+    "visibility": "public",
+    "createdAt": "2026-04-14T10:10:00.000Z"
+  }
+]

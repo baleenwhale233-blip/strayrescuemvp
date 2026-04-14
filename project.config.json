@@ -1,9 +1,10 @@
 {
-  "appid": "wxb53bfd96ddb0ef2e",
+  "appid": "touristappid",
   "projectname": "stray-rescue-mvp",
   "compileType": "miniprogram",
   "miniprogramRoot": "dist/",
   "srcMiniprogramRoot": "dist/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
     "es6": false,
     "postcss": false,

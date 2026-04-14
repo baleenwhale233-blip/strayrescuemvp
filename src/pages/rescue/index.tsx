@@ -1,49 +1,87 @@
-import { View, Text } from "@tarojs/components";
+import { Image, View, Text } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import { NavBar } from "../../components/NavBar";
 import { SectionHeader } from "../../components/SectionHeader";
-import { getWorkbenchVMForCurrentUser } from "../../domain/canonical/repository/localRepository";
+import { loadWorkbenchVMForCurrentUser } from "../../domain/canonical/repository";
 import type { WorkbenchCaseCardVM } from "../../domain/canonical/types";
+import fallbackCoverImage from "../../assets/detail/guest-hero-cat.png";
 import "./index.scss";
 
+function getProjectSubtitle(project: WorkbenchCaseCardVM) {
+  if (project.visibility === "draft") {
+    return project.updatedAtLabel
+      ? `草稿待完善 · ${project.updatedAtLabel} 更新`
+      : "草稿待完善";
+  }
+
+  return `${project.statusLabel} · ${project.updatedAtLabel} 更新`;
+}
+
+function getProjectNotice(project: WorkbenchCaseCardVM) {
+  if (project.pendingSupportEntryCount) {
+    return `${project.pendingSupportEntryCount} 条支持待确认`;
+  }
+
+  if (project.unmatchedSupportEntryCount) {
+    return `${project.unmatchedSupportEntryCount} 条支持待核对`;
+  }
+
+  if (
+    project.homepageEligibilityStatus &&
+    project.homepageEligibilityStatus !== "eligible"
+  ) {
+    return project.homepageEligibilityReason;
+  }
+
+  return undefined;
+}
+
 function ProjectListItem({
-  id,
-  name,
-  state,
-  avatarLabel,
-  avatarStart,
-  avatarEnd,
+  project,
+  compact = false,
   onTap,
 }: {
-  id: string;
-  name: string;
-  state: string;
-  avatarLabel: string;
-  avatarStart: string;
-  avatarEnd: string;
-  onTap: (id: string) => void;
+  project: WorkbenchCaseCardVM;
+  compact?: boolean;
+  onTap: (project: WorkbenchCaseCardVM) => void;
 }) {
+  const notice = compact ? undefined : getProjectNotice(project);
+
   return (
-    <View className="project-list-item theme-card" onTap={() => onTap(id)}>
-      <View
-        className="project-list-item__avatar"
-        style={{
-          background: `linear-gradient(135deg, ${avatarStart}, ${avatarEnd})`,
-        }}
-      >
-        <Text className="project-list-item__avatar-label">{avatarLabel}</Text>
+    <View
+      className={`project-list-item theme-card${notice ? " project-list-item--with-notice" : ""}`}
+      onTap={() => onTap(project)}
+    >
+      <View className="project-list-item__main">
+        <View className="project-list-item__avatar">
+          <Image
+            className="project-list-item__avatar-image"
+            mode="aspectFill"
+            src={project.coverImageUrl || fallbackCoverImage}
+          />
+        </View>
+
+        <View className="project-list-item__content">
+          <Text className="project-list-item__name">{project.title}</Text>
+          {!compact ? (
+            <Text className="project-list-item__state">
+              {getProjectSubtitle(project)}
+            </Text>
+          ) : null}
+        </View>
+
+        <View className="project-list-item__arrow">
+          <AppIcon name="chevronRight" size={16} variant="muted" />
+        </View>
       </View>
 
-      <View className="project-list-item__content">
-        <Text className="project-list-item__name">{name}</Text>
-        <Text className="project-list-item__state">{state}</Text>
-      </View>
-
-      <View className="project-list-item__arrow">
-        <AppIcon name="chevronRight" size={16} variant="muted" />
-      </View>
+      {notice ? (
+        <View className="project-list-item__notice">
+          <Text className="project-list-item__notice-text">{notice}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -53,9 +91,17 @@ export default function RescuePage() {
   const [draftCases, setDraftCases] = useState<WorkbenchCaseCardVM[]>([]);
 
   useDidShow(() => {
-    const vm = getWorkbenchVMForCurrentUser();
-    setActiveCases(vm?.activeCases ?? []);
-    setDraftCases(vm?.draftCases ?? []);
+    loadWorkbenchVMForCurrentUser()
+      .then((vm) => {
+        setActiveCases(vm?.activeCases ?? []);
+        setDraftCases(vm?.draftCases ?? []);
+      })
+      .catch(() => {
+        Taro.showToast({
+          title: "救助列表加载失败",
+          icon: "none",
+        });
+      });
   });
 
   const handleNavigateToDetail = (
@@ -94,39 +140,38 @@ export default function RescuePage() {
       </View>
 
       <View className="rescue-page__section">
-        <SectionHeader title="进行中的项目" badge={activeBadge} />
+        <SectionHeader title="救助档案" badge={activeBadge} />
 
         <View className="rescue-page__list">
-          {activeCases.map((project) => (
-            <ProjectListItem
-              key={project.caseId}
-              id={project.caseId}
-              name={project.title}
-              state={project.statusLabel}
-              avatarLabel={project.title.slice(0, 2)}
-              avatarStart="#F5C08B"
-              avatarEnd="#A7621D"
-              onTap={() => handleNavigateToDetail(project)}
-            />
-          ))}
+          {activeCases.length ? (
+            activeCases.map((project) => (
+              <ProjectListItem
+                key={project.caseId}
+                project={project}
+                onTap={handleNavigateToDetail}
+              />
+            ))
+          ) : (
+            <Text className="rescue-page__empty">你还没有进行中的救助个案</Text>
+          )}
         </View>
       </View>
 
       <View className="rescue-page__section">
         <SectionHeader title="草稿箱" badge={draftBadge} />
         <View className="rescue-page__list">
-          {draftCases.map((project) => (
-            <ProjectListItem
-              key={project.caseId}
-              id={project.caseId}
-              name={project.title}
-              state={project.statusLabel}
-              avatarLabel={project.title.slice(0, 2)}
-              avatarStart="#E0E3E8"
-              avatarEnd="#9298A4"
-              onTap={() => handleNavigateToDetail(project)}
-            />
-          ))}
+          {draftCases.length ? (
+            draftCases.map((project) => (
+              <ProjectListItem
+                key={project.caseId}
+                project={project}
+                compact
+                onTap={handleNavigateToDetail}
+              />
+            ))
+          ) : (
+            <Text className="rescue-page__empty">当前没有草稿</Text>
+          )}
         </View>
       </View>
     </View>

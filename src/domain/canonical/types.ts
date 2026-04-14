@@ -342,6 +342,7 @@ export type HomepageCaseCardVM = {
   rescuerId: Id;
   sourceKind: BundleSourceKind;
   title: string;
+  aboutSummary: string;
   statusLabel: string;
   statusTone: StatusTone;
   coverImageUrl?: string;
@@ -354,6 +355,11 @@ export type HomepageCaseCardVM = {
   homepageEligibilityReason: string;
   progressPercent: number;
   amountLabel: string;
+  targetAmountLabel: string;
+  supportedAmountLabel: string;
+  rescuerAdvanceAmountLabel: string;
+  supportedProgressPercent: number;
+  rescuerAdvanceProgressPercent: number;
 };
 
 export type DiscoverCardVM = {

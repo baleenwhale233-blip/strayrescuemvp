@@ -498,13 +498,15 @@ export function getFundingStatusSummary(bundle: CanonicalCaseBundle) {
     supportEntries: getStructuredSupportEntries(bundle),
   });
 
-  if (ledger.verifiedGapAmount > 0) {
-    return `已确认支持 ${formatCurrency(ledger.supportedAmount)}，当前缺口 ${formatCurrency(
-      ledger.verifiedGapAmount,
-    )}`;
+  if (ledger.supportedAmount >= ledger.confirmedExpenseAmount) {
+    return "当前垫付已覆盖";
   }
 
-  return `已确认支持 ${formatCurrency(ledger.supportedAmount)}，当前暂无已确认缺口`;
+  if (ledger.verifiedGapAmount > 0 && ledger.verifiedGapAmount <= 2000) {
+    return "即将筹满";
+  }
+
+  return "‼️ 救助人垫付较多";
 }
 
 export function getRecommendationReason(bundle: CanonicalCaseBundle) {

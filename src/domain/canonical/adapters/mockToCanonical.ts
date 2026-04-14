@@ -13,11 +13,14 @@ import type {
   CanonicalCase,
   CanonicalCaseBundle,
   CanonicalCaseCreatedEvent,
+  CanonicalExpenseRecord,
   CanonicalDataset,
   CanonicalEvent,
   CanonicalExpenseEvent,
   CanonicalProgressUpdateEvent,
   CanonicalRescuer,
+  CanonicalSupportEntry,
+  CanonicalSupportThread,
   CanonicalSupportEvent,
   CaseCurrentStatus,
   CurrencyCode,
@@ -288,11 +291,86 @@ export function adaptRescueProjectDetailMockToCanonical(
     return event;
   });
 
+  const confirmedExpenseAmount = Math.max(
+    detail.ledger.supported + detail.ledger.verifiedGap,
+    0,
+  );
+  const expenseRecordId = `${caseId}_expense_record_001`;
+  const supportThreadId = `${caseId}_support_thread_001`;
+  const supportEntryId = `${caseId}_support_entry_001`;
+
+  const expenseRecords: CanonicalExpenseRecord[] = confirmedExpenseAmount
+    ? [
+        {
+          id: expenseRecordId,
+          caseId,
+          amount: confirmedExpenseAmount,
+          currency: "CNY",
+          spentAt: createdAt,
+          category: "medical",
+          summary: "阶段性已确认支出汇总",
+          note: "用于首页/详情页 mock 资金状态展示",
+          merchantName: "示例宠物医院",
+          evidenceItems: [],
+          evidenceLevel: "complete",
+          verificationStatus: "confirmed",
+          visibility: canonicalCase.visibility === "draft" ? "draft" : "public",
+          projectedEventId: createdEvent.id,
+        },
+      ]
+    : [];
+
+  const supportEntries: CanonicalSupportEntry[] = detail.ledger.supported
+    ? [
+        {
+          id: supportEntryId,
+          supportThreadId,
+          caseId,
+          supporterUserId: `legacy-supporter:${caseId}`,
+          supporterNameMasked: "爱心人士",
+          amount: detail.ledger.supported,
+          currency: "CNY",
+          supportedAt: createdAt,
+          note: "阶段性已确认支持汇总",
+          screenshotItems: [],
+          screenshotHashes: [],
+          status: "confirmed",
+          createdAt,
+          updatedAt: createdAt,
+          confirmedAt: createdAt,
+          confirmedByUserId: rescuer.id,
+          visibility: canonicalCase.visibility === "draft" ? "draft" : "public",
+        },
+      ]
+    : [];
+
+  const supportThreads: CanonicalSupportThread[] = detail.ledger.supported
+    ? [
+        {
+          id: supportThreadId,
+          caseId,
+          supporterUserId: `legacy-supporter:${caseId}`,
+          supporterNameMasked: "爱心人士",
+          createdAt,
+          updatedAt: createdAt,
+          totalConfirmedAmount: detail.ledger.supported,
+          totalPendingAmount: 0,
+          totalUnmatchedAmount: 0,
+          pendingCount: 0,
+          unmatchedCount: 0,
+          latestStatusSummary: "最近一条已确认",
+        },
+      ]
+    : [];
+
   return {
     sourceKind: "seed",
     rescuer,
     case: canonicalCase,
     events: [createdEvent, ...timelineEvents],
+    expenseRecords,
+    supportEntries,
+    supportThreads,
     assets,
   };
 }
@@ -308,12 +386,13 @@ export function adaptLocalDraftToCanonical(
 
   const rescuer: CanonicalRescuer = {
     id: rescuerId,
-    name: "当前救助人",
-    verifiedLevel: "wechat",
-    joinedAt: createdAt,
-    wechatId: "wxid_rescuer_99",
+    name: draft.rescuerName || "当前救助人",
+    avatarUrl: draft.rescuerAvatarUrl,
+    verifiedLevel: draft.rescuerVerifiedLevel || "wechat",
+    joinedAt: draft.rescuerJoinedAt || createdAt,
+    wechatId: draft.rescuerWechatId || "wxid_rescuer_99",
     paymentQrAssetId: `${rescuerId}_payment_qr`,
-    stats: {
+    stats: draft.rescuerStats || {
       publishedCaseCount: 0,
       verifiedReceiptCount: 0,
     },
@@ -334,11 +413,21 @@ export function adaptLocalDraftToCanonical(
       watermarkedUrl: draft.coverPath || coverImage,
       thumbnailUrl: draft.coverPath || coverImage,
     },
+    ...(rescuer.avatarUrl
+      ? [
+          {
+            id: `${rescuerId}_avatar`,
+            kind: "avatar" as const,
+            originalUrl: rescuer.avatarUrl,
+            thumbnailUrl: rescuer.avatarUrl,
+          },
+        ]
+      : []),
     {
       id: rescuer.paymentQrAssetId!,
       kind: "payment_qr",
-      originalUrl: coverImage,
-      thumbnailUrl: coverImage,
+      originalUrl: draft.paymentQrUrl || coverImage,
+      thumbnailUrl: draft.paymentQrUrl || coverImage,
     },
   ];
 
@@ -347,12 +436,16 @@ export function adaptLocalDraftToCanonical(
     publicCaseId: draft.publicCaseId || createCasePublicId(caseId),
     rescuerId,
     animalName: draft.name || "未命名救助",
-    species: "cat",
+    species: draft.species || "cat",
     coverAssetId: baseAssetId,
     faceIdAssetId: `${caseId}_face`,
+    foundLocationText: draft.foundLocationText,
     initialSummary: draft.summary || "待补充事件说明",
-    currentStatus: draft.status === "published" ? "medical" : "draft",
-    currentStatusLabel: draft.status === "published" ? "医疗救助中" : "草稿中",
+    currentStatus:
+      draft.currentStatus || (draft.status === "published" ? "medical" : "draft"),
+    currentStatusLabel:
+      draft.currentStatusLabel ||
+      (draft.status === "published" ? "医疗救助中" : "草稿中"),
     targetAmount: draft.budget,
     visibility: draft.status,
     createdAt,

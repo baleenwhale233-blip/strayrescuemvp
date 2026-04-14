@@ -209,6 +209,8 @@ src/
 
 - 依赖安装后 npm 会提示一些上游安全告警，这些主要来自 Taro 生态的传递依赖，当前没有影响工程启动和构建
 - 当前仍未接入真实后端，repository 底层数据源还是 `seed + local draft persistence`
+- 已加入 CloudBase 接入骨架：配置在 `src/config/cloudbase.ts`，当前环境 ID 为 `cloud1-9gl5sric0e5b386b`，云函数在 `cloudfunctions/rescueApi`，接入说明见 `docs/cloudbase_backend_setup.md`
+- 在 `rescueApi` 云函数部署和集合初始化完成前，小程序遇到基础设施错误会继续回落到本地 repository
 - `src/data/mock.ts` 不再是页面主数据源，只是兼容层
 - 当前仍未接入 OCR、AI 文案生成、真实分享落地页与认领支持完整流程
 - 构建时仍有一条图片体积 warning：`src/assets/detail/timeline-status-cat.png`

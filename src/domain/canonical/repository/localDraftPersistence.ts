@@ -6,12 +6,15 @@ import {
 import type {
   CanonicalEvidenceItem,
   CanonicalExpenseRecord,
+  CanonicalRescuerStats,
   CanonicalSharedEvidenceGroup,
   CanonicalSupportEntry,
   CanonicalSupportThread,
+  CaseCurrentStatus,
   CurrencyCode,
   ExpenseCategory,
   HomepageEligibilityStatus,
+  RescuerVerifiedLevel,
   SupportEntryStatus,
   SupportUnmatchedReason,
 } from "../types";
@@ -47,6 +50,17 @@ export type RescueCreateDraft = {
   coverPath: string;
   budget: number;
   budgetNote: string;
+  species?: "cat" | "dog" | "other";
+  currentStatus?: CaseCurrentStatus;
+  currentStatusLabel?: string;
+  foundLocationText?: string;
+  rescuerName?: string;
+  rescuerAvatarUrl?: string;
+  rescuerWechatId?: string;
+  rescuerVerifiedLevel?: RescuerVerifiedLevel;
+  rescuerJoinedAt?: string;
+  rescuerStats?: CanonicalRescuerStats;
+  paymentQrUrl?: string;
   status: RescueCreateDraftStatus;
   timeline: RescueCreateTimelineEntry[];
   sharedEvidenceGroups: CanonicalSharedEvidenceGroup[];

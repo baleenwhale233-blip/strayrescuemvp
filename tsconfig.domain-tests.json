@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": ".tmp/domain-tests",
     "rootDir": ".",
-    "noEmit": false
+    "noEmit": false,
+    "module": "CommonJS"
   },
   "include": [
     "src/domain/canonical/**/*.ts",

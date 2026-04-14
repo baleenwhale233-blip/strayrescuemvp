@@ -10,7 +10,6 @@ import {
   getLastPublicActivityAt,
   getLatestStatusSummary,
   getPublicCaseId,
-  getRecommendationReason,
 } from "../modeling";
 import { getPublicDetailVM } from "./getPublicDetailVM";
 
@@ -35,7 +34,15 @@ export function getHomepageCaseCardVM(
   const publicDetail = getPublicDetailVM(bundle);
   const homepageEligibility = getHomepageEligibility(bundle);
   const latestStatusSummary = getLatestStatusSummary(bundle);
-  const recommendationReason = getRecommendationReason(bundle);
+  const rescuerAdvanceAmount = Math.max(
+    publicDetail.ledger.confirmedExpenseAmount - publicDetail.ledger.supportedAmount,
+    0,
+  );
+  const fundedBaseAmount = Math.max(
+    publicDetail.ledger.confirmedExpenseAmount,
+    publicDetail.ledger.supportedAmount,
+    1,
+  );
 
   return {
     caseId: publicDetail.caseId,
@@ -43,18 +50,30 @@ export function getHomepageCaseCardVM(
     rescuerId: publicDetail.rescuerId,
     sourceKind: bundle.sourceKind,
     title: publicDetail.title,
+    aboutSummary: bundle.case.initialSummary,
     statusLabel: publicDetail.statusLabel,
     statusTone: publicDetail.statusTone,
     coverImageUrl: publicDetail.heroImageUrl,
     updatedAtLabel: formatDateLabel(getLastPublicActivityAt(bundle)),
     latestStatusSummary,
     fundingStatusSummary: getFundingStatusSummary(bundle),
-    recommendationReason,
+    recommendationReason: undefined,
     evidenceLevel: getCaseEvidenceLevel(bundle),
     homepageEligibilityStatus: homepageEligibility.status,
     homepageEligibilityReason: homepageEligibility.reason,
     progressPercent: publicDetail.ledger.progressPercent,
     amountLabel: `${publicDetail.ledger.supportedAmountLabel} / ${publicDetail.ledger.targetAmountLabel}`,
+    targetAmountLabel: publicDetail.ledger.targetAmountLabel,
+    supportedAmountLabel: publicDetail.ledger.supportedAmountLabel,
+    rescuerAdvanceAmountLabel: `¥${rescuerAdvanceAmount.toLocaleString("zh-CN")}`,
+    supportedProgressPercent: Math.min(
+      Math.round((publicDetail.ledger.supportedAmount / fundedBaseAmount) * 100),
+      100,
+    ),
+    rescuerAdvanceProgressPercent: Math.min(
+      Math.round((rescuerAdvanceAmount / fundedBaseAmount) * 100),
+      100,
+    ),
   };
 }
 
@@ -73,7 +92,7 @@ export function getDiscoverCardVM(bundle: CanonicalCaseBundle): DiscoverCardVM {
     coverImageUrl: homepageCard.coverImageUrl,
     updatedAtLabel: homepageCard.updatedAtLabel,
     subtitle: publicDetail.locationText || publicDetail.summary,
-    latestTimelineSummary: homepageCard.latestStatusSummary,
+    latestTimelineSummary: publicDetail.latestTimelineSummary,
     progressPercent: homepageCard.progressPercent,
     amountLabel: homepageCard.amountLabel,
   };

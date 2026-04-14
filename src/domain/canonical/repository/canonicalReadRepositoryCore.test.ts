@@ -126,14 +126,69 @@ test("public case id exact search supports prefixed and digits-only input", () =
   assert.equal(digitsOnly?.case.id, "case_001");
 });
 
-test("homepage richer card vm exposes recommendation and eligibility", () => {
+test("homepage richer card vm exposes funding status and eligibility", () => {
   const cards = getHomepageCaseCardVMsFromBundles([publishedBundle]);
   const firstCard = cards[0];
 
   assert.ok(firstCard);
   assert.equal(firstCard.publicCaseId, "JM482731");
   assert.equal(firstCard.homepageEligibilityStatus, "eligible");
-  assert.ok(firstCard.fundingStatusSummary.includes("当前缺口"));
+  assert.equal(firstCard.fundingStatusSummary, "即将筹满");
+  assert.equal(firstCard.aboutSummary, "发现时流口水严重，疑似口炎，精神差");
+});
+
+test("homepage funding status is covered when confirmed support meets confirmed expense", () => {
+  const coveredBundle: CanonicalCaseBundle = {
+    ...publishedBundle,
+    supportEntries: [
+      {
+        ...publishedBundle.supportEntries?.[0]!,
+        amount: 280,
+      },
+    ],
+    supportThreads: [
+      {
+        ...publishedBundle.supportThreads?.[0]!,
+        totalConfirmedAmount: 280,
+      },
+    ],
+  };
+
+  const [card] = getHomepageCaseCardVMsFromBundles([coveredBundle]);
+
+  assert.equal(card?.fundingStatusSummary, "当前垫付已覆盖");
+});
+
+test("homepage funding status treats a 2000 gap as almost complete", () => {
+  const almostBundle: CanonicalCaseBundle = {
+    ...publishedBundle,
+    expenseRecords: [
+      {
+        ...publishedBundle.expenseRecords?.[0]!,
+        amount: 2100,
+      },
+    ],
+  };
+
+  const [card] = getHomepageCaseCardVMsFromBundles([almostBundle]);
+
+  assert.equal(card?.fundingStatusSummary, "即将筹满");
+});
+
+test("homepage funding status becomes high pressure when gap exceeds 2000", () => {
+  const highPressureBundle: CanonicalCaseBundle = {
+    ...publishedBundle,
+    expenseRecords: [
+      {
+        ...publishedBundle.expenseRecords?.[0]!,
+        amount: 2501,
+      },
+    ],
+  };
+
+  const [card] = getHomepageCaseCardVMsFromBundles([highPressureBundle]);
+
+  assert.equal(card?.fundingStatusSummary, "‼️ 救助人垫付较多");
 });
 
 test("support entries are grouped into threads", () => {

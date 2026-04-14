@@ -12,6 +12,7 @@ import {
   getDraftById,
   persistDraft,
   replaceDraft,
+  saveRemoteDraftCase,
   syncCurrentDraft,
   toOwnerActionTimelineEntry,
   type RescueCreateDraft,
@@ -414,9 +415,18 @@ export default function RescueCreatePreviewPage() {
     });
   };
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     const saved = persistDraft("draft");
     setDraft(saved);
+    try {
+      await saveRemoteDraftCase(saved, "draft");
+    } catch {
+      Taro.showToast({
+        title: "草稿已本地保存，远端同步失败",
+        icon: "none",
+      });
+      return;
+    }
 
     Taro.showToast({
       title: "草稿已保存",
@@ -430,9 +440,18 @@ export default function RescueCreatePreviewPage() {
     }, 300);
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     const saved = persistDraft("published");
     setDraft(saved);
+    try {
+      await saveRemoteDraftCase(saved, "published");
+    } catch {
+      Taro.showToast({
+        title: "已本地发布，远端同步失败",
+        icon: "none",
+      });
+      return;
+    }
 
     Taro.showToast({
       title: saved.status === "published" ? "救助已发布" : "已更新",

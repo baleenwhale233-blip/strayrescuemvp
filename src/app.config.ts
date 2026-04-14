@@ -6,6 +6,8 @@ export default defineAppConfig({
     "pages/rescue/create/budget/index",
     "pages/rescue/create/preview/index",
     "pages/rescue/detail/index",
+    "pages/support/claim/index",
+    "pages/support/review/index",
     "pages/profile/index",
   ],
   window: {
