@@ -26,6 +26,45 @@
 
 ---
 
+## 2026-04-14 | CloudBase | 接入后端骨架与 rescueApi 云函数
+
+- 为什么改：
+  当前最小闭环已经接到 canonical repository，但真实后端仍缺位，需要先把 CloudBase 作为远端数据源接进来，同时不破坏本地可跑链路。
+- 改了什么：
+  新增 `src/config/cloudbase.ts`、CloudBase 初始化、远端 repository facade 和 `cloudfunctions/rescueApi`；首页、详情、工作台、支持登记、核实页切到异步远端入口；支持凭证接入 `Taro.cloud.uploadFile` 后传 `fileID`。
+- 影响范围：
+  CloudBase 配置、repository、P0 闭环页面、建档发布远端同步、项目配置和后端接入文档。
+- 验证结果：
+  `npm run typecheck` 通过；`node --check cloudfunctions/rescueApi/index.js` 通过；真实 CloudBase 运行仍需填环境 ID、创建集合并部署云函数。
+- 下一步 / 遗留问题：
+  开通 CloudBase 环境后填入 `envId`，创建集合并导入开发种子案例；再用微信开发者工具验证云函数调用、权限和支持登记闭环。
+
+## 2026-04-14 | CloudBase | 绑定 cloud1 开发环境
+
+- 为什么改：
+  微信开发者工具中已经创建 `cloud1` 环境，项目需要从本地回落状态推进到可真实调用 CloudBase 的开发配置。
+- 改了什么：
+  将 `src/config/cloudbase.ts` 的 `envId` 填为 `cloud1-9gl5sric0e5b386b`；修正 CloudBase 文档中的 AppID 说明到当前真实小程序；新增 `docs/cloudbase_seed/` 最小开发种子数据。
+- 影响范围：
+  CloudBase 初始化、开发环境说明、数据库集合初始化和首页远端数据验证。
+- 验证结果：
+  `docs/cloudbase_seed/*.json` 均可解析；`node --check cloudfunctions/rescueApi/index.js`、`npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过；`cli cloud env list` 能看到 `cloud1-9gl5sric0e5b386b`；build 仍保留既有图片体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  已用镜像安装 `rescueApi` 本地依赖，但 CLI 部署连续返回 `getCloudAPISignedHeader failed` / `41002 system error`；需要在开发者工具 UI 里重新登录/右键部署，或等云 API 签名服务恢复后重试 CLI 部署。
+
+## 2026-04-15 | CloudBase | 验证 cloud1 首页远端数据链路
+
+- 为什么改：
+  `rescueApi` 已通过微信开发者工具部署，CloudBase 集合和开发 seed 已导入，需要记录真实远端链路是否跑通。
+- 改了什么：
+  通过开发者工具重新编译小程序，使用 `cloud1-9gl5sric0e5b386b` 环境读取远端 seed 案例。
+- 影响范围：
+  CloudBase 首页读取链路、`rescueApi` 云函数、`rescue_cases / case_events / expense_records` 等开发集合。
+- 验证结果：
+  首页已显示 seed 案例 `云朵 / JM386001`，说明 `小程序 -> Taro.cloud.init -> rescueApi -> CloudBase 数据库 -> canonical selector -> 首页 UI` 链路通过。
+- 下一步 / 遗留问题：
+  继续验证“我已支持”登记、云存储凭证上传、`support_entries` pending 写入，以及 owner 侧确认；seed 案例的 `rescuerOpenid` 仍是开发占位，测试 owner 权限前需替换成真实 OPENID。
+
 ## 2026-04-04 | 文档管理 | 建立项目级开发日志机制
 
 - 为什么改：
@@ -130,6 +169,45 @@
 - 下一步 / 遗留问题：
   需要把 `PublicDetailVM` 和首页 richer VM 的字段表达进一步同步到页面实现。
 
+## 2026-04-04 | 我的页 | 收入支持足迹与联系方式设置字段
+
+- 为什么改：
+  “我的”页原本只被收成支持足迹入口，但新的设计稿已经明确加入头像、用户名、联系方式设置和使用说明入口，需要把这些字段正式写进文档，避免后续 UI 和产品定义脱节。
+- 改了什么：
+  新增 `profile_page_ia.md`，收录“我的 / 支持足迹 / 联系方式设置”三组字段；同步更新 `main_info_arch_v3.2.md`、`ui_priority_matrix.md` 和 `product_development_status.md`。
+- 影响范围：
+  我的页 IA、P1 UI 改动范围、后续联系方式设置页开发输入。
+- 验证结果：
+  文档层面已经明确：一期支持足迹只展示每只动物的累计支持金额，联系方式设置只收微信号、二维码上传和备注，不依赖自动获取二维码。
+- 下一步 / 遗留问题：
+  后续需要决定“头像/用户名”在小程序里是授权获取还是占位后用户确认，以及使用说明页采用单页文档还是多段落说明。
+
+## 2026-04-04 | 设计口径 | 首页无 CTA，详情页主按钮保留“我要支持”
+
+- 为什么改：
+  新一轮设计稿已经明确：首页更克制、卡片不再放操作按钮，客态详情页则继续保留一个更直接的转化主按钮；同时救助人主页统计也确认可以保留“支持其他救助人的次数”。
+- 改了什么：
+  首页列表卡改成整卡点击进入详情页，不再写 CTA；客态详情页主按钮改回“我要支持”；救助人主页统计补充说明“支持其他救助人的次数”可作为信任记录。
+- 影响范围：
+  `main_info_arch_v3.2.md`、`home_page_ia.md`、`case_detail_page_ia.md`、`ui_priority_matrix.md`。
+- 验证结果：
+  文档口径已对齐当前设计稿：首页更克制，详情页保留主转化动作，救助人主页统计不必再额外删减。
+- 下一步 / 遗留问题：
+  开发前只需要继续锁定“我要支持”按钮的实际打开方式，不需要再重改页面结构。
+
+## 2026-04-04 | 对接文档 | 新增前后端字段对照表
+
+- 为什么改：
+  现在页面、信息架构和 canonical data layer 都在并行推进，如果没有一份按页面整理的字段对照表，前端接页面时仍然会反复确认“这个字段从哪里来、现在有没有、还缺什么”。
+- 改了什么：
+  新增 `frontend_backend_field_matrix.md`，按首页、客态详情、主态详情、工作台、我的/支持足迹/联系方式设置、支持登记页等模块整理前端用途、字段来源、当前状态和注意事项。
+- 影响范围：
+  前后端对齐、页面接数据、后续 AI / 工程师交接。
+- 验证结果：
+  已把当前已接、未接、路由不一致（如 `support/review` vs `support/manage`）等问题写入同一份对照表。
+- 下一步 / 遗留问题：
+  页面正式开发时，应以这份对照表作为字段接入入口，并逐步把“当前状态 = 未做/未接”的项清掉。
+
 ## 2026-03-08 | 工程骨架 | 建立 Taro 小程序基础界面与主题层
 
 - 为什么改：
@@ -207,3 +285,55 @@
   微信开发者工具中已能稳定完成 Step 3 保存草稿 / 发布救助，不再因旧缓存结构报错；`npm run typecheck`、`npm run build:weapp` 通过。
 - 下一步 / 遗留问题：
   现在建档流程更符合“前两步只恢复会话、第三步才正式入草稿箱”的产品约束；后续如果继续扩大本地试跑范围，需要再观察草稿恢复和主态回流是否还有边缘情况。
+
+## 2026-04-04 | P0 闭环 | 首页查档、支持登记与核实页接入 Figma 版实现
+
+- 为什么改：
+  当前 canonical data layer 已具备 `publicCaseId`、support thread / entry 和 richer VM，但首页、详情页和支持闭环 UI 仍停留在旧页面结构，无法按最新 Figma 和文档口径跑通最小闭环。
+- 改了什么：
+  首页切到 Figma 版搜索 + 卡片结构；详情页切到新的主客态布局并保留 `我要支持 / 我已支持`；新增支持者登记页、救助人核实页和 `caseDraftBridge`；repository 补齐按 caseId 读写支持登记的兼容入口，并修复 `test:domain` 在 Node 25 下的运行脚本。
+- 影响范围：
+  `src/pages/discover/*`、`src/pages/rescue/detail/*`、`src/pages/support/*`、`src/components/SupportSheet.*`、`src/components/caseDraftBridge.ts`、`src/domain/canonical/repository/*`、`src/domain/canonical/selectors/getDiscoverCardVM.ts`、`package.json`、`tsconfig.domain-tests.json`。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 已通过；首页案例 ID 搜索、客态详情支持入口、支持登记与核实动作都已接到新的页面和 repository 出口。
+- 下一步 / 遗留问题：
+  当前后端仍是 `seed + local draft persistence` 兼容层，不是真正 CloudBase；build 仍保留 discover wxss 的 Css Minimizer warning 和大图体积 warning，后续可继续压样式和资源体积。
+
+## 2026-04-04 | 前端还原 | 记录“截图定样式、规则定文案”的首页精修原则
+
+- 为什么改：
+  这一轮首页与详情页都以 Figma 截图为视觉还原基准，但资金状态文案又必须服从最新业务规则；如果不把这条原则写进项目，后续很容易再次把截图里的示例值误当成真实显示逻辑。
+- 改了什么：
+  明确记录：`截图决定长什么样，口头确认/产品规则决定显示什么字`；同时把首页卡片继续向 Figma 靠拢，细修文案层级、资金区布局、状态色和底部元信息表达。
+- 影响范围：
+  `src/pages/discover/*`、首页资金状态显示逻辑、后续详情资金卡还原口径。
+- 验证结果：
+  首页继续保持 `关于我 / 当前进展 / 总预算 / 资金状态 / 已确认支持 / 已确认垫付` 的结构，且资金状态仍严格按 `confirmed support vs confirmed expense` 的 3 档规则输出。
+- 下一步 / 遗留问题：
+  如果后续继续做页面精修，默认先看 Figma 截图确认视觉，再回到规则确认动态文案和数字口径，不再直接照抄设计示例值。
+
+## 2026-04-04 | Figma 还原 | 局部偏差改为按节点级上下文精修
+
+- 为什么改：
+  仅靠整页截图做页面还原，容易把局部模块的 icon、字重、字号、行高、padding、gap 估错，尤其是首页卡片里的证据行、资金区和正文段距这类高密度区域。
+- 改了什么：
+  明确记录新的前端还原原则：发现局部偏差时，不只看整页截图，而是对具体节点单独拉 `get_design_context + get_screenshot` 做节点级精修；整页截图用于把握整体层级，节点级上下文用于校正具体数值。
+- 影响范围：
+  后续所有 Figma 驱动的页面精修，尤其是首页卡片、详情资金卡、状态标签、证据条等局部模块。
+- 验证结果：
+  前端后续有了更明确的执行口径：先用整页截图定整体，再用节点级 MCP 数据校准局部，不再只靠肉眼近似还原。
+- 下一步 / 遗留问题：
+  接下来继续做首页和详情页细修时，应优先对出现偏差的具体节点单独抓上下文，而不是重复整页粗调。
+
+## 2026-04-10 | 首页 | 校正 header、Case Card 资金条和 mock 资金状态分布
+
+- 为什么改：
+  连续几轮首页对照 Figma 后，仍存在导航标题过大、Case Card 细节不稳，以及 legacy mock 经 adapter 投影后资金状态几乎都落到“即将筹满”的问题，导致真实还原和状态验证都不可靠。
+- 改了什么：
+  把全局 `NavBar` 标题降到更接近小程序常规导航的 `16px / 24px`；首页 `Case Card` 标题恢复到 `18px`；资金条改成只表达“已确认支持 + 已确认垫付”，不再把总预算画进 bar；补齐状态标签 5 态映射、Figma icon 资源接入、标题/正文/资金区/证据行的节点级字号与间距微调；同时把 legacy mock 的 `ledger` 直接映射成结构化 `expenseRecords / supportEntries / supportThreads`，确保首页能稳定看到 `当前垫付已覆盖 / 即将筹满 / ‼️ 救助人垫付较多` 三种情况。
+- 影响范围：
+  `src/app.scss`、`src/pages/discover/*`、`src/domain/canonical/selectors/getDiscoverCardVM.ts`、`src/domain/canonical/types.ts`、`src/domain/canonical/adapters/mockToCanonical.ts`、`src/domain/canonical/fixtures/legacyRescueProjectDetails.ts`、相关 domain tests。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过；首页搜索 icon、证据链 icon、状态 badge、资金条和 mock 资金状态分布均已更新到新口径。
+- 下一步 / 遗留问题：
+  下一轮仍建议只做首页剩余边界：不同屏幕宽度下的卡片高度、文案换行、ID 与金额对齐，以及极端图片比例下的封面裁切表现。

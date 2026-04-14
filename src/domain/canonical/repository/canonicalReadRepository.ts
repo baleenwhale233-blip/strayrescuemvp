@@ -19,7 +19,17 @@ export type { OwnerDetailVM } from "./canonicalReadRepositoryCore";
 export type { HomepageCaseCardVM } from "../types";
 
 export function getCanonicalBundles() {
-  return [...getSeedBundles(), ...getLocalBundles()];
+  const bundleMap = new Map<string, ReturnType<typeof getSeedBundles>[number]>();
+
+  getSeedBundles().forEach((bundle) => {
+    bundleMap.set(bundle.case.id, bundle);
+  });
+
+  getLocalBundles().forEach((bundle) => {
+    bundleMap.set(bundle.case.id, bundle);
+  });
+
+  return [...bundleMap.values()];
 }
 
 export function getCanonicalBundleByCaseId(caseId?: string) {

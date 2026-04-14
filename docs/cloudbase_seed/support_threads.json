@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "thread_case_cloudbase_demo_001_dev_supporter_openid",
+    "threadId": "thread_case_cloudbase_demo_001_dev_supporter_openid",
+    "caseId": "case_cloudbase_demo_001",
+    "supporterOpenid": "dev_supporter_openid",
+    "supporterUserId": "dev_supporter_openid",
+    "supporterNameMasked": "爱心人士",
+    "createdAt": "2026-04-14T10:30:00.000Z",
+    "updatedAt": "2026-04-14T10:35:00.000Z",
+    "totalConfirmedAmount": 300,
+    "totalPendingAmount": 0,
+    "totalUnmatchedAmount": 0,
+    "pendingCount": 0,
+    "unmatchedCount": 0,
+    "latestStatusSummary": "最近一条已确认"
+  }
+]

@@ -62,19 +62,19 @@ export const legacyRescueProjectDetails: LegacyRescueProjectDetail[] = [
   {
     id: "project-002",
     name: "Luna（狸花猫）",
-    state: "领养中 • 3d",
+    state: "医疗中 • 3d",
     avatarLabel: "Lu",
     avatarStart: "#DBD2B8",
     avatarEnd: "#6E6145",
-    statusLabel: "进行中",
+    statusLabel: "医疗救助中",
     statusTone: "active",
     location: "上海 · 杨浦区",
     updatedAt: "今天 10:15",
     summary:
       "在小区停车场发现时后腿拖行，目前已完成首轮清创和检查，接下来需要继续住院观察并补充后续康复费用。",
     ledger: {
-      supported: 2450,
-      verifiedGap: 1750,
+      supported: 3200,
+      verifiedGap: 0,
       pending: 1050,
     },
     rescuer: {
@@ -135,20 +135,20 @@ export const legacyRescueProjectDetails: LegacyRescueProjectDetail[] = [
   {
     id: "project-003",
     name: "热裤（橘猫）",
-    state: "住院中 • 3d",
+    state: "紧急中 • 3d",
     avatarLabel: "热裤",
     avatarStart: "#F5C08B",
     avatarEnd: "#A7621D",
-    statusLabel: "紧急",
+    statusLabel: "紧急送医",
     statusTone: "urgent",
     location: "上海 · 普陀区",
     updatedAt: "昨天 20:10",
     summary:
       "橘猫热裤目前仍在住院，重点观察发热情况和食欲恢复。公开页会持续同步住院进展与外部支持情况。",
     ledger: {
-      supported: 1680,
-      verifiedGap: 1120,
-      pending: 900,
+      supported: 800,
+      verifiedGap: 2600,
+      pending: 300,
     },
     rescuer: {
       name: "小顾",
@@ -199,12 +199,12 @@ export const legacyRescueProjectDetails: LegacyRescueProjectDetail[] = [
   {
     id: "project-004",
     name: "阿黄（中华田园犬）",
-    state: "住院中 • 24d",
+    state: "康复中 • 24d",
     avatarLabel: "阿黄",
     avatarStart: "#E0C9A6",
     avatarEnd: "#8B6337",
-    statusLabel: "进行中",
-    statusTone: "active",
+    statusLabel: "康复观察中",
+    statusTone: "progress",
     location: "上海 · 宝山区",
     updatedAt: "10月24日",
     summary:
