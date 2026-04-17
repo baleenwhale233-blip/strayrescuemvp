@@ -130,6 +130,7 @@
   - 写进展更新页已新建统一入口页面 `src/pages/rescue/update/index.tsx`，主态与草稿箱都走同一路由
   - 写进展更新页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成状态卡并更新状态标签；草稿箱提交后会在简介页出现当前状态卡片
   - 状态更新页的添加照片模块已对齐到记账页同款交互：左侧固定添加按钮，右侧横向滑动图片列表
+  - 救助详情时间线里的支出记录和状态更新已补只读详情页入口，并已接 `getCaseRecordDetail` 正式后端详情 VM；提交后的账目 / 进展不可修改，只能通过新增记录保留轨迹
   - 追加预算页已新建统一入口页面 `src/pages/rescue/budget-update/index.tsx`，主态与草稿箱都走同一路由
   - 追加预算页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成预算调整卡并更新总预算；草稿箱提交后会更新草稿预算并在 detail tab 生成预算调整卡
   - 救助详情页现在只会在首次进入或子页面真实写入成功后刷新；从记账页无提交返回时不再整页重载
@@ -141,6 +142,7 @@
   - 救助联系方式设置页已按 Figma `446:7828` 新建，并接 `user_profiles` 远端读写；微信二维码会上传为 CloudBase `cloud://` fileID
   - 新建救助档案前当前会优先读取远端 `getMyProfile.hasContactProfile`，未填写时先引导到联系方式设置页，保存后再进入建档流程；CloudBase 不可用时才回落本地校验
   - 救助人主页已按 Figma `442:6758` 新建，详情页“查看主页”已接真实页面，并已接 `getRescuerHomepage` 远端 VM；下方案例列表复用首页卡片组件，页面层聚合只作为 CloudBase 不可用时兜底
+  - 主态详情底部“右滑结束救助”已从静态 UI 改成真实可拖动滑块，滑到阈值后弹确认；正式结束救助后端链路仍待接入
 - 已有但还没完全吃满字段：
   - 工作台
   - 详情页主态 / 客态
@@ -180,6 +182,7 @@
 | Profile / 支持足迹链路 | `已可试跑` | `getMyProfile / updateMyProfile / getMySupportHistory` 已接 CloudBase；二维码 asset 上传、真实 OPENID 支持足迹聚合、新建救助前置远端校验均已接通 | 继续补更多真机账号回归 |
 | 救助人公开主页链路 | `已可试跑` | `getRescuerHomepage` 已接 CloudBase，可按 `rescuerId` 或 `caseId` 输出救助人公开资料和 published 案例列表 | 继续补统计口径精修和更多公开主页视觉细节 |
 | 案例档案编辑链路 | `已可试跑` | `updateCaseProfile` 已接 CloudBase，主态 `caseId` 可远端更新 `animalName / coverFileID`，并写入 `case_cover` asset；本地展示覆盖降级为兜底 | 继续补草稿远端编辑增强 |
+| 只读记录详情链路 | `已可试跑` | `getCaseRecordDetail` 已接 CloudBase，可按 `caseId + recordType + recordId` 回读支出 / 进展 / 预算 / 支持详情；支出明细结构化返回，图片最多 9 张，私有记录按 owner 权限控制 | 继续补前端从 storage 兜底逐步过渡到纯远端详情 |
 
 ---
 

@@ -58,7 +58,7 @@ export function mergeCaseStatusSubmissionsIntoDetail(
     tone: "progress" as const,
     title: submission.description,
     timestampLabel: submission.timestampLabel,
-    assetUrls: submission.assetUrls.slice(0, 2),
+    assetUrls: submission.assetUrls.slice(0, 9),
   }));
 
   return {

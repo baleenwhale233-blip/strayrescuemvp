@@ -166,7 +166,7 @@ function buildPreviewTimelineEntries(draft: RescueCreateDraft): PreviewTimelineE
     images: record.evidenceItems
       .map((item) => item.imageUrl)
       .filter((value): value is string => Boolean(value))
-      .slice(0, 2),
+      .slice(0, 9),
     sortKey: 1000 + index,
   }));
 
@@ -225,6 +225,16 @@ function getPreviewOverviewProps(
 function toPreviewTimelineItems(draft: RescueCreateDraft): RescueOwnerTimelineItem[] {
   return buildPreviewTimelineEntries(draft).map((entry) => ({
     id: entry.id,
+    caseId: draftIdToCaseId(draft.id),
+    recordType:
+      entry.tone === "income"
+        ? "support"
+        : entry.tone === "budget"
+          ? "budget_adjustment"
+          : entry.tone === "expense"
+            ? "expense"
+            : "progress_update",
+    recordId: entry.id,
     kind:
       entry.tone === "income"
         ? "income"

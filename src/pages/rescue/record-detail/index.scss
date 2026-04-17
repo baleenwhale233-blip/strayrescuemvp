@@ -115,6 +115,40 @@
   line-height: 23px;
 }
 
+.record-detail-page__expense-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.record-detail-page__expense-line {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+.record-detail-page__expense-index {
+  flex-shrink: 0;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.record-detail-page__expense-title {
+  flex: 1;
+  min-width: 0;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .record-detail-page__row {
   display: flex;
   align-items: center;
@@ -173,7 +207,7 @@
 
 .record-detail-page__images {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -183,19 +217,33 @@
 
 .record-detail-page__image-wrap {
   position: relative;
-  height: 132px;
+  aspect-ratio: 1;
+  height: auto;
   overflow: hidden;
   background: #f1f5f9;
   border-radius: 8px;
 }
 
 .record-detail-page__images--single .record-detail-page__image-wrap {
-  height: 220px;
+  aspect-ratio: 16 / 10;
+  height: auto;
 }
 
 .record-detail-page__image {
   width: 100%;
   height: 100%;
+}
+
+.record-detail-page__image-count {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 6px;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.48);
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 14px;
 }
 
 .record-detail-page__watermark {

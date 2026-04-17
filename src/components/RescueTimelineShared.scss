@@ -57,6 +57,10 @@
   border-radius: 12px;
 }
 
+.rescue-timeline__card--clickable {
+  cursor: pointer;
+}
+
 .rescue-timeline__header,
 .rescue-timeline__badges,
 .rescue-timeline__amount-row,

@@ -24,6 +24,19 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-17 | 前端 | 补只读记录详情页与右滑结束救助交互
+
+- 为什么改：
+  时间线里的支出记录和状态更新此前只有卡片摘要，`查看详情 / 查看更新` 没有后续页面；同时主态底部“右滑结束救助”只是静态 UI，用户无法真正滑动。救助账本需要体现“提交后不可修改”的透明账本口径，避免后续账目对不上。
+- 改了什么：
+  新增 `src/pages/rescue/record-detail/index.tsx` / `index.scss` / `index.config.ts`，时间线支出记录可进入“支出详情”，状态更新可进入“进展更新”，页面只读展示记录内容、金额、时间和图片，并提示提交后不可修改；`RescueTimelineShared` 增加记录详情跳转；主态详情底部结束救助区补真实 touch 滑动逻辑，滑到阈值后弹确认，确认后暂提示“结束救助链路待接入”。
+- 影响范围：
+  `src/components/RescueTimelineShared.*`、`src/pages/rescue/record-detail/*`、`src/pages/rescue/detail/*`、`src/app.config.ts`，以及详情 / 记账 / 状态更新相关文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前主态 / 客态 / 草稿时间线均可进入只读记录详情页，主态底部滑块也可真实拖动并弹出确认。
+- 下一步 / 遗留问题：
+  结束救助仍缺正式后端 action；只读记录详情当前通过本地临时 storage 传递 record 数据，后续如需要可补正式 record id 查询接口。
+
 ## 2026-04-17 | 后端 | 接通用户资料、联系方式和支持足迹远端 VM
 
 - 为什么改：
@@ -127,6 +140,19 @@
   `npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过，仅保留既有 asset size warning。
 - 下一步 / 遗留问题：
   当前仍是轻量 toast 成功态；如果后续设计需要更完整的成功页或结果卡，可在这个统一入口上继续扩展。
+
+## 2026-04-17 | 后端 | 接通只读记录详情远端 VM
+
+- 为什么改：
+  只读记录详情页此前只从时间线卡片写入的本地 storage 读取，支出明细还需要从标题拆分，无法作为正式远端记录详情链路。
+- 改了什么：
+  为 `rescueApi` 新增 `getCaseRecordDetail`，支持通过 `caseId + recordType + recordId` 回读 `expense / progress_update / budget_adjustment / support` 详情；支出详情返回结构化 `expenseItems[]`，不输出 `merchantName`；图片从 `evidence_assets / record evidence / event assetIds` 回读并限制最多 9 张；私有记录按 owner 权限返回 `FORBIDDEN`。前端只读详情页改为优先远端读取，storage 保留为旧兜底。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`cloudfunctions/rescueApi/README.md`、`src/domain/canonical/repository/remoteRepository.ts`、`src/components/RescueTimelineShared.tsx`、`src/pages/rescue/detail/index.tsx`、`src/pages/rescue/create/preview/index.tsx`、`src/pages/rescue/record-detail/index.tsx`，以及只读记录详情相关文档。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 通过；`npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过。已部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b`，并用小程序自动化真实调用验证：expense detail 返回 3 条结构化支出明细和去重后的图片，不包含 `merchantName`；progress detail 返回描述和图片；非 owner 读取 private support detail 返回 `FORBIDDEN`。
+- 下一步 / 遗留问题：
+  后续如果要支持纠错，应新增追加型记录，例如更正记录或新的支出 / 进展，而不是更新原记录。
 
 ## 2026-04-17 | 后端 | 接通 P0-B 状态更新、记账和预算调整远端写链路
 
