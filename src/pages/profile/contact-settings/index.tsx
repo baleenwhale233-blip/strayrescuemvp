@@ -21,6 +21,7 @@ export default function ContactSettingsPage() {
   const [wechatId, setWechatId] = useState("");
   const [qrImagePath, setQrImagePath] = useState("");
   const [note, setNote] = useState("");
+  const [remotePaymentQrAssetId, setRemotePaymentQrAssetId] = useState("");
 
   useDidShow(() => {
     const profile = getRescuerContactProfile();
@@ -38,6 +39,7 @@ export default function ContactSettingsPage() {
           qrImagePath: remoteProfile.paymentQrUrl || profile.qrImagePath,
           note: remoteProfile.contactNote || profile.note,
         };
+        setRemotePaymentQrAssetId(remoteProfile.paymentQrAssetId || "");
         saveRescuerContactProfile(nextProfile);
         setWechatId(nextProfile.wechatId);
         setQrImagePath(nextProfile.qrImagePath);
@@ -59,6 +61,7 @@ export default function ContactSettingsPage() {
       const nextPath = result.tempFilePaths?.[0];
       if (nextPath) {
         setQrImagePath(nextPath);
+        setRemotePaymentQrAssetId("");
       }
     } catch {
       // ignore cancel
@@ -86,28 +89,73 @@ export default function ContactSettingsPage() {
 
     try {
       Taro.showLoading({ title: "保存中" });
+      const isExistingRemoteQr = Boolean(
+        remotePaymentQrAssetId &&
+          (qrImagePath.startsWith("https://") || qrImagePath.startsWith("cloud://")),
+      );
+      const baseProfileSaved = await updateRemoteMyProfile({
+        wechatId: nextWechatId,
+        contactNote: note.trim(),
+      });
+
+      if (!baseProfileSaved) {
+        saveRescuerContactProfile({
+          wechatId: nextWechatId,
+          qrImagePath,
+          note: note.trim(),
+        });
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "只保存在本机，请稍后再试",
+          icon: "none",
+        });
+        return;
+      }
+
       const uploaded =
         qrImagePath &&
         !qrImagePath.startsWith("cloud://") &&
-        !qrImagePath.startsWith("https://")
+        !isExistingRemoteQr
           ? await uploadProfileAssetImage(qrImagePath, "payment-qr")
           : undefined;
       const nextQrImagePath =
         uploaded && !uploaded.isLocalFallback ? uploaded.fileID : qrImagePath;
 
-      await updateRemoteMyProfile({
-        wechatId: nextWechatId,
-        contactNote: note.trim(),
-        paymentQrFileID:
-          nextQrImagePath.startsWith("cloud://") ? nextQrImagePath : undefined,
-      });
+      const didSyncRemote =
+        nextQrImagePath.startsWith("cloud://") && !isExistingRemoteQr
+          ? await updateRemoteMyProfile({
+              wechatId: nextWechatId,
+              contactNote: note.trim(),
+              paymentQrFileID: nextQrImagePath,
+            })
+          : true;
+      const confirmedProfile = didSyncRemote
+        ? await loadMyProfile().catch(() => undefined)
+        : undefined;
+
+      if (!confirmedProfile?.hasContactProfile) {
+        saveRescuerContactProfile({
+          wechatId: nextWechatId,
+          qrImagePath,
+          note: note.trim(),
+        });
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "只保存在本机，请稍后再试",
+          icon: "none",
+        });
+        return;
+      }
 
       saveRescuerContactProfile({
-        wechatId: nextWechatId,
-        qrImagePath: nextQrImagePath,
-        note: note.trim(),
+        wechatId: confirmedProfile.wechatId || nextWechatId,
+        qrImagePath: confirmedProfile.paymentQrUrl || nextQrImagePath,
+        note: confirmedProfile.contactNote || note.trim(),
       });
-      setQrImagePath(nextQrImagePath);
+      setWechatId(confirmedProfile.wechatId || nextWechatId);
+      setQrImagePath(confirmedProfile.paymentQrUrl || nextQrImagePath);
+      setNote(confirmedProfile.contactNote || note.trim());
+      setRemotePaymentQrAssetId(confirmedProfile.paymentQrAssetId || "");
       Taro.hideLoading();
       Taro.showToast({
         title: "联系方式已保存",
@@ -116,8 +164,13 @@ export default function ContactSettingsPage() {
     } catch (error) {
       Taro.hideLoading();
       if (error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED") {
+        saveRescuerContactProfile({
+          wechatId: nextWechatId,
+          qrImagePath,
+          note: note.trim(),
+        });
         Taro.showToast({
-          title: "二维码上传失败",
+          title: "微信号已保存，二维码没传上去",
           icon: "none",
         });
         return;
@@ -129,9 +182,10 @@ export default function ContactSettingsPage() {
         note: note.trim(),
       });
       Taro.showToast({
-        title: "已保存在本机，稍后再试",
+        title: "只保存在本机，请稍后再试",
         icon: "none",
       });
+      return;
     }
 
     setTimeout(() => {
