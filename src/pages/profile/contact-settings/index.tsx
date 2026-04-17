@@ -87,7 +87,9 @@ export default function ContactSettingsPage() {
     try {
       Taro.showLoading({ title: "保存中" });
       const uploaded =
-        qrImagePath && !qrImagePath.startsWith("cloud://")
+        qrImagePath &&
+        !qrImagePath.startsWith("cloud://") &&
+        !qrImagePath.startsWith("https://")
           ? await uploadProfileAssetImage(qrImagePath, "payment-qr")
           : undefined;
       const nextQrImagePath =
@@ -107,6 +109,10 @@ export default function ContactSettingsPage() {
       });
       setQrImagePath(nextQrImagePath);
       Taro.hideLoading();
+      Taro.showToast({
+        title: "联系方式已保存",
+        icon: "none",
+      });
     } catch (error) {
       Taro.hideLoading();
       if (error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED") {
@@ -122,12 +128,11 @@ export default function ContactSettingsPage() {
         qrImagePath,
         note: note.trim(),
       });
+      Taro.showToast({
+        title: "已保存在本机，稍后再试",
+        icon: "none",
+      });
     }
-
-    Taro.showToast({
-      title: "已保存联系方式",
-      icon: "none",
-    });
 
     setTimeout(() => {
       if (router.params?.redirect === "create") {
