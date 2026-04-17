@@ -24,6 +24,19 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-18 | 仓库安全 | 清理 Git 历史并补未来公开防线
+
+- 为什么改：
+  仓库后续可能从 private 切到 public，而 Git 历史里已经出现过两个真实小程序 AppID；只改当前文件还不够，必须同时清历史并补防线，避免以后再次把真实配置推上去。
+- 改了什么：
+  改写 `main`、`codex/cloudbase-cloud1-backend` 和 `alpha-0.1.0` 标签历史，把 `project.config.json` 中的旧真实 AppID 统一收回为 `touristappid`，把 `docs/alpha_test_plan.md` 里的测试 AppID 改成“不入库、本地填写”；同时新增 `scripts/check-sensitive-config.mjs`、`.github/workflows/repo-safety.yml`、`npm run check:repo-safety`，并把 `.env`、证书和私钥类文件加入 `.gitignore`。
+- 影响范围：
+  Git 提交历史、远端分支 / 标签、仓库安全检查流程和本地默认忽略规则；产品逻辑、页面交互和数据模型未变化。
+- 验证结果：
+  历史改写后的 `main` 与 `codex/cloudbase-cloud1-backend` 均不再包含 `wx[a-z0-9]{16}` 形式的真实 AppID；`project.config.json` 的跟踪版本保持 `touristappid`，`docs/alpha_test_plan.md` 改为不记录真实值；`node scripts/check-sensitive-config.mjs` 本地通过。
+- 下一步 / 遗留问题：
+  需要 force-push 覆盖 GitHub 上的旧历史，并提醒协作者重新 fetch / reset；本地开发仍可继续依赖 skip-worktree 的 `project.config.json` 保留真实 AppID，但不要取消这层隔离再直接提交。
+
 ## 2026-04-17 | 前端 | 补只读记录详情页与右滑结束救助交互
 
 - 为什么改：
