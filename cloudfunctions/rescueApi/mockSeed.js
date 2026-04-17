@@ -30,10 +30,72 @@ function computeSupportThreadDoc(threadId, entryDocs) {
   };
 }
 
-function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
+function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs = {} }) {
   const ownerDisplayName = ownerProfile.displayName || "当前救助人";
   const ownerAvatarUrl = ownerProfile.avatarUrl || "";
   const ownerWechatId = ownerProfile.wechatId || "rescuer-notes";
+  const assets = [];
+  const assetIdsByKey = {};
+
+  function fileID(key) {
+    return alphaAssetFileIDs[key] || "";
+  }
+
+  function addAsset(key, input) {
+    const imageFileID = fileID(key);
+    if (!imageFileID) {
+      return undefined;
+    }
+
+    const assetId = input.assetId || `alpha_${key}`;
+    if (!assetIdsByKey[key]) {
+      assets.push({
+        _id: assetId,
+        assetId,
+        caseId: input.caseId,
+        fileID: imageFileID,
+        originalUrl: imageFileID,
+        watermarkedUrl: imageFileID,
+        thumbnailUrl: imageFileID,
+        kind: input.kind || "other",
+        visibility: input.visibility || "public",
+        uploadedByOpenid: input.uploadedByOpenid || ownerOpenid,
+        createdAt: input.createdAt || "2026-04-17T00:00:00.000Z",
+        updatedAt: input.updatedAt || "2026-04-17T00:00:00.000Z",
+      });
+      assetIdsByKey[key] = assetId;
+    }
+
+    return assetIdsByKey[key];
+  }
+
+  function addCaseAsset(key, caseId, kind, visibility = "public") {
+    return addAsset(key, { caseId, kind, visibility });
+  }
+
+  function evidenceItem(id, key, caseId, kind, visibility = "public", assetKind = kind) {
+    const assetId = addCaseAsset(key, caseId, assetKind, visibility);
+    const imageUrl = fileID(key);
+
+    return {
+      id,
+      kind,
+      assetId,
+      imageUrl,
+      hash: imageUrl || id,
+    };
+  }
+
+  function compactAssetIds(...ids) {
+    return ids.filter(Boolean);
+  }
+
+  const ownerPaymentQrAssetId = addAsset("profile_qr_owner", {
+    assetId: `profile_${ownerOpenid}_payment_qr`,
+    kind: "payment_qr",
+    visibility: "private",
+    uploadedByOpenid: ownerOpenid,
+  });
 
   const profiles = [
     {
@@ -44,6 +106,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       verifiedLevel: "wechat",
       joinedAt: "2026-01-12T09:00:00.000Z",
       wechatId: ownerWechatId,
+      paymentQrAssetId: ownerPaymentQrAssetId,
       stats: {
         publishedCaseCount: 5,
         verifiedReceiptCount: 18,
@@ -78,7 +141,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currentStatusLabel: "医疗救助中",
       targetAmount: 4200,
       visibility: "published",
-      coverFileID: "",
+      coverFileID: fileID("cover_lizi"),
       foundLocationText: "宝山路旧小区地库",
       foundAt: "2026-04-08T11:20:00.000Z",
       createdAt: "2026-04-08T14:00:00.000Z",
@@ -97,7 +160,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currentStatusLabel: "恢复中",
       targetAmount: 1800,
       visibility: "published",
-      coverFileID: "",
+      coverFileID: fileID("cover_ahuang"),
       foundLocationText: "顾村公园北门工地围挡边",
       foundAt: "2026-04-01T07:40:00.000Z",
       createdAt: "2026-04-01T09:10:00.000Z",
@@ -116,7 +179,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currentStatusLabel: "刚发现待安置",
       targetAmount: 1500,
       visibility: "published",
-      coverFileID: "",
+      coverFileID: fileID("cover_tuantuan"),
       foundLocationText: "超市后门快递堆旁",
       foundAt: "2026-04-10T06:50:00.000Z",
       createdAt: "2026-04-10T08:30:00.000Z",
@@ -135,7 +198,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currentStatusLabel: "医疗救助中",
       targetAmount: 2600,
       visibility: "published",
-      coverFileID: "",
+      coverFileID: fileID("cover_zhima"),
       foundLocationText: "菜市场后巷喂食点",
       foundAt: "2026-04-11T19:10:00.000Z",
       createdAt: "2026-04-11T20:00:00.000Z",
@@ -154,7 +217,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currentStatusLabel: "草稿中",
       targetAmount: 1200,
       visibility: "draft",
-      coverFileID: "",
+      coverFileID: fileID("cover_nuomi"),
       foundLocationText: "学校后街早餐摊旁",
       foundAt: "2026-04-15T06:20:00.000Z",
       createdAt: "2026-04-15T06:50:00.000Z",
@@ -173,7 +236,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currentStatusLabel: "恢复待领养",
       targetAmount: 2300,
       visibility: "published",
-      coverFileID: "",
+      coverFileID: fileID("cover_xiaoman"),
       foundLocationText: "静安寺社区花坛边",
       foundAt: "2026-03-28T10:10:00.000Z",
       createdAt: "2026-03-28T12:00:00.000Z",
@@ -192,7 +255,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currentStatusLabel: "已完成",
       targetAmount: 3100,
       visibility: "archived",
-      coverFileID: "",
+      coverFileID: fileID("cover_miwo"),
       foundLocationText: "商场地下停车场出口",
       foundAt: "2026-03-05T18:00:00.000Z",
       createdAt: "2026-03-05T20:20:00.000Z",
@@ -209,7 +272,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-08T14:00:00.000Z",
       text: "已创建栗子的透明档案，补充了首诊情况和基础预算。",
       statusLabel: "建档",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("cover_lizi", "seed_case_owner_lizi_001", "case_cover")),
       visibility: "public",
       createdAt: "2026-04-08T14:00:00.000Z",
     },
@@ -224,7 +287,10 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       merchantName: "安安宠物医院",
       expenseItemsText: "夜诊挂号、X 光、血常规和首晚住院押金",
       verificationStatus: "confirmed",
-      assetIds: [],
+      assetIds: compactAssetIds(
+        addCaseAsset("receipt_lizi_exam", "seed_case_owner_lizi_001", "receipt"),
+        addCaseAsset("medical_lizi_exam", "seed_case_owner_lizi_001", "medical_record"),
+      ),
       visibility: "public",
       createdAt: "2026-04-08T15:10:00.000Z",
     },
@@ -236,7 +302,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-09T09:20:00.000Z",
       text: "栗子已经能自己抬头吃流食，医生说先观察骨裂位置，今天重点补液和止痛。",
       statusLabel: "医疗救助中",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("progress_lizi_1", "seed_case_owner_lizi_001", "progress_photo")),
       visibility: "public",
       createdAt: "2026-04-09T09:20:00.000Z",
     },
@@ -249,7 +315,10 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       previousTargetAmount: 3200,
       newTargetAmount: 4200,
       reason: "复查显示需要继续住院观察并增加固定支具，预算上调 1000 元。",
-      assetIds: [],
+      assetIds: compactAssetIds(
+        addCaseAsset("receipt_lizi_medication", "seed_case_owner_lizi_001", "receipt"),
+        addCaseAsset("medical_lizi_medication", "seed_case_owner_lizi_001", "medical_record"),
+      ),
       visibility: "public",
       createdAt: "2026-04-11T18:30:00.000Z",
     },
@@ -266,7 +335,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       supporterNameMasked: "小鱼",
       message: "给栗子补一点住院费，辛苦你坚持更新。",
       verificationStatus: "confirmed",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("progress_lizi_2", "seed_case_owner_lizi_001", "progress_photo")),
       visibility: "public",
       createdAt: "2026-04-12T13:25:00.000Z",
     },
@@ -281,7 +350,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       merchantName: "安安宠物医院",
       expenseItemsText: "消炎针、止痛药和复查拍片",
       verificationStatus: "confirmed",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("cover_ahuang", "seed_case_owner_ahuang_002", "case_cover")),
       visibility: "public",
       createdAt: "2026-04-13T16:40:00.000Z",
     },
@@ -293,7 +362,10 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-15T09:40:00.000Z",
       text: "今天拆掉静脉留置针后状态更稳了，能自己走几步，但还需要继续笼养和按时吃药。",
       statusLabel: "医疗救助中",
-      assetIds: [],
+      assetIds: compactAssetIds(
+        addCaseAsset("receipt_ahuang", "seed_case_owner_ahuang_002", "receipt"),
+        addCaseAsset("animal_ahuang", "seed_case_owner_ahuang_002", "animal_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-15T09:40:00.000Z",
     },
@@ -305,7 +377,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-01T09:10:00.000Z",
       text: "已为阿黄建档，记录缝合伤口和术后恢复预算。",
       statusLabel: "建档",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("progress_ahuang", "seed_case_owner_ahuang_002", "progress_photo")),
       visibility: "public",
       createdAt: "2026-04-01T09:10:00.000Z",
     },
@@ -320,7 +392,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       merchantName: "仁爱动物诊所",
       expenseItemsText: "清创缝合、止血药和三天输液",
       verificationStatus: "confirmed",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("cover_tuantuan", "seed_case_owner_tuantuan_003", "case_cover")),
       visibility: "public",
       createdAt: "2026-04-02T11:00:00.000Z",
     },
@@ -337,7 +409,10 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       supporterNameMasked: "工地师傅",
       message: "之前一直喂阿黄，这次也想一起分担。",
       verificationStatus: "confirmed",
-      assetIds: [],
+      assetIds: compactAssetIds(
+        addCaseAsset("receipt_tuantuan", "seed_case_owner_tuantuan_003", "receipt"),
+        addCaseAsset("animal_tuantuan", "seed_case_owner_tuantuan_003", "animal_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-05T20:10:00.000Z",
     },
@@ -349,7 +424,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-14T18:20:00.000Z",
       text: "阿黄已经愿意自己踩地走路，今天换药时没有明显抗拒，后续主要观察伤口收口情况。",
       statusLabel: "恢复中",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("cover_zhima", "seed_case_owner_zhima_004", "case_cover")),
       visibility: "public",
       createdAt: "2026-04-14T18:20:00.000Z",
     },
@@ -361,7 +436,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-10T08:30:00.000Z",
       text: "团团已入笼安置，先补了驱虫和基础体检预算。",
       statusLabel: "建档",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("progress_zhima", "seed_case_owner_zhima_004", "progress_photo")),
       visibility: "public",
       createdAt: "2026-04-10T08:30:00.000Z",
     },
@@ -376,7 +451,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       merchantName: "社区宠物门诊",
       expenseItemsText: "猫瘟筛查、驱虫和基础营养膏",
       verificationStatus: "confirmed",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("cover_xiaoman", "seed_case_other_xiaoman_006", "case_cover")),
       visibility: "public",
       createdAt: "2026-04-10T10:10:00.000Z",
     },
@@ -388,7 +463,10 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-11T20:00:00.000Z",
       text: "芝麻已开始吃药，先记下门诊检查和近两天观察重点。",
       statusLabel: "建档",
-      assetIds: [],
+      assetIds: compactAssetIds(
+        addCaseAsset("receipt_xiaoman", "seed_case_other_xiaoman_006", "receipt"),
+        addCaseAsset("animal_xiaoman", "seed_case_other_xiaoman_006", "animal_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-11T20:00:00.000Z",
     },
@@ -403,7 +481,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       merchantName: "菜场边便民宠物诊所",
       expenseItemsText: "口炎检查、退烧针和两天口服药",
       verificationStatus: "confirmed",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("progress_xiaoman", "seed_case_other_xiaoman_006", "progress_photo")),
       visibility: "public",
       createdAt: "2026-04-12T09:30:00.000Z",
     },
@@ -415,7 +493,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       occurredAt: "2026-04-14T10:15:00.000Z",
       text: "芝麻体温已经降下来，但嘴里还很疼，今晚会继续观察进食情况，明天决定要不要复诊。",
       statusLabel: "医疗救助中",
-      assetIds: [],
+      assetIds: compactAssetIds(addCaseAsset("cover_miwo", "seed_case_owner_miwo_007", "case_cover")),
       visibility: "public",
       createdAt: "2026-04-14T10:15:00.000Z",
     },
@@ -526,19 +604,14 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       summary: "夜诊挂号、X 光、血常规和首晚住院押金",
       note: "首晚住院后继续观察呼吸和骨裂位置。",
       merchantName: "安安宠物医院",
+      expenseItems: [
+        { description: "夜诊挂号", amount: 180 },
+        { description: "X 光和血常规", amount: 620 },
+        { description: "首晚住院押金", amount: 880 },
+      ],
       evidenceItems: [
-        {
-          id: "seed_expense_lizi_exam_receipt",
-          kind: "receipt",
-          imageUrl: "",
-          hash: "seed_expense_lizi_exam_receipt",
-        },
-        {
-          id: "seed_expense_lizi_exam_cat",
-          kind: "animal_photo",
-          imageUrl: "",
-          hash: "seed_expense_lizi_exam_cat",
-        },
+        evidenceItem("seed_expense_lizi_exam_receipt", "receipt_lizi_exam", "seed_case_owner_lizi_001", "receipt"),
+        evidenceItem("seed_expense_lizi_exam_cat", "medical_lizi_exam", "seed_case_owner_lizi_001", "treatment_photo", "public", "medical_record"),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -557,19 +630,14 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       summary: "消炎针、止痛药和复查拍片",
       note: "医生建议继续笼养，避免二次受伤。",
       merchantName: "安安宠物医院",
+      expenseItems: [
+        { description: "消炎针", amount: 160 },
+        { description: "止痛药", amount: 80 },
+        { description: "复查拍片", amount: 180 },
+      ],
       evidenceItems: [
-        {
-          id: "seed_expense_lizi_medication_receipt",
-          kind: "receipt",
-          imageUrl: "",
-          hash: "seed_expense_lizi_medication_receipt",
-        },
-        {
-          id: "seed_expense_lizi_medication_record",
-          kind: "treatment_photo",
-          imageUrl: "",
-          hash: "seed_expense_lizi_medication_record",
-        },
+        evidenceItem("seed_expense_lizi_medication_receipt", "receipt_lizi_medication", "seed_case_owner_lizi_001", "receipt"),
+        evidenceItem("seed_expense_lizi_medication_record", "medical_lizi_medication", "seed_case_owner_lizi_001", "treatment_photo", "public", "medical_record"),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -588,19 +656,14 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       summary: "清创缝合、止血药和三天输液",
       note: "术后第一周重点控制感染。",
       merchantName: "仁爱动物诊所",
+      expenseItems: [
+        { description: "清创缝合", amount: 520 },
+        { description: "止血药", amount: 160 },
+        { description: "三天输液", amount: 300 },
+      ],
       evidenceItems: [
-        {
-          id: "seed_expense_ahuang_receipt",
-          kind: "receipt",
-          imageUrl: "",
-          hash: "seed_expense_ahuang_receipt",
-        },
-        {
-          id: "seed_expense_ahuang_scene",
-          kind: "animal_photo",
-          imageUrl: "",
-          hash: "seed_expense_ahuang_scene",
-        },
+        evidenceItem("seed_expense_ahuang_receipt", "receipt_ahuang", "seed_case_owner_ahuang_002", "receipt"),
+        evidenceItem("seed_expense_ahuang_scene", "animal_ahuang", "seed_case_owner_ahuang_002", "animal_photo"),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -619,19 +682,14 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       summary: "猫瘟筛查、驱虫和基础营养膏",
       note: "暂时还没补最近情况更新。",
       merchantName: "社区宠物门诊",
+      expenseItems: [
+        { description: "猫瘟筛查", amount: 120 },
+        { description: "驱虫", amount: 80 },
+        { description: "基础营养膏", amount: 60 },
+      ],
       evidenceItems: [
-        {
-          id: "seed_expense_tuantuan_receipt",
-          kind: "receipt",
-          imageUrl: "",
-          hash: "seed_expense_tuantuan_receipt",
-        },
-        {
-          id: "seed_expense_tuantuan_scene",
-          kind: "animal_photo",
-          imageUrl: "",
-          hash: "seed_expense_tuantuan_scene",
-        },
+        evidenceItem("seed_expense_tuantuan_receipt", "receipt_tuantuan", "seed_case_owner_tuantuan_003", "receipt"),
+        evidenceItem("seed_expense_tuantuan_scene", "animal_tuantuan", "seed_case_owner_tuantuan_003", "animal_photo"),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -668,19 +726,14 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       summary: "刀口感染处理、换药和术后营养包",
       note: "后续还会有拆线和送养前驱虫费用。",
       merchantName: "静安伴侣动物医院",
+      expenseItems: [
+        { description: "刀口感染处理", amount: 380 },
+        { description: "换药", amount: 160 },
+        { description: "术后营养包", amount: 240 },
+      ],
       evidenceItems: [
-        {
-          id: "seed_expense_xiaoman_receipt",
-          kind: "receipt",
-          imageUrl: "",
-          hash: "seed_expense_xiaoman_receipt",
-        },
-        {
-          id: "seed_expense_xiaoman_scene",
-          kind: "animal_photo",
-          imageUrl: "",
-          hash: "seed_expense_xiaoman_scene",
-        },
+        evidenceItem("seed_expense_xiaoman_receipt", "receipt_xiaoman", "seed_case_other_xiaoman_006", "receipt"),
+        evidenceItem("seed_expense_xiaoman_scene", "animal_xiaoman", "seed_case_other_xiaoman_006", "animal_photo"),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -703,8 +756,8 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currency: "CNY",
       supportedAt: "2026-04-12T13:25:00.000Z",
       note: "给栗子补一点住院费，辛苦你坚持更新。",
-      screenshotFileIds: [],
-      screenshotHashes: [],
+      screenshotFileIds: fileID("support_lizi_confirmed") ? [fileID("support_lizi_confirmed")] : [],
+      screenshotHashes: fileID("support_lizi_confirmed") ? [fileID("support_lizi_confirmed")] : [],
       status: "confirmed",
       visibility: "private",
       createdAt: "2026-04-12T13:25:00.000Z",
@@ -726,8 +779,8 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currency: "CNY",
       supportedAt: "2026-04-15T08:45:00.000Z",
       note: "昨天刚转，备注写了栗子住院费，麻烦你核对下。",
-      screenshotFileIds: [],
-      screenshotHashes: [],
+      screenshotFileIds: fileID("support_lizi_pending") ? [fileID("support_lizi_pending")] : [],
+      screenshotHashes: fileID("support_lizi_pending") ? [fileID("support_lizi_pending")] : [],
       status: "pending",
       visibility: "private",
       createdAt: "2026-04-15T08:46:00.000Z",
@@ -745,8 +798,8 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currency: "CNY",
       supportedAt: "2026-04-13T20:05:00.000Z",
       note: "我这边转了 180，截图只截到了部分订单。",
-      screenshotFileIds: [],
-      screenshotHashes: [],
+      screenshotFileIds: fileID("support_lizi_unmatched") ? [fileID("support_lizi_unmatched")] : [],
+      screenshotHashes: fileID("support_lizi_unmatched") ? [fileID("support_lizi_unmatched")] : [],
       status: "unmatched",
       unmatchedReason: "insufficient_screenshot",
       unmatchedNote: "截图没带完整订单号，先标未匹配等待补充。",
@@ -766,8 +819,8 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currency: "CNY",
       supportedAt: "2026-04-05T20:10:00.000Z",
       note: "之前一直喂阿黄，这次也想一起分担。",
-      screenshotFileIds: [],
-      screenshotHashes: [],
+      screenshotFileIds: fileID("support_ahuang_confirmed") ? [fileID("support_ahuang_confirmed")] : [],
+      screenshotHashes: fileID("support_ahuang_confirmed") ? [fileID("support_ahuang_confirmed")] : [],
       status: "confirmed",
       visibility: "private",
       createdAt: "2026-04-05T20:10:00.000Z",
@@ -789,8 +842,8 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
       currency: "CNY",
       supportedAt: "2026-04-05T13:10:00.000Z",
       note: "小满看起来精神多了，给你补一点复查费。",
-      screenshotFileIds: [],
-      screenshotHashes: [],
+      screenshotFileIds: fileID("support_xiaoman_confirmed") ? [fileID("support_xiaoman_confirmed")] : [],
+      screenshotHashes: fileID("support_xiaoman_confirmed") ? [fileID("support_xiaoman_confirmed")] : [],
       status: "confirmed",
       visibility: "private",
       createdAt: "2026-04-05T13:10:00.000Z",
@@ -827,17 +880,18 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {} }) {
     expenses,
     supportEntries,
     supportThreads,
-    assets: [],
+    assets,
     sharedEvidenceGroups: [],
   };
 }
 
 async function upsertDocs(db, collectionName, docs) {
-  for (const doc of docs) {
-    await db.collection(collectionName).doc(doc._id).set({
-      data: doc,
+  await Promise.all(docs.map((doc) => {
+    const { _id, ...data } = doc;
+    return db.collection(collectionName).doc(doc._id).set({
+      data,
     });
-  }
+  }));
 }
 
 async function seedMockData({ db, collections, openid, input = {} }) {
@@ -854,6 +908,7 @@ async function seedMockData({ db, collections, openid, input = {} }) {
   const seedData = buildMockSeedData({
     ownerOpenid,
     ownerProfile: input.ownerProfile,
+    alphaAssetFileIDs: input.alphaAssetFileIDs || {},
   });
 
   await upsertDocs(db, collections.profiles, seedData.profiles);
@@ -862,6 +917,8 @@ async function seedMockData({ db, collections, openid, input = {} }) {
   await upsertDocs(db, collections.expenses, seedData.expenses);
   await upsertDocs(db, collections.supportEntries, seedData.supportEntries);
   await upsertDocs(db, collections.supportThreads, seedData.supportThreads);
+  await upsertDocs(db, collections.assets, seedData.assets);
+  await upsertDocs(db, collections.sharedEvidenceGroups, seedData.sharedEvidenceGroups);
 
   return {
     ownerOpenid,
@@ -873,6 +930,8 @@ async function seedMockData({ db, collections, openid, input = {} }) {
       expenseRecords: seedData.expenses.length,
       supportEntries: seedData.supportEntries.length,
       supportThreads: seedData.supportThreads.length,
+      evidenceAssets: seedData.assets.length,
+      sharedEvidenceGroups: seedData.sharedEvidenceGroups.length,
     },
     ownerCaseIds: seedData.cases
       .filter((item) => item.rescuerOpenid === ownerOpenid)

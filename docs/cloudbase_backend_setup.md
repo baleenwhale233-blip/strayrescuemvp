@@ -18,6 +18,7 @@
 - P0-B 状态更新 / 记账 / 预算调整的主态 `caseId` 写链路已在开发环境完成远端写入验证
 - 支持凭证、状态图片、记账凭证的真实 CloudBase 上传回归已完成
 - owner-only action 的非 owner `FORBIDDEN` 回归已完成；`INVALID_*`、限流和重复凭证业务错误回归已完成
+- Alpha Seed Pack 已可通过 `npm run seed:alpha` 播种到当前 CloudBase 环境
 
 ## 你需要在 CloudBase 侧准备
 
@@ -202,7 +203,22 @@ support-proofs/{caseId}/{timestamp}-{random}.jpg
 
 ## 开发环境种子数据
 
-建议先把 `docs/cloudbase_seed/` 中的最小开发数据导入开发环境，避免接上 CloudBase 后首页为空。
+建议优先使用 Alpha Seed Pack：
+
+```bash
+npm run seed:alpha
+```
+
+该脚本会：
+
+- 生成 / 使用 `docs/alpha_seed_assets/*.png`
+- 上传 28 张 Alpha 测试图片到 CloudBase Storage
+- 调用 `rescueApi.seedMockCases`
+- 写入演示救助人、公开案例、草稿案例、支持记录、支出记录、进展记录和 `evidence_assets`
+
+Alpha 图片均为测试素材，凭证和二维码明确标注测试用途，不应作为真实票据或付款二维码使用。
+
+也可以手动把 `docs/cloudbase_seed/` 中的最小开发数据导入开发环境，避免接上 CloudBase 后首页为空。
 
 最小可用数据：
 

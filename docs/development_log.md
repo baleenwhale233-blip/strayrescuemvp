@@ -154,6 +154,19 @@
 - 下一步 / 遗留问题：
   后续如果要支持纠错，应新增追加型记录，例如更正记录或新的支出 / 进展，而不是更新原记录。
 
+## 2026-04-17 | Alpha | 准备并播种 Alpha Seed Pack
+
+- 为什么改：
+  准备拉人做超级内测前，需要一个稳定可复现的测试环境，打开体验版就能看到演示救助人、演示案例、凭证图、进展图和可操作的支持 / 核实 / 记账路径。
+- 改了什么：
+  新增 `docs/alpha_test_plan.md` 记录 alpha 测试目标、角色、案例、任务和反馈模板；新增 `scripts/generate-alpha-seed-assets.mjs` 生成 28 张明确标注 Alpha 测试用途的安全图片素材；新增 `scripts/seed-alpha-cloudbase.mjs` 和 `npm run seed:alpha`，可上传图片到 CloudBase Storage，并把 fileID 映射给 `seedMockCases`。同时扩展 `cloudfunctions/rescueApi/mockSeed.js`，让 seed 数据支持封面图、进展图、凭证图、测试二维码和结构化支出明细。
+- 影响范围：
+  `docs/alpha_test_plan.md`、`docs/alpha_seed_assets/*`、`scripts/generate-alpha-seed-assets.mjs`、`scripts/seed-alpha-cloudbase.mjs`、`package.json`、`cloudfunctions/rescueApi/mockSeed.js`、`docs/cloudbase_backend_setup.md`、`docs/project_control_center.md`。
+- 验证结果：
+  `node --check` 已覆盖 seed 脚本和云函数文件；`npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过。已重新部署 `rescueApi`，执行 `npm run seed:alpha` 成功上传 28 张图片并播种：2 个 profile、7 个 rescue case、23 条 case event、6 条 expense record、5 条 support entry、5 条 support thread、22 个 evidence asset。CloudBase smoke 验证通过：首页、详情、工作台和支持足迹能读到带图片的 Alpha 数据。
+- 下一步 / 遗留问题：
+  当前 Alpha 图片是安全测试占位素材，不是写实照片；如需更高质感，可后续用 GPT 生图替换同名文件后重新执行 `npm run seed:alpha`。
+
 ## 2026-04-17 | 后端 | 接通 P0-B 状态更新、记账和预算调整远端写链路
 
 - 为什么改：
