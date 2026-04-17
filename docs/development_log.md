@@ -24,6 +24,19 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-18 | 仓库安全 | 让安全扫描兼容本地 skip-worktree AppID
+
+- 为什么改：
+  历史清理后的仓库已经加了安全扫描，但脚本如果直接读取工作区文件，会把本地 `project.config.json` 里故意保留的真实 AppID 误判成泄漏，不利于继续本地开发。
+- 改了什么：
+  将 `scripts/check-sensitive-config.mjs` 改成扫描 Git index / 已跟踪内容，而不是直接读取工作区文件；这样 CI 和已暂存内容仍会严格拦截真实 AppID，而本地 `skip-worktree` 覆盖不会误伤。
+- 影响范围：
+  仓库安全脚本的本地运行体验、未来 CI 检查和 public 前自查流程；产品代码与页面行为未变化。
+- 验证结果：
+  带本地真实 AppID 的 `project.config.json` 仍可保留在工作区，但 `node scripts/check-sensitive-config.mjs` 只检查 index 中的 `touristappid` 版本并通过。
+- 下一步 / 遗留问题：
+  后续如果还要扩展敏感信息规则，优先继续基于 Git index 扫描，避免把本地未跟踪或 skip-worktree 的开发态配置误当成仓库泄漏。
+
 ## 2026-04-18 | 仓库安全 | 清理 Git 历史并补未来公开防线
 
 - 为什么改：

@@ -1,5 +1,4 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
 
 const trackedFiles = execFileSync("git", ["ls-files", "-z"], {
   encoding: "utf8",
@@ -36,7 +35,10 @@ const findings = [];
 for (const file of trackedFiles) {
   let content = "";
   try {
-    content = readFileSync(file, "utf8");
+    content = execFileSync("git", ["show", `:${file}`], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
   } catch {
     continue;
   }
