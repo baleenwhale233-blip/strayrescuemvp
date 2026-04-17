@@ -167,6 +167,19 @@
 - 下一步 / 遗留问题：
   当前 Alpha 图片是安全测试占位素材，不是写实照片；如需更高质感，可后续用 GPT 生图替换同名文件后重新执行 `npm run seed:alpha`。
 
+## 2026-04-18 | CloudBase | 修复体验版图片展示 URL
+
+- 为什么改：
+  体验版中图片刷不出来，排查后确认部分页面直接拿到了 CloudBase `cloud://` fileID；开发工具内可能可用，但体验版 `<Image>` 需要更稳定的可展示 URL。
+- 改了什么：
+  在 `rescueApi` 中统一增加 CloudBase `getTempFileURL` 转换：案例封面、进展图、支出凭证、支持凭证、profile 二维码和只读记录详情图片读回时会转换为临时 HTTPS URL；只读详情 VM 仍保留原始 `fileID` 供追踪。顺手修正 Alpha seed 中部分事件图片映射错位，并重新播种 alpha 数据。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`cloudfunctions/rescueApi/mockSeed.js`、`docs/cloudbase_backend_setup.md`。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 通过；`npm run typecheck` 通过；已部署 `rescueApi`；`npm run seed:alpha` 成功；自动化 smoke 验证 `alpha_cover_lizi` 和 `alpha_progress_lizi_2` 均返回 `https://...tcb.qcloud.la/...` URL，不再是 `cloud://`。
+- 下一步 / 遗留问题：
+  体验版无需重新上传代码即可吃到云函数修复；如页面已有缓存，可让测试者重新打开小程序或重新进入页面刷新数据。
+
 ## 2026-04-17 | 后端 | 接通 P0-B 状态更新、记账和预算调整远端写链路
 
 - 为什么改：

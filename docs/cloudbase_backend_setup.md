@@ -17,6 +17,7 @@
 - P0-A 支持登记 / 核实链路已在 `cloud1-9gl5sric0e5b386b` 开发环境完成远端写入与状态流转验证
 - P0-B 状态更新 / 记账 / 预算调整的主态 `caseId` 写链路已在开发环境完成远端写入验证
 - 支持凭证、状态图片、记账凭证的真实 CloudBase 上传回归已完成
+- 云函数回包会把 CloudBase `cloud://` fileID 转为可展示的临时 HTTPS URL，避免体验版图片无法直接渲染
 - owner-only action 的非 owner `FORBIDDEN` 回归已完成；`INVALID_*`、限流和重复凭证业务错误回归已完成
 - Alpha Seed Pack 已可通过 `npm run seed:alpha` 播种到当前 CloudBase 环境
 
@@ -200,6 +201,8 @@ support-proofs/{caseId}/{timestamp}-{random}.jpg
 - `support_entries.screenshotHashes`
 
 支持凭证默认是私有对账材料，不直接展示在公开详情页。上传失败时前端不会继续把本地临时路径作为远端 `fileID` 提交。
+
+公开展示图、进展图、凭证图和二维码在数据库里仍保存 CloudBase `fileID`；云函数读回时会调用 `getTempFileURL` 转成临时 HTTPS URL 给页面展示，同时在只读详情 VM 中保留原始 `fileID`。
 
 ## 开发环境种子数据
 

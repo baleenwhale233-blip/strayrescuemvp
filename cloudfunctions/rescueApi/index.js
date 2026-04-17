@@ -47,6 +47,49 @@ function hasOnlyCloudFileIDs(values = []) {
   return Array.isArray(values) && values.every((fileID) => isCloudFileID(fileID));
 }
 
+function getAssetFileID(doc = {}) {
+  return [doc.fileID, doc.originalUrl, doc.watermarkedUrl, doc.thumbnailUrl].find(
+    (value) => isCloudFileID(value),
+  );
+}
+
+async function getTempFileURLMap(fileIDs = []) {
+  const uniqueFileIDs = [...new Set(fileIDs.filter(isCloudFileID))];
+  if (!uniqueFileIDs.length) {
+    return new Map();
+  }
+
+  try {
+    const result = await cloud.getTempFileURL({
+      fileList: uniqueFileIDs,
+    });
+    const fileList = result.fileList || [];
+
+    return new Map(
+      fileList
+        .filter((item) => item.fileID && item.tempFileURL)
+        .map((item) => [item.fileID, item.tempFileURL]),
+    );
+  } catch (error) {
+    console.warn("[rescueApi] getTempFileURL failed", error);
+    return new Map();
+  }
+}
+
+function withTempFileURL(doc, tempFileURLMap) {
+  const fileID = getAssetFileID(doc);
+
+  if (!fileID) {
+    return doc;
+  }
+
+  return {
+    ...doc,
+    _fileID: fileID,
+    _tempFileURL: tempFileURLMap.get(fileID),
+  };
+}
+
 function normalizeOpenid(value) {
   return value || "anonymous";
 }
@@ -277,12 +320,15 @@ function recomputeThreads(entries) {
 }
 
 function toCanonicalAsset(doc) {
+  const fileID = doc._fileID || getAssetFileID(doc);
+  const url = doc._tempFileURL || doc.watermarkedUrl || doc.originalUrl || doc.thumbnailUrl || fileID;
+
   return {
     id: doc.assetId || doc.id || doc._id,
     kind: doc.kind || "other",
-    originalUrl: doc.fileID || doc.originalUrl,
-    watermarkedUrl: doc.watermarkedUrl,
-    thumbnailUrl: doc.thumbnailUrl || doc.fileID,
+    originalUrl: url,
+    watermarkedUrl: doc._tempFileURL || doc.watermarkedUrl,
+    thumbnailUrl: doc._tempFileURL || doc.thumbnailUrl || url,
   };
 }
 
@@ -332,6 +378,11 @@ async function composeBundles(caseDocs) {
         caseId: _.in(caseIds),
       }),
     ]);
+  const tempFileURLMap = await getTempFileURLMap([
+    ...assets.map(getAssetFileID),
+    ...profileAssets.map(getAssetFileID),
+    ...caseDocs.map((doc) => doc.coverFileID),
+  ]);
 
   const profileMap = new Map(profiles.map((profile) => [profileKey(profile), profile]));
   const canonicalEntries = supportEntries.map(toCanonicalSupportEntry);
@@ -343,22 +394,22 @@ async function composeBundles(caseDocs) {
     const profile = profileMap.get(caseRecord.rescuerId) || {};
     const caseAssets = assets
       .filter((doc) => doc.caseId === caseId)
-      .map(toCanonicalAsset);
+      .map((doc) => toCanonicalAsset(withTempFileURL(doc, tempFileURLMap)));
     const profileAssetIds = [
       profile.avatarAssetId,
       profile.paymentQrAssetId,
     ].filter(Boolean);
     const profileScopedAssets = profileAssets
       .filter((doc) => profileAssetIds.includes(doc.assetId || doc.id || doc._id))
-      .map(toCanonicalAsset);
+      .map((doc) => toCanonicalAsset(withTempFileURL(doc, tempFileURLMap)));
 
     if (caseDoc.coverFileID) {
       caseAssets.push({
         id: `${caseId}_cover`,
         kind: "case_cover",
-        originalUrl: caseDoc.coverFileID,
-        watermarkedUrl: caseDoc.coverFileID,
-        thumbnailUrl: caseDoc.coverFileID,
+        originalUrl: tempFileURLMap.get(caseDoc.coverFileID) || caseDoc.coverFileID,
+        watermarkedUrl: tempFileURLMap.get(caseDoc.coverFileID) || caseDoc.coverFileID,
+        thumbnailUrl: tempFileURLMap.get(caseDoc.coverFileID) || caseDoc.coverFileID,
       });
     }
 
@@ -450,7 +501,11 @@ function toProfilePayload(profile, paymentQrAsset) {
     wechatId: profile.wechatId || "",
     contactNote: profile.contactNote || "",
     paymentQrAssetId: profile.paymentQrAssetId,
-    paymentQrUrl: paymentQrAsset?.fileID || paymentQrAsset?.originalUrl || "",
+    paymentQrUrl:
+      paymentQrAsset?._tempFileURL ||
+      paymentQrAsset?.fileID ||
+      paymentQrAsset?.originalUrl ||
+      "",
     hasContactProfile: Boolean(profile.wechatId && profile.paymentQrAssetId),
   };
 }
@@ -494,8 +549,16 @@ async function getMyProfile(openid) {
         assetId: profile.paymentQrAssetId,
       })
     : undefined;
+  const tempFileURLMap = await getTempFileURLMap([
+    getAssetFileID(paymentQrAsset),
+  ]);
 
-  return ok({ profile: toProfilePayload(profile, paymentQrAsset) });
+  return ok({
+    profile: toProfilePayload(
+      profile,
+      paymentQrAsset ? withTempFileURL(paymentQrAsset, tempFileURLMap) : undefined,
+    ),
+  });
 }
 
 async function updateMyProfile(openid, input) {
@@ -957,8 +1020,13 @@ function toEvidenceItemsFromFileIds(fileIds = [], idPrefix = "evidence") {
 }
 
 function toRecordImageFromAsset(asset) {
-  const fileID = asset.fileID || asset.originalUrl || "";
-  const url = asset.watermarkedUrl || asset.thumbnailUrl || fileID;
+  const fileID = asset._fileID || getAssetFileID(asset) || asset.fileID || "";
+  const url =
+    asset._tempFileURL ||
+    asset.watermarkedUrl ||
+    asset.thumbnailUrl ||
+    asset.originalUrl ||
+    fileID;
   const kindMap = {
     receipt: "receipt",
     support_proof: "payment_screenshot",
@@ -989,11 +1057,17 @@ async function getAssetMapByIds(assetIds = []) {
   const docs = await queryCollection(COLLECTIONS.assets, {
     assetId: _.in(ids),
   }, 1000);
+  const tempFileURLMap = await getTempFileURLMap(docs.map(getAssetFileID));
 
-  return new Map(docs.map((doc) => [doc.assetId || doc.id || doc._id, doc]));
+  return new Map(
+    docs.map((doc) => [
+      doc.assetId || doc.id || doc._id,
+      withTempFileURL(doc, tempFileURLMap),
+    ]),
+  );
 }
 
-function getImageFromEvidenceItem(item, assetMap) {
+function getImageFromEvidenceItem(item, assetMap, tempFileURLMap = new Map()) {
   const asset = item.assetId ? assetMap.get(item.assetId) : undefined;
   if (asset) {
     return toRecordImageFromAsset(asset);
@@ -1007,8 +1081,8 @@ function getImageFromEvidenceItem(item, assetMap) {
   return {
     assetId: item.assetId,
     fileID,
-    url: fileID,
-    thumbnailUrl: fileID,
+    url: tempFileURLMap.get(fileID) || fileID,
+    thumbnailUrl: tempFileURLMap.get(fileID) || fileID,
     kind: item.kind || "other",
   };
 }
@@ -1114,8 +1188,11 @@ async function getCaseRecordDetail(openid, input) {
     const evidenceAssetIds = evidenceItems.map((item) => item.assetId).filter(Boolean);
     const eventAssetIds = Array.isArray(event?.assetIds) ? event.assetIds : [];
     const assetMap = await getAssetMapByIds([...evidenceAssetIds, ...eventAssetIds]);
+    const evidenceTempFileURLMap = await getTempFileURLMap(
+      evidenceItems.map((item) => item.imageUrl || item.fileID),
+    );
     const images = [
-      ...evidenceItems.map((item) => getImageFromEvidenceItem(item, assetMap)),
+      ...evidenceItems.map((item) => getImageFromEvidenceItem(item, assetMap, evidenceTempFileURLMap)),
       ...eventAssetIds.map((assetId) => assetMap.get(assetId)).map((asset) => asset && toRecordImageFromAsset(asset)),
     ];
     const amount = Number(expense.amount || 0);
@@ -1159,12 +1236,18 @@ async function getCaseRecordDetail(openid, input) {
       const assetMap = await getAssetMapByIds(
         screenshotItems.map((item) => item.assetId).filter(Boolean),
       );
+      const screenshotTempFileURLMap = await getTempFileURLMap([
+        ...screenshotItems.map((item) => item.imageUrl || item.fileID),
+        ...(entry.screenshotFileIds || []),
+      ]);
       const images = [
-        ...screenshotItems.map((item) => getImageFromEvidenceItem(item, assetMap)),
+        ...screenshotItems.map((item) => getImageFromEvidenceItem(item, assetMap, screenshotTempFileURLMap)),
         ...(entry.screenshotFileIds || []).map((fileID, index) =>
           toRecordImageFromAsset({
             assetId: `${entry.entryId || entry._id}_proof_${index}`,
             fileID,
+            _fileID: fileID,
+            _tempFileURL: screenshotTempFileURLMap.get(fileID),
             kind: "support_proof",
           }),
         ),
