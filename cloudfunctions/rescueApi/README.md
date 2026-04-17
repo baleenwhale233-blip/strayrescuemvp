@@ -20,6 +20,7 @@ This MVP function is intentionally a single action-dispatch function so the mini
 - `getMySupportHistory` aggregates confirmed support entries for the current OPENID and returns case-level support history items.
 - `getRescuerHomepage` returns public rescuer profile data and published case bundles by `rescuerId` or `caseId`.
 - `updateCaseProfile` updates owner-managed case profile fields such as animal name and cover image file ID.
+- `getCaseRecordDetail` returns immutable record details for expenses, progress updates, budget adjustments, and support records.
 
 ## Required setup
 

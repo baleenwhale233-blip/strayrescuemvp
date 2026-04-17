@@ -8,6 +8,9 @@ export type RescueTimelineSharedKind = "expense" | "status" | "budget" | "suppor
 
 export type RescueTimelineSharedItem = {
   id: string;
+  caseId?: string;
+  recordType?: "expense" | "progress_update" | "budget_adjustment" | "support";
+  recordId?: string;
   kind: RescueTimelineSharedKind;
   badgeLabel: string;
   statusLabel?: string;
@@ -15,6 +18,10 @@ export type RescueTimelineSharedItem = {
   title: string;
   description?: string;
   amountLabel?: string;
+  expenseItems?: Array<{
+    description: string;
+    amountLabel?: string;
+  }>;
   images?: string[];
   budgetPreviousLabel?: string;
   budgetCurrentLabel?: string;
@@ -26,8 +33,18 @@ export type RescueReadonlyRecordDetail = RescueTimelineSharedItem;
 
 function openReadonlyRecordDetail(item: RescueTimelineSharedItem) {
   Taro.setStorageSync(RECORD_DETAIL_STORAGE_KEY, item);
+  const recordType = item.recordType || (item.kind === "status" ? "progress_update" : item.kind);
+  const query = [
+    `id=${encodeURIComponent(item.recordId || item.id)}`,
+    `kind=${item.kind}`,
+    `recordType=${recordType}`,
+    item.caseId ? `caseId=${encodeURIComponent(item.caseId)}` : "",
+  ]
+    .filter(Boolean)
+    .join("&");
+
   Taro.navigateTo({
-    url: `/pages/rescue/record-detail/index?id=${encodeURIComponent(item.id)}&kind=${item.kind}`,
+    url: `/pages/rescue/record-detail/index?${query}`,
   });
 }
 
@@ -44,6 +61,13 @@ function getBadgeClass(kind: RescueTimelineSharedKind) {
 
 function getDotClass(kind: RescueTimelineSharedKind) {
   return `rescue-timeline__dot rescue-timeline__dot--${kind}`;
+}
+
+function canOpenReadonlyDetail(item: RescueTimelineSharedItem) {
+  return (
+    item.kind === "expense" ||
+    (item.kind === "status" && item.recordType === "progress_update")
+  );
 }
 
 export function RescueTimelineList({
@@ -73,7 +97,16 @@ export function RescueTimelineList({
       {items.map((item) => (
         <View key={item.id} className="rescue-timeline__item">
           <View className={getDotClass(item.kind)} />
-          <View className="rescue-timeline__card theme-card">
+          <View
+            className={`rescue-timeline__card theme-card ${
+              canOpenReadonlyDetail(item) ? "rescue-timeline__card--clickable" : ""
+            }`}
+            onTap={() => {
+              if (canOpenReadonlyDetail(item)) {
+                openReadonlyRecordDetail(item);
+              }
+            }}
+          >
             <View className="rescue-timeline__header">
               <View className="rescue-timeline__badges">
                 <View className={getBadgeClass(item.kind)}>
@@ -131,10 +164,7 @@ export function RescueTimelineList({
               <View className="rescue-timeline__amount-row">
                 <Text className="rescue-timeline__amount">{item.amountLabel}</Text>
                 {item.kind === "expense" ? (
-                  <View
-                    className="rescue-timeline__link-wrap"
-                    onTap={() => openReadonlyRecordDetail(item)}
-                  >
+                  <View className="rescue-timeline__link-wrap">
                     <Text className="rescue-timeline__link">查看详情</Text>
                     <Image
                       className="rescue-timeline__link-icon"
@@ -162,10 +192,7 @@ export function RescueTimelineList({
             ) : null}
 
             {item.kind === "status" ? (
-              <View
-                className="rescue-timeline__readonly-link"
-                onTap={() => openReadonlyRecordDetail(item)}
-              >
+              <View className="rescue-timeline__readonly-link">
                 <Text className="rescue-timeline__link">查看更新</Text>
                 <Image
                   className="rescue-timeline__link-icon"

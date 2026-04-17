@@ -276,7 +276,7 @@ export default function RescueStatusUpdatePage() {
             statusLabel,
             description: description.trim(),
             timestampLabel,
-            assetUrls: imageUrls.slice(0, 2),
+            assetUrls: imageUrls.slice(0, 9),
             createdAt: occurredAt,
           };
 

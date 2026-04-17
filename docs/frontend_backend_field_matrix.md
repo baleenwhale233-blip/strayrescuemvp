@@ -146,6 +146,8 @@
 - 主态详情页的核实入口统一使用 `/pages/support/review/index`
 - 主态详情页这轮已改成：**首次进入必加载；从子页面返回只有真实写入成功后才刷新**，不再因为进入记账页后无提交返回而整页重载
 - 客态详情里的“查看主页”当前已接 `/pages/rescuer/home/index?rescuerId=...`，并由 `PublicDetailVM.rescuer.profileEntryEnabled` 控制显隐
+- 主态详情底部“右滑结束救助”当前已有真实拖动和确认交互，但确认后仍未调用后端关闭案例 action
+- 主客态详情的时间线支出记录 / 状态更新已接只读记录详情页，优先用 `getCaseRecordDetail` 回读正式详情 VM，storage 仅作旧兜底；记录提交后不可修改
 
 ## 3.1 救助人主页
 
@@ -171,6 +173,25 @@
 - 当前页面优先读取后端正式 `RescuerHomepageVM`
 - 页面层按 bundles 聚合和 `caseId` 回读详情只作为 CloudBase 不可用时的兜底
 - 下方案例列表复用 `DiscoverCaseCard`，不要再 fork 一套首页卡片结构
+
+---
+
+## 3.2 只读记录详情页
+
+### 页面文件
+
+- [`src/pages/rescue/record-detail/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/record-detail/index.tsx)
+
+### 当前调用入口
+
+- 主态 / 客态 / 草稿详情时间线中的支出记录“查看详情”
+- 主态 / 客态 / 草稿详情时间线中的状态更新“查看更新”
+
+### 当前注意事项
+
+- 记录详情页是只读页，不提供修改入口
+- 支出记录和状态更新提交后不可编辑，后续变化应通过新增记录体现，避免账目和救助过程对不上
+- 当前通过本地临时 storage 传递记录详情；后续若后端需要直达详情页，可补正式 record id 查询接口
 
 ---
 
@@ -284,6 +305,7 @@
 - `draftId` 是页面级上下文，不是 canonical 草稿字段扩张
 - QA 场景下的 `qaPreset=design` 只用于原生验收，不属于生产态字段
 - 支出卡当前只保留基于项目描述拼接的标题，并限制为最多两行；不再展示 `merchantName` 一行
+- 只读支出详情通过 `getCaseRecordDetail` 返回结构化 `expenseItems[]`，不再依赖标题拆分；详情 VM 不输出 `merchantName`
 - 草稿预览页当前对支出卡只从 `draft.expenseRecords[]` 生成，避免和 `draft.timeline[]` 的兼容投影重复渲染
 - 记账页没有新增多行文本字段；项目里统一的覆盖层 placeholder 只是前端输入实现口径
 
@@ -318,6 +340,7 @@
 - `draftId` 是页面级上下文，不是 canonical 草稿字段扩张
 - 草稿箱提交后当前直接写入本地 draft 的 `timeline[] / currentStatusLabel`
 - 当前时间线严格按真实事件流渲染，不再固定拼成 `支出 / 状态 / 预算 / 收入` 四张卡
+- 只读进展详情通过 `getCaseRecordDetail` 返回 `description` 和最多 9 张图片
 - `description` 的多行 placeholder 当前已改成统一覆盖层实现；这是前端输入样式口径，不新增后端字段
 
 ---

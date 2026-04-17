@@ -163,7 +163,7 @@ function getLatestOverviewImage(detail: PublicDetailVM, item?: PublicTimelineIte
 
 function getTimelineAssetUrls(item: PublicTimelineItemVM) {
   if (item.assetUrls.length) {
-    return item.assetUrls.slice(0, 2);
+    return item.assetUrls.slice(0, 9);
   }
 
   if (item.type === "expense") {
@@ -220,6 +220,9 @@ function toOwnerTimelineItems(detail: PublicDetailVM): RescueOwnerTimelineItem[]
 
     return {
       id: item.id,
+      caseId: detail.caseId,
+      recordType: item.type === "case_created" ? undefined : item.type,
+      recordId: item.id,
       kind,
       badgeLabel: getTimelinePrimaryLabel(item),
       statusLabel: kind === "status" ? detail.statusLabel : undefined,
@@ -280,7 +283,7 @@ function TimelineCard({ item }: { item: PublicTimelineItemVM }) {
               item.assetUrls.length === 1 ? "timeline-card__images--single" : ""
             }`}
           >
-            {item.assetUrls.slice(0, 2).map((asset) => (
+            {item.assetUrls.slice(0, 9).map((asset) => (
               <View key={asset} className="timeline-card__image-wrap">
                 <Image className="timeline-card__image" mode="aspectFill" src={asset} />
                 <Text className="timeline-card__watermark">透明账本·严禁盗用</Text>
@@ -383,6 +386,9 @@ function GuestDetailTimeline({
 
     return {
       id: item.id,
+      caseId: detail.caseId,
+      recordType: item.type === "case_created" ? undefined : item.type,
+      recordId: item.id,
       kind: kind === "support" ? "support" : kind,
       badgeLabel: getTimelinePrimaryLabel(item),
       statusLabel: kind === "status" ? detail.statusLabel : undefined,

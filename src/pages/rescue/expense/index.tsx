@@ -366,7 +366,7 @@ export default function RescueExpensePage() {
             title,
             amount: total,
             timestampLabel: formatTimelineTimestamp(new Date(spentAt)),
-            assetUrls: publicEvidenceImages.slice(0, 2),
+            assetUrls: publicEvidenceImages.slice(0, 9),
             createdAt: spentAt,
           };
 

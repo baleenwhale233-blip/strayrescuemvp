@@ -197,6 +197,8 @@
 
 - 主态详情页这轮没有新增后端字段
 - 详情页“返回后是否刷新”现在由前端页面级 refresh signal 控制，不是新的 canonical / selector 字段
+- “右滑结束救助”当前只是前端交互和确认保护，确认后仍提示待接入，不会真的修改 case 状态
+- 支出记录 / 状态更新的只读详情页是前端展示收口；记录不可修改是产品规则，后端后续也应按追加记录而非修改原记录的方式设计
 
 ---
 
@@ -389,6 +391,9 @@
 - 记账页当前提交闭环分两路：`caseId` 优先走 CloudBase `createExpenseRecord`，基础设施不可用时才回落 owner detail 的前端页面层 local overlay；`draftId` 走本地 draft 的 `expenseRecords`
 - 主态详情里“提交后可看到支出卡”在远端成功时来自正式 `expense_records + case_events(type=expense)` 回读，不再依赖 local overlay；local overlay 只作为降级兜底
 - 支出卡标题当前直接由记账页项目描述拼接生成，不再依赖 `merchantName`
+- 支出记录提交后不可修改；当前详情页提供只读“查看详情”，并已接 `getCaseRecordDetail`
+- `getCaseRecordDetail` 会返回结构化 `expenseItems[]`，不依赖前端从“支付：A + B + C”标题里拆分，也不向详情页输出医院 / 商户字段
+- 如果后续要更正金额或用途，应新增更正记录或新增支出记录，而不是编辑原记录
 - 草稿 detail tab 当前对 `expense / income` 只走结构化记录渲染，不再重复消费 `draft.timeline` 里的兼容投影
 - 记账页本身没有新增多行文本字段；项目里统一的覆盖层 placeholder 只是前端输入实现收口，不是新的字段契约
 ---
@@ -430,6 +435,8 @@
 - 状态更新页主态 `caseId` 路径已接正式 CloudBase 写入；草稿 `draftId` 路径仍写本地 draft
 - 主态详情里“提交后可看到状态卡并更新状态标签”在远端成功时来自正式 `rescue_cases + case_events(type=progress_update)` 回读；local overlay 只作为降级兜底
 - 草稿箱提交后当前直接写入本地 draft 的 `timeline[] / currentStatusLabel`，不是新的远端字段
+- 状态更新提交后不可修改；当前详情页提供只读“查看更新”，并已接 `getCaseRecordDetail`
+- 进展详情图片最多返回 9 张，后续变化应继续发布新的进展更新
 - 图片区当前已对齐到记账页同款交互，但这只是前端组件交互统一，不是新的数据契约
 - `description` 输入区当前已统一成覆盖层 placeholder 方案；这只是前端样式与交互统一，不是新的字段或字段格式要求
 

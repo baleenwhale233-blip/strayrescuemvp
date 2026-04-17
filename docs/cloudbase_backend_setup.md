@@ -47,6 +47,7 @@
 - `getRescuerHomepage`
 - `searchCaseByPublicId`
 - `getCaseDetail`
+- `getCaseRecordDetail`
 - `getOwnerWorkbench`
 - `getOwnerCaseDetail`
 - `getMyProfile`
@@ -159,6 +160,19 @@
 - 更新 `rescue_cases.targetAmount/updatedAt`
 
 三条链路的页面侧规则是：主态 `caseId` 优先写 CloudBase；若 CloudBase 不可用或基础设施失败，保留已有 local overlay 兜底；草稿 `draftId` 仍保持本地 draft 闭环。
+
+### 只读记录详情
+
+`getCaseRecordDetail` 当前会：
+
+- 通过 `caseId + recordType + recordId` 查询单条记录
+- 支持 `expense / progress_update / budget_adjustment / support`
+- 公开记录可公开读；私有记录需要案例 owner 权限
+- 支出详情返回结构化 `expenseItems[]`，不向详情 VM 输出 `merchantName`
+- 图片从 `evidence_assets` / record evidence / event assetIds 回读，最多返回 9 张，并按 fileID/url 去重
+- 返回 `immutable: true`；后端不提供修改原支出或原进展的 action
+
+记录纠错应通过新增记录完成，例如新增 `expense / progress_update / budget_adjustment`，而不是覆盖原记录。
 
 真实上传回归已经覆盖：
 

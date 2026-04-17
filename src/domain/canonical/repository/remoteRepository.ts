@@ -82,12 +82,43 @@ export type RescuerHomepageVM = {
   profileEntryEnabled: boolean;
 };
 
+export type CaseRecordDetailVM = {
+  id: string;
+  caseId: string;
+  recordType: "expense" | "progress_update" | "budget_adjustment" | "support";
+  title: string;
+  description?: string;
+  occurredAt: string;
+  occurredAtLabel: string;
+  amount?: number;
+  amountLabel?: string;
+  immutable: true;
+  expenseItems?: Array<{
+    description: string;
+    amount?: number;
+  }>;
+  images: Array<{
+    assetId?: string;
+    fileID?: string;
+    url: string;
+    thumbnailUrl?: string;
+    watermarkedUrl?: string;
+    kind: "receipt" | "payment_screenshot" | "animal_photo" | "progress_photo" | "medical_record" | "other";
+  }>;
+  budgetPreviousLabel?: string;
+  budgetCurrentLabel?: string;
+};
+
 type ProfilePayload = {
   profile: MyProfileVM;
 };
 
 type SupportHistoryPayload = {
   summary: MySupportHistoryVM;
+};
+
+type CaseRecordDetailPayload = {
+  record: CaseRecordDetailVM;
 };
 
 type UpdateMyProfileInput = {
@@ -193,6 +224,8 @@ const DOMAIN_ERROR_CODES = new Set([
   "INVALID_ASSET_FILE_ID",
   "INVALID_PROFILE_ASSET_FILE_ID",
   "INVALID_CASE_PROFILE",
+  "INVALID_RECORD_DETAIL_INPUT",
+  "RECORD_NOT_FOUND",
   "INVALID_STATUS",
   "INVALID_TEXT",
   "SUPPORT_ENTRY_NOT_FOUND",
@@ -322,6 +355,23 @@ export async function loadPublicDetailVMByCaseId(
       return bundle ? getPublicDetailVMByCaseIdFromBundles([bundle], caseId) : undefined;
     },
     () => getPublicDetailVMByCaseId(caseId),
+  );
+}
+
+export async function loadCaseRecordDetail(input: {
+  caseId?: string;
+  recordType?: CaseRecordDetailVM["recordType"];
+  recordId?: string;
+}): Promise<CaseRecordDetailVM | undefined> {
+  return withRemoteFallback(
+    async () => {
+      const { record } = await callRescueApi<CaseRecordDetailPayload>(
+        "getCaseRecordDetail",
+        input,
+      );
+      return record;
+    },
+    () => undefined,
   );
 }
 

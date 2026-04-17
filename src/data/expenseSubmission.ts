@@ -64,7 +64,7 @@ export function mergeCaseExpenseSubmissionsIntoDetail(
     title: submission.title,
     amountLabel: `-${formatCurrency(submission.amount)}`,
     timestampLabel: submission.timestampLabel,
-    assetUrls: submission.assetUrls.slice(0, 2),
+    assetUrls: submission.assetUrls.slice(0, 9),
     verificationStatus: "manual",
   }));
 

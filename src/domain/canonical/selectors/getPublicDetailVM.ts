@@ -165,7 +165,7 @@ function eventToTimelineItemVM(
         label: "支出记录",
         tone: "urgent",
         title: event.expenseItemsText,
-        description: event.merchantName,
+        description: undefined,
         amountLabel: `- ${formatCurrency(event.amount)}`,
         verificationStatus: event.verificationStatus,
       };

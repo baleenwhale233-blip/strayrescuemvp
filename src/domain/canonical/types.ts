@@ -206,6 +206,10 @@ export type CanonicalExpenseRecord = {
   summary: string;
   note?: string;
   merchantName?: string;
+  expenseItems?: Array<{
+    description: string;
+    amount?: number;
+  }>;
   evidenceItems: CanonicalEvidenceItem[];
   sharedEvidenceGroupId?: Id;
   evidenceLevel: EvidenceLevel;
