@@ -1,0 +1,50 @@
+{
+  "id": "support-review-manual",
+  "route": "pages/support/review/index",
+  "query": {
+    "id": "case_001",
+    "tab": "manual"
+  },
+  "fixture": "seed-case-001",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".support-review-page__tabs",
+    "timeoutMs": 15000,
+    "stableMs": 1000
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "tab-switcher",
+      "manual-form",
+      "bottom-bar"
+    ],
+    "segmentSelectors": {
+      "tab-switcher": ".support-review-page__tabs",
+      "manual-form": ".support-review-page__manual",
+      "bottom-bar": ".support-review-page__manual-bottom"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "TV9rGp8GeRJErjAAvYafKu",
+    "figmaNodeId": "441:4498",
+    "designImagePath": "",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "当前使用本地 seed case_001 作为稳定 QA 场景。",
+    "当前页面通过路由参数直接进入手动记一笔 tab。",
+    "手动记一笔 tab 当前只有结构版，未接真实写链路。"
+  ]
+}

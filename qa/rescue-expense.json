@@ -1,0 +1,56 @@
+{
+  "id": "rescue-expense",
+  "route": "pages/rescue/expense/index",
+  "query": {
+    "caseId": "case_001",
+    "qaPreset": "design"
+  },
+  "fixture": "seed-case-001",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".rescue-expense-page__evidence",
+    "timeoutMs": 30000,
+    "stableMs": 1500
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "evidence",
+      "note",
+      "total",
+      "add-line",
+      "line-1",
+      "bottom-bar"
+    ],
+    "segmentSelectors": {
+      "evidence": ".rescue-expense-page__evidence",
+      "note": ".rescue-expense-page__note",
+      "total": ".rescue-expense-page__details-head",
+      "add-line": ".rescue-expense-page__add-line",
+      "line-1": ".rescue-expense-page__line",
+      "bottom-bar": ".rescue-expense-page__bottom"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "TV9rGp8GeRJErjAAvYafKu",
+    "figmaNodeId": "441:4714",
+    "designImagePath": ".qa-output/rescue-expense/design/figma-441-4714.png",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "记账页当前以本地页面状态为主，不依赖后端返回。",
+    "qaPreset=design 会注入设计对照用的上传图与金额示例，不触发页面缓存恢复弹窗。",
+    "本场景主要用于验结构、文案、固定按钮、上传区和卡片分区。"
+  ]
+}

@@ -23,6 +23,7 @@ import {
   getStructuredSupportThreads,
   normalizePublicCaseIdInput,
 } from "../modeling";
+import { getOwnerAlerts, type OwnerAlertVM } from "../selectors/ownerNoticeVM";
 import { caseIdToDraftId, type OwnerDetailActionKey } from "./localRepositoryCore";
 
 export type OwnerDetailVM = {
@@ -58,6 +59,10 @@ export type OwnerDetailVM = {
   homepageEligibilityReason?: string;
   pendingSupportEntryCount?: number;
   unmatchedSupportEntryCount?: number;
+  ownerAlerts: OwnerAlertVM[];
+  primaryNoticeLabel?: string;
+  lastUpdateAgeHint?: string;
+  canPublishHomepage: boolean;
   supportThreads?: CanonicalSupportThread[];
   quickActions: Array<{
     key: OwnerDetailActionKey;
@@ -181,6 +186,7 @@ export function getOwnerDetailVMByCaseIdFromBundles(
     (sum, thread) => sum + thread.unmatchedCount,
     0,
   );
+  const ownerAlerts = getOwnerAlerts(bundle);
 
   return {
     caseId: bundle.case.id,
@@ -215,6 +221,10 @@ export function getOwnerDetailVMByCaseIdFromBundles(
     homepageEligibilityReason: homepageEligibility.reason,
     pendingSupportEntryCount,
     unmatchedSupportEntryCount,
+    ownerAlerts,
+    primaryNoticeLabel: ownerAlerts[0]?.label,
+    lastUpdateAgeHint: ownerAlerts.find((alert) => alert.id === "stale-update")?.label,
+    canPublishHomepage: homepageEligibility.status === "eligible",
     supportThreads: supportThreads,
     quickActions,
   };

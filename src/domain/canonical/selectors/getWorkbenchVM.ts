@@ -10,6 +10,7 @@ import {
   getStructuredSupportEntries,
 } from "../modeling";
 import { getPublicDetailVM } from "./getPublicDetailVM";
+import { getLastUpdateAgeHint, getPrimaryNoticeLabel } from "./ownerNoticeVM";
 
 function toWorkbenchCardVM(
   bundle: CanonicalCaseBundle,
@@ -41,6 +42,8 @@ function toWorkbenchCardVM(
     homepageEligibilityReason: homepageEligibility.reason,
     pendingSupportEntryCount,
     unmatchedSupportEntryCount,
+    primaryNoticeLabel: getPrimaryNoticeLabel(bundle),
+    lastUpdateAgeHint: getLastUpdateAgeHint(bundle),
     draftId: options?.draftId,
   };
 }

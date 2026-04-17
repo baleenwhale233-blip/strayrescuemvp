@@ -208,6 +208,7 @@ UI 形态：
 
 主要承接：
 
+- 鼓励实际救助人自己发救助档案，不建议代发二手档案
 - 平台不碰资金
 - 怎么看透明账本
 - 怎么联系救助人
@@ -215,6 +216,23 @@ UI 形态：
 - 基础防骗说明
 
 一期不需要拆很多二级帮助页。
+
+正式用户文案见：
+
+- [`docs/rescue_ledger_usage_guide.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/rescue_ledger_usage_guide.md)
+
+当前页面结构：
+
+```text
+救助账本使用说明
+  A. 顶部说明
+  B. 为什么要实际救助人自己建档
+  C. 账本做什么 / 不做什么
+  D. 救助人使用步骤
+  E. 支持者使用步骤
+  F. 好档案标准
+  G. 不建议做的事
+```
 
 ---
 

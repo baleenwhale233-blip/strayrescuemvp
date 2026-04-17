@@ -27,6 +27,13 @@ test("getPublicDetailVM exposes latest public timeline summary", () => {
   assert.equal(vm.timeline[0]?.label, "预算调整");
 });
 
+test("getPublicDetailVM exposes stable rescue start time", () => {
+  const vm = getPublicDetailVM(bundle);
+
+  assert.equal(vm.rescueStartedAt, "2026-03-28T08:30:00Z");
+  assert.equal(vm.rescueStartedAtLabel, "03-28 16:30");
+});
+
 test("getDiscoverCardVM derives list-friendly card fields from canonical bundle", () => {
   const vm = getDiscoverCardVM(bundle);
 

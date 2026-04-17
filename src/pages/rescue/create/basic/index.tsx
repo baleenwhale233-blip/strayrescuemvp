@@ -1,9 +1,11 @@
-import { Image, Input, Text, Textarea, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
-import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
+import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
+import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
+import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
 import {
   getCurrentDraft,
   startDraftSession,
@@ -69,12 +71,16 @@ export default function RescueCreateBasicPage() {
     };
   }, [router.params?.entry]);
 
-  const handleChooseImage = async (sourceType: Array<"album" | "camera">) => {
+  const handleChooseImage = async () => {
     try {
+      const action = await Taro.showActionSheet({
+        itemList: ["拍摄", "上传图片"],
+      });
+
       const result = await Taro.chooseImage({
         count: 1,
         sizeType: ["compressed"],
-        sourceType,
+        sourceType: action.tapIndex === 0 ? ["camera"] : ["album"],
       });
 
       const nextPath = result.tempFilePaths[0] ?? "";
@@ -86,6 +92,21 @@ export default function RescueCreateBasicPage() {
     } catch {
       // Ignore cancel actions from the native picker.
     }
+  };
+
+  const handleDeleteImage = async () => {
+    const result = await Taro.showModal({
+      title: "删除照片？",
+      content: "删除后需要重新拍摄或上传档案图。",
+      confirmText: "删除",
+      cancelText: "取消",
+    });
+
+    if (!result.confirm) {
+      return;
+    }
+
+    setCoverPath("");
   };
 
   const handleNext = () => {
@@ -138,36 +159,39 @@ export default function RescueCreateBasicPage() {
       <View className="rescue-create-page__upload-card">
         <View className="rescue-create-page__upload-frame">
           {coverPath ? (
-            <Image
-              className="rescue-create-page__upload-image"
-              mode="aspectFill"
-              src={coverPath}
-            />
-          ) : (
-            <Image
-              className="rescue-create-page__upload-image rescue-create-page__upload-image--placeholder"
-              mode="aspectFill"
-              src={coverFallback}
-            />
-          )}
+            <View className="rescue-create-page__upload-preview">
+              <Image
+                className="rescue-create-page__upload-image"
+                mode="aspectFill"
+                src={coverPath}
+              />
+              <View
+                className="rescue-create-page__upload-remove"
+                onTap={(event) => {
+                  event.stopPropagation();
+                  handleDeleteImage();
+                }}
+              >
+                <Image
+                  className="rescue-create-page__upload-remove-icon"
+                  mode="aspectFit"
+                  src={uploadDeleteIcon}
+                />
+              </View>
+            </View>
+          ) : null}
 
-          <View
-            className="rescue-create-page__capture-button"
-            onTap={() => handleChooseImage(["camera"])}
-          >
-            <AppIcon name="camera" size={24} variant="default" />
-          </View>
+          {!coverPath ? (
+            <>
+              <View className="rescue-create-page__capture-button" onTap={handleChooseImage}>
+                <AppIcon name="camera" size={24} variant="default" />
+              </View>
 
-          <View
-            className="rescue-create-page__album-button"
-            onTap={() => handleChooseImage(["album"])}
-          >
-            <Text>相册导入</Text>
-          </View>
-
-          <Text className="rescue-create-page__upload-tip">
-            拍摄正脸清晰图作为数字档案卡
-          </Text>
+              <Text className="rescue-create-page__upload-tip">
+                拍摄正脸清晰图作为数字档案卡
+              </Text>
+            </>
+          ) : null}
         </View>
       </View>
 
@@ -178,6 +202,7 @@ export default function RescueCreateBasicPage() {
             className="rescue-create-page__input"
             maxlength={24}
             placeholder="如：车祸三花 / 纸箱里的橘猫"
+            placeholderStyle="color:#94A3B8;"
             value={name}
             onInput={(event) => setName(event.detail.value)}
           />
@@ -186,21 +211,25 @@ export default function RescueCreateBasicPage() {
 
       <View className="rescue-create-page__form-group">
         <Text className="rescue-create-page__label">一句话事件简述</Text>
-        <View className="rescue-create-page__textarea-card">
-          <Textarea
-            className="rescue-create-page__textarea"
-            maxlength={120}
-            placeholder="在哪发现的（不用太过具体）？它怎么了？"
-            value={summary}
-            onInput={(event) => setSummary(event.detail.value)}
-          />
-        </View>
+        <TextareaWithOverlayPlaceholder
+          wrapperClassName="rescue-create-page__textarea-card"
+          textareaClassName="rescue-create-page__textarea"
+          placeholderClassName="rescue-create-page__textarea-placeholder"
+          placeholder="在哪发现的（不用太过具体）？它怎么了？"
+          maxlength={120}
+          value={summary}
+          onInput={(event) => setSummary(event.detail.value)}
+        />
       </View>
 
       <View className="rescue-create-page__footer">
         <View className="theme-button-primary rescue-create-page__primary" onTap={handleNext}>
           <Text>下一步：设定目标</Text>
-          <Text className="rescue-create-page__primary-arrow">→</Text>
+          <Image
+            className="rescue-create-page__primary-arrow"
+            mode="aspectFit"
+            src={nextArrowIcon}
+          />
         </View>
         <Text className="rescue-create-page__footer-hint">
           所有数据将记录在流浪动物透明账本区块链中

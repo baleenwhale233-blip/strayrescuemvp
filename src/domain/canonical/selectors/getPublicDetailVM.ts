@@ -225,6 +225,14 @@ function getLatestTimelineSummary(timeline: PublicTimelineItemVM[]) {
   return timeline[0]?.description || timeline[0]?.title;
 }
 
+function getRescueStartedAt(caseRecord: CanonicalCase, events: CanonicalEvent[]) {
+  const createdEvent = events
+    .filter((event) => event.type === "case_created")
+    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))[0];
+
+  return caseRecord.foundAt || createdEvent?.occurredAt || caseRecord.createdAt;
+}
+
 function getVerifiedLevelLabel(rescuer: CanonicalRescuer) {
   if (rescuer.verifiedLevel === "realname") {
     return "已实名";
@@ -256,6 +264,7 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
     (sum, thread) => sum + thread.unmatchedCount,
     0,
   );
+  const rescueStartedAt = getRescueStartedAt(bundle.case, bundle.events);
 
   return {
     caseId: bundle.case.id,
@@ -268,6 +277,8 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
     heroImageUrl,
     locationText: bundle.case.foundLocationText,
     summary: bundle.case.initialSummary,
+    rescueStartedAt,
+    rescueStartedAtLabel: formatDateLabel(rescueStartedAt),
     updatedAtLabel: formatDateLabel(bundle.case.updatedAt),
     ledger: {
       ...ledger,
@@ -290,6 +301,7 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
       stats: bundle.rescuer.stats,
       wechatId: bundle.rescuer.wechatId,
       paymentQrUrl: getAssetUrl(assetMap, bundle.rescuer.paymentQrAssetId),
+      profileEntryEnabled: Boolean(bundle.rescuer.id),
     },
     supportSummary: {
       confirmedSupportAmount: ledger.supportedAmount,

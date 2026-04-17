@@ -24,7 +24,618 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-17 | 后端 | 接通用户资料、联系方式和支持足迹远端 VM
+
+- 为什么改：
+  我的页、联系方式设置和支持足迹页面已经有页面骨架，但头像昵称、微信号、二维码和支持足迹仍主要依赖本地 storage 或 `supporter_current_user` 临时身份，不适合作为正式跨设备数据契约。
+- 改了什么：
+  为 `rescueApi` 新增 `getMyProfile`、`updateMyProfile` 和 `getMySupportHistory`；`user_profiles` 现在承接 `displayName / avatarUrl / wechatId / contactNote / paymentQrAssetId`，二维码上传为 CloudBase `cloud://` fileID 后写入 `evidence_assets(kind=payment_qr)`；支持足迹按云函数 OPENID 聚合 confirmed support entries，输出总金额和案例级列表。前端 profile、contact settings、support history 三页改为优先读写远端，保留本地 storage 兜底。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`cloudfunctions/rescueApi/README.md`、`src/domain/canonical/repository/cloudbaseClient.ts`、`src/domain/canonical/repository/remoteRepository.ts`、`src/pages/profile/index.tsx`、`src/pages/profile/contact-settings/index.tsx`、`src/pages/profile/support-history/index.tsx`，以及 profile / support history 相关文档。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 通过；`npm run typecheck` 通过；`npm run test:domain` 23 项通过；`npm run build:weapp` 通过。已部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b`，并用小程序自动化真实调用验证：`updateMyProfile/getMyProfile` 可回读头像昵称、微信号、备注和二维码 fileID，`getMySupportHistory` 可按真实 OPENID 聚合刚确认的支持记录。
+- 下一步 / 遗留问题：
+  新建救助前置校验当前仍保留本地 `rescuer-contact-profile:v1` 兜底，后续可改为优先使用 `getMyProfile.hasContactProfile`；救助人主页远端 VM 已在后续记录中接通。
+
+## 2026-04-17 | 后端 | 接通救助人公开主页远端 VM
+
+- 为什么改：
+  救助人主页此前虽已有页面，但主要靠前端按 `rescuerId` 聚合本地 / 已加载 bundles；远端详情跳转时还需要用 `caseId` 兜底，不是稳定的公开主页契约。
+- 改了什么：
+  为 `rescueApi` 新增 `getRescuerHomepage`，支持按 `rescuerId` 查询，也支持通过 `caseId` 反查救助人；返回救助人公开资料和该救助人的 `published` 案例 bundles。前端 `src/pages/rescuer/home/index.tsx` 改为优先读取 `loadRescuerHomepageVM`，并继续复用 `DiscoverCaseCard`；本地聚合和 `caseId` 详情兜底仅保留为 CloudBase 不可用时的降级路径。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`cloudfunctions/rescueApi/README.md`、`src/domain/canonical/repository/remoteRepository.ts`、`src/pages/rescuer/home/index.tsx`，以及救助人主页相关文档。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 通过；`npm run typecheck` 通过；`npm run test:domain` 23 项通过；`npm run build:weapp` 通过。已部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b`，并用小程序自动化真实调用验证：`getRescuerHomepage` 能回出当前救助人资料和 5 个 published 案例。
+- 下一步 / 遗留问题：
+  后续可把 `rescuer.profileEntryEnabled` 补进详情 VM 控制“查看主页”入口显隐，并继续精修公开主页统计口径。
+
+## 2026-04-17 | 后端 | 补稳定救助开始时间 VM
+
+- 为什么改：
+  支持登记页、状态更新页和追加预算页此前要么在页面层从 timeline 查 `case_created`，要么显示“待补充”，这不是稳定字段契约，也容易和最近更新时间混淆。
+- 改了什么：
+  在 `PublicDetailVM` 中新增 `rescueStartedAt / rescueStartedAtLabel`，由 canonical selector 统一推导，优先级为 `case.foundAt -> case_created.occurredAt -> case.createdAt`；支持登记页改为直接消费该 VM，状态更新页和追加预算页的案例卡也会显示稳定救助开始时间。
+- 影响范围：
+  `src/domain/canonical/types.ts`、`src/domain/canonical/selectors/getPublicDetailVM.ts`、`src/domain/canonical/selectors/getPublicDetailVM.test.ts`、`src/pages/support/claim/index.tsx`、`src/pages/rescue/update/index.tsx`、`src/pages/rescue/budget-update/index.tsx`，以及字段契约文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过，仅保留既有 asset size warning。
+- 下一步 / 遗留问题：
+  后续可继续补 `ownerAlerts / primaryNoticeLabel` 这类工作台和主态提醒 VM。
+
+## 2026-04-17 | 后端 | 补主态和工作台轻提醒 VM
+
+- 为什么改：
+  工作台和主态详情已有待处理支持数、未匹配支持数和首页资格字段，但缺少统一的轻提醒排序口径，页面只能各自临时拼接文案。
+- 改了什么：
+  新增 `src/domain/canonical/selectors/ownerNoticeVM.ts`，从 pending support、unmatched support、最近公开更新时间和首页资格派生 `ownerAlerts[] / primaryNoticeLabel / lastUpdateAgeHint`；`OwnerDetailVM` 同步输出 `ownerAlerts / primaryNoticeLabel / lastUpdateAgeHint / canPublishHomepage`；`WorkbenchCaseCardVM` 同步输出 `primaryNoticeLabel / lastUpdateAgeHint`，工作台卡片 notice 优先消费 `primaryNoticeLabel`。
+- 影响范围：
+  `src/domain/canonical/types.ts`、`src/domain/canonical/selectors/getWorkbenchVM.ts`、`src/domain/canonical/selectors/ownerNoticeVM.ts`、`src/domain/canonical/repository/canonicalReadRepositoryCore.ts`、`src/pages/rescue/index.tsx`，以及字段契约文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过，仅保留既有 asset size warning。
+- 下一步 / 遗留问题：
+  主态详情页还没有专门的顶部提醒区，当前只是把 VM 暴露出来；后续前端精修时可直接消费 `ownerAlerts[]`。
+
+## 2026-04-17 | 后端 | 接通已发布案例代号和头像远端编辑
+
+- 为什么改：
+  主态详情和草稿预览虽然已经能编辑代号 / 动物头像，但已发布案例此前仍主要依赖 `caseTitleOverride.ts` 本地展示覆盖，跨设备和远端回读不稳定。
+- 改了什么：
+  为 `rescueApi` 新增 owner-only `updateCaseProfile`，支持更新 `animalName` 和 `coverFileID`；封面图写入 `evidence_assets(kind=case_cover)` 并关联为 `${caseId}_cover`。前端主态详情改名 / 换头像时优先调用远端接口，头像会先上传到 `case-assets/{caseId}/case-covers/...`；CloudBase 不可用时继续保留本地展示覆盖兜底。草稿预览仍保持本地 draft 编辑，不误写远端。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`cloudfunctions/rescueApi/README.md`、`src/domain/canonical/repository/cloudbaseClient.ts`、`src/domain/canonical/repository/remoteRepository.ts`、`src/pages/rescue/detail/index.tsx`，以及展示覆盖相关文档。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 通过；`npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过。已部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b`，并用小程序自动化真实调用验证：`seed_case_owner_tuantuan_003` 可远端更新 `animalName` 和 `coverFileID`，回包包含 `${caseId}_cover` asset；验收后已恢复原动物名。
+- 下一步 / 遗留问题：
+  本地覆盖层仍保留给草稿和 CloudBase 不可用兜底；后续如要进一步收口，可补 remote draft 编辑增强，或逐步减少 `caseTitleOverride.ts` 的读取优先级。
+
+## 2026-04-17 | 后端 | 新建救助前置校验改远端优先
+
+- 为什么改：
+  联系方式已经正式接入 `user_profiles` 和 `hasContactProfile` 后，工作台“新建救助档案”入口如果仍只看本地 `rescuer-contact-profile:v1`，跨设备会出现远端已填写但本机仍被拦住的问题。
+- 改了什么：
+  将 `src/pages/rescue/index.tsx` 的新建入口改为优先调用 `loadMyProfile()` 读取 `hasContactProfile`；远端返回完整则直接进入建档，远端不可用或不完整时再回落本地 `hasCompleteRescuerContactProfile()`，两边都不完整才引导去联系方式设置页。
+- 影响范围：
+  `src/pages/rescue/index.tsx`，以及 profile / contact settings 相关文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过，仅保留既有 asset size warning。
+- 下一步 / 遗留问题：
+  可继续做 `rescuer.profileEntryEnabled` 入口显隐，或提交成功态体验收口。
+
+## 2026-04-17 | 后端 | 补救助人主页入口显隐 VM
+
+- 为什么改：
+  `getRescuerHomepage` 已经接通后，客态详情页的“查看主页”入口仍是硬编码展示，字段契约里 `rescuer.profileEntryEnabled` 还停留在待补状态。
+- 改了什么：
+  在 `PublicDetailVM.rescuer` 中新增 `profileEntryEnabled`，当前规则为存在 `rescuer.id` 即可展示；客态详情页按该字段控制“查看主页”入口显隐。
+- 影响范围：
+  `src/domain/canonical/types.ts`、`src/domain/canonical/selectors/getPublicDetailVM.ts`、`src/pages/rescue/detail/index.tsx`，以及详情页 / 救助人主页字段契约文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过，仅保留既有 asset size warning。
+- 下一步 / 遗留问题：
+  后续如果要支持隐藏救助人主页，可在 `user_profiles` 或公开主页 VM 中扩展显隐配置。
+
+## 2026-04-17 | 前端 | 统一主要提交链路成功提示
+
+- 为什么改：
+  支持登记、支持核实、手动记收入、写进展、记账和追加预算此前各自使用不同 toast 文案和返回延迟，部分文案偏“保存/提交”系统口径，用户不容易判断是否已经记入救助记录。
+- 改了什么：
+  新增 `src/utils/successFeedback.ts`，统一成功提示和返回节奏；将主要提交链路文案收口为“已提交，待确认 / 已确认到账 / 已标记未匹配 / 收入已记入账本 / 进展已发布 / 支出已记入账本 / 预算已更新”。文案保持短句，不暴露远端、同步、缺省等内部词。
+- 影响范围：
+  `src/utils/successFeedback.ts`、`src/pages/support/claim/index.tsx`、`src/pages/support/review/index.tsx`、`src/pages/rescue/update/index.tsx`、`src/pages/rescue/expense/index.tsx`、`src/pages/rescue/budget-update/index.tsx`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run test:domain` 24 项通过；`npm run build:weapp` 通过，仅保留既有 asset size warning。
+- 下一步 / 遗留问题：
+  当前仍是轻量 toast 成功态；如果后续设计需要更完整的成功页或结果卡，可在这个统一入口上继续扩展。
+
+## 2026-04-17 | 后端 | 接通 P0-B 状态更新、记账和预算调整远端写链路
+
+- 为什么改：
+  P0-B 三个高频内容生产页此前在主态 `caseId` 场景仍靠前端 local overlay 让详情页“看起来已提交”，没有正式写入 `case_events / expense_records / rescue_cases`，跨设备和远端回读都不成立。
+- 改了什么：
+  为 `rescueApi` 新增 `createProgressUpdate`、`createExpenseRecord`、`createBudgetAdjustment` 三个 owner-only action；状态更新会写公开 progress event 并更新 `currentStatus/currentStatusLabel`，记账会写结构化 `expense_records` 和公开 expense event，预算调整会写公开 budget event 并更新 `targetAmount`。前端三页的主态 `caseId` 提交改为远端优先，CloudBase 不可用或基础设施失败时才回落现有 local overlay；草稿 `draftId` 路径继续保持本地 draft 闭环。后续又补上 `createManualSupportEntry`，让 `support/review` 的手动记一笔直接生成 confirmed support entry 和公开 `manual_entry` support event。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`cloudfunctions/rescueApi/README.md`、`src/domain/canonical/repository/cloudbaseClient.ts`、`src/domain/canonical/repository/remoteRepository.ts`、`src/pages/rescue/update/index.tsx`、`src/pages/rescue/expense/index.tsx`、`src/pages/rescue/budget-update/index.tsx`、`src/pages/support/review/index.tsx`，以及 P0-B 字段契约 / CloudBase 文档。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 通过；`npm run typecheck` 通过；`npm run test:domain` 23 项通过；`npm run build:weapp` 通过。已部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b`，并用小程序自动化真实调用验证：`seed_case_owner_lizi_001` 成功写入 progress event、expense record + expense event、budget adjustment event，并回读到 `currentStatus=康复观察`、`targetAmount=4201`；手动记一笔成功生成 confirmed support entry、thread 聚合和公开 `supportSource=manual_entry` support event；真实上传回归成功覆盖支持凭证、状态图片和记账凭证三类 `cloud://` fileID 写入与回读。
+- 下一步 / 遗留问题：
+  继续补多账号 owner 权限回归和提交成功态体验；当前自动化上传回归使用临时 PNG 文件验证 CloudBase fileID 写入，后续真机可继续补相册 / 相机选择路径。
+
+## 2026-04-17 | 后端 | 完成 owner 权限与业务错误回归
+
+- 为什么改：
+  P0-A / P0-B 远端写链路已经打通后，需要确认 owner-only action 不会被非救助人绕过，同时业务错误不会被 remote repository 当作基础设施失败回落本地。
+- 改了什么：
+  对 `createSupportEntry` 的校验顺序做了一个小收口：重复凭证校验提前到限流前，避免重复截图被 10 分钟限流错误盖住；其余主要是 CloudBase 自动化回归和文档同步。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、CloudBase / 字段契约 / 项目状态文档。
+- 验证结果：
+  非 owner 访问 `getOwnerCaseDetail / publishCase / createManualSupportEntry / createProgressUpdate / createExpenseRecord / createBudgetAdjustment / reviewSupportEntry` 均返回 `FORBIDDEN`；业务错误回归覆盖 `INVALID_AMOUNT / INVALID_SUPPORTED_AT / INVALID_SCREENSHOT_FILE_ID / INVALID_STATUS / INVALID_TEXT / INVALID_ASSET_FILE_ID / INVALID_EXPENSE_RECORD / INVALID_TARGET_AMOUNT / SUPPORT_ENTRY_RATE_LIMIT_10_MIN / DUPLICATE_SUPPORT_SCREENSHOT`。`node --check cloudfunctions/rescueApi/index.js` 和 `npm run typecheck` 通过，更新后 `rescueApi` 已重新部署。
+- 下一步 / 遗留问题：
+  继续做提交成功态体验收口，以及更多真实设备 / 不同微信账号的人工回归。
+
+## 2026-04-17 | 后端 | 支持登记与核实完成 CloudBase 远端闭环
+
+- 为什么改：
+  P0-A 的支持登记 / 救助人核实链路此前虽然已接 `createSupportEntry` 和 `reviewSupportEntry` 骨架，但还停在“已搭骨架 / 待验证”状态；同时凭证上传失败时存在把本地临时路径继续当作远端 fileID 提交的风险。
+- 改了什么：
+  收紧 `uploadSupportProofImage` 和 `support/claim` 的凭证提交边界，CloudBase 上传失败时不再伪装成本地成功；`rescueApi.createSupportEntry` 只接受 `cloud://` 凭证 fileID，并在写入 `support_entries / evidence_assets / support_threads` 后同步生成私有 pending support event；`reviewSupportEntry` 现在会把 confirmed 支持投成公开 support event，把 unmatched 支持保留为私有 rejected event，并同步更新 `rescue_cases.updatedAt`。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`cloudfunctions/rescueApi/README.md`、`src/domain/canonical/repository/cloudbaseClient.ts`、`src/domain/canonical/repository/remoteRepository.ts`、`src/pages/support/claim/index.tsx`，以及 CloudBase / 字段契约文档。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 通过；`npm run typecheck` 通过；`npm run test:domain` 23 项通过；`npm run build:weapp` 通过。已部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b`，并用小程序自动化真实调用验证：`seed_case_owner_lizi_001` 完成 `pending -> confirmed`，thread 聚合更新为 `totalConfirmedAmount=1 / pendingCount=0` 且生成公开 support event；`seed_case_owner_ahuang_002` 完成 `pending -> unmatched`，thread 聚合更新为 `totalUnmatchedAmount=1 / unmatchedCount=1` 且 support event 保持私有 rejected。
+- 下一步 / 遗留问题：
+  继续补多账号 owner 权限回归；真实凭证图上传、`support/review` 手动记一笔、P0-B 记账 / 更新进展 / 追加预算主态远端写入已在后续记录中接通。
+
+## 2026-04-17 | 前端 | 新增状态更新页并接通主态与草稿箱的前端提交闭环
+
+- 为什么改：
+  P0-B 的写进展更新页此前还没有真正页面实现，主态详情里的入口仍是 toast；同时草稿箱也缺统一入口，提交后无法在主态 detail tab 或草稿简介页立即看到状态卡片。
+- 改了什么：
+  新增 `src/pages/rescue/update/index.tsx` / `index.scss` / `index.config.ts`，按 Figma `294:699` 先落 `动物卡 -> 救助阶段 chip -> 详情描述 -> 近况影像记录 -> 底部取消/发布` 的结构版；主态详情与草稿箱统一接入该页面；新增 `src/data/statusUpdateSubmission.ts` 承接 owner detail 的页面层 local overlay；草稿场景提交后直接写入本地 draft 的 `timeline[] / currentStatusLabel`，并在返回时刷新草稿页。
+- 影响范围：
+  `src/pages/rescue/update/*`、`src/pages/rescue/detail/index.tsx`、`src/pages/rescue/create/preview/index.tsx`、`src/data/statusUpdateSubmission.ts`、路由配置 `src/app.config.ts`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：
+  当前闭环仍是前端页面层 local 提交，不是远端正式写链路；后续需要把状态更新成功后的远端写入、全局状态同步与成功态反馈补齐。
+
+## 2026-04-17 | 前端 | 新增追加预算页并接通主态与草稿箱的前端提交闭环
+
+- 为什么改：
+  追加预算页此前在 Figma `6:999` 已有完整结构，但代码里还没有真正页面，主态详情和草稿箱的预算入口也都没接通；提交后无法在 owner detail tab 或草稿 detail tab 立即看到预算调整结果。
+- 改了什么：
+  新增 `src/pages/rescue/budget-update/index.tsx` / `index.scss` / `index.config.ts`，按节点先落 `动物卡 -> 新预估总金额 -> 追加原因/说明 -> 提示卡 -> 固定底部主按钮` 的结构版；主态详情与草稿箱统一接入该页面；新增 `src/data/budgetAdjustmentSubmission.ts` 承接 owner detail 的页面层 local overlay；草稿场景提交后直接写入本地 draft 的 `budget / timeline[]`，并在返回时刷新草稿页。
+- 影响范围：
+  `src/pages/rescue/budget-update/*`、`src/pages/rescue/detail/index.tsx`、`src/pages/rescue/create/preview/index.tsx`、`src/data/budgetAdjustmentSubmission.ts`、路由配置 `src/app.config.ts`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：
+  当前闭环仍是前端页面层 local 提交，不是远端正式写链路；后续需要把预算调整成功后的远端写入、总预算同步与成功态反馈补齐。
+
+## 2026-04-17 | 前端 | 收口新版建档前两步并补救助开始时间的临时展示口径
+
+- 为什么改：
+  建档第一页和第二步虽然已有流程骨架，但仍停留在旧版结构，和 Figma `6:292 / 6:345` 存在明显偏差，例如第一页还保留了“相册导入”，第二步还多了一整块“账本预览”；同时支持登记页案例卡的“救助开始时间”一直显示“待补充”。
+- 改了什么：
+  调整 `src/pages/rescue/create/basic/index.tsx` / `index.scss`，把第一页收口到新版进度条、上传空态、输入区和底部按钮；调整 `src/pages/rescue/create/budget/index.tsx` / `index.scss`，去掉旧的账本预览块，收口头像区、预算卡和新版底部按钮图标；新增 `src/assets/rescue-create/step1-next-arrow.svg` 与 `step2-enter-icon.svg`；同时在 `src/pages/support/claim/index.tsx` 里先用公开时间线中的 `case_created` 时间点展示案例卡“救助开始时间”。
+- 影响范围：
+  `src/pages/rescue/create/basic/*`、`src/pages/rescue/create/budget/*`、`src/pages/support/claim/index.tsx`、`src/assets/rescue-create/*`，以及建档 / 支持登记相关进度与字段文档。
+- 验证结果：
+  `npm run typecheck` 通过；后续已继续执行 `npm run build:weapp` 做构建验证。
+- 下一步 / 遗留问题：
+  建档第一页已选封面后的运行态、第二步输入聚焦态仍建议继续按真机截图做像素级精修；`救助开始时间` 当前还是页面层临时映射，后续更稳的做法仍是落成统一 VM 字段。
+
+## 2026-04-17 | 前端 | 草稿预览移除默认状态卡并补代号编辑入口
+
+- 为什么改：
+  当前新草稿会自动带上一条“已创建基础档案，等待补充第一条进展”的系统状态卡，放在草稿预览里容易让人误以为已经手动写过进展；同时草稿预览页只能复制案例 ID，不能直接改动物代号，想改名必须退回第一步，路径太绕。
+- 改了什么：
+  在 `src/pages/rescue/create/preview/index.tsx` 中把这条 bootstrap 默认状态从页面展示层过滤掉，不再出现在摘要卡和 detail timeline 中；同时为 `RescueOwnerSummaryCard` 增加可选标题编辑按钮，并在草稿预览页接入一个轻量的“修改代号”弹层；新增小号编辑图标资源 `src/assets/rescue-detail/owner/edit-muted.svg`。
+- 影响范围：
+  `src/pages/rescue/create/preview/index.tsx`、`src/components/RescueOwnerShared.tsx`、`src/components/RescueOwnerShared.scss`、`src/assets/rescue-detail/owner/edit-muted.svg`，以及草稿预览相关进度文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前草稿预览页不再默认展示系统状态卡，且标题旁已出现轻量编辑入口。
+- 下一步 / 遗留问题：
+  这轮只是在页面展示层去掉默认状态卡，没有改 repository 里的初始草稿结构；后续如果要给空草稿一个更强引导，建议单独设计空状态，而不是继续把引导文案塞进 timeline。
+
+## 2026-04-17 | 前端 | 代号编辑补前端本地持久化，并贯通草稿/主态/工作台
+
+- 为什么改：
+  仅在当前页即时改名还不够，用户从草稿预览跳到主态详情、再回工作台时，标题会回退成旧名字；但这轮又不适合要求后端新增专门的改名接口，因此需要一个前端本地可持续的名字覆盖层。
+- 改了什么：
+  新增 `src/data/caseTitleOverride.ts`，把代号按 `caseId / draftId` 双键做本地持久化；草稿预览页与主态详情页保存代号时都会写入这层；工作台、主态详情、草稿预览、支持登记页在加载时统一先应用本地覆盖名字。这样草稿发布成主态后仍能延续同一名字，但不会反向把主态改回草稿状态。
+- 影响范围：
+  `src/data/caseTitleOverride.ts`、`src/pages/rescue/create/preview/index.tsx`、`src/pages/rescue/detail/index.tsx`、`src/pages/rescue/index.tsx`、`src/pages/support/claim/index.tsx`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前改名已能在草稿预览、主态详情、工作台和支持登记页之间保持一致。
+- 下一步 / 遗留问题：
+  这轮仍是前端本地持久化，不是后端正式更新；如果后续需要跨设备、跨账号或分享链路一致，再考虑补正式后端字段更新接口。
+
+## 2026-04-17 | 前端 | 主态详情与工作台优先使用本地草稿的头像和状态展示
+
+- 为什么改：
+  当前草稿发布成主态后，详情头卡和工作台卡片有时会退回远端回包里的默认封面和默认状态文案，导致建档第一步上传的动物头像、以及后续状态更新页里选过的状态，没有稳定显示在主态页面上。
+- 改了什么：
+  扩展 `src/data/caseTitleOverride.ts`，不只做名字覆盖，也统一从本地已保存 draft 和本地状态更新记录中提取“展示优先级更高”的头像、标题和状态；在 `src/pages/rescue/detail/index.tsx`、`src/pages/rescue/index.tsx`、`src/pages/support/claim/index.tsx` 和草稿预览页加载时统一先应用这层展示覆盖。
+- 影响范围：
+  主态详情头卡、救助工作台卡片、支持登记页案例卡，以及草稿预览页的本地展示一致性。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前主态详情与工作台会优先显示建档第一步上传的动物头像，并优先显示状态更新页里最近一次选中的状态文案。
+- 下一步 / 遗留问题：
+  这轮仍是前端展示覆盖，不是后端正式回写；如果后续要求跨设备一致，需要再把这些展示字段补进正式远端更新链路。
+
+## 2026-04-17 | 前端 | 主态与草稿头卡支持直接改动物头像
+
+- 为什么改：
+  当前草稿预览和主态详情虽然已经共用一套 owner-style 头卡，但只有代号能直接修改，动物头像仍需要退回建档第一步才能重选，操作路径太绕，也不符合“头卡作为当前动物档案入口”的直觉。
+- 改了什么：
+  为共享头卡 `RescueOwnerSummaryCard` 增加头像点击入口；草稿预览和主态详情页都接入同一套 `拍照 / 上传图片` action sheet；头像更新后会写入前端本地展示覆盖层，并继续影响工作台、主态详情、草稿预览和支持登记页的动物头像显示。
+- 影响范围：
+  `src/components/RescueOwnerShared.*`、`src/pages/rescue/create/preview/index.tsx`、`src/pages/rescue/detail/index.tsx`、`src/data/caseTitleOverride.ts`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前主态和草稿的头卡都可直接点头像更换图片，且换图后会在相关前端页面保持一致。
+- 下一步 / 遗留问题：
+  这轮仍是前端本地展示覆盖，不是远端正式更新；如果后续要做更强的可编辑态提示，可再补轻量角标或 hover 态，但不影响当前功能闭环。
+
+## 2026-04-17 | 文档 | 补记客态详情也已接入本地展示覆盖
+
+- 为什么改：
+  这轮讨论里重点一直落在草稿预览、主态详情、工作台和支持登记页，容易让后续线程误以为“客态详情还没有吃本地展示覆盖”；但当前客态详情实际上也已经会跟随本地名字、动物头像和状态文案变化展示。
+- 改了什么：
+  更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`，明确客态详情页同样会优先使用本地已保存 draft 与本地状态更新记录里的展示结果，只是这仍然是前端展示层覆盖，不是正式后端字段扩张。
+- 影响范围：
+  后续 AI / 工程师恢复上下文时对主客态详情一致性、前端展示覆盖边界、以及后端接入前职责边界的判断。
+- 验证结果：
+  五份核心文档已和当前代码真相对齐，后续做后端时能直接据此区分“前端展示覆盖”与“正式远端字段”。
+- 下一步 / 遗留问题：
+  等后端开始正式承接这些展示字段时，仍需回头把文档里的“前端临时覆盖”说明逐步替换成正式字段 / 接口口径。
+
+## 2026-04-17 | 前端 | 收口工作台状态文案到状态更新页标签集合
+
+- 为什么改：
+  工作台列表里曾出现过“刚发现待安置”这类不属于状态更新页正式标签集合的文案，和当前更新进展页可选的状态口径不一致，容易让前后端在“哪个状态才算正式展示值”上继续漂移。
+- 改了什么：
+  在 `src/pages/rescue/index.tsx` 里给工作台卡片状态文案增加一层展示规则：只允许使用状态更新页现有的 5 个标签 `紧急送医 / 医疗救助中 / 康复观察 / 寻找领养 / 遗憾离世`；如果当前案例还没有真正命中这些标签，则统一回退成“未更新状态”。
+- 影响范围：
+  救助工作台进行中列表与草稿列表里的状态文案展示口径，以及后续后端接手时对“正式展示状态集合”的判断。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前工作台列表不会再显示状态更新页之外的状态文案。
+- 下一步 / 遗留问题：
+  这轮只是前端展示约束；如果后续后端正式提供状态字段，应沿用同一套标签集合，避免再次出现页面可选状态和列表展示状态不一致。
+
+## 2026-04-17 | 前端 | 我的页从占位升级为正式入口页
+
+- 为什么改：
+  P1 的身份入口页此前仍是占位卡，无法承接“我的支持足迹 / 救助联系方式设置 / 使用说明”等入口；同时当前阶段还不能直接假设能拿到微信头像和昵称，需要先提供默认态和点击授权态。
+- 改了什么：
+  按 Figma `444:7259` 重做 `src/pages/profile/index.tsx` / `index.scss`，接入默认头像、默认“点击登录”文案、三条功能入口和 `God/1000 Lab · Druid Project` 底部署名；用户点击头像/名称模块时调用微信资料授权，获取头像昵称后写入本地 `profile-user:v1`。
+- 影响范围：
+  `src/pages/profile/index.tsx`、`src/pages/profile/index.scss`、`src/assets/profile/*`，以及 profile 相关文档口径。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；我的页当前已从占位页升级成可试跑的正式入口页。
+- 下一步 / 遗留问题：
+  当前头像和昵称仍是页面层本地存储，不是后端 `user_profiles`；支持足迹、联系方式设置和使用说明入口仍是 toast 占位，后续需要逐页接真实页面和后端字段。
+
+## 2026-04-17 | 前端 | 新增我的支持足迹页并接入我的页入口
+
+- 为什么改：
+  我的页已经从占位升级为正式入口页，但“我的支持足迹”仍只是 toast 占位；需要先把 P1 支持足迹页壳铺出来，并让用户能看到自己提交且已被救助人认领/确认的支持总额和案例列表。
+- 改了什么：
+  新增 `src/pages/profile/support-history/index.tsx` / `index.scss` / `index.config.ts`，按 Figma `446:7625` 落 `总计支持 -> 支持记录列表` 结构；在 `app.config.ts` 注册页面；我的页“我的支持足迹”入口改为跳转该页面；当前页面层从 canonical bundles 聚合 `supporter_current_user` 下 `status === confirmed` 的支持记录，并按案例汇总，点击条目进入客态救助档案。
+- 影响范围：
+  `src/pages/profile/index.tsx`、`src/pages/profile/support-history/*`、`src/app.config.ts`，以及 profile / support history 相关文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；我的支持足迹页当前已可显示页面层聚合出来的总支持金额和案例记录列表。
+- 下一步 / 遗留问题：
+  当前仍是前端页面层聚合，用户身份临时使用 `supporter_current_user`；后续需要后端提供真实用户身份和稳定 support history summary / item VM。
+
+## 2026-04-17 | 前端 | 新增救助联系方式设置页并接入建档前置校验
+
+- 为什么改：
+  新建救助档案前，支持者需要能看到救助人的联系方式和二维码；如果救助人还没设置联系方式就进入建档，后续支持闭环会缺少基础联系信息。因此需要先补联系方式设置页，并在新建档案入口前做本地完整性校验。
+- 改了什么：
+  新增 `src/pages/profile/contact-settings/index.tsx` / `index.scss` / `index.config.ts`，按 Figma `446:7828` 落微信号、微信二维码上传、备注和底部提交按钮；新增 `src/data/rescuerContactProfile.ts`，用 `rescuer-contact-profile:v1` 本地保存联系方式；我的页“救助联系方式设置”入口改为跳转该页；救助工作台“新建救助档案”入口在联系方式未完整时先弹窗引导填写，保存后再进入建档第一步。
+- 影响范围：
+  `src/pages/profile/contact-settings/*`、`src/data/rescuerContactProfile.ts`、`src/pages/profile/index.tsx`、`src/pages/rescue/index.tsx`、`src/app.config.ts`，以及 profile / contact settings 相关文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前联系方式设置页可本地保存微信号 / 二维码 / 备注，且新建救助前会先检查联系方式完整性。
+- 下一步 / 遗留问题：
+  当前二维码仍是本地临时路径，不是正式 asset / fileID；后续后端接入时需要把 `wechatId / qrImage / contactNote` 落到 `user_profiles` 与资产系统里，并替换前端本地校验。
+
+## 2026-04-17 | 前端 | 新增救助人主页并复用首页案例卡组件
+
+- 为什么改：
+  客态详情页里的“查看主页”此前仍是 toast 占位，而 Figma 已有救助人主页节点；同时主页下方案例卡和首页卡片是同一结构，继续复制实现会导致后续样式分叉。
+- 改了什么：
+  新增共享组件 `src/components/DiscoverCaseCard.*`，把首页案例卡结构从发现页抽出；发现页改为复用该组件；新增 `src/pages/rescuer/home/index.tsx` / `index.scss` / `index.config.ts`，按 Figma `442:6758` 落顶部救助人信息区，并按 `rescuerId` 聚合该救助人的公开案例，下方案例列表直接复用首页卡片组件；客态详情页“查看主页”改为跳转真实页面。
+- 影响范围：
+  `src/components/DiscoverCaseCard.*`、`src/pages/discover/index.tsx`、`src/pages/rescuer/home/*`、`src/pages/rescue/detail/index.tsx`、`src/app.config.ts`，以及救助人主页相关文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前可从客态详情页进入救助人主页，并查看同一救助人的公开案例列表。
+- 下一步 / 遗留问题：
+  此时救助人主页仍是前端页面层聚合，不是后端正式 `RescuerHomepageVM`；后续已接 `getRescuerHomepage` 远端 VM。
+
+## 2026-04-17 | 前端 | 救助人主页补远端详情兜底
+
+- 为什么改：
+  救助人主页首版只从本地 `getCanonicalBundles()` 按 `rescuerId` 聚合案例；当客态详情来自 CloudBase 远端时，远端返回的 `rescuerId` 可能不在本地 bundles 中，导致进入主页后显示“暂未找到救助人信息”。
+- 改了什么：
+  客态详情页跳转救助人主页时同时携带 `rescuerId` 和 `caseId`；救助人主页先尝试本地聚合，如果找不到救助人，则用 `caseId` 调 `loadPublicDetailVMByCaseId()` 回读当前案例详情，构建救助人信息，并至少把当前案例作为一张首页卡片展示。
+- 影响范围：
+  `src/pages/rescue/detail/index.tsx`、`src/pages/rescuer/home/index.tsx`，以及救助人主页相关文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前从 CloudBase 回读的客态详情进入救助人主页时不再直接落空。
+- 下一步 / 遗留问题：
+  这当时仍然是前端兜底，不是正式 `RescuerHomepageVM`；后续已接 `getRescuerHomepage` 远端 VM。
+
+## 2026-04-17 | 前端 | 联系方式页微信号提示文案改为手填口径
+
+- 为什么改：
+  “默认写入微信号”容易让人误解为小程序可以自动拿到登录用户微信号；但当前阶段微信号应由救助人手动填写，后端未来也应把它作为 user profile 字段保存。
+- 改了什么：
+  将 `src/pages/profile/contact-settings/index.tsx` 里的微信号输入框 placeholder 改为“请填写微信号”，并同步更新字段矩阵和待补字段契约里的说明。
+- 影响范围：
+  救助联系方式设置页的输入提示文案，以及后续后端接入时对 `wechatId` 来源的理解。
+- 验证结果：
+  文案已更新；本轮仅改文案和文档，未改变保存逻辑。
+- 下一步 / 遗留问题：
+  后端接入时仍需要把手填的 `wechatId` 正式落到 `user_profiles.wechatId`。
+
+## 2026-04-17 | 交接 | 后端接入前先识别前端本地展示覆盖
+
+- 为什么改：
+  当前名字、动物头像、状态文案在主态 / 客态 / 草稿 / 工作台之间已经能保持一致，但其中一部分仍然来自前端本地展示覆盖，而不是后端正式字段；如果后端接手时不先识别这层，容易把临时前端逻辑误判成正式数据契约。
+- 改了什么：
+  补记后端交接口径：接手前先读总控、字段矩阵、待补契约和开发日志，再对照 `src/data/caseTitleOverride.ts`、`src/pages/rescue/detail/index.tsx`、`src/pages/rescue/create/preview/index.tsx`、`src/pages/rescue/index.tsx`、`src/pages/support/claim/index.tsx`，确认哪些名字 / 头像 / 状态来自本地覆盖，再决定如何沉到正式后端接口。
+- 影响范围：
+  后端 agent / 后续工程师对“展示层临时覆盖”和“正式远端字段”的职责划分。
+- 验证结果：
+  交接信息已写入日志，后续线程可直接据此恢复后端接入前的上下文。
+- 下一步 / 遗留问题：
+  等后端正式接入这批字段后，应继续更新这份日志，删除已经不再需要的前端临时覆盖说明。
+
+## 2026-04-17 | 文档 | 再同步状态更新页节点轮与图片区交互
+
+- 为什么改：
+  状态更新页在节点轮里又补了字段顺序、底部按钮比例和图片区交互统一，如果文档不继续收口，后续线程会误以为它仍是早期的九宫格空态页。
+- 改了什么：
+  再次更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`，补记状态更新页当前完成度上调、图片区已对齐到记账页同款的固定添加按钮 + 横向滑动列表交互，以及 detail timeline 继续保持真实事件流渲染口径。
+- 影响范围：
+  P0-B 状态更新页当前状态判断、图片区交互口径、后续 AI / 工程师恢复上下文时对该页结构边界的理解。
+- 验证结果：
+  文档已同步到当前代码真相，后续线程可直接据此判断状态更新页当前节点收口进度。
+- 下一步 / 遗留问题：
+  若继续做状态更新页精修或接入真实远端写链路，仍需继续同步这些文档。
+
+## 2026-04-17 | 文档 | 再收口草稿支出去重与时间线共享现状
+
+- 为什么改：
+  这轮又补了两类容易在后续线程里判断错误的事实：草稿 detail tab 的支出重复渲染已经修掉，以及主/客态/草稿 detail 卡当前确实已经共用一套时间线组件。如果不再补记，后续很容易继续按旧认知排查。
+- 改了什么：
+  再次更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`，补记草稿 detail tab 现在只从结构化 `expenseRecords` 生成支出卡、不再双路渲染，以及主态时间线轴线仍在精修、但卡片结构已经统一。
+- 影响范围：
+  前端问题排查口径、草稿 detail tab 字段消费判断、Figma 完成度描述。
+- 验证结果：
+  文档已经补到当前代码真相，后续线程可以直接据此判断草稿箱支出卡来源和时间线共享现状。
+- 下一步 / 遗留问题：
+  如果继续调整主态 timeline 轴线或记账提交流程后的远端写链路，仍需继续同步这些文档。
+
+## 2026-04-17 | 文档 | 同步记账前端闭环与支出卡字段口径
+
+- 为什么改：
+  记账页这轮已经从“只有结构和缓存”推进到“主态详情 / 草稿箱都能落成支出卡”的前端闭环，如果文档不更新，后续线程会继续按旧口径判断“记账还没提交链路”或误以为支出卡仍应展示医院字段。
+- 改了什么：
+  更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`，补记记账页已进入 `已可试跑`、`caseId` 提交后会在主态 detail tab 生成 local overlay 支出卡、`draftId` 提交后会写入本地 draft 的 `expenseRecords`，以及支出卡标题现只保留项目描述拼接、最多两行、不再展示 `merchantName`。
+- 影响范围：
+  项目阶段判断、Figma 完成度口径、记账页字段消费参考、后续 AI / 工程师对记账和详情页联动的理解。
+- 验证结果：
+  文档已同步到当前代码真相，后续线程可直接据此判断当前记账闭环状态与字段边界。
+- 下一步 / 遗留问题：
+  等真实远端写链路接入后，需要继续更新这些文档，把当前页面层 local overlay / local draft 闭环替换成正式数据层口径。
+
+## 2026-04-17 | 文档 | 同步记账精修、详情页刷新策略与共享时间线现状
+
+- 为什么改：
+  这轮前端不只是继续精修记账页，还补了草稿箱记账入口、详情页返回刷新策略和时间线卡的共享组件统一。如果文档不更新，后续线程会继续误判“草稿箱还没接记账页”或“详情页返回一定整页重载”。
+- 改了什么：
+  更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`，补记记账页当前已进入精修轮、主/客态与草稿 detail tab 正在统一到共享时间线卡、草稿箱 `onExpense` 已接新记账页、以及详情页只在真实写入后才刷新。
+- 影响范围：
+  项目当前阶段判断、Figma 完成度口径、页面字段消费参考、后续 AI / 工程师恢复上下文时对记账页和详情页行为的判断。
+- 验证结果：
+  文档已同步到当前代码真相，后续线程可以直接据此判断页面状态与行为边界。
+- 下一步 / 遗留问题：
+  如果继续精修主态 timeline 轴线、记账页细节或补上写链路，需要继续把这些文档保持在最新状态。
+
+## 2026-04-17 | 前端 | 抽出客态真值版时间线卡并统一主态与草稿箱复用
+
+- 为什么改：
+  主态详情和草稿箱 detail tab 虽然号称共享时间线卡，但实际上仍在走另一套组件和样式，导致卡片 padding、dot 位置、金额字体、support 行和查看详情区域继续和客态“正确版”分叉；同时草稿箱的“记一笔支出”入口没有接到新记账页。
+- 改了什么：
+  新增 `src/components/RescueTimelineShared.tsx` / `RescueTimelineShared.scss`，把客态详情卡片的结构和视觉参数抽成共享时间线组件；客态详情改用这套共享组件渲染，`RescueOwnerTimeline` 也改为把 owner / draft 数据映射到同一组件；并将 `src/pages/rescue/create/preview/index.tsx` 的 `onExpense` 改成跳转 `/pages/rescue/expense/index?draftId=...`。
+- 影响范围：
+  救助详情客态 / 主态 detail tab、草稿箱 detail tab，以及草稿箱进入记账页的前端路由。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：
+  继续根据真机截图确认共享时间线卡已经完全达到客态基准，并逐步清理 detail 页里旧的 `guest-timeline-event__* / timeline-card__*` 冗余样式与实现。
+
+## 2026-04-17 | 前端 | 修正主态与草稿箱时间线卡样式分叉，并接通草稿记账入口
+
+- 为什么改：
+  救助详情主态和草稿箱都在使用 `RescueOwnerTimeline` 这套共享卡片，但它的 dot、时间线竖线、support 行、金额字体和 badge/link 细节已经悄悄偏离客态详情那套正确样式，导致主态 / 草稿页卡片内边距和层级观感变坏；同时草稿箱里的“记一笔支出”还停留在旧 action sheet，没有进入新记账页。
+- 改了什么：
+  在 `src/components/RescueOwnerShared.scss` 中把共享时间线卡的关键样式回对到客态详情口径：竖线位置、dot 坐标、expense dot 颜色、card 圆角、amount 数字字体、support 行裁切、link 颜色、budget panel 拉伸等；并将 `src/pages/rescue/create/preview/index.tsx` 的 `onExpense` 改为跳转 `/pages/rescue/expense/index?draftId=...`，同时让 `src/pages/rescue/expense/index.tsx` 兼容 `draftId` 作为缓存上下文主键。
+- 影响范围：
+  救助详情主态 detail tab、草稿箱 detail tab、草稿记账入口和记账页本地缓存隔离逻辑。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：
+  继续真机复看主态 / 草稿 detail tab 的时间线卡与客态是否已完全同口径，后续如果要彻底三端统一，可再把客态卡片结构进一步抽到共享组件层。
+
+## 2026-04-17 | 前端 | 修正记账页支出明细区的双重横向 padding
+
+- 为什么改：
+  记账页下半部分的 `支出明细 / 新增一条明细 / 支出卡片` 在运行态里离屏幕两侧过窄，和 Figma `441:4714` 的 16px 页边距不一致；排查后确认是 page-shell 自带 16px 外层 padding 的同时，`rescue-expense-page__details` 又额外加了一层 16px 内边距。
+- 改了什么：
+  移除 `src/pages/rescue/expense/index.scss` 中 `rescue-expense-page__details` 的横向 `padding: 0 16px`，保留 page-shell 的统一页边距，让下方支出明细相关内容恢复到与上方公共凭证卡一致的宽度。
+- 影响范围：
+  记账页下半部分的横向对齐，包括 `支出明细标题区 / 新增明细按钮 / 明细卡片`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：
+  继续按当前 compare 热点收口记账页细节，尤其是上传区、底部按钮栏和明细卡内部层级。
+
+## 2026-04-17 | QA | 修复记账页前端验收报告空指针并补设计态 QA 场景
+
+- 为什么改：
+  记账页在调用 `frontend-qa` 时虽然已经成功拿到原生截图，但 `miniprogram-design-qa` 在未提供本地 designImage/baselineImage 的情况下会在报告阶段空指针退出；同时记账页默认是空上传态，不利于和 Figma 设计态做有效对照。
+- 改了什么：
+  为记账页新增 `qa/rescue-expense.json` 的 `qaPreset=design` 场景，页面层按该 preset 注入公共凭证图与示例金额，避免缓存弹窗干扰原生验收；并修复 `miniprogram-design-qa/scripts/run-qa-pipeline.mjs` 在 `compareSummary = null` 时仍访问 `counts` 的空指针，重新跑通 `initial/final` 报告产出。
+- 影响范围：
+  `src/pages/rescue/expense/index.tsx`、`qa/rescue-expense.json`、记账页 QA 产物，以及本机 `miniprogram-design-qa` 工具链。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；`rescue-expense` 场景现已成功产出原生截图、初验报告和复验报告。
+- 下一步 / 遗留问题：
+  当前 pipeline 已能稳定出报告，但 Figma MCP 截图尚未直接桥接为本地 designImagePath，所以 compare 仍以“Figma 截图人工对照 + 运行时自动截图”为主，未进入像素级 diff。
+
+## 2026-04-17 | 前端 | 固定记账页添加图片按钮并将新上传图片前置
+
+- 为什么改：
+  记账页上传区虽然已经支持横向滚动，但“添加照片”按钮也会一起滑走，且新上传图片默认排在后面，第三张以后不利于用户立即感知上传结果；同时 Figma 导航标题也已从旧口径改成“记录支出”。
+- 改了什么：
+  调整 `src/pages/rescue/expense/index.tsx` / `index.scss`：将上传区改成左侧固定添加按钮、右侧横向滚动图片列表，并保留按钮左右间隔；新上传图片改为前置插入；导航标题同步改成 `记录支出`；同时把交互规则补记到 `docs/expense_record_ia.md`。
+- 影响范围：
+  记账页上传区可用性、导航标题口径、记账页 IA 交互规则。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；上传区当前可保持添加按钮始终可见，且新上传图片会优先出现在可视区域。
+- 下一步 / 遗留问题：
+  继续在真机上确认横向滚动和固定按钮并存时的手势体验，以及缓存恢复后再次上传的排序是否仍符合预期。
+
+## 2026-04-17 | 前端 | 记账页补横向滚动上传区与本地续填缓存
+
+- 为什么改：
+  记账页上传区上一版只有单行裁切，没有和之配套的横向浏览交互；同时用户离开页面后会直接丢失未提交内容，不符合记账这类高频表单的实际使用习惯。
+- 改了什么：
+  将 `src/pages/rescue/expense/index.tsx` 的公共凭证区改为横向 `ScrollView`，保留点击缩略图预览大图；新增按 `caseId` 隔离的页面本地缓存，页面 `hide/unload` 时静默保存当前上传图和明细输入，再次进入时弹出“继续上次录入 / 新的录入”选择；同步更新 `docs/expense_record_ia.md` 与 `project_control_center.md`。
+- 影响范围：
+  `src/pages/rescue/expense/index.tsx`、记账页交互规则、P0-B 记账页当前状态文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前上传区可横向滚动浏览，记账页未提交内容可在再次进入时继续恢复。
+- 下一步 / 遗留问题：
+  后续继续在真机上确认横向滚动手势、删除点击热区和缓存恢复弹窗时机；真实提交成功后仍需补“提交后清除本地缓存”的正式链路。
+
+## 2026-04-17 | 前端 | 按 Figma 节点收口记账页删除按钮与上传区结构，并补大图预览
+
+- 为什么改：
+  记账页上一版只完成了大致结构，上传区还是可换行列表，删除按钮也还是临时文字，不符合 Figma `441:4714` 新补充的节点细节；同时上传后的图片还缺少直接点开看大图的能力。
+- 改了什么：
+  重新读取 `441:4714` 的 metadata / design context，按节点把记账页上传区改成单行裁切轨道，统一补上缩略图点击大图预览；将上传图删除按钮、明细卡删除按钮、添加照片、提示 icon、新增明细按钮 icon、底部提交箭头都切到 Figma 资产；并按节点重新收口 `字段顺序 / 文本层级 / gap / padding / 卡片内部分区`。
+- 影响范围：
+  `src/pages/rescue/expense/index.tsx`、`src/pages/rescue/expense/index.scss`、`src/assets/rescue-expense/*`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；记账页当前已支持上传图点开大图，并且两类删除按钮都已切到 Figma 节点设计。
+- 下一步 / 遗留问题：
+  后续若继续精修，应基于真机截图继续核对输入框纵向居中、底部栏模糊层和卡片阴影；真实提交到账本链路仍未接入。
+
+## 2026-04-17 | 前端 | 新增记账页结构版并接通主态详情入口
+
+- 为什么改：
+  P0-B 的记账页此前在 Figma `441:4714` 已有完整页面，但代码里还没有独立页面，主态详情“记一笔支出”入口也停留在 toast，导致救助人的高频内容生产链路仍断在入口层。
+- 改了什么：
+  新增 `src/pages/rescue/expense/index.tsx` / `index.scss` / `index.config.ts`，按 Figma 节点先落 `公共凭证上传 -> 本次合计支出 -> 新增明细 -> 多条支出行 -> 底部固定主按钮` 的结构版；补上公共凭证多图上传、支出行新增/删除和合计金额前端交互；同时把主态详情页“记一笔支出”接到该新页面，并同步更新 `project_control_center.md`、`figma_progress_map.md`、`product_development_status.md`。
+- 影响范围：
+  `src/app.config.ts`、`src/pages/rescue/detail/index.tsx`、新建 `src/pages/rescue/expense/*` 页面，以及项目进度类文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前记账页已能在移动端与桌面端按现有 page-shell 模式稳定承载结构版。
+- 下一步 / 遗留问题：
+  继续做记账页运行态截图验证、按钮/输入/删除态的细节精修，并决定是否进入 `日期 / 类别 / 一句话说明` 的完整模板字段版；真实保存与挂载账本链路仍未接入。
+
+## 2026-04-17 | 前端 | 抽离主态详情与草稿预览共享 owner-style 组件并修正草稿箱跳转
+
+- 为什么改：
+  主态详情页和草稿预览页在 Figma 上大量复用同一套 `动物资金卡 / 动作卡区 / tab / 摘要卡 / 时间线卡`，但代码里却各写一遍，导致间距、图标、按钮和卡片层级持续分叉；同时草稿箱里的 remote draft 会误跳 owner detail，或者在 preview 页里回退成无关的空草稿，出现 `未命名救助 / ¥0`。
+- 改了什么：
+  新增 `src/components/RescueOwnerShared.tsx` / `RescueOwnerShared.scss`，统一承接 owner-style 的 `动物资金卡 / 快捷动作区 / 摘要详情 tab / 摘要卡 / 时间线卡`；将 `src/pages/rescue/detail/index.tsx` 与 `src/pages/rescue/create/preview/index.tsx` 切到共享组件；草稿箱改成所有 `draft` 卡片统一先进 preview 页；preview 页支持 `draftId / caseId` 双路由取数，并在 local draft 未命中时用 `OwnerDetailVM + PublicDetailVM` 做页面层 fallback；同时补上草稿 detail tab 的 `图标 + 标题 + 引导文案` 空状态，并把预算口径固定为已设置值，不再展示“待设定”。
+- 影响范围：
+  `src/components/RescueOwnerShared.*`、`src/pages/rescue/detail/*`、`src/pages/rescue/create/preview/*`、`src/pages/rescue/index.tsx`、owner 相关图标资源目录 `src/assets/rescue-detail/owner/`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；按 `frontend-qa` 跑通微信小程序原生复验，拿到 owner 摘要、owner 详情和草稿 preview 三组截图证据，草稿页已显示 `糯米 / 草稿中 / ¥1,200` 的正确取数结果。
+- 下一步 / 遗留问题：
+  继续按 Figma 节点对共享组件做像素级精修，尤其是 footer 按钮、tab 与内容区间距、时间线 dot/line 坐标，以及局部真机运行态排版。
+
+## 2026-04-17 | 文档 | 同步主态详情与草稿预览状态、字段与 QA 结论
+
+- 为什么改：
+  这轮前端不仅补了主态详情和草稿预览，还把两页抽成共享组件并修正了草稿箱 draft 的真实入口，如果不及时同步总控、Figma 对照表和字段矩阵，后续线程会继续误判“草稿页没改”或“remote draft 不能预览”。
+- 改了什么：
+  更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`，补记 owner-style 共享组件、草稿箱统一跳 preview、preview 的 `draftId / caseId` 双路由与 remote draft 页面层 fallback、以及“预算在 preview 页视作必填前置条件”的页面规则。
+- 影响范围：
+  页面完成度判断、前端字段消费参考、后续 AI / 工程师恢复上下文时对主态详情与草稿预览的口径。
+- 验证结果：
+  文档已经同步到当前代码真相源，后续线程可直接依据文档判断页面状态、字段来源和草稿预览入口。
+- 下一步 / 遗留问题：
+  若继续做主态详情 / 草稿页的像素级精修，应同步把对照表里的完成度和主要缺口继续细化，而不是只在聊天里口头说明。
+
 ---
+
+## 2026-04-15 | 前端 | 收口救助客态页到可试跑并补最终验收问题
+
+- 为什么改：
+  救助客态页已经完成主要结构，但在前端验收中仍暴露出几类可安全收口的问题：缺少明确的 loading/error 页面态、Hero 与首卡覆盖关系不够稳定、详情 tab 里四种主要操作卡片需要稳定 mock 展示，以及“关于我”文案会被旧 mock 预算句子污染。
+- 改了什么：
+  在 `src/pages/rescue/detail/index.tsx` / `index.scss` 中补齐客态页的 Figma 结构收口；把 `关于我` 固定为“猫咪情况介绍 + 当前总预算”两段；详情 tab 固定展示 `支出记录 / 状态更新 / 预算调整 / 场外收入` 四类卡片并接入 mock 图片兜底；补上 Hero 压卡关系、证据链/复制/摘要卡图标、卡片阴影和更稳的桌面承载；新增 loading / error 页面态与重试动作；同步更新 `project_control_center.md` 与 `figma_progress_map.md` 中的客态页状态。
+- 影响范围：
+  救助客态详情页、页面样式、前端验收结论、项目当前页面状态文档。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；客态页当前可稳定展示摘要态、详情态和四类主要操作卡片。
+- 下一步 / 遗留问题：
+  仍建议在微信开发者工具或真机上补一轮截图级验图；`查看主页 / 分享` 仍是占位交互；个别图标和图片裁切还可以继续做精修。
+
+## 2026-04-15 | 前端 | 根据手动构建截图修正救助人卡运行态布局
+
+- 为什么改：
+  手动构建截图里，救助人卡的标题和副文案在真实运行态中挤到同一行，说明页面在小程序 Text 渲染下还存在块级和宽度约束问题，需要按实际截图再收一次。
+- 改了什么：
+  调整 `src/pages/rescue/detail/index.scss` 中救助人卡的文案布局，让标题、副文案和“查看主页”成为稳定的三段结构；补充块级显示、行高、单行省略和右侧按钮对齐约束。
+- 影响范围：
+  救助客态页救助人卡的运行态排版。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：
+  仍建议继续依据真机构建截图，把客态页其余视觉细节按模块逐段收口。
+
+## 2026-04-15 | 前端 | 继续按 Figma 与真机构建截图收口救助客态页
+
+- 为什么改：
+  客态详情页进入可试跑后，仍需要根据真机构建截图逐轮对照 Figma 收细节，尤其是四类详情卡的运行态排版，以及“图标必须优先使用 Figma exact 资产”的实现要求。
+- 改了什么：
+  继续收口 `src/pages/rescue/detail/index.tsx` / `index.scss`；把 loading 页面改成轻量的 `图标 + 文案` 形式；把 `场外收入` 卡改成左右结构，右侧金额固定绿色，左侧标题和备注超长时省略；通过 Figma asset URL 下载并替换客态页关键 exact 图标资源，包括 `copy / 证据链完整 / 总支出 / 总收入 / 查看详情箭头 / 分享 / info`，并保留状态 badge 左侧的 Figma 原始 emoji 文本表达。
+- 影响范围：
+  救助客态详情页的摘要卡、详情卡、加载态、底部分享区和图标资源目录 `src/assets/rescue-detail/`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；客态页关键图标已从 Figma exact 资产切换到本地资源文件。
+- 下一步 / 遗留问题：
+  继续依据最新真机构建截图逐块收口卡片字号、换行、对齐和图片裁切；`分享 / 查看主页` 仍是占位交互。
+
+## 2026-04-16 | 文档 | 补记“救助开始时间”字段缺口
+
+- 为什么改：
+  认领支持页的案例卡按 Figma 需要展示“救助开始时间”，当前前端只能拿到 `updatedAtLabel`，语义不对，不能继续拿最近更新时间替代。
+- 改了什么：
+  在 `docs/pending_field_contracts.md` 中补充 `rescueStartedAt / rescueStartedAtLabel` 字段缺口；在 `docs/frontend_backend_field_matrix.md` 中补记认领支持页对该字段的依赖，并明确它不应复用 `updatedAtLabel`。
+- 影响范围：
+  建档流程字段契约、客态详情/认领支持页案例卡、后续 `PublicDetailVM` 输出。
+- 验证结果：
+  文档已记录该缺口，后续实现时可以按字段契约推进，而不是在页面层继续用错误字段兜底。
+- 下一步 / 遗留问题：
+  需要在建档流程里决定这个字段的采集方式与默认值，再接入 canonical case 和相关 VM。
+
+## 2026-04-16 | 前端 | 收口支持者认领支持页到可试跑结构版
+
+- 为什么改：
+  当前 P0-A 的支持者登记支持页仍停留在“结构部分完成”阶段，和 Figma `322:2005` 相比还存在字段顺序偏差、上传/提交图标占位、底部按钮位置和运行态加载行为不够稳等问题，需要先把结构版收口到可试跑。
+- 改了什么：
+  在 `src/pages/support/claim/index.tsx` / `index.scss` 中按节点收口页面结构：移除 Figma 中不存在的 `支持时间` 字段和顶部多余说明文案；完成 `案例卡 + 支持金额 + 您的称呼 + 转账截图/凭证 + 爱心留言/备注 + 底部固定提交按钮` 的页面组织；补充页面级 `loading / error` 态；修正图片选择返回页面时不应重新闪加载；为上传区图标和提交按钮箭头接入 Figma exact 资产；并继续根据真机构建截图修正案例卡和单行输入框的运行态表现。
+- 影响范围：
+  支持者认领支持页的结构、输入区、底部提交栏、页面级状态和图标资源目录 `src/assets/support-claim/`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；当前页面已能以正确结构完成支持登记主路径。
+- 下一步 / 遗留问题：
+  仍需继续按真机构建截图微调输入框运行态；案例卡里的 `救助开始时间` 还缺正式字段接入；真实 CloudBase 写链路仍需继续验证。
+
+## 2026-04-16 | 前端 | 接通 support/claim 与 support/review 的原生截图验收闭环
+
+- 为什么改：
+  `frontend-qa` 已增强 mini-program native 分支，仅靠代码审查已经不足以支撑后续精修，需要把 `support/claim`、`support/review` 的原生截图场景真正跑起来，用运行时证据推进前端收口。
+- 改了什么：
+  在项目内新增 `qa/support-claim.json`、`qa/support-review-pending.json`、`qa/support-review-manual.json` 三个场景文件；接通 `miniprogram-design-qa` 的 `detect-project / capture-devtools` 路径；补充 `support/review` 对 `tab=manual` 路由的同步；修正 `support/claim` 的 readySignal 超时配置；继续按运行截图收口 `support/claim` 的案例卡头像和 `support/review` 待确认卡片的缩略图与按钮组关系。
+- 影响范围：
+  `support/claim`、`support/review`、项目内 `qa/` 场景文件、原生截图输出目录 `.qa-output/`。
+- 验证结果：
+  `npm run typecheck` 通过；`npm run build:weapp` 通过；`support/claim`、`support-review-pending`、`support-review-manual` 三个场景均已拿到原生截图证据。
+- 下一步 / 遗留问题：
+  继续按原生截图和 Figma 节点推进精修；`support/claim` 仍缺 `救助开始时间` 真字段；`support/review` 的 `manual` tab 后续已接 `createManualSupportEntry` 真实写链路。
 
 ## 2026-04-14 | CloudBase | 接入后端骨架与 rescueApi 云函数
 
@@ -64,6 +675,45 @@
   首页已显示 seed 案例 `云朵 / JM386001`，说明 `小程序 -> Taro.cloud.init -> rescueApi -> CloudBase 数据库 -> canonical selector -> 首页 UI` 链路通过。
 - 下一步 / 遗留问题：
   继续验证“我已支持”登记、云存储凭证上传、`support_entries` pending 写入，以及 owner 侧确认；seed 案例的 `rescuerOpenid` 仍是开发占位，测试 owner 权限前需替换成真实 OPENID。
+
+## 2026-04-15 | 文档 | 新增待补完字段契约清单
+
+- 为什么改：
+  现有 `frontend_backend_field_matrix.md` 更偏“当前字段总表”，但前端继续补页面时，还需要一份专门聚焦“哪些字段尚未定稿、应该补到哪一层、为什么需要”的长期参考文档。
+- 改了什么：
+  新增 `docs/pending_field_contracts.md`，按首页、详情、工作台、我的/支持足迹/联系方式设置、支持登记/核实页整理待补字段，并给每个字段补上文字标注、层级建议和后续来源建议；同时在 `frontend_backend_field_matrix.md` 增加入口链接。
+- 影响范围：
+  前端页面完善顺序、后端字段补齐节奏、新线程/新 AI 的上下文恢复方式。
+- 验证结果：
+  文档已落库，待补字段已按 canonical object / selector / VM 三层拆开，后续可直接按页面引用。
+- 下一步 / 遗留问题：
+  后续每补完一页页面或定死一组字段，应同步把这份清单中的“未做 / 待确认”项逐步清掉，而不是只在聊天里口头确认。
+
+## 2026-04-15 | 文档 | 新增 Figma 页面完成度对照表
+
+- 为什么改：
+  之前对 Figma 的页面完成度判断主要来自局部页面，后续在 `446:7508` 主架构和 `446:7511 / 446:7512 / 446:7509` 三组节点中又发现了更多完整页面，需要一份正式文档把设计节点和代码实现对齐起来。
+- 改了什么：
+  新增 `docs/figma_progress_map.md`，按 `Figma 页面节点 -> 当前代码落点 -> 当前状态 -> 完成度 -> 主要缺口` 整理完整对照表，并把主架构里之前容易漏看的“我的支持足迹 / 联系方式设置 / 救助人主页”等页面一并纳入。
+- 影响范围：
+  前端排期、页面优先级判断、新线程上下文恢复、后续 Figma 驱动的页面精修。
+- 验证结果：
+  已重新核对 `446:7508`、`446:7509`、`446:7511`、`446:7512` 四组 Figma 节点，当前整体完成度修正为约 `45% - 55%`。
+- 下一步 / 遗留问题：
+  后续如果新增页面实现或完成度显著变化，应优先更新这份对照表，而不是继续依赖聊天中的口头完成度判断。
+
+## 2026-04-15 | 文档 | 新增项目总控中心并重排页面优先级
+
+- 为什么改：
+  现有文档虽然已经覆盖字段、Figma 覆盖率、CloudBase 接入和历史日志，但缺少一个单一入口来回答“项目当前阶段、前后端进度、页面优先级和下一步动作”，导致新线程仍要在多份文档间来回跳。
+- 改了什么：
+  新增 `docs/project_control_center.md` 作为总控入口；明确现有文档职责边界；将页面优先级重排为 `P0-A 前台查档与支持闭环`、`P0-B 救助人高频生产页`、`P1 身份与增强页`、`P2 延后能力`；并同步更新 `product_development_status.md` 与 `ui_priority_matrix.md` 的入口说明和优先级口径。
+- 影响范围：
+  新线程上下文恢复、页面排期判断、前后端协作节奏、文档维护规则。
+- 验证结果：
+  当前总控文档已能直接回答项目阶段、P0/P1/P2 页面清单、前端进度、后端进度和未来 1-2 个迭代动作；后续新线程应优先读取该文档。
+- 下一步 / 遗留问题：
+  后续每次改页面、字段或 CloudBase 能力时，必须优先更新 `project_control_center.md`，避免它再次退化成过时总览。
 
 ## 2026-04-04 | 文档管理 | 建立项目级开发日志机制
 
@@ -337,3 +987,81 @@
   `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过；首页搜索 icon、证据链 icon、状态 badge、资金条和 mock 资金状态分布均已更新到新口径。
 - 下一步 / 遗留问题：
   下一轮仍建议只做首页剩余边界：不同屏幕宽度下的卡片高度、文案换行、ID 与金额对齐，以及极端图片比例下的封面裁切表现。
+
+## 2026-04-17 | 表单输入 | 统一多行文本 placeholder 为覆盖层样式
+
+- 为什么改：
+  多个页面的 `Textarea` 还在使用系统原生 placeholder，字号、行高、颜色和内边距不一致，和当前 Figma 基线里的多行提示样式有明显偏差。
+- 改了什么：
+  新增复用组件 `TextareaWithOverlayPlaceholder`，把主态/草稿相关页面里的多行输入统一改为“覆盖层提示文案 + 透明 textarea”实现；同步收口 `14px` 字号、`24px` 行高、`#94A3B8` 文案色和 `18px` 内边距。
+- 影响范围：
+  `src/components/TextareaWithOverlayPlaceholder.tsx`、`src/pages/rescue/create/basic/*`、`src/pages/rescue/create/budget/*`、`src/pages/rescue/create/preview/*`、`src/pages/rescue/update/*`、`src/pages/rescue/budget-update/*`、`src/pages/support/claim/*`；保持现有页面结构与交互兼容，未新增 richer VM / richer mock。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；`test:domain` 未受影响，本轮未改 domain / repository / selector / types。
+- 下一步 / 遗留问题：
+  如果后续继续精修输入区，应再逐页核对不同节点的 textarea 高度和容器底色，但 placeholder 的实现方式不建议再回退到系统默认样式。
+
+## 2026-04-17 | 文档 | 同步 P0-B 页面状态与多行输入实现口径
+
+- 为什么改：
+  当前代码真相已经变化两次：`写进展更新 / 追加预算` 不再只是结构骨架，而是已有主态 / 草稿统一入口和前端提交闭环；同时项目内多页多行输入已统一成覆盖层 placeholder。如果文档不收口，后续线程会继续按旧状态判断页面成熟度，或把 placeholder 改动误当成字段契约变化。
+- 改了什么：
+  更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`，上调 P0-B 两页状态到更接近“已可试跑”，补记时间线事件流、主态/草稿联动、前端页面层 local 提交闭环，以及“覆盖层 placeholder 只是前端实现口径，不是新字段”的说明。
+- 影响范围：
+  项目当前阶段判断、Figma 完成度口径、字段契约边界判断，以及后续 AI / 工程师恢复上下文时对 P0-B 页面状态和输入区实现方式的理解。
+- 验证结果：
+  五份核心文档已经重新对齐到当前代码真相，和现有页面行为保持一致。
+- 下一步 / 遗留问题：
+  后续若继续把 P0-B 从前端 local 闭环替换成真实远端写链路，仍需继续同步这几份文档，避免“页面可试跑”和“后端已正式联通”被混写。
+
+## 2026-04-17 | 我的页 | 接入救助账本使用说明
+
+- 为什么改：
+  “我的”页已有使用说明入口但仍是占位；救助账本又需要先讲清楚“实际救助人自己建档，不建议代发”的边界，避免二手档案带来后续更新、对账和联系责任不清。
+- 改了什么：
+  新增 `src/pages/profile/guide/*` 静态说明页，把“我的”页入口接到真实路由；新增 `docs/rescue_ledger_usage_guide.md` 作为用户文案源，并同步 profile IA、总控、Figma 进度图和字段矩阵里的占位状态。
+- 影响范围：
+  `src/pages/profile/index.tsx`、`src/pages/profile/guide/*`、`src/app.config.ts`、`docs/rescue_ledger_usage_guide.md` 及相关产品状态文档；未改数据模型、repository、selector 或 VM。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仅保留既有资源体积 / code splitting warning。
+- 下一步 / 遗留问题：
+  后续可按真机截图继续精修说明页视觉，或把 Markdown 文案抽成更容易复用的内容源，避免页面文案和文档长期分叉。
+
+## 2026-04-17 | 我的页 | 使用说明页改为文章式分割线布局
+
+- 为什么改：
+  使用说明内容偏阅读型，整页卡片会把连续说明切得太碎，不如用白底和分割线保持“给用户看的小纸条”气质。
+- 改了什么：
+  调整 `src/pages/profile/guide/index.scss`，去掉说明分区的卡片背景、边框圆角和页面灰底，改成白底文章页、hero 分割线、段落分割线和轻量编号样式。
+- 影响范围：
+  仅影响救助账本使用说明页视觉，不改变路由、文案、数据模型、VM、selector 或 repository。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仍只保留既有资源体积 / code splitting warning。
+- 下一步 / 遗留问题：
+  后续如继续真机验图，可重点看长段文字在窄屏下的行距、分割线密度和底部留白是否舒服。
+
+## 2026-04-17 | 我的页 | 调整使用说明页阅读边距
+
+- 为什么改：
+  文章式说明页去掉卡片后，正文仍沿用全局 `16px` 页边距，长段落在手机上会显得贴边，阅读感不够松。
+- 改了什么：
+  将使用说明页 hero 和正文内容整体内收 `8px`，形成约 `24px` 阅读边距；同时去掉最后一个说明分区的底部分割线。
+- 影响范围：
+  仅影响 `src/pages/profile/guide/index.scss` 的阅读排版，不改路由、文案、数据层或状态规则。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仍只保留既有资源体积 / code splitting warning。
+- 下一步 / 遗留问题：
+  后续真机验图时重点看 24px 边距在小屏上是否仍舒适，必要时可在极窄屏回落到 20px。
+
+## 2026-04-17 | 我的页 | 使用说明页改回暖灰背景并加大边距
+
+- 为什么改：
+  说明页需要和首页 / 全局页面的暖灰背景保持一致；同时 24px 阅读边距仍略紧，长文阅读需要更松一点。
+- 改了什么：
+  将 `src/pages/profile/guide/index.scss` 的页面和导航背景改为 `var(--color-bg-page)`，并把 hero / 正文内容的额外内收从 `8px` 调整为 `16px`，形成约 `32px` 左右阅读边距。
+- 影响范围：
+  仅影响救助账本使用说明页视觉，不改文案、路由、数据模型、VM、selector 或 repository。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仍只保留既有资源体积 / code splitting warning。
+- 下一步 / 遗留问题：
+  后续可用真机截图确认 32px 边距在窄屏是否过宽，如有必要再为小屏加响应式回落。

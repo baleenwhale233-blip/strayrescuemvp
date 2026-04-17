@@ -1,0 +1,47 @@
+{
+  "id": "support-review-pending",
+  "route": "pages/support/review/index",
+  "query": {
+    "id": "case_001"
+  },
+  "fixture": "seed-case-001",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".support-review-page__tabs",
+    "timeoutMs": 15000,
+    "stableMs": 1000
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "tab-switcher",
+      "pending-list"
+    ],
+    "segmentSelectors": {
+      "tab-switcher": ".support-review-page__tabs",
+      "pending-list": ".support-review-page__list"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "TV9rGp8GeRJErjAAvYafKu",
+    "figmaNodeId": "319:1382",
+    "designImagePath": "",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "当前使用本地 seed case_001 作为稳定 QA 场景。",
+    "默认应停留在待确认认领 tab。",
+    "当前缩略图仍是结构版占位，不是最终精修图。"
+  ]
+}

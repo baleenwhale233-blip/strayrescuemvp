@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 36">
+<path d="M0 0H24V24H4C1.79086 24 0 22.2091 0 20V0Z" fill="var(--fill-0, black)" fill-opacity="0.4"/>
+<path id="Icon" d="M8.25 19C7.8375 19 7.48437 18.8477 7.19062 18.5431C6.89687 18.2384 6.75 17.8722 6.75 17.4444V7.33333H6V5.77778H9.75V5H14.25V5.77778H18V7.33333H17.25V17.4444C17.25 17.8722 17.1031 18.2384 16.8094 18.5431C16.5156 18.8477 16.1625 19 15.75 19H8.25ZM15.75 7.33333H8.25V17.4444H15.75V7.33333ZM9.75 15.8889H11.25V8.88889H9.75V15.8889ZM12.75 15.8889H14.25V8.88889H12.75V15.8889Z" fill="var(--fill-0, #EF4444)"/>
+</g>
+</svg>

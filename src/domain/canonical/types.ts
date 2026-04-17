@@ -305,6 +305,8 @@ export type PublicDetailVM = {
   heroImageUrl?: string;
   locationText?: string;
   summary: string;
+  rescueStartedAt?: IsoDateTimeString;
+  rescueStartedAtLabel?: string;
   updatedAtLabel: string;
   ledger: LedgerSnapshot & {
     targetAmountLabel: string;
@@ -324,6 +326,7 @@ export type PublicDetailVM = {
     stats: CanonicalRescuerStats;
     wechatId?: string;
     paymentQrUrl?: string;
+    profileEntryEnabled: boolean;
   };
   supportSummary: {
     confirmedSupportAmount: number;
@@ -394,6 +397,8 @@ export type WorkbenchCaseCardVM = {
   homepageEligibilityReason?: string;
   pendingSupportEntryCount?: number;
   unmatchedSupportEntryCount?: number;
+  primaryNoticeLabel?: string;
+  lastUpdateAgeHint?: string;
   draftId?: Id;
 };
 

@@ -4,10 +4,28 @@ import { useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import { NavBar } from "../../components/NavBar";
 import { SectionHeader } from "../../components/SectionHeader";
-import { loadWorkbenchVMForCurrentUser } from "../../domain/canonical/repository";
+import { applyTitleOverrideToWorkbenchCard } from "../../data/caseTitleOverride";
+import { hasCompleteRescuerContactProfile } from "../../data/rescuerContactProfile";
+import {
+  caseIdToDraftId,
+  loadMyProfile,
+  loadWorkbenchVMForCurrentUser,
+} from "../../domain/canonical/repository";
 import type { WorkbenchCaseCardVM } from "../../domain/canonical/types";
 import fallbackCoverImage from "../../assets/detail/guest-hero-cat.png";
 import "./index.scss";
+
+const WORKBENCH_STATUS_LABELS = new Set([
+  "紧急送医",
+  "医疗救助中",
+  "康复观察",
+  "寻找领养",
+  "遗憾离世",
+]);
+
+function getWorkbenchStatusLabel(label?: string) {
+  return label && WORKBENCH_STATUS_LABELS.has(label) ? label : "未更新状态";
+}
 
 function getProjectSubtitle(project: WorkbenchCaseCardVM) {
   if (project.visibility === "draft") {
@@ -16,10 +34,14 @@ function getProjectSubtitle(project: WorkbenchCaseCardVM) {
       : "草稿待完善";
   }
 
-  return `${project.statusLabel} · ${project.updatedAtLabel} 更新`;
+  return `${getWorkbenchStatusLabel(project.statusLabel)} · ${project.updatedAtLabel} 更新`;
 }
 
 function getProjectNotice(project: WorkbenchCaseCardVM) {
+  if (project.primaryNoticeLabel) {
+    return project.primaryNoticeLabel;
+  }
+
   if (project.pendingSupportEntryCount) {
     return `${project.pendingSupportEntryCount} 条支持待确认`;
   }
@@ -93,8 +115,8 @@ export default function RescuePage() {
   useDidShow(() => {
     loadWorkbenchVMForCurrentUser()
       .then((vm) => {
-        setActiveCases(vm?.activeCases ?? []);
-        setDraftCases(vm?.draftCases ?? []);
+        setActiveCases((vm?.activeCases ?? []).map(applyTitleOverrideToWorkbenchCard));
+        setDraftCases((vm?.draftCases ?? []).map(applyTitleOverrideToWorkbenchCard));
       })
       .catch(() => {
         Taro.showToast({
@@ -107,9 +129,10 @@ export default function RescuePage() {
   const handleNavigateToDetail = (
     card: WorkbenchCaseCardVM,
   ) => {
-    if (card.sourceKind === "local" && card.visibility === "draft" && card.draftId) {
+    if (card.visibility === "draft") {
+      const draftId = card.draftId || caseIdToDraftId(card.caseId);
       Taro.navigateTo({
-        url: `/pages/rescue/create/preview/index?id=${card.draftId}`,
+        url: `/pages/rescue/create/preview/index?id=${draftId}&caseId=${card.caseId}`,
       });
       return;
     }
@@ -119,7 +142,36 @@ export default function RescuePage() {
     });
   };
 
-  const handleCreate = () => {
+  const hasCompleteContactProfile = async () => {
+    try {
+      const profile = await loadMyProfile();
+      if (profile?.hasContactProfile) {
+        return true;
+      }
+    } catch {
+      // Fall back to local contact profile below.
+    }
+
+    return hasCompleteRescuerContactProfile();
+  };
+
+  const handleCreate = async () => {
+    if (!(await hasCompleteContactProfile())) {
+      Taro.showModal({
+        title: "先填写救助联系方式",
+        content: "发布救助前，需要让支持者知道如何联系您和核对转账。",
+        confirmText: "去填写",
+        cancelText: "稍后",
+      }).then((result) => {
+        if (result.confirm) {
+          Taro.navigateTo({
+            url: "/pages/profile/contact-settings/index?redirect=create",
+          });
+        }
+      });
+      return;
+    }
+
     Taro.navigateTo({
       url: "/pages/rescue/create/basic/index?entry=new",
     });
