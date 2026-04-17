@@ -1,22 +1,15 @@
-import { Image, Input, Text, Textarea, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
-import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
+import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
+import enterRescueIcon from "../../../../assets/rescue-create/step2-enter-icon.svg";
 import {
   getCurrentDraft,
   updateCurrentDraft,
 } from "../../../../domain/canonical/repository/localRepository";
 import "./index.scss";
-
-function formatBudgetText(value: string) {
-  if (!value) {
-    return "待定";
-  }
-
-  return `¥${Number(value || 0).toLocaleString("zh-CN")}`;
-}
 
 export default function RescueCreateBudgetPage() {
   const [coverPath, setCoverPath] = useState("");
@@ -86,9 +79,6 @@ export default function RescueCreateBudgetPage() {
             mode="aspectFill"
             src={coverPath || coverFallback}
           />
-          <View className="rescue-budget-page__avatar-badge">
-            <AppIcon name="circleCheck" size={24} variant="brand" />
-          </View>
         </View>
         <Text className="rescue-budget-page__name">{name || "未命名救助"}</Text>
       </View>
@@ -107,6 +97,7 @@ export default function RescueCreateBudgetPage() {
               className="rescue-budget-page__money-control"
               type="digit"
               placeholder="0.00"
+              placeholderStyle="color:#CBD5E1;"
               value={budget}
               onInput={(event) => setBudget(event.detail.value)}
             />
@@ -115,51 +106,26 @@ export default function RescueCreateBudgetPage() {
 
         <View className="rescue-budget-page__field">
           <Text className="rescue-budget-page__label">预估说明 (选填)</Text>
-          <View className="rescue-budget-page__textarea-wrap">
-            <Textarea
-              className="rescue-budget-page__textarea"
-              maxlength={160}
-              placeholder="请简要说明这笔预估费用将用于哪些方面？(如：后续3天住院费、特配处方粮、第2次复查化验等)"
-              value={budgetNote}
-              onInput={(event) => setBudgetNote(event.detail.value)}
-            />
-          </View>
-        </View>
-      </View>
-
-      <View className="rescue-budget-page__preview">
-        <Text className="rescue-budget-page__preview-title">账本预览</Text>
-        <View className="rescue-budget-page__preview-card">
-          <View className="rescue-budget-page__preview-head">
-            <Text className="rescue-budget-page__preview-meta">
-              已支出: 0.00
-            </Text>
-            <Text className="rescue-budget-page__preview-meta">
-              目标预估: {formatBudgetText(budget)}
-            </Text>
-          </View>
-
-          <View className="rescue-budget-page__preview-bar">
-            <View className="rescue-budget-page__preview-segment" />
-            <View className="rescue-budget-page__preview-segment rescue-budget-page__preview-segment--light" />
-            <View className="rescue-budget-page__preview-segment" />
-          </View>
-
-          <View className="rescue-budget-page__preview-tip">
-            <Text className="rescue-budget-page__preview-tip-icon">i</Text>
-            <Text className="rescue-budget-page__preview-tip-text">
-              进度条：已支出、结余/缺口、整体预估费用
-            </Text>
-          </View>
+          <TextareaWithOverlayPlaceholder
+            wrapperClassName="rescue-budget-page__textarea-wrap"
+            textareaClassName="rescue-budget-page__textarea"
+            placeholderClassName="rescue-budget-page__textarea-placeholder"
+            placeholder="请简要说明这笔预估费用将用于哪些方面？(如：后续3天住院费、特配处方粮、第2次复查化验等)"
+            maxlength={160}
+            value={budgetNote}
+            onInput={(event) => setBudgetNote(event.detail.value)}
+          />
         </View>
       </View>
 
       <View className="rescue-budget-page__footer">
         <View className="theme-button-primary rescue-budget-page__button" onTap={handleNext}>
           <Text>进入救助页面</Text>
-          <View className="rescue-budget-page__button-icon">
-            <AppIcon name="plusCircle" size={24} variant="inverse" />
-          </View>
+          <Image
+            className="rescue-budget-page__button-icon"
+            mode="aspectFit"
+            src={enterRescueIcon}
+          />
         </View>
         <Text className="rescue-budget-page__footer-hint">
           稍后您可以在工作台随时调整此预估金额

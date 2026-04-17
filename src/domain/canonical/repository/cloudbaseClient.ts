@@ -14,8 +14,28 @@ type RescueApiEnvelope<T> =
 
 let initializedEnvId: string | undefined;
 
+function getCurrentMiniProgramAppId() {
+  try {
+    const taroWithAccountInfo = Taro as typeof Taro & {
+      getAccountInfoSync?: () => {
+        miniProgram?: {
+          appId?: string;
+        };
+      };
+    };
+
+    return taroWithAccountInfo.getAccountInfoSync?.().miniProgram?.appId;
+  } catch {
+    return undefined;
+  }
+}
+
 export function initCloudBase() {
   if (!shouldUseCloudBase()) {
+    return false;
+  }
+
+  if (getCurrentMiniProgramAppId() === "touristappid") {
     return false;
   }
 
@@ -100,11 +120,73 @@ export async function uploadSupportProofImage(caseId: string, filePath: string) 
       isLocalFallback: false,
     };
   } catch (error) {
-    console.warn("[cloudbaseClient] Falling back to local proof image", error);
+    console.warn("[cloudbaseClient] Support proof upload failed", error);
+    throw new Error("SUPPORT_PROOF_UPLOAD_FAILED");
+  }
+}
 
+export async function uploadCaseAssetImage(
+  caseId: string,
+  filePath: string,
+  folder: "progress-updates" | "expense-proofs" | "case-covers",
+) {
+  if (!initCloudBase()) {
     return {
       fileID: filePath,
       isLocalFallback: true,
     };
+  }
+
+  const extension = getFileExtension(filePath);
+  const safeCaseId = caseId.replace(/[^a-zA-Z0-9_-]/g, "_");
+  const cloudPath = `case-assets/${safeCaseId}/${folder}/${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}${extension}`;
+
+  try {
+    const result = await Taro.cloud.uploadFile({
+      cloudPath,
+      filePath,
+    });
+
+    return {
+      fileID: result.fileID,
+      isLocalFallback: false,
+    };
+  } catch (error) {
+    console.warn("[cloudbaseClient] Case asset upload failed", error);
+    throw new Error("CASE_ASSET_UPLOAD_FAILED");
+  }
+}
+
+export async function uploadProfileAssetImage(
+  filePath: string,
+  folder: "payment-qr",
+) {
+  if (!initCloudBase()) {
+    return {
+      fileID: filePath,
+      isLocalFallback: true,
+    };
+  }
+
+  const extension = getFileExtension(filePath);
+  const cloudPath = `profile-assets/${folder}/${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}${extension}`;
+
+  try {
+    const result = await Taro.cloud.uploadFile({
+      cloudPath,
+      filePath,
+    });
+
+    return {
+      fileID: result.fileID,
+      isLocalFallback: false,
+    };
+  } catch (error) {
+    console.warn("[cloudbaseClient] Profile asset upload failed", error);
+    throw new Error("PROFILE_ASSET_UPLOAD_FAILED");
   }
 }

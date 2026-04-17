@@ -1,0 +1,52 @@
+{
+  "id": "support-claim",
+  "route": "pages/support/claim/index",
+  "query": {
+    "id": "case_001"
+  },
+  "fixture": "seed-case-001",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".support-claim__case-card",
+    "timeoutMs": 30000,
+    "stableMs": 1500
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "case-card",
+      "amount-input",
+      "upload",
+      "textarea",
+      "bottom-bar"
+    ],
+    "segmentSelectors": {
+      "case-card": ".support-claim__case-card",
+      "amount-input": ".support-claim__single-input--amount",
+      "upload": ".support-claim__upload",
+      "textarea": ".support-claim__textarea",
+      "bottom-bar": ".support-claim__bottom"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "TV9rGp8GeRJErjAAvYafKu",
+    "figmaNodeId": "322:2005",
+    "designImagePath": "",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "认领支持页当前使用本地 seed case_001 作为稳定 QA 场景。",
+    "救助开始时间字段尚未接入，案例卡该行仍是占位。"
+  ]
+}

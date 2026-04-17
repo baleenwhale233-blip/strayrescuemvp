@@ -1,0 +1,330 @@
+.rescue-expense-page {
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding-bottom: 200px;
+}
+
+.rescue-expense-page .page-nav--system {
+  position: sticky;
+  z-index: 30;
+}
+
+.rescue-expense-page .page-nav__title {
+  color: #000000;
+  font-weight: var(--font-weight-regular);
+}
+
+.rescue-expense-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rescue-expense-page__evidence,
+.rescue-expense-page__line {
+  overflow: hidden;
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.rescue-expense-page__evidence {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.rescue-expense-page__section-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rescue-expense-page__section-title,
+.rescue-expense-page__details-title {
+  color: #0f172a;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.rescue-expense-page__section-desc,
+.rescue-expense-page__total-label {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 23px;
+}
+
+.rescue-expense-page__upload-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.rescue-expense-page__upload-scroll {
+  flex: 1;
+  min-width: 0;
+  height: 96px;
+}
+
+.rescue-expense-page__upload-grid {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: max-content;
+  padding-right: 12px;
+}
+
+.rescue-expense-page__upload-trigger,
+.rescue-expense-page__upload-item {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.rescue-expense-page__upload-trigger {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #f8fafc;
+  border: 2px dashed #dbe4ef;
+}
+
+.rescue-expense-page__upload-trigger-icon {
+  width: 22px;
+  height: 20px;
+}
+
+.rescue-expense-page__upload-trigger-text {
+  color: #94a3b8;
+  font-size: 10px;
+  line-height: 14px;
+}
+
+.rescue-expense-page__upload-item {
+  background: #e2e8f0;
+  border-radius: 12px;
+}
+
+.rescue-expense-page__upload-image {
+  width: 100%;
+  height: 100%;
+}
+
+.rescue-expense-page__upload-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.rescue-expense-page__upload-remove-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.rescue-expense-page__note {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 17px;
+  background: rgba(236, 91, 19, 0.05);
+  border: 1px solid rgba(236, 91, 19, 0.12);
+  border-radius: 12px;
+}
+
+.rescue-expense-page__note-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.rescue-expense-page__note-copy {
+  color: #334155;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.rescue-expense-page__details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rescue-expense-page__details-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rescue-expense-page__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rescue-expense-page__total-value-wrap {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+  color: #f06418;
+}
+
+.rescue-expense-page__total-currency {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.rescue-expense-page__total-value {
+  color: #f06418;
+  font-size: 36px;
+  line-height: 40px;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.rescue-expense-page__add-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 0 16px;
+  color: #64748b;
+  background: transparent;
+  border: 2px dashed #dbe4ef;
+  border-radius: 16px;
+}
+
+.rescue-expense-page__add-line-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.rescue-expense-page__add-line-text {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.rescue-expense-page__line-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rescue-expense-page__line {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.rescue-expense-page__line-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rescue-expense-page__line-index {
+  color: #0f172a;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 1px;
+}
+
+.rescue-expense-page__line-delete {
+  display: inline-flex;
+  width: 12px;
+  height: 13.5px;
+  align-items: center;
+  justify-content: center;
+}
+
+.rescue-expense-page__line-delete-icon {
+  width: 12px;
+  height: 13.5px;
+}
+
+.rescue-expense-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rescue-expense-page__label {
+  color: #0f172a;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.rescue-expense-page__input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  color: #0f172a;
+  background: #f8fafc;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 44px;
+  box-sizing: border-box;
+}
+
+.rescue-expense-page__input::placeholder {
+  color: #94a3b8;
+}
+
+.rescue-expense-page__bottom {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 25;
+  padding: 16px 24px 40px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 -4px 40px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(20px);
+}
+
+.rescue-expense-page__submit {
+  width: 100%;
+  min-height: 60px;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: var(--font-weight-regular);
+}
+
+.rescue-expense-page__submit-arrow {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+}
+
+@media (min-width: 768px) {
+  .rescue-expense-page__bottom {
+    display: flex;
+    justify-content: center;
+  }
+
+  .rescue-expense-page__submit {
+    max-width: 390px;
+  }
+}
