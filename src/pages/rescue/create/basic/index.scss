@@ -1,5 +1,20 @@
 .rescue-create-page {
-  padding-bottom: 148px;
+  min-height: 100vh;
+  padding-bottom: 164px;
+  background: #f8f6f6;
+}
+
+.rescue-create-page .page-nav {
+  margin-bottom: 0;
+}
+
+.rescue-create-page .page-nav--system {
+  margin-bottom: 0;
+  background: #ffffff;
+}
+
+.rescue-create-page .page-nav__title {
+  font-weight: 400;
 }
 
 .rescue-create-page__steps {
@@ -28,7 +43,12 @@
 
 .rescue-create-page__upload-frame {
   position: relative;
-  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 262px;
+  padding: 40px 16px;
   overflow: hidden;
   border: 2px dashed rgba(236, 91, 19, 0.4);
   border-radius: 12px;
@@ -37,27 +57,28 @@
 
 .rescue-create-page__upload-image {
   width: 100%;
-  height: 260px;
+  height: 100%;
 }
 
-.rescue-create-page__upload-image--placeholder {
-  opacity: 0.2;
+.rescue-create-page__upload-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .rescue-create-page__capture-button {
-  position: absolute;
-  top: 62px;
-  left: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 80px;
   height: 80px;
-  margin-left: -40px;
   background: #ec5b13;
   border-radius: 999px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 
 .rescue-create-page__capture-button image {
@@ -65,34 +86,29 @@
   height: 27px;
 }
 
-.rescue-create-page__album-button {
+.rescue-create-page__upload-remove {
   position: absolute;
-  top: 158px;
-  left: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 0 18px;
-  margin-left: -50px;
-  color: #0f172a;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  z-index: 2;
+}
+
+.rescue-create-page__upload-remove-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .rescue-create-page__upload-tip {
-  position: absolute;
-  right: 0;
-  bottom: 16px;
-  left: 0;
+  margin-top: 16px;
   color: #64748b;
   font-size: var(--font-size-body-sm);
   line-height: var(--line-height-body-sm);
   text-align: center;
+  z-index: 1;
 }
+
 
 .rescue-create-page__form-group {
   margin-bottom: 24px;
@@ -124,16 +140,31 @@
 }
 
 .rescue-create-page__textarea-card {
+  position: relative;
   min-height: 106px;
+}
+
+.rescue-create-page__textarea-placeholder {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 24px;
+  pointer-events: none;
 }
 
 .rescue-create-page__textarea {
   width: 100%;
   min-height: 106px;
-  padding: 16px;
+  padding: 18px;
   color: #0f172a;
+  background: transparent;
+  border: 0;
   font-size: var(--font-size-body-lg);
   line-height: 24px;
+  box-sizing: border-box;
 }
 
 .rescue-create-page__footer {
@@ -141,23 +172,23 @@
   right: 0;
   bottom: 0;
   left: 0;
-  padding: 17px 16px 24px;
-  background: rgba(255, 255, 255, 0.96);
+  padding: 17px 16px 32px;
+  background: #f8f6f6;
   border-top: 1px solid #f1f5f9;
   width: 100%;
-  min-height: 56px;
-  border-radius: 12px;
+  min-height: 121px;
 }
 
 .rescue-create-page__primary {
   gap: 8px;
+  min-height: 56px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
 .rescue-create-page__primary-arrow {
-  font-size: 18px;
-  line-height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .rescue-create-page__footer-hint {

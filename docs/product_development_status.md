@@ -1,6 +1,12 @@
 # 产品开发进度总览
 
-最后更新：2026-04-04
+说明：
+
+- 本文档保留为背景总览与历史阶段说明
+- 以后新线程恢复上下文时，优先看：
+  [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
+
+最后更新：2026-04-17
 
 适用对象：
 
@@ -42,7 +48,8 @@
 - 建档三步
 - 客态详情页
 - 主态详情页
-- 我的页（当前仍是占位）
+- 记账页（结构版）
+- 我的页正式入口
 
 ### 已有数据层能力
 
@@ -66,6 +73,8 @@
 - 支持登记 thread / entry 聚合
 - 案例 ID 精确搜索数据能力
 - draft 结构化存储 + 兼容旧 timeline 投影
+- CloudBase 接入骨架：前端远端 repository facade、`rescueApi` 云函数、云存储支持凭证上传入口
+- CloudBase 开发环境：`cloud1-9gl5sric0e5b386b`
 
 ### 当前验证状态
 
@@ -80,6 +89,7 @@
 
 - **类型层是健康的**
 - **domain test runner 还需要单独处理运行环境问题**
+- CloudBase 环境 ID 已填入；仍待创建集合、部署云函数并导入开发种子数据
 
 ---
 
@@ -173,7 +183,31 @@
 
 还没完成：
 
-- 只保留“支持足迹”的真正实现
+- 使用说明页视觉精修
+- 支持足迹页视觉精修
+- 联系方式设置页多账号回归
+
+已经补上：
+
+- 微信头像 / 用户名展示
+- 支持足迹页
+- 联系方式设置页
+- 使用说明文档页入口与静态说明页
+
+### 记账页
+
+已经有：
+
+- 公共凭证上传区
+- 本次合计支出
+- 新增多条支出明细
+- 底部固定主按钮
+
+还没完成：
+
+- 真实提交流程
+- 运行态截图级验图
+- 进入精修轮前的按钮、输入态和删除态细节收口
 
 ## 3.3 未开始
 
@@ -252,25 +286,16 @@
 
 ## 5. 当前最该优先推进的开发顺序
 
-### P0
+当前执行优先级已迁移到：
 
-1. 首页 / 待支持
-2. 个案详情页（客态）
-3. “我已支持”登记页
-4. 救助人核实支持登记页
+- [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
 
-### P1
+其中最新排序为：
 
-5. 救助页 / 工作台
-6. 我的 / 支持足迹
-7. 救助人主页
-
-### P2
-
-- 批量记支出
-- OCR
-- AI 文案
-- 海报
+- P0-A：发现页、个案详情页（客态）、支持者登记支持页、救助人核实支持页
+- P0-B：记账页、写进展更新页
+- P1：工作台、我的页、支持足迹、联系方式设置、救助人主页、手动记一笔
+- P2：追加预算、批量能力、前台支持记录重明细、OCR / AI 文案 / 海报
 
 ---
 
@@ -311,7 +336,13 @@
 
 ## 7. 当前推荐的管理方式
 
-后续建议保持这 3 层管理：
+当前推荐的管理方式已升级为：
+
+### 层 0：总控入口
+
+- `project_control_center.md`
+
+在此基础上，再保留原来的 3 层管理：
 
 ### 层 1：产品主架构
 
@@ -325,17 +356,18 @@
 - `expense_record_ia.md`
 - `sub_pages_ia.md`
 
-### 层 3：推进状态
+### 层 3：推进状态与补充清单
 
-- 本文档 `product_development_status.md`
-- `ui_priority_matrix.md`
+- `figma_progress_map.md`
+- `pending_field_contracts.md`
+- `frontend_backend_field_matrix.md`
 - `development_log.md`
 
 这样后面每次变更时：
 
 - 产品方向改动，更新主架构
 - 页面表现改动，更新页面 IA
-- 实现进度变化，更新本文档
+- 实现进度变化，优先更新 `project_control_center.md`
 - 具体改动过程，追加到 `development_log.md`
 
 ### 新增协作规则

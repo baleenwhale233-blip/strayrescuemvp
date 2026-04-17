@@ -4,6 +4,7 @@
   "compileType": "miniprogram",
   "miniprogramRoot": "dist/",
   "srcMiniprogramRoot": "dist/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
     "es6": false,
     "postcss": false,

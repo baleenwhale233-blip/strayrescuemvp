@@ -1,154 +1,339 @@
-import { Button, Image, Input, Text, Textarea, View } from "@tarojs/components";
-import Taro, { useRouter } from "@tarojs/taro";
+import { Button, Image, Input, Text, View } from "@tarojs/components";
+import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useState } from "react";
-import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
+import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
+import { consumeDraftBudgetRefresh } from "../../../../data/budgetAdjustmentSubmission";
+import {
+  applyTitleOverrideToDraft,
+  saveCaseCoverOverride,
+  saveCaseTitleOverride,
+} from "../../../../data/caseTitleOverride";
+import { consumeDraftExpenseRefresh } from "../../../../data/expenseSubmission";
+import { consumeDraftStatusRefresh } from "../../../../data/statusUpdateSubmission";
+import {
+  RescueOwnerOverview,
+  RescueOwnerQuickActions,
+  RescueOwnerSummaryCard,
+  RescueOwnerTabs,
+  RescueOwnerTimeline,
+  type RescueOwnerTimelineItem,
+} from "../../../../components/RescueOwnerShared";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
+import ownerActionBudgetIcon from "../../../../assets/rescue-detail/owner/action-budget.svg";
+import ownerActionChevronIcon from "../../../../assets/rescue-detail/owner/action-chevron.svg";
+import ownerFooterArrowIcon from "../../../../assets/rescue-detail/owner/footer-publish-arrow.svg";
+import ownerAnimalFallback from "../../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   calculateDraftLedger,
   appendDraftEntry,
+  draftIdToCaseId,
   formatTimelineTimestamp,
   getCurrentDraft,
+  getDraftByCaseId,
   getDraftById,
+  loadOwnerDetailVMByCaseId,
+  loadPublicDetailVMByCaseId,
   persistDraft,
   replaceDraft,
+  saveRemoteDraftCase,
   syncCurrentDraft,
   toOwnerActionTimelineEntry,
+  type OwnerDetailVM,
   type RescueCreateDraft,
   type RescueCreateEntryTone,
 } from "../../../../domain/canonical/repository/localRepository";
+import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import "./index.scss";
 
-type ActionType = RescueCreateEntryTone | "copy" | null;
-
-type ActionConfig = {
-  key: ActionType;
+type ActionType = RescueCreateEntryTone | null;
+type PreviewTab = "overview" | "detail";
+type PreviewTimelineEntry = {
+  id: string;
+  tone: RescueCreateEntryTone;
   label: string;
-  icon: "camera" | "fileText" | "handCoins" | "sparkles" | "plusCircle";
+  title: string;
+  description?: string;
+  timestamp: string;
+  amount?: number;
+  images?: string[];
+  budgetPrevious?: number;
+  budgetCurrent?: number;
+  sortKey: number;
 };
-
-const actionConfigs: ActionConfig[] = [
-  { key: "expense", label: "记一笔支出", icon: "camera" },
-  { key: "status", label: "写进展更新", icon: "fileText" },
-  { key: "income", label: "记场外收入", icon: "handCoins" },
-  { key: "budget", label: "追加预算", icon: "plusCircle" },
-  { key: "copy", label: "生成文案", icon: "sparkles" },
-];
 
 function formatCurrency(value: number) {
   return `¥${value.toLocaleString("zh-CN")}`;
 }
 
-function Timeline({ draft }: { draft: RescueCreateDraft }) {
-  const timeline = draft.timeline;
+function getDraftCover(draft: RescueCreateDraft) {
+  return draft.coverPath || ownerAnimalFallback || coverFallback;
+}
 
-  return (
-    <View className="rescue-preview__timeline-block">
-      <View className="rescue-preview__section-header">
-        <Text className="rescue-preview__section-title">救助动态</Text>
-        <Text className="rescue-preview__section-hint">数据实时更新</Text>
-      </View>
+function getDraftPublicCaseId(draft: RescueCreateDraft) {
+  return draft.publicCaseId || "待生成";
+}
 
-      {timeline.length === 0 ? (
-        <View className="rescue-preview__empty-card theme-card">
-          <Text className="rescue-preview__empty-title">还没有第一条记录</Text>
-          <Text className="rescue-preview__empty-copy">
-            可以先用上方快捷动作记录一笔支出、近况更新或场外收入。
-          </Text>
-        </View>
-      ) : (
-        <View className="rescue-preview__timeline">
-          <View className="rescue-preview__timeline-line" />
+function getDraftStatusLabel(draft: RescueCreateDraft) {
+  return draft.currentStatusLabel || "医疗救助中";
+}
 
-          {timeline.map((entry) => (
-            <View key={entry.id} className="rescue-preview__timeline-item">
-              <View
-                className={`rescue-preview__timeline-node rescue-preview__timeline-node--${entry.tone}`}
-              />
+function matchesDraftRoute(
+  draft: RescueCreateDraft | undefined,
+  draftId?: string,
+  caseId?: string,
+) {
+  if (!draft) {
+    return false;
+  }
 
-              <View className="rescue-preview__timeline-card theme-card">
-                <View className="rescue-preview__timeline-header">
-                  <Text
-                    className={`rescue-preview__timeline-badge rescue-preview__timeline-badge--${entry.tone}`}
-                  >
-                    {entry.label}
-                  </Text>
-                  <Text className="rescue-preview__timeline-time">
-                    {entry.timestamp}
-                  </Text>
-                </View>
+  if (draftId && draft.id === draftId) {
+    return true;
+  }
 
-                <Text className="rescue-preview__timeline-title">
-                  {entry.title}
-                </Text>
+  if (caseId && (draft.id === caseId || draft.publicCaseId === caseId)) {
+    return true;
+  }
 
-                {entry.description ? (
-                  <Text className="rescue-preview__timeline-description">
-                    {entry.description}
-                  </Text>
-                ) : null}
+  return !draftId && !caseId;
+}
 
-                {typeof entry.amount === "number" ? (
-                  <Text className="rescue-preview__timeline-amount">
-                    {entry.tone === "income" ? "+ " : "- "}
-                    {formatCurrency(entry.amount)}
-                  </Text>
-                ) : null}
+function parsePreviewTimestamp(value: string) {
+  if (!value) {
+    return 0;
+  }
 
-                {entry.images?.length ? (
-                  <View
-                    className={`rescue-preview__timeline-images ${
-                      entry.images.length === 1
-                        ? "rescue-preview__timeline-images--single"
-                        : ""
-                    }`}
-                  >
-                    {entry.images.map((src, index) => (
-                      <View
-                        key={`${entry.id}-${index}`}
-                        className="rescue-preview__timeline-image-card"
-                      >
-                        <Image
-                          className="rescue-preview__timeline-image"
-                          mode="aspectFill"
-                          src={src}
-                        />
-                        <Text className="rescue-preview__timeline-watermark">
-                          透明账本·严禁盗用
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                ) : null}
+  const direct = Date.parse(value);
+  if (Number.isFinite(direct)) {
+    return direct;
+  }
 
-                {typeof entry.budgetPrevious === "number" &&
-                typeof entry.budgetCurrent === "number" ? (
-                  <View className="rescue-preview__budget-summary">
-                    <View className="rescue-preview__budget-row">
-                      <Text className="rescue-preview__budget-label">
-                        原预算总计
-                      </Text>
-                      <Text className="rescue-preview__budget-label">
-                        现预算总计
-                      </Text>
-                    </View>
-                    <View className="rescue-preview__budget-row">
-                      <Text className="rescue-preview__budget-old">
-                        {formatCurrency(entry.budgetPrevious)}
-                      </Text>
-                      <Text className="rescue-preview__budget-new">
-                        {formatCurrency(entry.budgetCurrent)}
-                      </Text>
-                    </View>
-                  </View>
-                ) : null}
-              </View>
-            </View>
-          ))}
-        </View>
-      )}
-    </View>
+  const todayMatch = value.match(/^今天\s+(\d{2}):(\d{2})$/);
+  if (todayMatch) {
+    const now = new Date();
+    now.setHours(Number(todayMatch[1]), Number(todayMatch[2]), 0, 0);
+    return now.getTime();
+  }
+
+  const monthDayTimeMatch = value.match(/^(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/);
+  if (monthDayTimeMatch) {
+    const now = new Date();
+    return new Date(
+      now.getFullYear(),
+      Number(monthDayTimeMatch[1]) - 1,
+      Number(monthDayTimeMatch[2]),
+      Number(monthDayTimeMatch[3]),
+      Number(monthDayTimeMatch[4]),
+      0,
+      0,
+    ).getTime();
+  }
+
+  const monthDayMatch = value.match(/^(\d{2})-(\d{2})$/);
+  if (monthDayMatch) {
+    const now = new Date();
+    return new Date(
+      now.getFullYear(),
+      Number(monthDayMatch[1]) - 1,
+      Number(monthDayMatch[2]),
+      0,
+      0,
+      0,
+      0,
+    ).getTime();
+  }
+
+  return 0;
+}
+
+function buildPreviewTimelineEntries(draft: RescueCreateDraft): PreviewTimelineEntry[] {
+  const baseEntries: PreviewTimelineEntry[] = draft.timeline
+    .filter((entry) => !isDraftBootstrapEntry(entry))
+    .filter((entry) => entry.tone !== "expense" && entry.tone !== "income")
+    .map((entry, index) => ({
+      ...entry,
+      sortKey: parsePreviewTimestamp(entry.timestamp) - index,
+    }));
+
+  const expenseEntries: PreviewTimelineEntry[] = draft.expenseRecords.map((record, index) => ({
+    id: `expense-${record.id}`,
+    tone: "expense" as const,
+    label: "支出记录",
+    title: `支付：${record.summary}`,
+    description: record.note,
+    timestamp: formatTimelineTimestamp(new Date(record.spentAt)),
+    amount: record.amount,
+    images: record.evidenceItems
+      .map((item) => item.imageUrl)
+      .filter((value): value is string => Boolean(value))
+      .slice(0, 9),
+    sortKey: 1000 + index,
+  }));
+
+  const supportEntries: PreviewTimelineEntry[] = draft.supportEntries
+    .filter((entry) => entry.status === "confirmed")
+    .map((entry, index) => ({
+      id: `support-${entry.id}`,
+      tone: "income" as const,
+      label: "场外收入",
+      title: `${entry.supporterNameMasked || "爱心人士"} 的支持`,
+      description: entry.note ? `备注：${entry.note}` : undefined,
+      timestamp: formatTimelineTimestamp(new Date(entry.supportedAt)),
+      amount: entry.amount,
+      sortKey: Date.parse(entry.supportedAt) - index,
+    }));
+
+  return [...expenseEntries, ...baseEntries, ...supportEntries].sort(
+    (left, right) => right.sortKey - left.sortKey,
   );
+}
+
+function isDraftBootstrapEntry(entry: RescueCreateDraft["timeline"][number]) {
+  return (
+    entry.tone === "status" &&
+    entry.title === "已创建基础档案，等待补充第一条进展" &&
+    entry.description ===
+      "完成封面、代号和事件简述后，就可以继续设定预算并进入救助页预览。"
+  );
+}
+
+function getPreviewOverviewProps(
+  draft: RescueCreateDraft,
+  ledger: ReturnType<typeof calculateDraftLedger>,
+) {
+  const timeline = buildPreviewTimelineEntries(draft);
+  const latestStatus = timeline.find((entry) => entry.tone === "status") || timeline[0];
+
+  return {
+    paragraphs: [
+      draft.summary || "等待补充救助情况介绍。",
+      `当前总预算为${formatCurrency(draft.budget || 0)}。`,
+    ],
+    expenseLabel: `-${formatCurrency(ledger.expense)}`,
+    incomeLabel: `+${formatCurrency(ledger.income)}`,
+    latestStatus: latestStatus
+      ? {
+          statusLabel: getDraftStatusLabel(draft),
+          timestamp: latestStatus.timestamp,
+          text: latestStatus.description || latestStatus.title,
+          imageUrl: (latestStatus.images && latestStatus.images[0]) || getDraftCover(draft),
+        }
+      : undefined,
+  };
+}
+
+function toPreviewTimelineItems(draft: RescueCreateDraft): RescueOwnerTimelineItem[] {
+  return buildPreviewTimelineEntries(draft).map((entry) => ({
+    id: entry.id,
+    caseId: draftIdToCaseId(draft.id),
+    recordType:
+      entry.tone === "income"
+        ? "support"
+        : entry.tone === "budget"
+          ? "budget_adjustment"
+          : entry.tone === "expense"
+            ? "expense"
+            : "progress_update",
+    recordId: entry.id,
+    kind:
+      entry.tone === "income"
+        ? "income"
+        : entry.tone === "budget"
+          ? "budget"
+          : entry.tone === "expense"
+            ? "expense"
+            : "status",
+    badgeLabel:
+      entry.tone === "income"
+        ? "场外收入"
+        : entry.tone === "budget"
+          ? "预算调整"
+          : entry.tone === "expense"
+            ? "支出记录"
+            : "状态更新",
+    statusLabel: entry.tone === "status" ? getDraftStatusLabel(draft) : undefined,
+    timestamp: entry.timestamp,
+    title: entry.title,
+    description: entry.description,
+    amountLabel:
+      typeof entry.amount === "number"
+        ? `${entry.tone === "income" ? "+" : "-"}${formatCurrency(entry.amount)}`
+        : undefined,
+    images: entry.images,
+    budgetPreviousLabel:
+      typeof entry.budgetPrevious === "number"
+        ? formatCurrency(entry.budgetPrevious)
+        : undefined,
+    budgetCurrentLabel:
+      typeof entry.budgetCurrent === "number"
+        ? formatCurrency(entry.budgetCurrent)
+        : undefined,
+  }));
+}
+
+function buildDraftFromOwnerAndPublicDetail(
+  caseId: string,
+  ownerDetail: OwnerDetailVM,
+  publicDetail: PublicDetailVM,
+): RescueCreateDraft {
+  const timeline: RescueCreateDraft["timeline"] = ownerDetail.timeline.map((entry) => {
+    const tone: RescueCreateEntryTone =
+      entry.type === "expense"
+        ? "expense"
+        : entry.type === "support"
+          ? "income"
+          : entry.type === "budget_adjustment"
+            ? "budget"
+            : "status";
+
+    return {
+      id: entry.id,
+      tone,
+      label: entry.label,
+      title: entry.title,
+      description: entry.description,
+      timestamp: entry.timestampLabel,
+      amount: entry.amountLabel
+        ? Number(entry.amountLabel.replace(/[^\d.-]/g, ""))
+        : undefined,
+      images: entry.assetUrls,
+      budgetPrevious:
+        entry.type === "budget_adjustment" ? publicDetail.ledger.targetAmount : undefined,
+      budgetCurrent:
+        entry.type === "budget_adjustment" ? ownerDetail.ledger.targetAmount : undefined,
+    };
+  });
+
+  return {
+    id: caseId,
+    publicCaseId: ownerDetail.publicCaseId,
+    name: ownerDetail.title,
+    summary: publicDetail.summary,
+    coverPath: ownerDetail.coverImage || publicDetail.heroImageUrl || "",
+    budget: ownerDetail.ledger.targetAmount,
+    budgetNote: "",
+    currentStatusLabel: ownerDetail.statusLabel,
+    foundLocationText: publicDetail.locationText,
+    rescuerName: publicDetail.rescuer.name,
+    rescuerAvatarUrl: publicDetail.rescuer.avatarUrl,
+    rescuerWechatId: publicDetail.rescuer.wechatId,
+    rescuerVerifiedLevel: publicDetail.rescuer.verifiedLevel,
+    rescuerJoinedAt: publicDetail.rescuer.joinedAtLabel,
+    rescuerStats: publicDetail.rescuer.stats,
+    paymentQrUrl: publicDetail.rescuer.paymentQrUrl,
+    status: "draft",
+    timeline,
+    sharedEvidenceGroups: [],
+    expenseRecords: [],
+    supportThreads: ownerDetail.supportThreads || [],
+    supportEntries: [],
+    homepageEligibility: {
+      status: ownerDetail.homepageEligibilityStatus || "public_but_not_eligible",
+      reason: ownerDetail.homepageEligibilityReason || "",
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function ActionSheet({
@@ -156,7 +341,7 @@ function ActionSheet({
   onClose,
   onSave,
 }: {
-  action: Exclude<ActionType, "copy" | null>;
+  action: Exclude<ActionType, null>;
   onClose: () => void;
   onSave: (values: {
     title: string;
@@ -243,15 +428,15 @@ function ActionSheet({
 
         <View className="rescue-preview__sheet-field">
           <Text className="rescue-preview__sheet-label">补充说明</Text>
-          <View className="rescue-preview__sheet-textarea-card">
-            <Textarea
-              className="rescue-preview__sheet-textarea"
-              maxlength={160}
-              placeholder={copy.descriptionPlaceholder}
-              value={description}
-              onInput={(event) => setDescription(event.detail.value)}
-            />
-          </View>
+          <TextareaWithOverlayPlaceholder
+            wrapperClassName="rescue-preview__sheet-textarea-card"
+            textareaClassName="rescue-preview__sheet-textarea"
+            placeholderClassName="rescue-preview__sheet-textarea-placeholder"
+            placeholder={copy.descriptionPlaceholder}
+            maxlength={160}
+            value={description}
+            onInput={(event) => setDescription(event.detail.value)}
+          />
         </View>
 
         <View
@@ -265,33 +450,157 @@ function ActionSheet({
   );
 }
 
+function RenameSheet({
+  initialValue,
+  onClose,
+  onSave,
+}: {
+  initialValue: string;
+  onClose: () => void;
+  onSave: (value: string) => void;
+}) {
+  const [value, setValue] = useState(initialValue);
+
+  return (
+    <View className="rescue-preview__sheet-overlay" onTap={onClose}>
+      <View
+        className="rescue-preview__sheet"
+        onTap={(event) => event.stopPropagation()}
+      >
+        <View className="rescue-preview__sheet-handle">
+          <View className="rescue-preview__sheet-handle-bar" />
+        </View>
+
+        <Text className="rescue-preview__sheet-title">修改代号</Text>
+
+        <View className="rescue-preview__sheet-field">
+          <Text className="rescue-preview__sheet-label">小家伙的代号</Text>
+          <View className="rescue-preview__sheet-input-card">
+            <Input
+              className="rescue-preview__sheet-input"
+              maxlength={24}
+              placeholder="如：车祸三花 / 纸箱里的橘猫"
+              value={value}
+              onInput={(event) => setValue(event.detail.value)}
+            />
+          </View>
+        </View>
+
+        <View
+          className="theme-button-primary rescue-preview__sheet-button"
+          onTap={() => onSave(value)}
+        >
+          <Text>保存代号</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export default function RescueCreatePreviewPage() {
   const router = useRouter();
   const [draft, setDraft] = useState<RescueCreateDraft | null>(null);
   const [activeAction, setActiveAction] = useState<ActionType>(null);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const initialTab: PreviewTab =
+    router.params?.tab === "overview" ? "overview" : "detail";
+  const [activeTab, setActiveTab] = useState<PreviewTab>(initialTab);
 
   useEffect(() => {
-    const savedDraft = getDraftById(router.params?.id);
-    const currentDraft = getCurrentDraft();
-    const nextDraft = savedDraft ?? currentDraft;
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
-    if (!nextDraft) {
-      Taro.redirectTo({
-        url: "/pages/rescue/create/basic/index",
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadDraft = async () => {
+      const routeDraftId = router.params?.id;
+      const routeCaseId = router.params?.caseId;
+      const savedDraft = getDraftById(routeDraftId);
+      const caseDraft = getDraftByCaseId(routeCaseId);
+      const currentDraft = getCurrentDraft();
+      const matchedCurrentDraft = matchesDraftRoute(
+        currentDraft || undefined,
+        routeDraftId,
+        routeCaseId,
+      )
+        ? currentDraft
+        : undefined;
+      let nextDraft = savedDraft ?? caseDraft ?? matchedCurrentDraft;
+
+      if (!nextDraft && routeCaseId) {
+        const [ownerDetail, publicDetail] = await Promise.all([
+          loadOwnerDetailVMByCaseId(routeCaseId),
+          loadPublicDetailVMByCaseId(routeCaseId),
+        ]);
+
+        if (ownerDetail && publicDetail) {
+          nextDraft = buildDraftFromOwnerAndPublicDetail(
+            routeCaseId,
+            ownerDetail,
+            publicDetail,
+          );
+        }
+      }
+
+      if (!nextDraft) {
+        Taro.redirectTo({
+          url: "/pages/rescue/create/basic/index",
+        });
+        return;
+      }
+
+      if (nextDraft.status === "published") {
+        Taro.redirectTo({
+          url: `/pages/rescue/detail/index?id=${nextDraft.id}&mode=owner&source=custom`,
+        });
+        return;
+      }
+
+      if (cancelled) {
+        return;
+      }
+
+      const resolvedDraft = applyTitleOverrideToDraft(nextDraft, routeCaseId);
+      if (!resolvedDraft) {
+        return;
+      }
+
+      syncCurrentDraft(resolvedDraft);
+      setDraft(resolvedDraft);
+    };
+
+    loadDraft().catch(() => {
+      Taro.showToast({
+        title: "草稿加载失败",
+        icon: "none",
       });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router.params?.caseId, router.params?.id]);
+
+  useDidShow(() => {
+    const routeDraftId = router.params?.id;
+    if (
+      !consumeDraftBudgetRefresh(routeDraftId) &&
+      !consumeDraftExpenseRefresh(routeDraftId) &&
+      !consumeDraftStatusRefresh(routeDraftId)
+    ) {
       return;
     }
 
-    if (nextDraft.status === "published") {
-      Taro.redirectTo({
-        url: `/pages/rescue/detail/index?id=${nextDraft.id}&mode=owner&source=custom`,
-      });
-      return;
-    }
+    const refreshedDraft = applyTitleOverrideToDraft(
+      getDraftById(routeDraftId) || getCurrentDraft(),
+      router.params?.caseId,
+    );
 
-    syncCurrentDraft(nextDraft);
-    setDraft(nextDraft);
-  }, [router.params?.id]);
+    if (refreshedDraft) {
+      setDraft(refreshedDraft);
+    }
+  });
 
   const ledger = useMemo(
     () => (draft ? calculateDraftLedger(draft) : null),
@@ -322,14 +631,6 @@ export default function RescueCreatePreviewPage() {
   ];
 
   const handleActionTap = (action: ActionType) => {
-    if (action === "copy") {
-      Taro.showToast({
-        title: "生成文案能力待下一步接入",
-        icon: "none",
-      });
-      return;
-    }
-
     setActiveAction(action);
   };
 
@@ -338,7 +639,7 @@ export default function RescueCreatePreviewPage() {
     description: string;
     amount: string;
   }) => {
-    if (!activeAction || activeAction === "copy") {
+    if (!activeAction) {
       return;
     }
 
@@ -414,9 +715,18 @@ export default function RescueCreatePreviewPage() {
     });
   };
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     const saved = persistDraft("draft");
     setDraft(saved);
+    try {
+      await saveRemoteDraftCase(saved, "draft");
+    } catch {
+      Taro.showToast({
+        title: "草稿已本地保存，远端同步失败",
+        icon: "none",
+      });
+      return;
+    }
 
     Taro.showToast({
       title: "草稿已保存",
@@ -430,9 +740,18 @@ export default function RescueCreatePreviewPage() {
     }, 300);
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     const saved = persistDraft("published");
     setDraft(saved);
+    try {
+      await saveRemoteDraftCase(saved, "published");
+    } catch {
+      Taro.showToast({
+        title: "已本地发布，远端同步失败",
+        icon: "none",
+      });
+      return;
+    }
 
     Taro.showToast({
       title: saved.status === "published" ? "救助已发布" : "已更新",
@@ -446,109 +765,130 @@ export default function RescueCreatePreviewPage() {
     }, 300);
   };
 
+  const handleSaveTitle = (value: string) => {
+    const nextName = value.trim();
+    if (!nextName) {
+      Taro.showToast({
+        title: "请先填写代号",
+        icon: "none",
+      });
+      return;
+    }
+
+    const nextDraft = replaceDraft({
+      ...draft,
+      name: nextName,
+    });
+    saveCaseTitleOverride({
+      title: nextName,
+      draftId: draft.id,
+      caseId: draftIdToCaseId(draft.id),
+    });
+
+    setDraft(nextDraft);
+    setEditingTitle(false);
+    Taro.showToast({
+      title: "已更新代号",
+      icon: "none",
+    });
+  };
+
+  const handleChangeCover = async () => {
+    try {
+      const action = await Taro.showActionSheet({
+        itemList: ["拍照", "上传图片"],
+      });
+
+      const result = await Taro.chooseImage({
+        count: 1,
+        sizeType: ["compressed"],
+        sourceType: action.tapIndex === 0 ? ["camera"] : ["album"],
+      });
+
+      const nextPath = result.tempFilePaths?.[0];
+      if (!nextPath) {
+        return;
+      }
+
+      const nextDraft = replaceDraft({
+        ...draft,
+        coverPath: nextPath,
+      });
+
+      saveCaseCoverOverride({
+        coverPath: nextPath,
+        draftId: draft.id,
+        caseId: draftIdToCaseId(draft.id),
+      });
+
+      setDraft(nextDraft);
+      Taro.showToast({
+        title: "已更新头像",
+        icon: "none",
+      });
+    } catch {
+      // ignore cancel
+    }
+  };
+
   return (
     <View className="page-shell rescue-preview-page">
-      <NavBar showBack title="救助记录预览" />
+      <NavBar showBack title="救助记录管理" />
 
-      <View className="rescue-preview__card theme-card">
-        <View className="rescue-preview__summary-top">
-          <Image
-            className="rescue-preview__cover"
-            mode="aspectFill"
-            src={draft.coverPath || coverFallback}
+      <RescueOwnerSummaryCard
+        budgetLabel={formatCurrency(budget)}
+        coverImage={getDraftCover(draft)}
+        expenseLabel={formatCurrency(ledger.expense)}
+        onCopy={() => {
+          Taro.setClipboardData({ data: getDraftPublicCaseId(draft) });
+        }}
+        progressPercent={budget > 0 ? (ledger.expense / budget) * 100 : 0}
+        publicCaseId={getDraftPublicCaseId(draft)}
+        statusLabel={getDraftStatusLabel(draft)}
+        supportLabel={formatCurrency(ledger.income)}
+        thirdLabel={activeTab === "overview" ? "结余" : "缺口"}
+        thirdMode={activeTab === "overview" ? "balance" : "gap"}
+        thirdValue={formatCurrency(activeTab === "overview" ? ledger.balance : ledger.pending)}
+        title={draft.name || "未命名救助"}
+        onEditCover={handleChangeCover}
+        onEditTitle={() => setEditingTitle(true)}
+      />
+
+      <RescueOwnerQuickActions
+        onBudget={() =>
+          Taro.navigateTo({
+            url: `/pages/rescue/budget-update/index?draftId=${draft.id}`,
+          })
+        }
+        onExpense={() =>
+          Taro.navigateTo({
+            url: `/pages/rescue/expense/index?draftId=${draft.id}`,
+          })
+        }
+        onIncome={() => handleActionTap("income")}
+        onStatus={() =>
+          Taro.navigateTo({
+            url: `/pages/rescue/update/index?draftId=${draft.id}`,
+          })
+        }
+      />
+
+      <RescueOwnerTabs activeTab={activeTab} onChange={setActiveTab} />
+
+      <View className="rescue-preview__tab-panel">
+        {activeTab === "overview" ? (
+          <RescueOwnerOverview {...getPreviewOverviewProps(draft, ledger)} />
+        ) : (
+          <RescueOwnerTimeline
+            emptyState={{
+              title: "还没有第一条记录",
+              description:
+                "可以先记录一笔支出、写进展更新，或者补上一笔场外收入。",
+            }}
+            items={toPreviewTimelineItems(draft)}
           />
-          <View className="rescue-preview__summary-copy">
-            <View className="rescue-preview__title-row">
-              <Text className="rescue-preview__title">
-                {draft.name || "未命名救助"}
-              </Text>
-              <Text className="rescue-preview__state-chip">医疗救助中</Text>
-            </View>
-            <Text className="rescue-preview__goal-text">
-              预估目标：{budget > 0 ? formatCurrency(budget) : "待设定"}
-            </Text>
-          </View>
-        </View>
-
-        <View className="rescue-preview__progress-head">
-          <Text className="rescue-preview__progress-meta">
-            当前筹集: {formatCurrency(ledger.income)}
-          </Text>
-          <Text className="rescue-preview__progress-meta">
-            {ledger.progress}%
-          </Text>
-        </View>
-
-        <View className="rescue-preview__bar">
-          {previewSegments.map((segment) => (
-            <View
-              key={segment.key}
-              className="rescue-preview__bar-segment"
-              style={{
-                width: segment.width,
-                background: segment.color,
-              }}
-            />
-          ))}
-        </View>
-
-        <View className="rescue-preview__legend">
-          <View className="rescue-preview__legend-item">
-            <View
-              className="rescue-preview__legend-dot"
-              style={{ background: "var(--color-ledger-spent)" }}
-            />
-            <Text className="rescue-preview__legend-label">
-              已支出 {formatCurrency(ledger.expense)}
-            </Text>
-          </View>
-          <View className="rescue-preview__legend-item">
-            <View
-              className="rescue-preview__legend-dot"
-              style={{ background: "var(--color-ledger-balance)" }}
-            />
-            <Text className="rescue-preview__legend-label">
-              结余 {formatCurrency(ledger.balance)}
-            </Text>
-          </View>
-          <View className="rescue-preview__legend-item">
-            <View
-              className="rescue-preview__legend-dot"
-              style={{ background: "var(--color-ledger-pending)" }}
-            />
-            <Text className="rescue-preview__legend-label">
-              待筹 {formatCurrency(ledger.pending)}
-            </Text>
-          </View>
-        </View>
+        )}
       </View>
-
-      <View className="rescue-preview__actions">
-        {actionConfigs.map((action) => (
-          <View
-            key={action.key ?? "none"}
-            className="rescue-preview__action-card theme-card"
-            onTap={() => handleActionTap(action.key)}
-          >
-            <View
-              className={`rescue-preview__action-icon ${
-                action.icon === "plusCircle"
-                  ? "rescue-preview__action-icon--solid"
-                  : ""
-              }`}
-            >
-              <AppIcon
-                name={action.icon}
-                size={24}
-                variant={action.icon === "plusCircle" ? "inverse" : "default"}
-              />
-            </View>
-            <Text className="rescue-preview__action-label">{action.label}</Text>
-          </View>
-        ))}
-      </View>
-
-      <Timeline draft={draft} />
 
       <View className="rescue-preview__footer">
         <Button
@@ -563,16 +903,24 @@ export default function RescueCreatePreviewPage() {
         >
           <Text>发布救助</Text>
           <View className="rescue-preview__footer-arrow">
-            <AppIcon name="plusCircle" size={24} variant="inverse" />
+            <Image className="rescue-preview__footer-arrow-icon" mode="aspectFit" src={ownerFooterArrowIcon} />
           </View>
         </Button>
       </View>
 
-      {activeAction && activeAction !== "copy" ? (
+      {activeAction ? (
         <ActionSheet
           action={activeAction}
           onClose={() => setActiveAction(null)}
           onSave={handleSaveAction}
+        />
+      ) : null}
+
+      {editingTitle ? (
+        <RenameSheet
+          initialValue={draft.name}
+          onClose={() => setEditingTitle(false)}
+          onSave={handleSaveTitle}
         />
       ) : null}
     </View>

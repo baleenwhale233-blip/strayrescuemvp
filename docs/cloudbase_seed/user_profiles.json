@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "dev_rescuer_openid",
+    "openid": "dev_rescuer_openid",
+    "displayName": "云开发示例救助人",
+    "avatarUrl": "",
+    "verifiedLevel": "wechat",
+    "wechatId": "wxid_rescuer_demo",
+    "joinedAt": "2026-04-14T10:00:00.000Z",
+    "createdAt": "2026-04-14T10:00:00.000Z",
+    "stats": {
+      "publishedCaseCount": 1,
+      "verifiedReceiptCount": 1
+    }
+  }
+]

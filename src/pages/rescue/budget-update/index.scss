@@ -1,0 +1,207 @@
+.rescue-budget-update-page {
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding-bottom: 120px;
+}
+
+.rescue-budget-update-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 0;
+}
+
+.rescue-budget-update-page__animal-card {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 17px;
+  border-radius: 12px;
+  border-color: #f1f5f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-top: 16px;
+}
+
+.rescue-budget-update-page__animal-cover {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.rescue-budget-update-page__animal-copy {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rescue-budget-update-page__animal-title-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rescue-budget-update-page__animal-title {
+  color: #1e293b;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.rescue-budget-update-page__animal-status {
+  padding: 2px 8px;
+  color: #f06418;
+  background: rgba(240, 100, 24, 0.1);
+  border-radius: 16px;
+  font-size: 10px;
+  line-height: 15px;
+}
+
+.rescue-budget-update-page__animal-meta {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.rescue-budget-update-page__animal-meta--muted {
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.rescue-budget-update-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.rescue-budget-update-page__label {
+  color: #334155;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.rescue-budget-update-page__amount-input {
+  display: flex;
+  align-items: center;
+  height: 58px;
+  padding: 17px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.rescue-budget-update-page__amount-prefix {
+  margin-right: 8px;
+  color: #ec5b13;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.rescue-budget-update-page__amount-control {
+  flex: 1;
+  color: #1e293b;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.rescue-budget-update-page__hint {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.rescue-budget-update-page__textarea-wrap {
+  position: relative;
+  min-height: 160px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.rescue-budget-update-page__textarea-placeholder {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 24px;
+  pointer-events: none;
+}
+
+.rescue-budget-update-page__textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 18px;
+  color: #0f172a;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 24px;
+  box-sizing: border-box;
+}
+
+.rescue-budget-update-page__notice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 17px;
+  background: #fff7ed;
+  border: 1px solid rgba(236, 91, 19, 0.1);
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+.rescue-budget-update-page__notice-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.rescue-budget-update-page__notice-text {
+  color: #334155;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.rescue-budget-update-page__bottom {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  padding: 17px 16px 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border-top: 1px solid #e2e8f0;
+  backdrop-filter: blur(6px);
+}
+
+.rescue-budget-update-page__bottom-submit {
+  width: 100%;
+  gap: 8px;
+  min-height: 56px;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(236, 91, 19, 0.2),
+    0 4px 6px -4px rgba(236, 91, 19, 0.2);
+  font-weight: var(--font-weight-regular);
+}
+
+.rescue-budget-update-page__bottom-submit-icon {
+  width: 19px;
+  height: 16px;
+}
+
+@media (min-width: 768px) {
+  .rescue-budget-update-page__bottom-submit {
+    max-width: 358px;
+  }
+}

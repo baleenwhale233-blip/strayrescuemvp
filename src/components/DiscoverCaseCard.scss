@@ -1,0 +1,227 @@
+.discover-card {
+  background: #ffffff;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.discover-card__cover {
+  position: relative;
+  height: 192px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.discover-card__cover-image {
+  width: 100%;
+  height: 100%;
+}
+
+.discover-card__status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 7px 5px 11px;
+  background: #f06418;
+  border: 1px solid #f06418;
+  border-radius: 20px;
+}
+
+.discover-card__status-emoji {
+  color: #1e293b;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.discover-card__status-text {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 15px;
+  letter-spacing: 0.5px;
+}
+
+.discover-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px 24px;
+}
+
+.discover-card__copy-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discover-card__title-row,
+.discover-card__ledger-head,
+.discover-card__footer,
+.discover-card__ledger-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.discover-card__title {
+  flex: 1;
+  min-width: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.discover-card__id {
+  flex-shrink: 0;
+  color: #a1a1aa;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.discover-card__updated {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.discover-card__line {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 24px;
+  word-break: break-word;
+}
+
+.discover-card__line-label {
+  font-weight: 600;
+}
+
+.discover-card__ledger-head {
+  margin-top: 2px;
+}
+
+.discover-card__budget,
+.discover-card__funding {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.discover-card__funding {
+  flex-shrink: 0;
+  max-width: 132px;
+  text-align: right;
+}
+
+.discover-card__funding--covered {
+  color: #64748b;
+}
+
+.discover-card__funding--almost {
+  color: #f59e0b;
+}
+
+.discover-card__funding--pressure {
+  color: #dc2626;
+}
+
+.discover-card__progress {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.discover-card__progress-advance {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  background: #d7dde7;
+  border-radius: 999px;
+}
+
+.discover-card__progress-fill {
+  position: relative;
+  height: 100%;
+  background: #ec5b13;
+  border-radius: 999px;
+}
+
+.discover-card__ledger-meta {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 14px;
+}
+
+.discover-card__ledger-meta-item {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.discover-card__ledger-meta-item--end {
+  justify-content: flex-end;
+}
+
+.discover-card__ledger-meta-label,
+.discover-card__ledger-meta-value {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.discover-card__ledger-meta-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.discover-card__ledger-meta-dot--brand {
+  background: #ec5b13;
+}
+
+.discover-card__ledger-meta-dot--slate {
+  background: #e2e8f0;
+}
+
+.discover-card__footer {
+  padding-top: 13px;
+  border-top: 1px solid rgba(229, 226, 220, 0.3);
+}
+
+.discover-card__evidence {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  color: #702e15;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.discover-card__evidence-icon {
+  width: 14px;
+  height: 13px;
+}
+
+.discover-card__evidence-dot {
+  width: 8px;
+  height: 8px;
+  background: #8b4513;
+  border-radius: 999px;
+}

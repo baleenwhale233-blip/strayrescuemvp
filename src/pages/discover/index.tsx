@@ -1,94 +1,102 @@
-import { Image, View, Text } from "@tarojs/components";
-import Taro from "@tarojs/taro";
+import { Image, Input, Text, View } from "@tarojs/components";
+import Taro, { useDidShow } from "@tarojs/taro";
+import { useState } from "react";
+import { DiscoverCaseCard } from "../../components/DiscoverCaseCard";
 import { NavBar } from "../../components/NavBar";
-import { StatusChip } from "../../components/StatusChip";
+import searchIcon from "../../assets/icons/search-muted-18.svg";
 import {
-  getDiscoverCardVMs,
-} from "../../domain/canonical/repository/localRepository";
+  loadHomepageCaseCardVMs,
+  searchCaseByPublicIdExact,
+  type HomepageCaseCardVM,
+} from "../../domain/canonical/repository";
 import "./index.scss";
 
-const discoverCategories = [
-  { key: "all", label: "全部", active: true },
-  { key: "urgent", label: "紧急", active: false },
-  { key: "active", label: "进行中", active: false },
-  { key: "done", label: "完成", active: false },
-] as const;
-
 export default function DiscoverPage() {
-  const discoverCards = getDiscoverCardVMs();
+  const [keyword, setKeyword] = useState("");
+  const [cards, setCards] = useState<HomepageCaseCardVM[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleNavigateToGuestDetail = (caseId: string) => {
+  useDidShow(() => {
+    setLoading(true);
+    loadHomepageCaseCardVMs()
+      .then((nextCards) => {
+        setCards(nextCards);
+      })
+      .catch(() => {
+        Taro.showToast({
+          title: "案例列表加载失败",
+          icon: "none",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  });
+
+  const goToGuestDetail = (caseId: string) => {
     Taro.navigateTo({
       url: `/pages/rescue/detail/index?id=${caseId}&mode=guest`,
     });
+  };
+
+  const handleSearch = async () => {
+    const value = keyword.trim();
+
+    if (!value) {
+      Taro.showToast({
+        title: "请输入案例 ID",
+        icon: "none",
+      });
+      return;
+    }
+
+    const bundle = await searchCaseByPublicIdExact(value);
+
+    if (!bundle) {
+      Taro.showToast({
+        title: "没有找到这个案例 ID",
+        icon: "none",
+      });
+      return;
+    }
+
+    goToGuestDetail(bundle.case.id);
   };
 
   return (
     <View className="page-shell discover-page">
       <NavBar title="救猫咪" />
 
-      <View className="discover-page__chips">
-        {discoverCategories.map((category) => (
-          <View
-            key={category.key}
-            className={`theme-chip ${category.active ? "theme-chip--active" : ""}`}
-          >
-            <Text>{category.label}</Text>
-          </View>
-        ))}
+      <View className="discover-page__search">
+        <View className="discover-page__search-icon" onTap={handleSearch}>
+          <Image
+            className="discover-page__search-icon-image"
+            mode="aspectFit"
+            src={searchIcon}
+          />
+        </View>
+        <Input
+          className="discover-page__search-input"
+          confirmType="search"
+          maxlength={16}
+          placeholder="搜索案例ID，如JM482731..."
+          value={keyword}
+          onConfirm={handleSearch}
+          onInput={(event) => setKeyword(event.detail.value)}
+        />
       </View>
 
       <View className="discover-page__list">
-        {discoverCards.map((item) => (
-          <View
+        {loading ? (
+          <Text className="discover-page__empty">正在加载案例...</Text>
+        ) : null}
+
+        {cards.map((item) => (
+          <DiscoverCaseCard
             key={item.caseId}
-            className="discover-card theme-card"
-            onTap={() => handleNavigateToGuestDetail(item.caseId)}
-          >
-            <View className="discover-card__cover">
-              {item.coverImageUrl ? (
-                <Image
-                  className="discover-card__cover-image"
-                  mode="aspectFill"
-                  src={item.coverImageUrl}
-                />
-              ) : null}
-              <StatusChip label={item.statusLabel} tone={item.statusTone} />
-              {!item.coverImageUrl ? (
-                <Text className="discover-card__cover-label">
-                  {item.title.slice(0, 2)}
-                </Text>
-              ) : null}
-            </View>
-
-            <View className="discover-card__body">
-              <View className="discover-card__title-row">
-                <Text className="theme-text-card-title">{item.title}</Text>
-                <Text className="discover-card__updated-at">{item.updatedAtLabel}</Text>
-              </View>
-
-              <View className="discover-card__meta-row">
-                <Text className="discover-card__meta">{item.subtitle}</Text>
-                <Text className="discover-card__amount">{item.amountLabel}</Text>
-              </View>
-
-              <View className="discover-card__progress">
-                <View className="progress">
-                  <View
-                    className="progress__segment"
-                    style={{
-                      width: `${item.progressPercent}%`,
-                      background: "var(--color-ledger-spent)",
-                    }}
-                  />
-                </View>
-              </View>
-
-              <Text className="discover-card__latest">
-                {item.latestTimelineSummary || "暂无公开动态"}
-              </Text>
-            </View>
-          </View>
+            item={item}
+            onTap={() => goToGuestDetail(item.caseId)}
+          />
         ))}
       </View>
     </View>

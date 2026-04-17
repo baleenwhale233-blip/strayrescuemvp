@@ -206,6 +206,10 @@ export type CanonicalExpenseRecord = {
   summary: string;
   note?: string;
   merchantName?: string;
+  expenseItems?: Array<{
+    description: string;
+    amount?: number;
+  }>;
   evidenceItems: CanonicalEvidenceItem[];
   sharedEvidenceGroupId?: Id;
   evidenceLevel: EvidenceLevel;
@@ -305,6 +309,8 @@ export type PublicDetailVM = {
   heroImageUrl?: string;
   locationText?: string;
   summary: string;
+  rescueStartedAt?: IsoDateTimeString;
+  rescueStartedAtLabel?: string;
   updatedAtLabel: string;
   ledger: LedgerSnapshot & {
     targetAmountLabel: string;
@@ -324,6 +330,7 @@ export type PublicDetailVM = {
     stats: CanonicalRescuerStats;
     wechatId?: string;
     paymentQrUrl?: string;
+    profileEntryEnabled: boolean;
   };
   supportSummary: {
     confirmedSupportAmount: number;
@@ -342,6 +349,7 @@ export type HomepageCaseCardVM = {
   rescuerId: Id;
   sourceKind: BundleSourceKind;
   title: string;
+  aboutSummary: string;
   statusLabel: string;
   statusTone: StatusTone;
   coverImageUrl?: string;
@@ -354,6 +362,11 @@ export type HomepageCaseCardVM = {
   homepageEligibilityReason: string;
   progressPercent: number;
   amountLabel: string;
+  targetAmountLabel: string;
+  supportedAmountLabel: string;
+  rescuerAdvanceAmountLabel: string;
+  supportedProgressPercent: number;
+  rescuerAdvanceProgressPercent: number;
 };
 
 export type DiscoverCardVM = {
@@ -388,6 +401,8 @@ export type WorkbenchCaseCardVM = {
   homepageEligibilityReason?: string;
   pendingSupportEntryCount?: number;
   unmatchedSupportEntryCount?: number;
+  primaryNoticeLabel?: string;
+  lastUpdateAgeHint?: string;
   draftId?: Id;
 };
 
