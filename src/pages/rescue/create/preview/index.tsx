@@ -66,6 +66,22 @@ function formatCurrency(value: number) {
   return `¥${value.toLocaleString("zh-CN")}`;
 }
 
+function getFundingCompareMetrics(input: {
+  expenseAmount: number;
+  supportAmount: number;
+}) {
+  const diff = input.expenseAmount - input.supportAmount;
+  const base = Math.max(input.expenseAmount, input.supportAmount, 1);
+
+  return {
+    advanceProgressPercent: (input.expenseAmount / base) * 100,
+    supportProgressPercent: (input.supportAmount / base) * 100,
+    thirdLabel: diff > 0 ? "缺口" : "结余",
+    thirdValue: formatCurrency(Math.abs(diff)),
+    thirdMode: diff > 0 ? "gap" as const : "balance" as const,
+  };
+}
+
 function getDraftCover(draft: RescueCreateDraft) {
   return draft.coverPath || ownerAnimalFallback || coverFallback;
 }
@@ -612,23 +628,10 @@ export default function RescueCreatePreviewPage() {
   }
 
   const budget = draft.budget || 0;
-  const previewSegments = [
-    {
-      key: "expense",
-      color: "var(--color-ledger-spent)",
-      width: budget > 0 ? `${(ledger.expense / budget) * 100}%` : "0%",
-    },
-    {
-      key: "balance",
-      color: "var(--color-ledger-balance)",
-      width: budget > 0 ? `${(ledger.balance / budget) * 100}%` : "0%",
-    },
-    {
-      key: "pending",
-      color: "var(--color-ledger-pending)",
-      width: budget > 0 ? `${(ledger.pending / budget) * 100}%` : "100%",
-    },
-  ];
+  const fundingCompare = getFundingCompareMetrics({
+    expenseAmount: ledger.expense,
+    supportAmount: ledger.income,
+  });
 
   const handleActionTap = (action: ActionType) => {
     setActiveAction(action);
@@ -838,17 +841,18 @@ export default function RescueCreatePreviewPage() {
       <RescueOwnerSummaryCard
         budgetLabel={formatCurrency(budget)}
         coverImage={getDraftCover(draft)}
+        advanceProgressPercent={fundingCompare.advanceProgressPercent}
         expenseLabel={formatCurrency(ledger.expense)}
         onCopy={() => {
           Taro.setClipboardData({ data: getDraftPublicCaseId(draft) });
         }}
-        progressPercent={budget > 0 ? (ledger.expense / budget) * 100 : 0}
+        progressPercent={fundingCompare.supportProgressPercent}
         publicCaseId={getDraftPublicCaseId(draft)}
         statusLabel={getDraftStatusLabel(draft)}
         supportLabel={formatCurrency(ledger.income)}
-        thirdLabel={activeTab === "overview" ? "结余" : "缺口"}
-        thirdMode={activeTab === "overview" ? "balance" : "gap"}
-        thirdValue={formatCurrency(activeTab === "overview" ? ledger.balance : ledger.pending)}
+        thirdLabel={fundingCompare.thirdLabel}
+        thirdMode={fundingCompare.thirdMode}
+        thirdValue={fundingCompare.thirdValue}
         title={draft.name || "未命名救助"}
         onEditCover={handleChangeCover}
         onEditTitle={() => setEditingTitle(true)}

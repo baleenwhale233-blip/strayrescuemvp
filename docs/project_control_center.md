@@ -39,6 +39,7 @@
 - `写进展更新` / `记账` / `追加预算` 的主态 `caseId` 路径已接 CloudBase 远端写链路；草稿 `draftId` 路径仍保持本地 draft 闭环
 - P0-B 三条写链路和 `support/review` 手动记一笔收入已完成开发环境自动化验证；基础成功提示已统一，AI 分发和更多真机账号回归仍未做
 - 支持登记写链路与核实链路已完成 CloudBase 开发环境远端闭环验证，包含 `pending -> confirmed / unmatched`
+- Alpha Seed Pack 已准备并播种到 `cloud1-9gl5sric0e5b386b`，包含演示救助人、公开案例、草稿案例、支持记录和 28 张 Alpha 测试图片
 - owner 权限链路还缺真实 `rescuerOpenid` 替换与验证
 
 ---
@@ -183,6 +184,7 @@
 | 救助人公开主页链路 | `已可试跑` | `getRescuerHomepage` 已接 CloudBase，可按 `rescuerId` 或 `caseId` 输出救助人公开资料和 published 案例列表 | 继续补统计口径精修和更多公开主页视觉细节 |
 | 案例档案编辑链路 | `已可试跑` | `updateCaseProfile` 已接 CloudBase，主态 `caseId` 可远端更新 `animalName / coverFileID`，并写入 `case_cover` asset；本地展示覆盖降级为兜底 | 继续补草稿远端编辑增强 |
 | 只读记录详情链路 | `已可试跑` | `getCaseRecordDetail` 已接 CloudBase，可按 `caseId + recordType + recordId` 回读支出 / 进展 / 预算 / 支持详情；支出明细结构化返回，图片最多 9 张，私有记录按 owner 权限控制 | 继续补前端从 storage 兜底逐步过渡到纯远端详情 |
+| Alpha 测试环境 | `已可试跑` | `npm run seed:alpha` 已可上传 `docs/alpha_seed_assets` 图片并调用 `seedMockCases` 播种；当前开发环境已完成一次播种和 smoke 验证 | 体验版上传前再执行一次 smoke |
 
 ---
 

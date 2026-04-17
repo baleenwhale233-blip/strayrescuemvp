@@ -177,6 +177,22 @@ function getTimelineAssetUrls(item: PublicTimelineItemVM) {
   return [];
 }
 
+function getFundingCompareMetrics(input: {
+  expenseAmount: number;
+  supportAmount: number;
+}) {
+  const diff = input.expenseAmount - input.supportAmount;
+  const base = Math.max(input.expenseAmount, input.supportAmount, 1);
+
+  return {
+    advanceProgressPercent: (input.expenseAmount / base) * 100,
+    supportProgressPercent: (input.supportAmount / base) * 100,
+    thirdLabel: diff > 0 ? "缺口" : "结余",
+    thirdValue: `¥${Math.abs(diff).toLocaleString("zh-CN")}`,
+    thirdMode: diff > 0 ? "gap" as const : "balance" as const,
+  };
+}
+
 function getShareTitle(detail?: PublicDetailVM) {
   if (!detail) {
     return "救猫咪透明救助档案";
@@ -730,6 +746,10 @@ function OwnerDetail({
       icon: "none",
     });
   };
+  const fundingCompare = getFundingCompareMetrics({
+    expenseAmount: ownerDetail.ledger.confirmedExpenseAmount,
+    supportAmount: ownerDetail.ledger.supportedAmount,
+  });
 
   return (
     <View className="detail-page detail-page--owner">
@@ -738,23 +758,20 @@ function OwnerDetail({
       <RescueOwnerSummaryCard
         budgetLabel={ownerDetail.ledger.targetAmountLabel}
         coverImage={getOwnerAnimalImage(publicDetail)}
+        advanceProgressPercent={fundingCompare.advanceProgressPercent}
         expenseLabel={ownerDetail.ledger.confirmedExpenseAmountLabel}
         onCopy={() => {
           Taro.setClipboardData({ data: ownerDetail.publicCaseId });
         }}
         onEditCover={onChangeCover}
         onEditTitle={() => setEditingTitle(true)}
-        progressPercent={publicDetail.ledger.progressPercent}
+        progressPercent={fundingCompare.supportProgressPercent}
         publicCaseId={ownerDetail.publicCaseId}
         statusLabel={ownerDetail.statusLabel}
         supportLabel={ownerDetail.ledger.supportedAmountLabel}
-        thirdLabel={activeTab === "overview" ? "结余" : "缺口"}
-        thirdMode={activeTab === "overview" ? "balance" : "gap"}
-        thirdValue={
-          activeTab === "overview"
-            ? ownerDetail.ledger.remainingTargetAmountLabel
-            : ownerDetail.ledger.verifiedGapAmountLabel
-        }
+        thirdLabel={fundingCompare.thirdLabel}
+        thirdMode={fundingCompare.thirdMode}
+        thirdValue={fundingCompare.thirdValue}
         title={ownerDetail.title}
       />
 
