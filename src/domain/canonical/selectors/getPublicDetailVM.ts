@@ -121,7 +121,7 @@ function getResolvedTargetAmount(
   return events
     .filter((event) => event.type === "budget_adjustment")
     .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))
-    .reduce((targetAmount, event) => event.newTargetAmount, caseRecord.targetAmount);
+    .reduce((_targetAmount, event) => event.newTargetAmount, caseRecord.targetAmount);
 }
 
 function isCountableExpenseEvent(

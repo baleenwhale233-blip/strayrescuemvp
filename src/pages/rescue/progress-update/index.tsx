@@ -1,16 +1,14 @@
-import { Image, ScrollView, Text, Textarea, View } from "@tarojs/components";
+import { Image, ScrollView, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
-  markDraftStatusRefresh,
   saveCaseStatusSubmission,
   type LocalStatusSubmission,
-} from "../../../data/statusUpdateSubmission";
+} from "../../../domain/canonical/repository";
 import addPhotoIcon from "../../../assets/rescue-update/add-photo-icon.svg";
 import imageSectionIcon from "../../../assets/rescue-update/image-section-icon.svg";
 import imageNoticeIcon from "../../../assets/rescue-update/image-notice-icon.svg";
@@ -19,16 +17,14 @@ import submitArrowIcon from "../../../assets/rescue-update/footer-submit-arrow.s
 import uploadDeleteIcon from "../../../assets/rescue-expense/upload-delete-24.svg";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
+  createRemoteProgressUpdateByCaseId,
   getCurrentDraft,
   getDraftById,
+  loadPublicDetailVMByCaseId,
   replaceDraft,
   syncCurrentDraft,
   type RescueCreateDraft,
   type RescueCreateEntryTone,
-} from "../../../domain/canonical/repository/localRepository";
-import {
-  createRemoteProgressUpdateByCaseId,
-  loadPublicDetailVMByCaseId,
 } from "../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import type { CaseCurrentStatus, PublicDetailVM } from "../../../domain/canonical/types";
@@ -254,7 +250,6 @@ export default function RescueStatusUpdatePage() {
 
         replaceDraft(nextDraft);
         syncCurrentDraft(nextDraft);
-        markDraftStatusRefresh(draftId);
       } else if (caseId) {
         const uploadedAssets = await Promise.all(
           imageUrls.map((imageUrl) =>
@@ -284,8 +279,6 @@ export default function RescueStatusUpdatePage() {
 
           saveCaseStatusSubmission(caseId, submission);
         }
-
-        markCaseDetailRefresh(caseId);
       } else {
         Taro.hideLoading();
         Taro.showToast({

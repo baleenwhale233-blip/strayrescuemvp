@@ -1,6 +1,7 @@
 import {
   getCaseByPublicIdExact,
   getCanonicalBundles,
+  getHomepageCaseCardVMs,
   getOwnerDetailVMByCaseId,
   getPublicDetailVMByCaseId,
   getSupportSheetDataByCaseId,
@@ -24,6 +25,15 @@ import {
 import { getHomepageCaseCardVM } from "../selectors/getDiscoverCardVM";
 import { callRescueApi, canUseCloudBase } from "./cloudbaseClient";
 import { isDomainErrorCode } from "./domainErrorCodes";
+import {
+  finalizeHomepageCaseCardPresentation,
+  finalizeOwnerDetailPresentation,
+  finalizePublicDetailPresentation,
+  finalizeWorkbenchCaseCardPresentation,
+  resolveBundlePresentation,
+  resolvePresentedCover,
+  resolvePresentedTitle,
+} from "./localPresentation";
 import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
@@ -263,21 +273,75 @@ async function writeRemoteOrFallback(remote: () => Promise<void>): Promise<boole
   }
 }
 
+function formatCurrency(amount: number) {
+  return `¥${amount.toLocaleString("zh-CN")}`;
+}
+
+function resolveBundlesPresentation(bundles: CanonicalCaseBundle[]) {
+  return bundles.map(resolveBundlePresentation);
+}
+
+function finalizeWorkbenchVM(vm: WorkbenchVM | undefined) {
+  if (!vm) {
+    return undefined;
+  }
+
+  return {
+    ...vm,
+    activeCases: vm.activeCases.map((card) =>
+      finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
+    ),
+    draftCases: vm.draftCases.map((card) =>
+      finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
+    ),
+    archivedCases: vm.archivedCases.map((card) =>
+      finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
+    ),
+  };
+}
+
 export async function loadHomepageCaseCardVMs(): Promise<HomepageCaseCardVM[]> {
   return withRemoteFallback(
     async () => {
       const { bundles } = await callRescueApi<BundlesPayload>("listHomepageCases");
-      return getHomepageCaseCardVMsFromBundles(bundles);
+      return getHomepageCaseCardVMsFromBundles(resolveBundlesPresentation(bundles)).map(
+        (card) => finalizeHomepageCaseCardPresentation(card, { caseId: card.caseId }),
+      );
     },
-    () => getHomepageCaseCardVMsFromBundles(getCanonicalBundles()),
+    () => getHomepageCaseCardVMs(),
   );
 }
 
 function buildRescuerHomepageVMFromBundles(input: {
   rescuer?: CanonicalRescuer;
   bundles: CanonicalCaseBundle[];
+  rescuerId?: string;
+  caseId?: string;
 }): RescuerHomepageVM | undefined {
-  const rescuer = input.rescuer ?? input.bundles[0]?.rescuer;
+  const resolvedBundles = resolveBundlesPresentation(input.bundles);
+  const targetRescuerId =
+    input.rescuerId ||
+    input.rescuer?.id ||
+    (input.caseId
+      ? resolvedBundles.find((bundle) => bundle.case.id === input.caseId)?.rescuer.id
+      : undefined) ||
+    resolvedBundles[0]?.rescuer.id;
+
+  if (!targetRescuerId) {
+    return undefined;
+  }
+
+  const rescuerBundles = resolvedBundles
+    .filter(
+      (bundle) =>
+        bundle.rescuer.id === targetRescuerId &&
+        bundle.case.visibility === "published",
+    )
+    .sort((left, right) => right.case.updatedAt.localeCompare(left.case.updatedAt));
+  const rescuer =
+    input.rescuer ||
+    rescuerBundles[0]?.rescuer ||
+    resolvedBundles.find((bundle) => bundle.rescuer.id === targetRescuerId)?.rescuer;
 
   if (!rescuer) {
     return undefined;
@@ -290,10 +354,11 @@ function buildRescuerHomepageVMFromBundles(input: {
       avatarUrl: rescuer.avatarUrl,
       stats: rescuer.stats,
     },
-    cards: input.bundles
-      .filter((bundle) => bundle.case.visibility === "published")
-      .sort((left, right) => right.case.updatedAt.localeCompare(left.case.updatedAt))
-      .map((bundle) => getHomepageCaseCardVM(bundle)),
+    cards: rescuerBundles.map((bundle) =>
+      finalizeHomepageCaseCardPresentation(getHomepageCaseCardVM(bundle), {
+        caseId: bundle.case.id,
+      }),
+    ),
     profileEntryEnabled: true,
   };
 }
@@ -308,9 +373,18 @@ export async function loadRescuerHomepageVM(input: {
         "getRescuerHomepage",
         input,
       );
-      return buildRescuerHomepageVMFromBundles(payload);
+      return buildRescuerHomepageVMFromBundles({
+        ...payload,
+        rescuerId: input.rescuerId,
+        caseId: input.caseId,
+      });
     },
-    () => undefined,
+    () =>
+      buildRescuerHomepageVMFromBundles({
+        bundles: getCanonicalBundles(),
+        rescuerId: input.rescuerId,
+        caseId: input.caseId,
+      }),
   );
 }
 
@@ -321,7 +395,7 @@ export async function searchCaseByPublicIdExact(input?: string) {
         "searchCaseByPublicId",
         { publicCaseId: input },
       );
-      return bundle;
+      return bundle ? resolveBundlePresentation(bundle) : undefined;
     },
     () => getCaseByPublicIdExact(input),
   );
@@ -335,7 +409,15 @@ export async function loadPublicDetailVMByCaseId(
       const { bundle } = await callRescueApi<BundlePayload>("getCaseDetail", {
         caseId,
       });
-      return bundle ? getPublicDetailVMByCaseIdFromBundles([bundle], caseId) : undefined;
+      return finalizePublicDetailPresentation(
+        bundle
+          ? getPublicDetailVMByCaseIdFromBundles(
+              [resolveBundlePresentation(bundle)],
+              caseId,
+            )
+          : undefined,
+        { caseId },
+      );
     },
     () => getPublicDetailVMByCaseId(caseId),
   );
@@ -367,7 +449,10 @@ export async function loadSupportSheetDataByCaseId(
         caseId,
       });
       return bundle
-        ? getSupportSheetDataByCaseIdFromBundles([bundle], caseId)
+        ? getSupportSheetDataByCaseIdFromBundles(
+            [resolveBundlePresentation(bundle)],
+            caseId,
+          )
         : undefined;
     },
     () => getSupportSheetDataByCaseId(caseId),
@@ -382,7 +467,14 @@ export async function loadOwnerDetailVMByCaseId(
       const { bundle } = await callRescueApi<BundlePayload>("getOwnerCaseDetail", {
         caseId,
       });
-      return bundle ? getOwnerDetailVMByCaseIdFromBundles([bundle], caseId) : undefined;
+      return finalizeOwnerDetailPresentation(
+        bundle
+          ? getOwnerDetailVMByCaseIdFromBundles(
+              [resolveBundlePresentation(bundle)],
+              caseId,
+            )
+          : undefined,
+      );
     },
     () => getOwnerDetailVMByCaseId(caseId),
   );
@@ -394,7 +486,9 @@ export async function loadWorkbenchVMForCurrentUser(): Promise<
   return withRemoteFallback(
     async () => {
       const { bundles } = await callRescueApi<BundlesPayload>("getOwnerWorkbench");
-      return getWorkbenchVMFromBundles(bundles);
+      return finalizeWorkbenchVM(
+        getWorkbenchVMFromBundles(resolveBundlesPresentation(bundles)),
+      );
     },
     () => getWorkbenchVMForCurrentUser(),
   );
@@ -424,9 +518,69 @@ export async function loadMySupportHistory(): Promise<
       const { summary } = await callRescueApi<SupportHistoryPayload>(
         "getMySupportHistory",
       );
-      return summary;
+      return {
+        ...summary,
+        supportCases: summary.supportCases.map((item) => ({
+          ...item,
+          animalName:
+            resolvePresentedTitle({
+              caseId: item.caseId,
+              fallback: item.animalName,
+            }) || item.animalName,
+          animalCoverImageUrl:
+            resolvePresentedCover({
+              caseId: item.caseId,
+              fallback: item.animalCoverImageUrl,
+            }) || item.animalCoverImageUrl,
+        })),
+      };
     },
-    () => undefined,
+    () => {
+      const resolvedBundles = resolveBundlesPresentation(getCanonicalBundles());
+      const supportCases = resolvedBundles
+        .map((bundle) =>
+          finalizePublicDetailPresentation(
+            getPublicDetailVMByCaseIdFromBundles([bundle], bundle.case.id),
+            { caseId: bundle.case.id },
+          ),
+        )
+        .filter((detail): detail is PublicDetailVM => Boolean(detail))
+        .map((detail) => {
+          const thread = detail.supportSummary.threads.find(
+            (item) => item.supporterUserId === LOCAL_SUPPORTER_ID,
+          );
+          const amount =
+            thread?.entries
+              .filter((entry) => entry.status === "confirmed")
+              .reduce((sum, entry) => sum + entry.amount, 0) || 0;
+
+          return {
+            caseId: detail.caseId,
+            publicCaseId: detail.publicCaseId,
+            animalName: detail.title,
+            animalCoverImageUrl: detail.heroImageUrl || "",
+            myTotalSupportedAmount: amount,
+            myTotalSupportedAmountLabel: formatCurrency(amount),
+            latestSupportedAtLabel:
+              thread?.latestEntryAtLabel || detail.updatedAtLabel,
+          };
+        })
+        .filter((item) => item.myTotalSupportedAmount > 0)
+        .sort(
+          (left, right) =>
+            right.myTotalSupportedAmount - left.myTotalSupportedAmount,
+        );
+      const totalSupportedAmount = supportCases.reduce(
+        (sum, item) => sum + item.myTotalSupportedAmount,
+        0,
+      );
+
+      return {
+        totalSupportedAmount,
+        totalSupportedAmountLabel: formatCurrency(totalSupportedAmount),
+        supportCases,
+      };
+    },
   );
 }
 

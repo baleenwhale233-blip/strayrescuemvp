@@ -2,14 +2,13 @@ import { Image, Input, ScrollView, Text, View } from "@tarojs/components";
 import Taro, { useDidHide, useDidShow, useRouter, useUnload } from "@tarojs/taro";
 import { useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
+  addExpenseRecord,
   buildExpenseEvidenceItems,
-  markDraftExpenseRefresh,
   saveCaseExpenseSubmission,
   type LocalExpenseSubmission,
-} from "../../../data/expenseSubmission";
+} from "../../../domain/canonical/repository";
 import addLineIcon from "../../../assets/rescue-expense/add-line-20.svg";
 import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
 import lineDeleteIcon from "../../../assets/rescue-expense/line-delete-12.svg";
@@ -19,7 +18,6 @@ import qaReceiptImage from "../../../assets/rescue-expense/qa-receipt.png";
 import submitArrowIcon from "../../../assets/rescue-expense/submit-arrow-16.svg";
 import uploadDeleteIcon from "../../../assets/rescue-expense/upload-delete-24.svg";
 import {
-  addExpenseRecord,
   createRemoteExpenseRecordByCaseId,
   formatTimelineTimestamp,
   getCurrentDraft,
@@ -364,7 +362,6 @@ export default function RescueExpensePage() {
 
         replaceDraft(nextDraft);
         syncCurrentDraft(nextDraft);
-        markDraftExpenseRefresh(draftId);
       } else if (caseId) {
         const uploadedAssets = await Promise.all(
           publicEvidenceImages.map((imageUrl) =>
@@ -398,8 +395,6 @@ export default function RescueExpensePage() {
 
           saveCaseExpenseSubmission(caseId, submission);
         }
-
-        markCaseDetailRefresh(caseId);
       } else {
         Taro.hideLoading();
         Taro.showToast({

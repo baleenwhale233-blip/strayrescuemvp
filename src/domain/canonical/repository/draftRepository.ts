@@ -21,16 +21,9 @@ import {
   type RescueCreateEntryTone,
   type RescueCreateTimelineEntry,
 } from "./localDraftPersistence";
-import { adaptRescueProjectDetailMockToCanonical } from "../adapters/mockToCanonical";
-import { sampleCaseBundle } from "../fixtures/sampleCaseBundle";
-import { legacyRescueProjectDetails } from "../fixtures/legacyRescueProjectDetails";
+import { getSeedBundles } from "./bundleSources";
+import { caseIdToDraftId, draftIdToCaseId } from "./localRepositoryCore";
 import type { CanonicalCaseBundle } from "../types";
-import {
-  caseIdToDraftId,
-  draftIdToCaseId,
-  toOwnerActionTimelineEntry,
-  type OwnerDetailActionKey,
-} from "./localRepositoryCore";
 
 export type {
   RescueCreateDraft,
@@ -42,16 +35,8 @@ export type {
 export { calculateDraftLedger, formatTimelineTimestamp, draftIdToCaseId, caseIdToDraftId };
 export { toOwnerActionTimelineEntry, type OwnerDetailActionKey } from "./localRepositoryCore";
 
-function getSeedBundles(): CanonicalCaseBundle[] {
-  const legacyBundles = legacyRescueProjectDetails.map((detail, index) =>
-    adaptRescueProjectDetailMockToCanonical(detail, index),
-  );
-
-  return [sampleCaseBundle, ...legacyBundles];
-}
-
 function resolveAssetUrl(
-  bundle: CanonicalCaseBundle,
+  bundle: ReturnType<typeof getSeedBundles>[number],
   assetId?: string,
 ) {
   if (!assetId) {

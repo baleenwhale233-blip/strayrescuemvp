@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import {
   createRemoteManualSupportEntryByCaseId,
   draftIdToCaseId,
@@ -110,7 +109,6 @@ export default function SupportReviewPage() {
         entryId,
         status: "confirmed",
       });
-      markCaseDetailRefresh(caseId);
       showSuccessFeedback({
         title: "已确认到账",
         navigateBack: false,
@@ -133,7 +131,6 @@ export default function SupportReviewPage() {
         reason,
         note: reason === "duplicate_submission" ? "疑似重复提交" : "暂未匹配",
       });
-      markCaseDetailRefresh(caseId);
       showSuccessFeedback({
         title: "已标记未匹配",
         navigateBack: false,
@@ -161,7 +158,6 @@ export default function SupportReviewPage() {
         supportedAt: new Date().toISOString(),
         note: "救助人手动记一笔",
       });
-      markCaseDetailRefresh(caseId);
       Taro.hideLoading();
       showSuccessFeedback({
         title: "收入已记入账本",

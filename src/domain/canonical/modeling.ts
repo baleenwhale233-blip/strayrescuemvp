@@ -22,7 +22,6 @@ import type {
 } from "./types";
 
 const PUBLIC_CASE_PREFIX = "JM";
-const HOMEPAGE_REASON_FALLBACK = "公开后仍需继续补充基础记录";
 const RECOMMENDATION_WINDOW_MS = 48 * 60 * 60 * 1000;
 
 const STANDARD_CASE_STATUS_LABELS = {

@@ -1,31 +1,27 @@
-import { Image, Input, Text, Textarea, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
-  markDraftBudgetRefresh,
   saveCaseBudgetAdjustment,
   type LocalBudgetAdjustmentSubmission,
-} from "../../../data/budgetAdjustmentSubmission";
+} from "../../../domain/canonical/repository";
 import submitArrowIcon from "../../../assets/rescue-budget-update/footer-submit-arrow.svg";
 import noteInfoIcon from "../../../assets/rescue-budget-update/notice-icon.svg";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   calculateDraftLedger,
+  createRemoteBudgetAdjustmentByCaseId,
   getCurrentDraft,
   getDraftById,
+  loadPublicDetailVMByCaseId,
   replaceDraft,
   syncCurrentDraft,
   type RescueCreateDraft,
   type RescueCreateEntryTone,
-} from "../../../domain/canonical/repository/localRepository";
-import {
-  createRemoteBudgetAdjustmentByCaseId,
-  loadPublicDetailVMByCaseId,
 } from "../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
 import "./index.scss";
@@ -204,7 +200,6 @@ export default function RescueBudgetUpdatePage() {
 
         replaceDraft(nextDraft);
         syncCurrentDraft(nextDraft);
-        markDraftBudgetRefresh(draftId);
       } else if (caseId) {
         const didSyncRemote = await createRemoteBudgetAdjustmentByCaseId(caseId, {
           previousTargetAmount: contextCard.previousBudget,
@@ -225,8 +220,6 @@ export default function RescueBudgetUpdatePage() {
 
           saveCaseBudgetAdjustment(caseId, submission);
         }
-
-        markCaseDetailRefresh(caseId);
       } else {
         Taro.hideLoading();
         Taro.showToast({

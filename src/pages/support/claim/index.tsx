@@ -1,4 +1,4 @@
-import { Image, Input, Text, Textarea, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
@@ -7,8 +7,6 @@ import animalProfileExact from "../../../assets/support-claim/animal-profile-exa
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
-import { applyTitleOverrideToPublicDetail } from "../../../data/caseTitleOverride";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
@@ -71,12 +69,11 @@ export default function SupportClaimPage() {
     setLoadStatus("loading");
     loadPublicDetailVMByCaseId(caseId)
       .then((nextDetail) => {
-        const resolvedDetail = applyTitleOverrideToPublicDetail(nextDetail);
-        setDetail(resolvedDetail);
+        setDetail(nextDetail);
         setCaseCoverSrc(
-          resolvedDetail ? getSupportClaimCover(resolvedDetail) : animalProfileExact,
+          nextDetail ? getSupportClaimCover(nextDetail) : animalProfileExact,
         );
-        setLoadStatus(resolvedDetail ? "ready" : "error");
+        setLoadStatus(nextDetail ? "ready" : "error");
       })
       .catch(() => {
         setLoadStatus("error");
@@ -167,7 +164,6 @@ export default function SupportClaimPage() {
       });
       Taro.hideLoading();
 
-      markCaseDetailRefresh(caseId);
       showSuccessFeedback({
         title: "已提交，待确认",
         delay: 900,

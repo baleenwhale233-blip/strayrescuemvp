@@ -9,7 +9,7 @@ import enterRescueIcon from "../../../../assets/rescue-create/step2-enter-icon.s
 import {
   getCurrentDraft,
   updateCurrentDraft,
-} from "../../../../domain/canonical/repository/localRepository";
+} from "../../../../domain/canonical/repository";
 import "./index.scss";
 
 export default function RescueCreateBudgetPage() {

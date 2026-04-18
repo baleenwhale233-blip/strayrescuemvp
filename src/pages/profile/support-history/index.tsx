@@ -2,18 +2,10 @@ import { Image, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { applyTitleOverrideToPublicDetail } from "../../../data/caseTitleOverride";
 import fallbackCoverImage from "../../../assets/detail/guest-hero-cat.png";
 import chevronIcon from "../../../assets/rescue-detail/owner/action-chevron.svg";
-import {
-  getCanonicalBundles,
-  loadMySupportHistory,
-  getPublicDetailVMByCaseId,
-} from "../../../domain/canonical/repository";
-import type { PublicDetailVM } from "../../../domain/canonical/types";
+import { loadMySupportHistory } from "../../../domain/canonical/repository";
 import "./index.scss";
-
-const CURRENT_SUPPORTER_ID = "supporter_current_user";
 
 type SupportHistoryItem = {
   caseId: string;
@@ -27,54 +19,14 @@ function formatCurrency(value: number) {
   return `¥${value.toLocaleString("zh-CN")}`;
 }
 
-function getMyConfirmedAmount(detail: PublicDetailVM) {
-  const thread = detail.supportSummary.threads.find(
-    (item) => item.supporterUserId === CURRENT_SUPPORTER_ID,
-  );
-
-  if (!thread) {
-    return 0;
-  }
-
-  return thread.entries
-    .filter((entry) => entry.status === "confirmed")
-    .reduce((sum, entry) => sum + entry.amount, 0);
-}
-
-function buildSupportHistoryItems(): SupportHistoryItem[] {
-  return getCanonicalBundles()
-    .map((bundle) => getPublicDetailVMByCaseId(bundle.case.id))
-    .filter((detail): detail is PublicDetailVM => Boolean(detail))
-    .map((detail) => applyTitleOverrideToPublicDetail(detail))
-    .filter((detail): detail is PublicDetailVM => Boolean(detail))
-    .map((detail) => {
-      const amount = getMyConfirmedAmount(detail);
-
-      return {
-        caseId: detail.caseId,
-        title: detail.title,
-        coverImageUrl: detail.heroImageUrl || fallbackCoverImage,
-        amount,
-        amountLabel: formatCurrency(amount),
-      };
-    })
-    .filter((item) => item.amount > 0)
-    .sort((left, right) => right.amount - left.amount);
-}
-
 export default function SupportHistoryPage() {
   const [items, setItems] = useState<SupportHistoryItem[]>([]);
 
   useDidShow(() => {
     loadMySupportHistory()
       .then((summary) => {
-        if (!summary) {
-          setItems(buildSupportHistoryItems());
-          return;
-        }
-
         setItems(
-          summary.supportCases.map((item) => ({
+          (summary?.supportCases || []).map((item) => ({
             caseId: item.caseId,
             title: item.animalName,
             coverImageUrl: item.animalCoverImageUrl || fallbackCoverImage,
@@ -84,7 +36,7 @@ export default function SupportHistoryPage() {
         );
       })
       .catch(() => {
-        setItems(buildSupportHistoryItems());
+        setItems([]);
       });
   });
 

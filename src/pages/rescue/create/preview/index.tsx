@@ -3,14 +3,10 @@ import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
-import { consumeDraftBudgetRefresh } from "../../../../data/budgetAdjustmentSubmission";
 import {
-  applyTitleOverrideToDraft,
   saveCaseCoverOverride,
   saveCaseTitleOverride,
-} from "../../../../data/caseTitleOverride";
-import { consumeDraftExpenseRefresh } from "../../../../data/expenseSubmission";
-import { consumeDraftStatusRefresh } from "../../../../data/statusUpdateSubmission";
+} from "../../../../domain/canonical/repository";
 import {
   RescueOwnerOverview,
   RescueOwnerQuickActions,
@@ -20,8 +16,6 @@ import {
   type RescueOwnerTimelineItem,
 } from "../../../../components/RescueOwnerShared";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
-import ownerActionBudgetIcon from "../../../../assets/rescue-detail/owner/action-budget.svg";
-import ownerActionChevronIcon from "../../../../assets/rescue-detail/owner/action-chevron.svg";
 import ownerFooterArrowIcon from "../../../../assets/rescue-detail/owner/footer-publish-arrow.svg";
 import ownerAnimalFallback from "../../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
@@ -42,7 +36,7 @@ import {
   type OwnerDetailVM,
   type RescueCreateDraft,
   type RescueCreateEntryTone,
-} from "../../../../domain/canonical/repository/localRepository";
+} from "../../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import "./index.scss";
@@ -578,13 +572,12 @@ export default function RescueCreatePreviewPage() {
         return;
       }
 
-      const resolvedDraft = applyTitleOverrideToDraft(nextDraft, routeCaseId);
-      if (!resolvedDraft) {
+      if (!nextDraft) {
         return;
       }
 
-      syncCurrentDraft(resolvedDraft);
-      setDraft(resolvedDraft);
+      syncCurrentDraft(nextDraft);
+      setDraft(nextDraft);
     };
 
     loadDraft().catch(() => {
@@ -601,18 +594,12 @@ export default function RescueCreatePreviewPage() {
 
   useDidShow(() => {
     const routeDraftId = router.params?.id;
-    if (
-      !consumeDraftBudgetRefresh(routeDraftId) &&
-      !consumeDraftExpenseRefresh(routeDraftId) &&
-      !consumeDraftStatusRefresh(routeDraftId)
-    ) {
-      return;
-    }
+    const routeCaseId = router.params?.caseId;
 
-    const refreshedDraft = applyTitleOverrideToDraft(
-      getDraftById(routeDraftId) || getCurrentDraft(),
-      router.params?.caseId,
-    );
+    const refreshedDraft =
+      getDraftById(routeDraftId) ||
+      getDraftByCaseId(routeCaseId) ||
+      getCurrentDraft();
 
     if (refreshedDraft) {
       setDraft(refreshedDraft);
@@ -633,10 +620,6 @@ export default function RescueCreatePreviewPage() {
     expenseAmount: ledger.expense,
     supportAmount: ledger.income,
   });
-
-  const handleActionTap = (action: ActionType) => {
-    setActiveAction(action);
-  };
 
   const handleSaveAction = (values: {
     title: string;

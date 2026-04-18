@@ -1481,3 +1481,18 @@
   重新检索当前活跃产品文档与 IA，确认这几份文件已与 `progress-update`、标准状态标签池、联系方式 OR 语义和审核友好支持文案保持一致。
 - 下一步 / 遗留问题：
   历史评审稿和旧版 IA 仍保留原始表述作为存档；后续如要彻底分层 archive / current 文档，再单独做一次清理。
+
+## 2026-04-19 | 数据层 | 统一 repository 读路径并收编本地 overlay / compat 壳
+
+- 为什么改：
+  首页、详情、工作台、支持足迹和救助人主页之前分别在页面层补 title/cover/status/budget/expense overlay，还依赖 `case-detail-refresh` / `draft-*-refresh` storage marker 才能回显，读口分叉后越来越难判断“哪页才是最终态”。
+- 改了什么：
+  在 `src/domain/canonical/repository/` 内新增 bundle source 与 local presentation resolver，把 title/cover/status/expense/budget 的本地 overlay 收回 repository；`load/get` 读 API 默认返回 resolved/final VM，详情与草稿预览改成 `useDidShow` 直接重读，不再走 refresh marker；同时删除 `src/data/*` 里已废弃的 overlay/compat facade、`localRepository.ts`、零引用组件与一批未使用 twin 资源。
+- 影响范围：
+  `canonicalReadRepository`、`remoteRepository`、`draftRepository`、首页/详情/工作台/支持足迹/救助人主页/支持登记/记账/进展/预算更新/建档页的读链与 import 入口；现有 public API 名字保持不变，页面 contract 目标仍是“最终态 VM”，只是责任从页面层回收到 repository。
+- 兼容性说明：
+  已保持现有页面继续消费同名 `load*/get*` API，不新增页面侧决策；本轮没有新增 richer VM 字段，只把原本散落在页面和 `src/data` 的展示合成逻辑集中到 repository，并保留 `src/data/rescuerContactProfile.ts` 这条仍在用的本地资料链。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npx tsc --noEmit --noUnusedLocals --noUnusedParameters` 通过；额外用 `rg` 复查页面层已不再引用已删除的 overlay facade、selector 直连和 `localRepository.ts`。
+- 下一步 / 遗留问题：
+  远端 `getMySupportHistory` / `getRescuerHomepage` 现在已经在 repository 内补本地展示覆盖，但如果后续把 title/cover/status 正式沉到后端字段，还要继续评估是否可以把这层本地 presentation resolver 再收薄一轮。

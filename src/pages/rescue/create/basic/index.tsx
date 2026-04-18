@@ -11,7 +11,7 @@ import {
   getCurrentDraft,
   startDraftSession,
   updateCurrentDraft,
-} from "../../../../domain/canonical/repository/localRepository";
+} from "../../../../domain/canonical/repository";
 import "./index.scss";
 
 export default function RescueCreateBasicPage() {

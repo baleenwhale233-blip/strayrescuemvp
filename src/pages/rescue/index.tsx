@@ -4,7 +4,6 @@ import { useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import { NavBar } from "../../components/NavBar";
 import { SectionHeader } from "../../components/SectionHeader";
-import { applyTitleOverrideToWorkbenchCard } from "../../data/caseTitleOverride";
 import { hasCompleteRescuerContactProfile } from "../../data/rescuerContactProfile";
 import {
   caseIdToDraftId,
@@ -121,8 +120,8 @@ export default function RescuePage() {
   useDidShow(() => {
     loadWorkbenchVMForCurrentUser()
       .then((vm) => {
-        setActiveCases((vm?.activeCases ?? []).map(applyTitleOverrideToWorkbenchCard));
-        setDraftCases((vm?.draftCases ?? []).map(applyTitleOverrideToWorkbenchCard));
+        setActiveCases(vm?.activeCases ?? []);
+        setDraftCases(vm?.draftCases ?? []);
       })
       .catch(() => {
         Taro.showToast({

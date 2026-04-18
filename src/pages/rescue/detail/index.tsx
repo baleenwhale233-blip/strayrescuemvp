@@ -4,23 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
 import { NavBar } from "../../../components/NavBar";
 import {
-  applyTitleOverrideToOwnerDetail,
-  applyTitleOverrideToPublicDetail,
   saveCaseCoverOverride,
   saveCaseTitleOverride,
-} from "../../../data/caseTitleOverride";
-import { consumeCaseDetailRefresh, markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
-import {
-  applyCaseBudgetAdjustmentsToOwnerDetail,
-  applyCaseBudgetAdjustmentsToPublicDetail,
-  getCaseBudgetAdjustments,
-} from "../../../data/budgetAdjustmentSubmission";
-import { getCaseExpenseSubmissions, mergeCaseExpenseSubmissionsIntoDetail } from "../../../data/expenseSubmission";
-import {
-  applyCaseStatusSubmissionsToOwnerDetail,
-  getCaseStatusSubmissions,
-  mergeCaseStatusSubmissionsIntoDetail,
-} from "../../../data/statusUpdateSubmission";
+} from "../../../domain/canonical/repository";
 import {
   RescueOwnerOverview,
   RescueOwnerQuickActions,
@@ -244,61 +230,6 @@ function toOwnerTimelineItems(detail: PublicDetailVM): RescueOwnerTimelineItem[]
       budgetCurrentLabel: budgetAdjustment?.currentAmountLabel,
     };
   });
-}
-
-function TimelineCard({ item }: { item: PublicTimelineItemVM }) {
-  return (
-    <View className="timeline-card">
-      <View className={`timeline-card__dot timeline-card__dot--${item.tone}`} />
-      <View className="timeline-card__content theme-card">
-        <View className="timeline-card__head">
-          <View className={`timeline-card__badge timeline-card__badge--${item.tone}`}>
-            <Text>{item.label}</Text>
-          </View>
-          <Text className="timeline-card__time">{item.timestampLabel}</Text>
-        </View>
-
-        <Text className="timeline-card__title">{item.title}</Text>
-
-        {item.description ? (
-          <Text className="timeline-card__description">{item.description}</Text>
-        ) : null}
-
-        {item.amountLabel ? (
-          <View className="timeline-card__amount-row">
-            <Text
-              className={`timeline-card__amount ${
-                item.type === "support" ? "timeline-card__amount--income" : ""
-              }`}
-            >
-              {item.type === "support" ? "+" : "-"}
-              {item.amountLabel}
-            </Text>
-            {item.type === "expense" ? (
-              <View className="timeline-card__link">
-                <Text>查看详情</Text>
-              </View>
-            ) : null}
-          </View>
-        ) : null}
-
-        {item.assetUrls.length ? (
-          <View
-            className={`timeline-card__images ${
-              item.assetUrls.length === 1 ? "timeline-card__images--single" : ""
-            }`}
-          >
-            {item.assetUrls.slice(0, 9).map((asset) => (
-              <View key={asset} className="timeline-card__image-wrap">
-                <Image className="timeline-card__image" mode="aspectFill" src={asset} />
-                <Text className="timeline-card__watermark">透明账本·严禁盗用</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-      </View>
-    </View>
-  );
 }
 
 function GuestOverview({
@@ -850,7 +781,6 @@ export default function RescueDetailPage() {
   const mode = router.params?.mode === "guest" ? "guest" : "owner";
   const initialOwnerTab = router.params?.tab === "detail" ? "detail" : "overview";
   const caseId = router.params?.id;
-  const hasLoadedOnceRef = useRef(false);
 
   useShareAppMessage(() => ({
     title: getShareTitle(publicDetail),
@@ -898,7 +828,6 @@ export default function RescueDetailPage() {
             }
           : current,
       );
-      markCaseDetailRefresh(caseId);
       Taro.hideLoading();
     } catch {
       Taro.hideLoading();
@@ -962,7 +891,6 @@ export default function RescueDetailPage() {
           draftId: ownerDetail?.draftId,
         });
       }
-      markCaseDetailRefresh(caseId);
       Taro.hideLoading();
 
       Taro.showToast({
@@ -990,47 +918,10 @@ export default function RescueDetailPage() {
       loadSupportSheetDataByCaseId(caseId),
     ])
       .then(([nextPublicDetail, nextOwnerDetail, nextSupportData]) => {
-        const detailWithExpenseOverlay =
-          mode === "owner" && nextPublicDetail
-            ? mergeCaseExpenseSubmissionsIntoDetail(
-                nextPublicDetail,
-                getCaseExpenseSubmissions(caseId),
-              )
-            : nextPublicDetail;
-        const mergedPublicDetail =
-          mode === "owner" && detailWithExpenseOverlay
-            ? mergeCaseStatusSubmissionsIntoDetail(
-                detailWithExpenseOverlay,
-                getCaseStatusSubmissions(caseId),
-              )
-            : detailWithExpenseOverlay;
-        const budgetAdjustedPublicDetail =
-          mode === "owner" && mergedPublicDetail
-            ? applyCaseBudgetAdjustmentsToPublicDetail(
-                mergedPublicDetail,
-                getCaseBudgetAdjustments(caseId),
-              )
-            : mergedPublicDetail;
-        const mergedOwnerDetail =
-          mode === "owner" && nextOwnerDetail
-            ? applyCaseBudgetAdjustmentsToOwnerDetail(
-                applyCaseStatusSubmissionsToOwnerDetail(
-                  nextOwnerDetail,
-                  getCaseStatusSubmissions(caseId),
-                ),
-                getCaseBudgetAdjustments(caseId),
-              )
-            : nextOwnerDetail;
-
-        setPublicDetail(
-          applyTitleOverrideToPublicDetail(
-            budgetAdjustedPublicDetail,
-            mergedOwnerDetail?.draftId,
-          ),
-        );
-        setOwnerDetail(applyTitleOverrideToOwnerDetail(mergedOwnerDetail));
+        setPublicDetail(nextPublicDetail);
+        setOwnerDetail(nextOwnerDetail);
         setSupportData(nextSupportData);
-        setDetailStatus(budgetAdjustedPublicDetail ? "ready" : "error");
+        setDetailStatus(nextPublicDetail ? "ready" : "error");
       })
       .catch(() => {
         setDetailStatus("error");
@@ -1042,13 +933,6 @@ export default function RescueDetailPage() {
   };
 
   useDidShow(() => {
-    const shouldRefresh = consumeCaseDetailRefresh(caseId);
-
-    if (hasLoadedOnceRef.current && !shouldRefresh) {
-      return;
-    }
-
-    hasLoadedOnceRef.current = true;
     loadDetailPage();
   });
 
