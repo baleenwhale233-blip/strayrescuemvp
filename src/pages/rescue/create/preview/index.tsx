@@ -43,6 +43,7 @@ import {
   type RescueCreateDraft,
   type RescueCreateEntryTone,
 } from "../../../../domain/canonical/repository/localRepository";
+import { uploadCaseAssetImage } from "../../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import "./index.scss";
 
@@ -746,8 +747,41 @@ export default function RescueCreatePreviewPage() {
   const handlePublish = async () => {
     const saved = persistDraft("published");
     setDraft(saved);
+
+    let remoteDraft = saved;
+
+    if (
+      saved.coverPath &&
+      !saved.coverPath.startsWith("cloud://") &&
+      !saved.coverPath.startsWith("http://") &&
+      !saved.coverPath.startsWith("https://")
+    ) {
+      try {
+        const uploadedCover = await uploadCaseAssetImage(
+          draftIdToCaseId(saved.id),
+          saved.coverPath,
+          "case-covers",
+        );
+
+        if (!uploadedCover.isLocalFallback) {
+          remoteDraft = {
+            ...saved,
+            coverPath: uploadedCover.fileID,
+          };
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
+          Taro.showToast({
+            title: "封面上传失败，请重试",
+            icon: "none",
+          });
+          return;
+        }
+      }
+    }
+
     try {
-      await saveRemoteDraftCase(saved, "published");
+      await saveRemoteDraftCase(remoteDraft, "published");
     } catch {
       Taro.showToast({
         title: "已本地发布，远端同步失败",
@@ -869,7 +903,11 @@ export default function RescueCreatePreviewPage() {
             url: `/pages/rescue/expense/index?draftId=${draft.id}`,
           })
         }
-        onIncome={() => handleActionTap("income")}
+        onIncome={() =>
+          Taro.navigateTo({
+            url: `/pages/support/review/index?caseId=${draftIdToCaseId(draft.id)}&draftId=${draft.id}&tab=manual`,
+          })
+        }
         onStatus={() =>
           Taro.navigateTo({
             url: `/pages/rescue/update/index?draftId=${draft.id}`,

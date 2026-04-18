@@ -891,6 +891,69 @@ async function upsertDocs(db, collectionName, docs) {
   }));
 }
 
+async function listAllDocIds(db, collectionName, pageSize = 100) {
+  const ids = [];
+  let offset = 0;
+
+  while (true) {
+    const result = await db.collection(collectionName).skip(offset).limit(pageSize).get();
+    const docs = result.data || [];
+    ids.push(
+      ...docs.map((doc) => String(doc._id || "")).filter(Boolean),
+    );
+
+    if (docs.length < pageSize) {
+      break;
+    }
+
+    offset += docs.length;
+  }
+
+  return ids;
+}
+
+async function removeDocsByIds(db, collectionName, docIds, chunkSize = 20) {
+  let removedCount = 0;
+
+  for (let index = 0; index < docIds.length; index += chunkSize) {
+    const chunk = docIds.slice(index, index + chunkSize);
+    const results = await Promise.all(
+      chunk.map((docId) =>
+        db.collection(collectionName).doc(docId).remove().then(
+          () => ({ ok: true, docId }),
+          (error) => ({ ok: false, docId, error }),
+        ),
+      ),
+    );
+    const failed = results.filter((result) => !result.ok);
+
+    if (failed.length) {
+      throw new Error(
+        `Failed to prune ${collectionName}: ${failed
+          .map((result) => result.docId)
+          .join(", ")}`,
+      );
+    }
+
+    removedCount += chunk.length;
+  }
+
+  return removedCount;
+}
+
+async function pruneCollectionToDocIds(db, collectionName, keepDocIds) {
+  const keepSet = new Set(keepDocIds.map((docId) => String(docId)));
+  const existingDocIds = await listAllDocIds(db, collectionName);
+  const staleDocIds = existingDocIds.filter((docId) => !keepSet.has(docId));
+  const removedCount = await removeDocsByIds(db, collectionName, staleDocIds);
+
+  return {
+    existingCount: existingDocIds.length,
+    keptCount: keepSet.size,
+    removedCount,
+  };
+}
+
 async function seedMockData({ db, collections, openid, input = {} }) {
   const ownerOpenid = openid || input.ownerOpenid;
 
@@ -907,19 +970,82 @@ async function seedMockData({ db, collections, openid, input = {} }) {
     ownerProfile: input.ownerProfile,
     alphaAssetFileIDs: input.alphaAssetFileIDs || {},
   });
+  const resetAlphaEnv = input.cleanupMode === "reset_alpha_environment";
+  const seededCollections = {
+    profiles: seedData.profiles,
+    cases: seedData.cases,
+    events: seedData.events,
+    expenses: seedData.expenses,
+    supportEntries: seedData.supportEntries,
+    supportThreads: seedData.supportThreads,
+    assets: seedData.assets,
+    sharedEvidenceGroups: seedData.sharedEvidenceGroups,
+  };
 
-  await upsertDocs(db, collections.profiles, seedData.profiles);
-  await upsertDocs(db, collections.cases, seedData.cases);
-  await upsertDocs(db, collections.events, seedData.events);
-  await upsertDocs(db, collections.expenses, seedData.expenses);
-  await upsertDocs(db, collections.supportEntries, seedData.supportEntries);
-  await upsertDocs(db, collections.supportThreads, seedData.supportThreads);
-  await upsertDocs(db, collections.assets, seedData.assets);
-  await upsertDocs(db, collections.sharedEvidenceGroups, seedData.sharedEvidenceGroups);
+  await upsertDocs(db, collections.profiles, seededCollections.profiles);
+  await upsertDocs(db, collections.cases, seededCollections.cases);
+  await upsertDocs(db, collections.events, seededCollections.events);
+  await upsertDocs(db, collections.expenses, seededCollections.expenses);
+  await upsertDocs(db, collections.supportEntries, seededCollections.supportEntries);
+  await upsertDocs(db, collections.supportThreads, seededCollections.supportThreads);
+  await upsertDocs(db, collections.assets, seededCollections.assets);
+  await upsertDocs(
+    db,
+    collections.sharedEvidenceGroups,
+    seededCollections.sharedEvidenceGroups,
+  );
+
+  let cleanup = undefined;
+  if (resetAlphaEnv) {
+    cleanup = {
+      profiles: await pruneCollectionToDocIds(
+        db,
+        collections.profiles,
+        seededCollections.profiles.map((doc) => doc._id),
+      ),
+      cases: await pruneCollectionToDocIds(
+        db,
+        collections.cases,
+        seededCollections.cases.map((doc) => doc._id),
+      ),
+      events: await pruneCollectionToDocIds(
+        db,
+        collections.events,
+        seededCollections.events.map((doc) => doc._id),
+      ),
+      expenses: await pruneCollectionToDocIds(
+        db,
+        collections.expenses,
+        seededCollections.expenses.map((doc) => doc._id),
+      ),
+      supportEntries: await pruneCollectionToDocIds(
+        db,
+        collections.supportEntries,
+        seededCollections.supportEntries.map((doc) => doc._id),
+      ),
+      supportThreads: await pruneCollectionToDocIds(
+        db,
+        collections.supportThreads,
+        seededCollections.supportThreads.map((doc) => doc._id),
+      ),
+      assets: await pruneCollectionToDocIds(
+        db,
+        collections.assets,
+        seededCollections.assets.map((doc) => doc._id),
+      ),
+      sharedEvidenceGroups: await pruneCollectionToDocIds(
+        db,
+        collections.sharedEvidenceGroups,
+        seededCollections.sharedEvidenceGroups.map((doc) => doc._id),
+      ),
+    };
+  }
 
   return {
     ownerOpenid,
     seeded: true,
+    cleanupMode: resetAlphaEnv ? "reset_alpha_environment" : "upsert_only",
+    cleanup,
     counts: {
       profiles: seedData.profiles.length,
       rescueCases: seedData.cases.length,

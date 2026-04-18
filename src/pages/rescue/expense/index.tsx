@@ -134,6 +134,24 @@ function hydrateExpenseLines(lines?: ExpenseLine[]) {
   }));
 }
 
+function mapExpenseError(error: unknown) {
+  const code = error instanceof Error ? error.message : "";
+
+  if (code === "EXPENSE_EVIDENCE_REQUIRED") {
+    return "请至少上传 1 张图片";
+  }
+
+  if (code === "INVALID_ASSET_FILE_ID") {
+    return "图片上传结果异常，请重新上传";
+  }
+
+  if (code === "CASE_ASSET_UPLOAD_FAILED") {
+    return "凭证上传失败，请重试";
+  }
+
+  return "记账保存失败";
+}
+
 export default function RescueExpensePage() {
   const router = useRouter();
   const caseId = router.params?.caseId || router.params?.id;
@@ -308,6 +326,14 @@ export default function RescueExpensePage() {
       return;
     }
 
+    if (!publicEvidenceImages.length) {
+      Taro.showToast({
+        title: "请至少上传 1 张图片",
+        icon: "none",
+      });
+      return;
+    }
+
     const total = validLines.reduce((sum, line) => sum + parseAmount(line.amount), 0);
     const title = getExpenseSubmissionTitle(validLines);
     const spentAt = new Date().toISOString();
@@ -391,10 +417,7 @@ export default function RescueExpensePage() {
     } catch (error) {
       Taro.hideLoading();
       Taro.showToast({
-        title:
-          error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED"
-            ? "凭证上传失败，请重试"
-            : "记账保存失败",
+        title: mapExpenseError(error),
         icon: "none",
       });
     }

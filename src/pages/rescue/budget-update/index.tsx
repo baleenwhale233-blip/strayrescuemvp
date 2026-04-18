@@ -3,6 +3,7 @@ import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
@@ -68,6 +69,7 @@ function buildDraftBudgetEntry(input: {
 
 export default function RescueBudgetUpdatePage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const caseId = router.params?.caseId || router.params?.id;
   const draftId = router.params?.draftId;
   const [loadStatus, setLoadStatus] = useState<BudgetUpdateLoadStatus>("loading");
@@ -249,14 +251,20 @@ export default function RescueBudgetUpdatePage() {
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
-      <View className="page-shell rescue-budget-update-page">
+      <View
+        className="page-shell rescue-budget-update-page"
+        style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
+      >
         <NavBar showBack title="追加预算" />
       </View>
     );
   }
 
   return (
-    <View className="page-shell rescue-budget-update-page">
+    <View
+      className="page-shell rescue-budget-update-page"
+      style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
+    >
       <NavBar showBack title="追加预算" />
 
       <View className="rescue-budget-update-page__body">
@@ -302,6 +310,7 @@ export default function RescueBudgetUpdatePage() {
             textareaClassName="rescue-budget-update-page__textarea"
             placeholderClassName="rescue-budget-update-page__textarea-placeholder"
             placeholder="请说明为什么要追加预算，如：病情反复需要额手术、住院时间延长等"
+            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={160}
             value={reason}
             onInput={(event) => setReason(event.detail.value)}
@@ -316,7 +325,10 @@ export default function RescueBudgetUpdatePage() {
         </View>
       </View>
 
-      <View className="rescue-budget-update-page__bottom">
+      <View
+        className="rescue-budget-update-page__bottom"
+        style={{ bottom: `${keyboardBottomInset}px` }}
+      >
         <View className="theme-button-primary rescue-budget-update-page__bottom-submit" onTap={handleSubmit}>
           <Text>确认追加并更新时间线</Text>
           <Image className="rescue-budget-update-page__bottom-submit-icon" mode="aspectFit" src={submitArrowIcon} />

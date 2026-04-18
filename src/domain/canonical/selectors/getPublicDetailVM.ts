@@ -60,6 +60,32 @@ function getAssetUrl(assetMap: Map<string, CanonicalAsset>, assetId?: string) {
   return asset.watermarkedUrl || asset.originalUrl || asset.thumbnailUrl;
 }
 
+function getLatestPublicProgressPhotoUrl(
+  events: CanonicalEvent[],
+  assetMap: Map<string, CanonicalAsset>,
+) {
+  const progressEvents = [...events]
+    .filter(
+      (
+        event,
+      ): event is Extract<CanonicalEvent, { type: "progress_update" }> =>
+        event.type === "progress_update" && event.visibility === "public",
+    )
+    .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt));
+
+  for (const event of progressEvents) {
+    const assetUrl = event.assetIds
+      .map((assetId) => getAssetUrl(assetMap, assetId))
+      .find((value): value is string => Boolean(value));
+
+    if (assetUrl) {
+      return assetUrl;
+    }
+  }
+
+  return undefined;
+}
+
 function getStatusTone(caseRecord: CanonicalCase): StatusTone {
   if (caseRecord.visibility === "draft" || caseRecord.currentStatus === "draft") {
     return "draft";
@@ -254,7 +280,8 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
   const timeline = getPublicTimeline(bundle.events, assetMap);
   const heroImageUrl =
     getAssetUrl(assetMap, bundle.case.coverAssetId) ||
-    getAssetUrl(assetMap, bundle.case.faceIdAssetId);
+    getAssetUrl(assetMap, bundle.case.faceIdAssetId) ||
+    getLatestPublicProgressPhotoUrl(bundle.events, assetMap);
   const supportThreads = toSupportThreadSummaryVMs(bundle);
   const pendingSupportEntryCount = supportThreads.reduce(
     (sum, thread) => sum + thread.pendingCount,

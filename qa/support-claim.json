@@ -47,6 +47,6 @@
   "ignoreRegions": [],
   "notes": [
     "认领支持页当前使用本地 seed case_001 作为稳定 QA 场景。",
-    "救助开始时间字段尚未接入，案例卡该行仍是占位。"
+    "案例卡的救助开始时间当前已接稳定的 rescueStartedAtLabel VM。"
   ]
 }

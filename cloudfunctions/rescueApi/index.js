@@ -47,6 +47,19 @@ function hasOnlyCloudFileIDs(values = []) {
   return Array.isArray(values) && values.every((fileID) => isCloudFileID(fileID));
 }
 
+function hasText(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function hasAnyContactProfileInfo(input = {}) {
+  return Boolean(
+    hasText(input.wechatId) ||
+      hasText(input.paymentQrAssetId) ||
+      hasText(input.paymentQrUrl) ||
+      hasText(input.qrImagePath),
+  );
+}
+
 function getAssetFileID(doc = {}) {
   return [doc.fileID, doc.originalUrl, doc.watermarkedUrl, doc.thumbnailUrl].find(
     (value) => isCloudFileID(value),
@@ -332,6 +345,39 @@ function toCanonicalAsset(doc) {
   };
 }
 
+function getCanonicalAssetUrl(asset) {
+  return asset?.watermarkedUrl || asset?.originalUrl || asset?.thumbnailUrl || "";
+}
+
+function getHeroImageUrlFromBundle(bundle) {
+  if (!bundle) {
+    return "";
+  }
+
+  const assetMap = new Map((bundle.assets || []).map((asset) => [asset.id, asset]));
+  const getAssetUrlById = (assetId) =>
+    assetId ? getCanonicalAssetUrl(assetMap.get(assetId)) : "";
+  const sortedProgressEvents = [...(bundle.events || [])]
+    .filter((event) => event.type === "progress_update" && event.visibility === "public")
+    .sort((left, right) => String(right.occurredAt || "").localeCompare(String(left.occurredAt || "")));
+
+  for (const event of sortedProgressEvents) {
+    const progressAssetUrl = (event.assetIds || [])
+      .map((assetId) => getAssetUrlById(assetId))
+      .find(Boolean);
+
+    if (progressAssetUrl) {
+      return (
+        getAssetUrlById(bundle.case?.coverAssetId) ||
+        getAssetUrlById(bundle.case?.faceIdAssetId) ||
+        progressAssetUrl
+      );
+    }
+  }
+
+  return getAssetUrlById(bundle.case?.coverAssetId) || getAssetUrlById(bundle.case?.faceIdAssetId);
+}
+
 function toCanonicalSharedEvidenceGroup(doc) {
   return {
     id: doc.groupId || doc.id || doc._id,
@@ -494,6 +540,12 @@ function formatDateLabel(isoDateTime) {
 }
 
 function toProfilePayload(profile, paymentQrAsset) {
+  const paymentQrUrl =
+    paymentQrAsset?._tempFileURL ||
+    paymentQrAsset?.fileID ||
+    paymentQrAsset?.originalUrl ||
+    "";
+
   return {
     openid: profile.openid || profile._openid || profile.userId || profile._id,
     displayName: profile.displayName || profile.name || "",
@@ -501,12 +553,12 @@ function toProfilePayload(profile, paymentQrAsset) {
     wechatId: profile.wechatId || "",
     contactNote: profile.contactNote || "",
     paymentQrAssetId: profile.paymentQrAssetId,
-    paymentQrUrl:
-      paymentQrAsset?._tempFileURL ||
-      paymentQrAsset?.fileID ||
-      paymentQrAsset?.originalUrl ||
-      "",
-    hasContactProfile: Boolean(profile.wechatId && profile.paymentQrAssetId),
+    paymentQrUrl,
+    hasContactProfile: hasAnyContactProfileInfo({
+      wechatId: profile.wechatId,
+      paymentQrAssetId: profile.paymentQrAssetId,
+      paymentQrUrl,
+    }),
   };
 }
 
@@ -651,21 +703,7 @@ async function getMySupportHistory(openid) {
         .sort()
         .pop();
       const bundle = caseMap.get(caseId);
-      const assetMap = new Map((bundle?.assets || []).map((asset) => [asset.id, asset]));
-      const coverAsset = bundle?.case.coverAssetId
-        ? assetMap.get(bundle.case.coverAssetId)
-        : undefined;
-      const faceAsset = bundle?.case.faceIdAssetId
-        ? assetMap.get(bundle.case.faceIdAssetId)
-        : undefined;
-      const coverUrl =
-        coverAsset?.watermarkedUrl ||
-        coverAsset?.originalUrl ||
-        coverAsset?.thumbnailUrl ||
-        faceAsset?.watermarkedUrl ||
-        faceAsset?.originalUrl ||
-        faceAsset?.thumbnailUrl ||
-        "";
+      const coverUrl = getHeroImageUrlFromBundle(bundle);
 
       return {
         caseId,
@@ -1430,6 +1468,10 @@ async function createExpenseRecord(openid, input) {
 
   if (!amount || Number.isNaN(amount) || !summary) {
     return fail("INVALID_EXPENSE_RECORD");
+  }
+
+  if (!evidenceFileIds.length) {
+    return fail("EXPENSE_EVIDENCE_REQUIRED");
   }
 
   if (!hasOnlyCloudFileIDs(evidenceFileIds)) {

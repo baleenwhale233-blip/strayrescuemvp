@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
 import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
 import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
 import {
@@ -15,6 +16,7 @@ import "./index.scss";
 
 export default function RescueCreateBasicPage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const [coverPath, setCoverPath] = useState("");
   const [name, setName] = useState("");
   const [summary, setSummary] = useState("");
@@ -147,7 +149,10 @@ export default function RescueCreateBasicPage() {
   };
 
   return (
-    <View className="page-shell rescue-create-page">
+    <View
+      className="page-shell rescue-create-page"
+      style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
+    >
       <NavBar showBack title="新建救助" onBack={handleBack} />
 
       <View className="rescue-create-page__steps">
@@ -216,13 +221,17 @@ export default function RescueCreateBasicPage() {
           textareaClassName="rescue-create-page__textarea"
           placeholderClassName="rescue-create-page__textarea-placeholder"
           placeholder="在哪发现的（不用太过具体）？它怎么了？"
+          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
           maxlength={120}
           value={summary}
           onInput={(event) => setSummary(event.detail.value)}
         />
       </View>
 
-      <View className="rescue-create-page__footer">
+      <View
+        className="rescue-create-page__footer"
+        style={{ bottom: `${keyboardBottomInset}px` }}
+      >
         <View className="theme-button-primary rescue-create-page__primary" onTap={handleNext}>
           <Text>下一步：设定目标</Text>
           <Image

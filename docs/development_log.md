@@ -50,6 +50,32 @@
 - 下一步 / 遗留问题：
   需要 force-push 覆盖 GitHub 上的旧历史，并提醒协作者重新 fetch / reset；本地开发仍可继续依赖 skip-worktree 的 `project.config.json` 保留真实 AppID，但不要取消这层隔离再直接提交。
 
+## 2026-04-18 | 仓库安全 | 清理 AppID 公开暴露并区分本地与公网
+
+- 为什么改：
+  公开 GitHub 仓库里的 `docs/alpha_test_plan.md` 直接写了真实测试 AppID；同时本地工作区的 `project.config.json` 也保留了真实 AppID，需要明确区分“只在本地存在”和“已经公开暴露”的边界。
+- 改了什么：
+  将 `docs/alpha_test_plan.md` 的测试环境说明改为“不在仓库记录真实 AppID，本地自行填写”；把本地 `project.config.json` 恢复为 `touristappid`；补查确认 git 跟踪版本的 `project.config.json` 本身一直是 `touristappid`，真实 AppID 仅存在于本地 skip-worktree 覆盖。
+- 影响范围：
+  `docs/alpha_test_plan.md`、`project.config.json`（本地工作区恢复）、仓库安全排查结论。
+- 验证结果：
+  `rg 'wx[a-z0-9]{16}'` 复查后，repo 当前工作区不再在 `project.config.json` 中暴露真实 AppID；`git show origin/main:project.config.json` 与 `git show origin/codex/cloudbase-cloud1-backend:project.config.json` 均为 `touristappid`；公网当前仍可在 `docs/alpha_test_plan.md` 的既有提交历史中看到这次被移除前的 AppID 记录。
+- 下一步 / 遗留问题：
+  如果要把 GitHub 公共仓库历史里的 AppID 一并擦掉，下一步需要改写历史并 force-push；CloudBase 环境 ID 当前仍在前端配置和文档中公开，按能力上属于可见运行时标识，不是密钥，但若要进一步收口可再单独梳理。
+
+## 2026-04-18 | 仓库安全 | 恢复本地真实 AppID，仅保留公网文档清理
+
+- 为什么改：
+  本地小程序开发、预览和上传体验版依赖真实 AppID；前一条清理里把本地 `project.config.json` 一并恢复成 `touristappid`，会影响当前开发环境，不符合“本地和公网分开处理”的目标。
+- 改了什么：
+  将本地 `project.config.json` 的 `appid` 恢复为当前真实值，继续保留 `docs/alpha_test_plan.md` 里“不在仓库记录真实 AppID”的文案；同时维持对 `project.config.json` 的本地 skip-worktree 使用方式，让本地覆盖不进入 Git 跟踪变更。
+- 影响范围：
+  本地开发者工具导入、体验版上传和 CloudBase 调试流程恢复正常；公网仓库仍只清理文档中的 AppID 暴露，不额外改变远端已跟踪配置。
+- 验证结果：
+  本地 [project.config.json](/Users/yang/Documents/New%20project/stray-rescue-mvp/project.config.json) 已恢复真实 AppID；`git show origin/main:project.config.json` 仍是 `touristappid`，说明远端当前跟踪版本未被重新写回真实值。
+- 下一步 / 遗留问题：
+  后续如要提交这次仓库安全修正，只推文档和日志改动即可；若要进一步清历史，需要单独处理 GitHub 历史里的旧 AppID 记录。
+
 ## 2026-04-17 | 前端 | 补只读记录详情页与右滑结束救助交互
 
 - 为什么改：
@@ -1143,3 +1169,81 @@
   `npm run typecheck`、`npm run build:weapp` 通过；构建仍只保留既有资源体积 / code splitting warning。
 - 下一步 / 遗留问题：
   后续可用真机截图确认 32px 边距在窄屏是否过宽，如有必要再为小屏加响应式回落。
+
+## 2026-04-18 | 文档 | 明确首页准入规则与推荐要求的边界
+
+- 为什么改：
+  首页相关文档已经写了“公开转发”和“进入首页”分层，也写了推荐要求，但没有把“当前真正执行的首页准入规则”单独写清楚，容易让人把后续增强方向误读成已经落地的拦截条件。
+- 改了什么：
+  在 `docs/home_page_ia.md`、`docs/main_info_arch_v3.2.md`、`docs/expense_record_ia.md`、`docs/product_development_status.md` 中补充“首页准入的一期当前执行口径”：只看 `published`、公开进展更新、以及至少一条基础支出证据；同时把“异常 / 重复风险”明确收回为后续增强方向，而不是当前首页拦截条件。
+- 影响范围：
+  首页 IA、主信息架构、首页资格说明口径，以及后续 AI / 工程师恢复上下文时对 `homepageEligibilityStatus / Reason` 的理解；未改代码、selector、repository 或 VM。
+- 验证结果：
+  文档现已和 `src/domain/canonical/modeling.ts#getHomepageEligibility()` 的实际判断保持一致，首页未公开 / 缺最近更新 / 缺基础证据三类原因也已经统一成固定人话文案。
+- 下一步 / 遗留问题：
+  如果后续真的把“异常 / 重复风险”纳入首页拦截条件，需要先改 selector，再同步更新这几份文档，避免再次把目标口径和执行口径写混。
+
+## 2026-04-18 | 我的页 | 同步救助账本使用说明里的首页规则口径
+
+- 为什么改：
+  首页准入规则在产品文档里刚被补清楚，但“我的”页里的救助账本使用说明还停留在更泛的表述，用户仍然可能误会“公开了为什么还没上首页”。
+- 改了什么：
+  更新 `docs/rescue_ledger_usage_guide.md` 和 `src/pages/profile/guide/index.tsx`，新增“为什么公开了，不一定马上出现在首页”一节，并把救助人 / 支持者使用步骤同步到最新口径：公开页不等于首页展示，想更容易出现在首页，先补公开更新、第一笔支出和基础支出证据。
+- 影响范围：
+  “我的”页里的用户说明文案、静态说明页展示内容，以及后续对外解释首页规则的统一口径；未改数据模型、selector、repository 或页面交互结构。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仍只保留既有资源体积 / code splitting warning。
+- 下一步 / 遗留问题：
+  如果后续首页准入条件再变化，除了更新产品文档，也要同步回这份用户说明，避免内部规则和对外解释继续分叉。
+
+## 2026-04-18 | Alpha 环境 | 让 seed:alpha 变成可重复的干净重置
+
+- 为什么改：
+  Alpha 体验环境混入了旧 demo / probe / 验收残留数据，`seedMockCases` 之前只做 upsert，不做清理，导致首页、工作台和救助人主页会继续读到历史 published case 或同 owner 历史 case。
+- 改了什么：
+  在 `cloudfunctions/rescueApi/mockSeed.js` 增加 `cleanupMode=reset_alpha_environment` 的集合级 prune 逻辑；`scripts/seed-alpha-cloudbase.mjs` 默认以该模式调用 `seedMockCases`，先回填 Alpha Seed Pack，再清掉 8 个集合里的非 seed 文档；同步更新 Alpha / CloudBase / 总控文档说明。
+- 影响范围：
+  `npm run seed:alpha`、`rescueApi.seedMockCases`、CloudBase Alpha 演示环境的一致性，以及 `listHomepageCases / getOwnerWorkbench / getRescuerHomepage` 在 reseed 后看到的数据面；未改页面样式、selector、repository 或产品范围。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 通过；已部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b` 并执行 `npm run seed:alpha`，返回清理结果：profiles 删 4、cases 删 4、events 删 18、expenses 删 5、supportEntries 删 8、supportThreads 删 7、assets 删 10；真实云调用 smoke 确认首页只剩 5 个 Alpha published case，工作台只剩当前 owner 的 4 published + 1 draft + 1 archived，`getRescuerHomepage(caseId=seed_case_owner_lizi_001)` 只返回该救助人的 4 个公开案例，旧 `case_cloudbase_demo_001` 也已无法回读。
+- 下一步 / 遗留问题：
+  这次重置只清数据库文档，不回收 Cloud Storage 里历史上传过但已脱离文档引用的旧测试文件；如果后续需要收存储空间，再单独做 fileID 级清理工具，不混进本轮 bug fix。
+
+## 2026-04-18 | 数据层 | 收口 Alpha 联系方式语义、主图 fallback 和记账凭证校验
+
+- 为什么改：
+  Alpha 测试里同时暴露了三条数据层问题：只填微信号或只传二维码仍会被旧 AND 规则挡住；首页 / 详情 / 救助人主页在没有封面时拿不到稳定主图；远端 `createExpenseRecord` 还允许空凭证写入，和当前“记账必须带图”的口径不一致。
+- 改了什么：
+  在 `cloudfunctions/rescueApi/index.js` 为新记账写入增加 `EXPENSE_EVIDENCE_REQUIRED` 业务错误，并让 `toProfilePayload.hasContactProfile` 改成微信号 / 收款码任一即可；在 canonical selector 中把 `heroImageUrl` fallback 统一成“封面 -> face -> 最新公开进展图”；同时把本地 `rescuerContactProfile` helper、support sheet 文案语义和 remote domain error 识别同步到同一口径。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`src/domain/canonical/selectors/getPublicDetailVM.ts`、`src/domain/canonical/repository/canonicalReadRepositoryCore.ts`、`src/domain/canonical/repository/remoteRepository.ts`、`src/data/rescuerContactProfile.ts` 以及新增的 domain helper / tests；现有页面 contract 保持兼容，只是 `hasContactProfile`、`heroImageUrl` 和 support/contact 文案更准确。
+- 验证结果：
+  现有页面兼容保持不变，未新增 breaking VM 字段；`npm run typecheck` 通过，`npm run test:domain` 30 项通过；新增覆盖包括 hero 图 fallback、联系方式 OR 语义，以及 `EXPENSE_EVIDENCE_REQUIRED` 不会被 remote fallback 吃掉。
+- 下一步 / 遗留问题：
+  前端还需要把 `EXPENSE_EVIDENCE_REQUIRED` 映射成明确 toast，并完成草稿发布前封面上传和支持半弹层的交互收口；云函数侧这次只拦截新写入，历史无图账目仍按只读 text-only 记录兼容展示。
+
+## 2026-04-18 | Alpha | 收口人测计划与发包前预检入口
+
+- 为什么改：
+  Alpha 已进入真人试跑阶段，但仓库里只有零散测试说明和 3 个页面 QA 场景，缺少一份可执行的人测节奏、统一缺陷模板，以及发包前固定预检入口。
+- 改了什么：
+  重写 `docs/alpha_test_plan.md`，补齐 Round 0-4、HT-01~HT-12、优先级、agent 补测范围和放行口径；新增 `docs/alpha_bug_report_template.md`；新增 `qa/alpha-smoke-manifest.json` 与发现页 / 客态详情 / 救助页 / 写进展 / 我的页 smoke 场景，并修正 `support-claim`、`support-review-manual` 的过时注释；新增 `scripts/run-alpha-preflight.mjs` 和 `npm run preflight:alpha` / `npm run preflight:alpha:seed`。
+- 影响范围：
+  Alpha 测试协作方式、发包前预检命令、`qa/` 场景资产和项目总控文档；产品逻辑、数据模型和页面交互未改动。
+- 验证结果：
+  `node scripts/run-alpha-preflight.mjs --help` 可正常输出；`npm run preflight:alpha -- --skip-build` 通过，覆盖 smoke manifest 校验、`typecheck` 和 `test:domain`，并会打印 8 个 smoke 页面、全局放行条件和缺陷模板路径；在当前 Codex sandbox 里单独执行 `build:weapp` 仍会撞上 Taro/Rust `system-configuration` panic，需要在本机终端继续确认。
+- 下一步 / 遗留问题：
+  后续可把 `qa/alpha-smoke-manifest.json` 接到真实小程序自动化执行器，继续把多账号 happy path 和错误分支从“清单”推进到“脚本化回归”；若要让预检在 Codex sandbox 内也完整覆盖 build，需要再处理 Taro 构建阶段的系统配置崩溃问题。
+
+## 2026-04-18 | Alpha | 收口键盘避让、联系方式 OR、主图 fallback 与记账强图规则
+
+- 为什么改：
+  Alpha 人测同时暴露了输入框被键盘遮挡、草稿箱仍走旧“记录支持”弹层、联系方式仍按微信号+二维码双必填、首页/详情主图断链，以及记账允许空图写入的问题，已经直接影响试跑。
+- 改了什么：
+  为建档/预算/进展更新/联系方式/支持登记补统一键盘避让和吸底按钮位移；草稿箱“记录支持”改为直达 `support/review?tab=manual`；SupportSheet 改成滚动内容 + 固定底部操作，并按“仅二维码 / 仅微信号 / 两者都有”真实展示；数据层把 `hasContactProfile` 改成 OR 语义、`heroImageUrl` 统一为“封面 -> face -> 最新公开进展图”、`createExpenseRecord` 增加 `EXPENSE_EVIDENCE_REQUIRED`；前端同步改成记账必须至少 1 张图，历史无图记录只按文本展示。
+- 影响范围：
+  `cloudfunctions/rescueApi/index.js`、`src/domain/canonical/*`、`src/data/rescuerContactProfile.ts`、`src/components/SupportSheet*`、`src/pages/rescue/create/*`、`src/pages/rescue/update/*`、`src/pages/rescue/expense/*`、`src/pages/support/*`、`src/pages/profile/contact-settings/*` 以及相关 IA / 状态文档。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 通过；domain tests 现覆盖联系方式 OR、hero 图 fallback、`EXPENSE_EVIDENCE_REQUIRED` domain error；构建仅保留既有大图资源 warning。
+- 下一步 / 遗留问题：
+  还需要在真实小程序设备上补一轮键盘避让和半弹层滚动回归，重点看 iOS/Android 键盘高度差异、支持二维码长按保存体验，以及新建后发布案例在真实 CloudBase 数据下的主图回读是否稳定。

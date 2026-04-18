@@ -6,6 +6,7 @@ import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { applyTitleOverrideToPublicDetail } from "../../../data/caseTitleOverride";
 import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -56,6 +57,7 @@ function getRescueStartedAtLabel(detail: PublicDetailVM) {
 
 export default function SupportClaimPage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const caseId = router.params?.caseId || router.params?.id;
   const [amount, setAmount] = useState("");
   const [nickname, setNickname] = useState("默认写入微信ID");
@@ -87,7 +89,10 @@ export default function SupportClaimPage() {
 
   if (loadStatus === "loading") {
     return (
-      <View className="support-claim page-shell">
+      <View
+        className="support-claim page-shell"
+        style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
+      >
         <NavBar showBack title="认领支持" />
         <View className="support-claim__state">
           <View className="support-claim__state-icon">
@@ -102,7 +107,10 @@ export default function SupportClaimPage() {
 
   if (loadStatus === "error" || !detail) {
     return (
-      <View className="support-claim page-shell">
+      <View
+        className="support-claim page-shell"
+        style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
+      >
         <NavBar showBack title="认领支持" />
         <View className="support-claim__state">
           <View className="support-claim__state-icon">
@@ -174,7 +182,10 @@ export default function SupportClaimPage() {
   };
 
   return (
-    <View className="support-claim page-shell">
+    <View
+      className="support-claim page-shell"
+      style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
+    >
       <NavBar showBack title="认领支持" />
 
       <View className="support-claim__case-card theme-card">
@@ -244,13 +255,17 @@ export default function SupportClaimPage() {
           textareaClassName="support-claim__textarea"
           placeholderClassName="support-claim__textarea-placeholder"
           placeholder="给毛孩子留句祝福吧，或者备注资金的具体用途"
+          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
           maxlength={120}
           value={note}
           onInput={(event) => setNote(event.detail.value)}
         />
       </View>
 
-      <View className="support-claim__bottom">
+      <View
+        className="support-claim__bottom"
+        style={{ bottom: `${keyboardBottomInset}px` }}
+      >
         <View className="theme-button-primary support-claim__submit" onTap={handleSubmit}>
           <Text>提交支持</Text>
           <Image className="support-claim__submit-arrow" mode="aspectFit" src={submitArrowIcon} />

@@ -80,10 +80,22 @@
   border-radius: 8px;
 }
 
+.support-review-page__proof--empty {
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
 .support-review-page__proof-image {
   width: 100%;
   height: 100%;
   border-radius: 7px;
+}
+
+.support-review-page__proof-empty-text {
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .support-review-page__card-copy {

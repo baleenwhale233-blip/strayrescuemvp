@@ -42,9 +42,6 @@ import summaryExpenseIcon from "../../../assets/rescue-detail/summary-expense-18
 import summaryIncomeIcon from "../../../assets/rescue-detail/summary-income-17.svg";
 import guestHeroCat from "../../../assets/detail/guest-hero-cat.png";
 import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
-import timelineReceipt from "../../../assets/detail/timeline-receipt.png";
-import timelineStatusCat from "../../../assets/detail/timeline-status-cat.png";
-import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   loadOwnerDetailVMByCaseId,
@@ -158,20 +155,12 @@ function getRescuerAvatar(detail: PublicDetailVM) {
 }
 
 function getLatestOverviewImage(detail: PublicDetailVM, item?: PublicTimelineItemVM) {
-  return item?.assetUrls[0] || detail.heroImageUrl || timelineStatusCat;
+  return item?.assetUrls[0] || detail.heroImageUrl;
 }
 
 function getTimelineAssetUrls(item: PublicTimelineItemVM) {
   if (item.assetUrls.length) {
     return item.assetUrls.slice(0, 9);
-  }
-
-  if (item.type === "expense") {
-    return [timelineReceipt, timelineTreatment];
-  }
-
-  if (item.type === "progress_update" || item.type === "case_created") {
-    return [timelineStatusCat];
   }
 
   return [];

@@ -1,0 +1,94 @@
+{
+  "id": "alpha-smoke",
+  "summary": "Round 0 smoke checklist before each alpha build",
+  "scenarios": [
+    {
+      "id": "discover",
+      "label": "发现页",
+      "file": "qa/discover.json",
+      "checks": [
+        "页面可正常打开，无白屏或报错",
+        "能看到首页案例列表或明确空态",
+        "案例 ID 搜索可用于查档入口"
+      ]
+    },
+    {
+      "id": "rescue-detail-guest",
+      "label": "客态详情",
+      "file": "qa/rescue-detail-guest.json",
+      "checks": [
+        "主图和关键信息可见",
+        "当前状态、资金区和底部操作栏可正常展示",
+        "能继续进入支持或扩散相关动作"
+      ]
+    },
+    {
+      "id": "rescue-workbench",
+      "label": "救助页",
+      "file": "qa/rescue-workbench.json",
+      "checks": [
+        "进行中案例和草稿箱均可加载",
+        "能从卡片进入详情或草稿预览",
+        "新建救助入口可见"
+      ]
+    },
+    {
+      "id": "support-claim",
+      "label": "支持登记",
+      "file": "qa/support-claim.json",
+      "checks": [
+        "案例卡正常显示",
+        "金额、截图、备注输入区可见",
+        "提交链路能进入 happy path"
+      ]
+    },
+    {
+      "id": "support-review-pending",
+      "label": "核实支持",
+      "file": "qa/support-review-pending.json",
+      "checks": [
+        "待确认列表可加载",
+        "确认和未匹配操作入口可见",
+        "处理后可回看结果"
+      ]
+    },
+    {
+      "id": "rescue-expense",
+      "label": "记账页",
+      "file": "qa/rescue-expense.json",
+      "checks": [
+        "公共凭证区和明细区可见",
+        "底部提交按钮固定可见",
+        "提交流程可形成可回看的账目记录"
+      ]
+    },
+    {
+      "id": "rescue-update",
+      "label": "写进展",
+      "file": "qa/rescue-update.json",
+      "checks": [
+        "动物卡、阶段标签、描述区和图片区可见",
+        "可正常选择阶段和添加图片",
+        "发布后详情页能看到状态变化"
+      ]
+    },
+    {
+      "id": "profile-index",
+      "label": "我的页",
+      "file": "qa/profile-index.json",
+      "checks": [
+        "头像昵称区域可见",
+        "支持足迹、联系方式、使用说明三个入口可见",
+        "进入后可继续走 profile 相关链路"
+      ]
+    }
+  ],
+  "globalChecks": [
+    "无白屏 / 报错",
+    "主要图片可见",
+    "案例 JM482731 和 482731 都能命中同一档案",
+    "至少 1 条 happy path 提交后能在第二页面看见结果"
+  ],
+  "happyPath": "发现 -> 详情 -> 我已支持 -> 核实 -> 详情回看",
+  "bugTemplate": "docs/alpha_bug_report_template.md"
+}

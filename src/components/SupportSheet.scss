@@ -2,15 +2,16 @@
   position: fixed;
   inset: 0;
   z-index: 40;
+  display: flex;
+  align-items: flex-end;
   background: rgba(15, 23, 42, 0.32);
 }
 
 .support-sheet__panel {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 24px 16px 32px;
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
   border-radius: 28px 28px 0 0;
   box-shadow: 0 -12px 32px rgba(15, 23, 42, 0.12);
@@ -19,7 +20,7 @@
 .support-sheet__handle {
   display: flex;
   justify-content: center;
-  margin-bottom: 16px;
+  padding: 16px 16px 8px;
 }
 
 .support-sheet__handle-bar {
@@ -27,6 +28,15 @@
   height: 6px;
   background: #d7dde7;
   border-radius: 999px;
+}
+
+.support-sheet__scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.support-sheet__content {
+  padding: 0 16px 16px;
 }
 
 .support-sheet__tip {
@@ -83,27 +93,22 @@
   height: 246px;
 }
 
-.support-sheet__qr-placeholder {
+.support-sheet__empty-card,
+.support-sheet__note-card {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
   align-items: center;
   justify-content: center;
-  width: 246px;
-  height: 246px;
+  padding: 20px 16px;
   background: #f8fafc;
-  border-radius: 18px;
+  border-radius: 16px;
 }
 
-.support-sheet__qr-placeholder-icon {
-  width: 27px;
-  height: 27px;
-}
-
-.support-sheet__qr-placeholder-label {
+.support-sheet__empty-text,
+.support-sheet__note-text {
   color: #94a3b8;
   font-size: 12px;
-  line-height: 16px;
+  line-height: 18px;
+  text-align: center;
 }
 
 .support-sheet__hint {
@@ -134,6 +139,12 @@
   border-radius: 999px;
 }
 
+.support-sheet__footer {
+  padding: 12px 16px 24px;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #f1f5f9;
+}
+
 .support-sheet__save-button {
-  margin-top: 8px;
+  width: 100%;
 }

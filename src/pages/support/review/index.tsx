@@ -3,25 +3,74 @@ import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
-import paymentReceiptExact from "../../../assets/support-review/payment-receipt-exact.png";
 import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import {
   createRemoteManualSupportEntryByCaseId,
+  draftIdToCaseId,
+  getDraftByCaseId,
+  getDraftById,
   loadPublicDetailVMByCaseId,
   reviewRemoteSupportEntryByCaseId,
+  type RescueCreateDraft,
 } from "../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
 import "./index.scss";
 
 type ReviewTab = "pending" | "manual";
 
+type PendingEntryCard = {
+  id: string;
+  supporterName: string;
+  latestEntryAtLabel: string;
+  amountLabel: string;
+  note?: string;
+  proofUrl?: string;
+};
+
+function formatCurrencyLabel(amount: number) {
+  return `¥${amount.toLocaleString("zh-CN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function getDraftPendingEntries(draft?: RescueCreateDraft): PendingEntryCard[] {
+  if (!draft) {
+    return [];
+  }
+
+  const threadMap = new Map(draft.supportThreads.map((thread) => [thread.id, thread]));
+
+  return draft.supportEntries
+    .filter((entry) => entry.status === "pending")
+    .sort((left, right) => right.supportedAt.localeCompare(left.supportedAt))
+    .map((entry) => ({
+      id: entry.id,
+      supporterName:
+        threadMap.get(entry.supportThreadId)?.supporterNameMasked ||
+        entry.supporterNameMasked ||
+        "爱心人士",
+      latestEntryAtLabel: entry.supportedAt
+        ? entry.supportedAt.slice(5, 16).replace("T", " ")
+        : "待确认",
+      amountLabel: formatCurrencyLabel(entry.amount),
+      note: entry.note,
+      proofUrl: entry.screenshotItems[0]?.imageUrl,
+    }));
+}
+
 export default function SupportReviewPage() {
   const router = useRouter();
-  const caseId = router.params?.id || router.params?.caseId;
+  const draftId = router.params?.draftId;
+  const caseId =
+    router.params?.id ||
+    router.params?.caseId ||
+    (draftId ? draftIdToCaseId(draftId) : undefined);
   const requestedTab = router.params?.tab === "manual" ? "manual" : "pending";
   const [reloadSeed, setReloadSeed] = useState(0);
   const [detail, setDetail] = useState<PublicDetailVM | undefined>();
+  const [draft, setDraft] = useState<RescueCreateDraft | undefined>();
   const [activeTab, setActiveTab] = useState<ReviewTab>(requestedTab);
   const [manualAmount, setManualAmount] = useState("");
   const [manualSupporter, setManualSupporter] = useState("");
@@ -31,8 +80,14 @@ export default function SupportReviewPage() {
   }, [requestedTab]);
 
   const reloadDetail = async () => {
-    const nextDetail = await loadPublicDetailVMByCaseId(caseId);
+    const [nextDetail, nextDraft] = await Promise.all([
+      loadPublicDetailVMByCaseId(caseId).catch(() => undefined),
+      Promise.resolve(
+        draftId ? getDraftById(draftId) || getDraftByCaseId(caseId) : undefined,
+      ),
+    ]);
     setDetail(nextDetail);
+    setDraft(nextDraft);
   };
 
   useDidShow(() => {
@@ -45,7 +100,7 @@ export default function SupportReviewPage() {
     });
   });
 
-  if (!detail || !caseId) {
+  if (!caseId || (!detail && !draft)) {
     return null;
   }
 
@@ -119,16 +174,22 @@ export default function SupportReviewPage() {
     }
   };
 
-  const pendingEntries = detail.supportSummary.threads.flatMap((thread) =>
+  const pendingEntries = (detail?.supportSummary.threads || []).flatMap((thread) =>
     thread.entries
       .filter((entry) => entry.status === "pending")
       .map((entry) => ({
-        threadId: thread.id,
+        id: entry.id,
         supporterName: thread.supporterNameMasked || "爱心人士",
         latestEntryAtLabel: thread.latestEntryAtLabel,
-        entry,
+        amountLabel: entry.amountLabel,
+        note: entry.note,
+        proofUrl: entry.screenshotUrls[0],
       })),
   );
+  const fallbackPendingEntries = getDraftPendingEntries(draft);
+  const displayedPendingEntries = pendingEntries.length ? pendingEntries : fallbackPendingEntries;
+  const pendingBadgeCount =
+    detail?.supportSummary.pendingSupportEntryCount || fallbackPendingEntries.length;
 
   return (
     <View key={reloadSeed} className="page-shell support-review-page">
@@ -144,7 +205,7 @@ export default function SupportReviewPage() {
           <Text>待确认认领</Text>
           {activeTab === "pending" ? (
             <View className="support-review-page__badge">
-              <Text>{detail.supportSummary.pendingSupportEntryCount}</Text>
+              <Text>{pendingBadgeCount}</Text>
             </View>
           ) : null}
         </View>
@@ -160,25 +221,31 @@ export default function SupportReviewPage() {
 
       {activeTab === "pending" ? (
         <View className="support-review-page__list">
-          {pendingEntries.map(({ supporterName, latestEntryAtLabel, entry }) => (
+          {displayedPendingEntries.map((entry) => (
             <View key={entry.id} className="support-review-page__card theme-card">
               <View className="support-review-page__card-top">
-                <View className="support-review-page__proof">
-                  <Image
-                    className="support-review-page__proof-image"
-                    mode="aspectFill"
-                    src={paymentReceiptExact}
-                  />
-                </View>
+                {entry.proofUrl ? (
+                  <View className="support-review-page__proof">
+                    <Image
+                      className="support-review-page__proof-image"
+                      mode="aspectFill"
+                      src={entry.proofUrl}
+                    />
+                  </View>
+                ) : (
+                  <View className="support-review-page__proof support-review-page__proof--empty">
+                    <Text className="support-review-page__proof-empty-text">未附截图</Text>
+                  </View>
+                )}
 
                 <View className="support-review-page__card-copy">
                   <View className="support-review-page__card-head">
-                    <Text className="support-review-page__card-name">{supporterName}</Text>
-                    <Text className="support-review-page__card-time">{latestEntryAtLabel}</Text>
+                    <Text className="support-review-page__card-name">{entry.supporterName}</Text>
+                    <Text className="support-review-page__card-time">{entry.latestEntryAtLabel}</Text>
                   </View>
                   <Text className="support-review-page__card-amount">{entry.amountLabel}</Text>
                   <Text className="support-review-page__card-note">
-                    “{entry.note || "给流浪猫猫买点好罐头..."}”
+                    “{entry.note || "待确认支持记录"}”
                   </Text>
                 </View>
               </View>
@@ -208,7 +275,7 @@ export default function SupportReviewPage() {
             </View>
           ))}
 
-          {!pendingEntries.length ? (
+          {!displayedPendingEntries.length ? (
             <View className="support-review-page__empty theme-card">
               <Text className="support-review-page__empty-title">暂时没有待确认认领</Text>
               <Text className="support-review-page__empty-copy">

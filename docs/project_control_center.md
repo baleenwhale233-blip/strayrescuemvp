@@ -1,6 +1,6 @@
 # 项目总控中心
 
-最后更新：2026-04-17
+最后更新：2026-04-18
 
 用途：
 
@@ -37,9 +37,13 @@
 ### 当前阻塞项
 
 - `写进展更新` / `记账` / `追加预算` 的主态 `caseId` 路径已接 CloudBase 远端写链路；草稿 `draftId` 路径仍保持本地 draft 闭环
+- 联系方式完整性已改成“微信号 / 收款码任一即可”，但还需要一轮真机回归确认建档前置校验和支持半弹层在单渠道场景下都顺畅
+- 首页 / 详情 / 救助人主页主图已统一 fallback 到“封面 -> face -> 最新公开进展图”，但仍要用真实远端数据再确认一次新建后发布案例的封面回读
+- 新记账已改成强制至少 1 张图片，历史无图记录按纯文本兼容；还需要真机确认图片上传和无图历史卡片展示
 - P0-B 三条写链路和 `support/review` 手动记一笔收入已完成开发环境自动化验证；基础成功提示已统一，AI 分发和更多真机账号回归仍未做
 - 支持登记写链路与核实链路已完成 CloudBase 开发环境远端闭环验证，包含 `pending -> confirmed / unmatched`
-- Alpha Seed Pack 已准备并播种到 `cloud1-9gl5sric0e5b386b`，包含演示救助人、公开案例、草稿案例、支持记录和 28 张 Alpha 测试图片
+- Alpha Seed Pack 已准备并播种到 `cloud1-9gl5sric0e5b386b`，包含演示救助人、公开案例、草稿案例、支持记录和 28 张 Alpha 测试图片；`npm run seed:alpha` 现在会重置旧 demo / probe / 验收残留数据
+- Alpha 人测与 agent 补测流程已收口到 `docs/alpha_test_plan.md` 与 `npm run preflight:alpha`；发包前先跑 Round 0，再进入人测
 - owner 权限链路还缺真实 `rescuerOpenid` 替换与验证
 
 ---
@@ -124,6 +128,7 @@
   - 救助人核实页已完成 `待确认认领 / 手动记一笔` 双 tab 结构版，并跑通原生截图场景
   - 记账页已新建独立页面 `src/pages/rescue/expense/index.tsx`，完成 `公共凭证 -> 本次合计支出 -> 新增明细 -> 多条支出行 -> 底部固定主按钮` 的结构版，并接通主态详情页入口
   - 记账页已补 `公共凭证横向滚动查看 + 点击看大图 + 按 caseId / draftId 静默缓存未提交内容，并在再次进入时选择继续上次录入或新的录入`
+  - 新记账当前已强制至少上传 1 张图片；历史无图记录保持 text-only 展示，不再补假凭证图或占位图
   - 草稿箱里的 `记一笔支出` 已改为进入新记账页，并支持 `draftId / caseId` 双上下文缓存
   - 记账页已补前端提交闭环：从主态详情提交后可在主态 detail tab 看到新的支出卡；从草稿箱提交后可在草稿 detail tab 看到新的支出卡
   - 支出卡当前已去掉和记账系统不一致的医院字段，只保留基于项目描述拼接的标题，并限制为最多两行
@@ -141,7 +146,10 @@
   - 救助账本使用说明已新增静态页面 `src/pages/profile/guide/index.tsx`，入口从“我的”页跳转，不再是 toast 占位
   - 我的支持足迹页已按 Figma `446:7625` 新建，并优先读取 `getMySupportHistory` 远端 VM；当前已用真实 OPENID 聚合 confirmed 支持
   - 救助联系方式设置页已按 Figma `446:7828` 新建，并接 `user_profiles` 远端读写；微信二维码会上传为 CloudBase `cloud://` fileID
-  - 新建救助档案前当前会优先读取远端 `getMyProfile.hasContactProfile`，未填写时先引导到联系方式设置页，保存后再进入建档流程；CloudBase 不可用时才回落本地校验
+  - 新建救助档案前当前会优先读取远端 `getMyProfile.hasContactProfile`，微信号或二维码任一存在即可通过前置校验；CloudBase 不可用时才回落本地校验
+  - “我要支持”半弹层已改成滚动内容 + 固定底部操作，并按“仅二维码 / 仅微信号 / 两者都有”真实展示，不再补假二维码占位
+  - 建档、预算、进展更新、联系方式和支持登记页已补统一键盘避让，输入框和吸底按钮会随键盘高度上移
+  - 草稿箱里的“记录支持”已改成直接进入 `support/review` 的 `手动记一笔` tab，不再走旧弹层
   - 救助人主页已按 Figma `442:6758` 新建，详情页“查看主页”已接真实页面，并已接 `getRescuerHomepage` 远端 VM；下方案例列表复用首页卡片组件，页面层聚合只作为 CloudBase 不可用时兜底
   - 主态详情底部“右滑结束救助”已从静态 UI 改成真实可拖动滑块，滑到阈值后弹确认；正式结束救助后端链路仍待接入
 - 已有但还没完全吃满字段：
@@ -179,12 +187,12 @@
 | 支持登记写链路 | `已可试跑` | `createSupportEntry` 已完成 CloudBase 远端写入验证，会写入 `support_entries`、私有 `evidence_assets`、`support_threads`，并生成私有 pending support event；真实凭证图上传、限流和重复凭证错误回归已跑通 | 继续补更多真机账号回归 |
 | 核实链路 | `已可试跑` | `reviewSupportEntry` 已完成 `pending -> confirmed / unmatched` 远端状态流转验证；确认后生成公开 support event，未匹配保持私有 rejected event；非 owner review 已验证返回 `FORBIDDEN` | 继续补成功态体验 |
 | owner 权限链路 | `已可试跑` | 已用当前测试账号对他人案例验证 `getOwnerCaseDetail / publishCase / createManualSupportEntry / createProgressUpdate / createExpenseRecord / createBudgetAdjustment / reviewSupportEntry` 均返回 `FORBIDDEN` | 后续换测试账号时需重新绑定 / 重 seed |
-| 内容生产链路（记账 / 更新进展 / 追加预算） | `已可试跑` | 三页主态 `caseId` 路径已接 CloudBase 远端写入；状态图片 / 记账凭证上传回归已跑通；草稿 `draftId` 路径仍走本地 draft；CloudBase 不可用时保留页面层 local overlay 兜底，业务错误不回落；提交成功提示已统一 | 继续做更多真机回归 |
+| 内容生产链路（记账 / 更新进展 / 追加预算） | `已可试跑` | 三页主态 `caseId` 路径已接 CloudBase 远端写入；状态图片 / 记账凭证上传回归已跑通；草稿 `draftId` 路径仍走本地 draft；CloudBase 不可用时保留页面层 local overlay 兜底，业务错误不回落；新记账已增加 `EXPENSE_EVIDENCE_REQUIRED` 口径；提交成功提示已统一 | 继续做更多真机回归 |
 | Profile / 支持足迹链路 | `已可试跑` | `getMyProfile / updateMyProfile / getMySupportHistory` 已接 CloudBase；二维码 asset 上传、真实 OPENID 支持足迹聚合、新建救助前置远端校验均已接通 | 继续补更多真机账号回归 |
 | 救助人公开主页链路 | `已可试跑` | `getRescuerHomepage` 已接 CloudBase，可按 `rescuerId` 或 `caseId` 输出救助人公开资料和 published 案例列表 | 继续补统计口径精修和更多公开主页视觉细节 |
 | 案例档案编辑链路 | `已可试跑` | `updateCaseProfile` 已接 CloudBase，主态 `caseId` 可远端更新 `animalName / coverFileID`，并写入 `case_cover` asset；本地展示覆盖降级为兜底 | 继续补草稿远端编辑增强 |
 | 只读记录详情链路 | `已可试跑` | `getCaseRecordDetail` 已接 CloudBase，可按 `caseId + recordType + recordId` 回读支出 / 进展 / 预算 / 支持详情；支出明细结构化返回，图片最多 9 张，私有记录按 owner 权限控制 | 继续补前端从 storage 兜底逐步过渡到纯远端详情 |
-| Alpha 测试环境 | `已可试跑` | `npm run seed:alpha` 已可上传 `docs/alpha_seed_assets` 图片并调用 `seedMockCases` 播种；当前开发环境已完成一次播种和 smoke 验证 | 体验版上传前再执行一次 smoke |
+| Alpha 测试环境 | `已可试跑` | `npm run seed:alpha` 已可上传 `docs/alpha_seed_assets` 图片并调用 `seedMockCases` 播种，且会重置 8 个集合里的非 Alpha Seed 文档；当前开发环境已完成一次播种和 smoke 验证 | 体验版上传前先执行 `npm run preflight:alpha`；数据漂移时改跑 `npm run preflight:alpha:seed`，再按 `docs/alpha_test_plan.md` 的 Round 0-4 执行 |
 
 ---
 

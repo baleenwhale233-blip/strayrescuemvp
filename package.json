@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit",
     "test:domain": "rm -rf .tmp/domain-tests && tsc -p tsconfig.domain-tests.json && node --experimental-specifier-resolution=node --test .tmp/domain-tests/src/domain/canonical/selectors/*.test.js .tmp/domain-tests/src/domain/canonical/repository/*.test.js",
     "seed:alpha": "node scripts/seed-alpha-cloudbase.mjs",
-    "check:repo-safety": "node scripts/check-sensitive-config.mjs"
+    "check:repo-safety": "node scripts/check-sensitive-config.mjs",
+    "preflight:alpha": "node scripts/run-alpha-preflight.mjs",
+    "preflight:alpha:seed": "node scripts/run-alpha-preflight.mjs --seed-alpha"
   },
   "dependencies": {
     "@tarojs/components": "4.1.11",

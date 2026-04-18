@@ -3,6 +3,7 @@ import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
 import submitArrowIcon from "../../../assets/rescue-create/step1-next-arrow.svg";
 import {
@@ -18,6 +19,7 @@ import "./index.scss";
 
 export default function ContactSettingsPage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const [wechatId, setWechatId] = useState("");
   const [qrImagePath, setQrImagePath] = useState("");
   const [note, setNote] = useState("");
@@ -76,10 +78,11 @@ export default function ContactSettingsPage() {
 
   const handleSubmit = async () => {
     const nextWechatId = wechatId.trim();
+    const hasQrImage = Boolean(qrImagePath.trim());
 
-    if (!nextWechatId) {
+    if (!nextWechatId && !hasQrImage) {
       Taro.showToast({
-        title: "请填写微信号",
+        title: "请填写微信号或上传二维码",
         icon: "none",
       });
       return;
@@ -132,7 +135,7 @@ export default function ContactSettingsPage() {
           });
           Taro.hideLoading();
           Taro.showToast({
-            title: "微信号已保存，二维码没传上去",
+            title: "联系方式已保存，二维码没传上去",
             icon: "none",
           });
           return;
@@ -159,7 +162,7 @@ export default function ContactSettingsPage() {
 
       if (!confirmedProfile?.hasContactProfile) {
         Taro.showToast({
-          title: "微信号已保存",
+          title: hasQrImage ? "二维码已保存" : "微信号已保存",
           icon: "none",
         });
         return;
@@ -178,7 +181,7 @@ export default function ContactSettingsPage() {
           note: note.trim(),
         });
         Taro.showToast({
-          title: "微信号已保存，二维码没传上去",
+          title: "联系方式已保存，二维码没传上去",
           icon: "none",
         });
         return;
@@ -209,12 +212,15 @@ export default function ContactSettingsPage() {
   };
 
   return (
-    <View className="page-shell contact-settings-page">
+    <View
+      className="page-shell contact-settings-page"
+      style={{ paddingBottom: `${128 + keyboardBottomInset}px` }}
+    >
       <NavBar showBack title="救助联系方式" />
 
       <View className="contact-settings-page__body">
         <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信号</Text>
+          <Text className="contact-settings-page__label">微信号（二选一即可）</Text>
           <View className="contact-settings-page__input-card">
             <Input
               className="contact-settings-page__input"
@@ -227,7 +233,7 @@ export default function ContactSettingsPage() {
         </View>
 
         <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信二维码</Text>
+          <Text className="contact-settings-page__label">微信二维码（二选一即可）</Text>
           <View className="contact-settings-page__qr-trigger" onTap={handlePickQrImage}>
             {qrImagePath ? (
               <Image
@@ -255,6 +261,7 @@ export default function ContactSettingsPage() {
             textareaClassName="contact-settings-page__textarea"
             placeholderClassName="contact-settings-page__textarea-placeholder"
             placeholder="如果要联系您有什么特别的注意事项"
+            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={120}
             value={note}
             onInput={(event) => setNote(event.detail.value)}
@@ -262,7 +269,10 @@ export default function ContactSettingsPage() {
         </View>
       </View>
 
-      <View className="contact-settings-page__bottom">
+      <View
+        className="contact-settings-page__bottom"
+        style={{ bottom: `${keyboardBottomInset}px` }}
+      >
         <View className="theme-button-primary contact-settings-page__submit" onTap={handleSubmit}>
           <Text>提交</Text>
           <Image className="contact-settings-page__submit-icon" mode="aspectFit" src={submitArrowIcon} />

@@ -19,7 +19,7 @@
 - 支持凭证、状态图片、记账凭证的真实 CloudBase 上传回归已完成
 - 云函数回包会把 CloudBase `cloud://` fileID 转为可展示的临时 HTTPS URL，避免体验版图片无法直接渲染
 - owner-only action 的非 owner `FORBIDDEN` 回归已完成；`INVALID_*`、限流和重复凭证业务错误回归已完成
-- Alpha Seed Pack 已可通过 `npm run seed:alpha` 播种到当前 CloudBase 环境
+- Alpha Seed Pack 已可通过 `npm run seed:alpha` 播种到当前 CloudBase 环境，并在播种时清掉旧 demo / probe / 验收残留文档
 
 ## 你需要在 CloudBase 侧准备
 
@@ -75,7 +75,7 @@
 - 保存 `displayName / avatarUrl / wechatId / contactNote`
 - 微信二维码上传为 `cloud://` fileID 后写入 `evidence_assets(kind=payment_qr)`
 - 将二维码 asset 关联到 `user_profiles.paymentQrAssetId`
-- 输出 `hasContactProfile`
+- 输出 `hasContactProfile`，当前口径为“微信号或二维码任一存在即可”
 
 `getMySupportHistory` 当前会：
 
@@ -150,6 +150,7 @@
 `createExpenseRecord` 当前会：
 
 - 校验当前 OPENID 是案例救助人
+- 对新写入强制要求至少 1 张凭证图；空 `evidenceFileIds` 会返回 `EXPENSE_EVIDENCE_REQUIRED`
 - 写入 `expense_records`
 - 写入公开 `case_events(type=expense)`
 - 写入凭证图对应的 `evidence_assets`
@@ -204,6 +205,12 @@ support-proofs/{caseId}/{timestamp}-{random}.jpg
 
 公开展示图、进展图、凭证图和二维码在数据库里仍保存 CloudBase `fileID`；云函数读回时会调用 `getTempFileURL` 转成临时 HTTPS URL 给页面展示，同时在只读详情 VM 中保留原始 `fileID`。
 
+当前公开主图的 canonical fallback 已统一为：
+
+1. `case_cover`
+2. `face`
+3. 最新一条公开进展里的第一张图片
+
 ## 开发环境种子数据
 
 建议优先使用 Alpha Seed Pack：
@@ -217,6 +224,7 @@ npm run seed:alpha
 - 生成 / 使用 `docs/alpha_seed_assets/*.png`
 - 上传 28 张 Alpha 测试图片到 CloudBase Storage
 - 调用 `rescueApi.seedMockCases`
+- 以 `cleanupMode=reset_alpha_environment` 重置 `user_profiles / rescue_cases / case_events / expense_records / support_entries / support_threads / evidence_assets / shared_evidence_groups`
 - 写入演示救助人、公开案例、草稿案例、支持记录、支出记录、进展记录和 `evidence_assets`
 
 Alpha 图片均为测试素材，凭证和二维码明确标注测试用途，不应作为真实票据或付款二维码使用。

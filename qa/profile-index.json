@@ -1,0 +1,46 @@
+{
+  "id": "profile-index",
+  "route": "pages/profile/index",
+  "query": {},
+  "fixture": "profile-index",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".profile-page__menu",
+    "timeoutMs": 30000,
+    "stableMs": 1500
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "user",
+      "menu",
+      "footer"
+    ],
+    "segmentSelectors": {
+      "user": ".profile-page__user",
+      "menu": ".profile-page__menu",
+      "footer": ".profile-page__footer"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "",
+    "figmaNodeId": "",
+    "designImagePath": "",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "Round 0 smoke 重点是头像昵称区和三个功能入口都可见。",
+    "Round 3 会从这里继续进入联系方式设置和建档前置校验链路。"
+  ]
+}

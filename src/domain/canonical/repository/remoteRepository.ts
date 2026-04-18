@@ -23,6 +23,7 @@ import {
 } from "./canonicalReadRepositoryCore";
 import { getHomepageCaseCardVM } from "../selectors/getDiscoverCardVM";
 import { callRescueApi, canUseCloudBase } from "./cloudbaseClient";
+import { isDomainErrorCode } from "./domainErrorCodes";
 import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
@@ -213,33 +214,13 @@ function toRemoteDraftPayload(
 
 const LOCAL_SUPPORTER_ID = "supporter_current_user";
 const LOCAL_RESCUER_ID = "rescuer_current_user";
-const DOMAIN_ERROR_CODES = new Set([
-  "CASE_NOT_FOUND",
-  "FORBIDDEN",
-  "INVALID_AMOUNT",
-  "INVALID_EXPENSE_RECORD",
-  "INVALID_TARGET_AMOUNT",
-  "INVALID_SUPPORTED_AT",
-  "INVALID_SCREENSHOT_FILE_ID",
-  "INVALID_ASSET_FILE_ID",
-  "INVALID_PROFILE_ASSET_FILE_ID",
-  "INVALID_CASE_PROFILE",
-  "INVALID_RECORD_DETAIL_INPUT",
-  "RECORD_NOT_FOUND",
-  "INVALID_STATUS",
-  "INVALID_TEXT",
-  "SUPPORT_ENTRY_NOT_FOUND",
-  "DUPLICATE_SUPPORT_SCREENSHOT",
-  "SUPPORT_ENTRY_RATE_LIMIT_10_MIN",
-  "SUPPORT_ENTRY_RATE_LIMIT_24_HOUR",
-]);
 
 function getErrorCode(error: unknown) {
   return error instanceof Error ? error.message : "";
 }
 
 function shouldFallbackToLocal(error: unknown) {
-  return !DOMAIN_ERROR_CODES.has(getErrorCode(error));
+  return !isDomainErrorCode(getErrorCode(error));
 }
 
 async function withRemoteFallback<T>(

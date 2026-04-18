@@ -1,4 +1,5 @@
 import Taro from "@tarojs/taro";
+import { hasAnyContactProfileInfo } from "../domain/canonical/contactProfileSemantics";
 
 const RESCUER_CONTACT_PROFILE_KEY = "rescuer-contact-profile:v1";
 
@@ -31,5 +32,5 @@ export function saveRescuerContactProfile(profile: RescuerContactProfile) {
 
 export function hasCompleteRescuerContactProfile() {
   const profile = getRescuerContactProfile();
-  return Boolean(profile.wechatId.trim() && profile.qrImagePath);
+  return hasAnyContactProfileInfo(profile);
 }

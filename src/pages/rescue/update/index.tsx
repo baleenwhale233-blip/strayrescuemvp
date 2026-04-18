@@ -3,6 +3,7 @@ import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
@@ -81,6 +82,7 @@ function buildDraftStatusEntry(input: {
 
 export default function RescueStatusUpdatePage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const caseId = router.params?.caseId || router.params?.id;
   const draftId = router.params?.draftId;
   const [loadStatus, setLoadStatus] = useState<UpdateLoadStatus>("loading");
@@ -311,14 +313,20 @@ export default function RescueStatusUpdatePage() {
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
-      <View className="page-shell rescue-update-page">
+      <View
+        className="page-shell rescue-update-page"
+        style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
+      >
         <NavBar showBack title="更新进展" />
       </View>
     );
   }
 
   return (
-    <View className="page-shell rescue-update-page">
+    <View
+      className="page-shell rescue-update-page"
+      style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
+    >
       <NavBar showBack title="更新进展" />
 
       <View className="rescue-update-page__body">
@@ -372,6 +380,7 @@ export default function RescueStatusUpdatePage() {
             textareaClassName="rescue-update-page__textarea"
             placeholderClassName="rescue-update-page__textarea-placeholder"
             placeholder="请详细描述当前动物救助进展"
+            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={800}
             value={description}
             onInput={(event) => setDescription(event.detail.value)}
@@ -439,7 +448,10 @@ export default function RescueStatusUpdatePage() {
         </View>
       </View>
 
-      <View className="rescue-update-page__bottom">
+      <View
+        className="rescue-update-page__bottom"
+        style={{ bottom: `${keyboardBottomInset}px` }}
+      >
         <View className="theme-button-secondary rescue-update-page__bottom-cancel" onTap={handleCancel}>
           <Text>取消</Text>
         </View>

@@ -6,7 +6,7 @@
 - 以后新线程恢复上下文时，优先看：
   [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
 
-最后更新：2026-04-17
+最后更新：2026-04-18
 
 适用对象：
 
@@ -73,23 +73,21 @@
 - 支持登记 thread / entry 聚合
 - 案例 ID 精确搜索数据能力
 - draft 结构化存储 + 兼容旧 timeline 投影
+- 联系方式完整性口径已收口为：微信号或收款码任一即可通过建档前置校验
+- 公开详情主图 fallback 已统一为：案例封面 -> 动物 face 图 -> 最新公开进展图
 - CloudBase 接入骨架：前端远端 repository facade、`rescueApi` 云函数、云存储支持凭证上传入口
 - CloudBase 开发环境：`cloud1-9gl5sric0e5b386b`
 
 ### 当前验证状态
 
 - `npm run typecheck`：通过
-- `npm run test:domain`：当前仍失败
+- `npm run test:domain`：通过
 
-#### 失败原因说明
+当前可以认为：
 
-当前 `test:domain` 失败，主要是 Node 25 下 `.tmp/domain-tests` 的 ESM 路径解析问题，不是最近数据层改造引入的新类型错误。
-
-所以目前可以认为：
-
-- **类型层是健康的**
-- **domain test runner 还需要单独处理运行环境问题**
-- CloudBase 环境 ID 已填入；仍待创建集合、部署云函数并导入开发种子数据
+- **类型层与 canonical selector / repository 测试当前是健康的**
+- **联系方式 OR 语义、hero 图 fallback 和 domain error 口径已有自动化覆盖**
+- CloudBase 环境 ID 已填入；仍待持续做真机 Alpha 回归和远端数据链验收
 
 ---
 
@@ -202,10 +200,11 @@
 - 本次合计支出
 - 新增多条支出明细
 - 底部固定主按钮
+- 主态 / 草稿真实提交流程
+- 新记账强制至少上传 1 张图片
 
 还没完成：
 
-- 真实提交流程
 - 运行态截图级验图
 - 进入精修轮前的按钮、输入态和删除态细节收口
 
@@ -243,6 +242,17 @@
 - 不做模糊搜索
 - 只做案例 ID 精确搜索
 - 首页卡片按最近更新时间倒序
+
+### 首页进入规则（当前执行口径）
+
+- 只有 `published` 案例才可能进入首页
+- 还必须至少有 1 条公开进展更新
+- 还必须至少有 1 条支出记录，且证据完整度不是 `待补充`
+- 当前不按预算高低、惨烈程度或支持次数决定首页准入
+- 未满足时的人话原因固定为：
+  - `未公开，暂不进入首页`
+  - `还缺一条最近更新`
+  - `基础支出证据待补充`
 
 ### 首页卡片
 

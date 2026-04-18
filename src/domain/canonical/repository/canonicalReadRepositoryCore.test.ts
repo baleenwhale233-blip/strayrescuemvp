@@ -116,6 +116,38 @@ test("support sheet data comes from public detail output", () => {
 
   assert.ok(support);
   assert.equal(support?.wechatId, "aqing_rescue");
+  assert.equal(support?.paymentQrUrl, "https://example.com/assets/payment-qr.png");
+});
+
+test("support sheet copy adapts to qr-only and wechat-only cases", () => {
+  const qrOnlySupport = getSupportSheetDataByCaseIdFromBundles(
+    [
+      {
+        ...publishedBundle,
+        rescuer: {
+          ...publishedBundle.rescuer,
+          wechatId: "",
+        },
+      },
+    ],
+    "case_001",
+  );
+  const wechatOnlySupport = getSupportSheetDataByCaseIdFromBundles(
+    [
+      {
+        ...publishedBundle,
+        rescuer: {
+          ...publishedBundle.rescuer,
+          paymentQrAssetId: undefined,
+        },
+        assets: publishedBundle.assets.filter((asset) => asset.id !== "asset_qr_001"),
+      },
+    ],
+    "case_001",
+  );
+
+  assert.match(qrOnlySupport?.contactHint || "", /未提供微信号/);
+  assert.match(wechatOnlySupport?.directHint || "", /未提供收款码/);
 });
 
 test("public case id exact search supports prefixed and digits-only input", () => {

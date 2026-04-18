@@ -620,6 +620,9 @@ export function toSupportThreadSummaryVMs(
         supportedAtLabel: formatDateLabel(entry.supportedAt),
         note: entry.note,
         hasScreenshot: entry.screenshotItems.length > 0,
+        screenshotUrls: entry.screenshotItems
+          .map((item) => item.imageUrl)
+          .filter((value): value is string => Boolean(value)),
         unmatchedReasonLabel: getSupportUnmatchedReasonLabel(
           entry.unmatchedReason,
         ),

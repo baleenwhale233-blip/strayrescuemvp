@@ -25,6 +25,7 @@ import {
 } from "../modeling";
 import { getOwnerAlerts, type OwnerAlertVM } from "../selectors/ownerNoticeVM";
 import { caseIdToDraftId, type OwnerDetailActionKey } from "./localRepositoryCore";
+import { buildSupportSheetCopy } from "../contactProfileSemantics";
 
 export type OwnerDetailVM = {
   caseId: string;
@@ -155,14 +156,15 @@ export function getSupportSheetDataByCaseIdFromBundles(
     return undefined;
   }
 
+  const copy = buildSupportSheetCopy({
+    wechatId: detail.rescuer.wechatId,
+    paymentQrUrl: detail.rescuer.paymentQrUrl,
+  });
+
   return {
     wechatId: detail.rescuer.wechatId,
     paymentQrUrl: detail.rescuer.paymentQrUrl,
-    contactHint: "长按图片保存到相册，打开微信扫一扫添加好友",
-    directHint: "长按图片保存到相册，打开微信/支付宝扫码转账",
-    contactTip: "添加救助人后，可通过微信直接沟通救助细节。",
-    directTip:
-      "支持完成后，请回到页面点击“我已支持”以登记支持记录。",
+    ...copy,
   };
 }
 

@@ -45,7 +45,7 @@ export type RescueOwnerOverviewProps = {
     statusLabel: string;
     timestamp: string;
     text: string;
-    imageUrl: string;
+    imageUrl?: string;
   };
 };
 
@@ -281,10 +281,12 @@ export function RescueOwnerOverview({
             <Text className="rescue-owner-overview__time">{latestStatus.timestamp}</Text>
           </View>
           <Text className="rescue-owner-overview__paragraph">{latestStatus.text}</Text>
-          <View className="rescue-owner-overview__latest-image-wrap">
-            <Image className="rescue-owner-overview__latest-image" mode="aspectFill" src={latestStatus.imageUrl} />
-            <Text className="rescue-owner-overview__watermark">透明账本·严禁盗用</Text>
-          </View>
+          {latestStatus.imageUrl ? (
+            <View className="rescue-owner-overview__latest-image-wrap">
+              <Image className="rescue-owner-overview__latest-image" mode="aspectFill" src={latestStatus.imageUrl} />
+              <Text className="rescue-owner-overview__watermark">透明账本·严禁盗用</Text>
+            </View>
+          ) : null}
         </View>
       ) : null}
     </View>
