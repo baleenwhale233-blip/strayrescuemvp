@@ -1247,3 +1247,133 @@
   `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 通过；domain tests 现覆盖联系方式 OR、hero 图 fallback、`EXPENSE_EVIDENCE_REQUIRED` domain error；构建仅保留既有大图资源 warning。
 - 下一步 / 遗留问题：
   还需要在真实小程序设备上补一轮键盘避让和半弹层滚动回归，重点看 iOS/Android 键盘高度差异、支持二维码长按保存体验，以及新建后发布案例在真实 CloudBase 数据下的主图回读是否稳定。
+
+## 2026-04-18 | 前端 | 键盘弹起时不再把吸底按钮一起顶上来
+
+- 为什么改：
+  上一轮给表单页补键盘避让后，`keyboardBottomInset` 同时作用到了输入框和吸底 footer，导致键盘弹起时底部主按钮整体上浮，页面结构看起来被打乱。
+- 改了什么：
+  保留 textarea 的 `cursorSpacing` 和页面额外滚动空间，只移除建档、预算、进展更新、联系方式、支持登记和追加预算页里 footer 跟随 `keyboardBottomInset` 上移的逻辑，让按钮继续固定贴底。
+- 影响范围：
+  `src/pages/rescue/create/basic/index.tsx`、`src/pages/rescue/create/budget/index.tsx`、`src/pages/rescue/update/index.tsx`、`src/pages/profile/contact-settings/index.tsx`、`src/pages/support/claim/index.tsx`、`src/pages/rescue/budget-update/index.tsx` 的键盘交互。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仅保留既有大图资源 warning。
+- 下一步 / 遗留问题：
+  需要在真机上继续看 textarea 自身是否已经足够可见，尤其是 iOS 键盘工具条场景；如果局部输入区还会被遮挡，再单独收紧内容区滚动而不是继续移动 footer。
+
+## 2026-04-18 | 前端 | 锁住“我要支持”半弹层打开时的底层页面滚动
+
+- 为什么改：
+  虽然上一轮已经把 `SupportSheet` 改成了内部可滚、底部固定，但客态详情页在弹层打开时底层页面仍然能跟着手势滚动，用户会感觉整页还在“漏滑”。
+- 改了什么：
+  给 `pages/rescue/detail` 打开 `enablePageMeta`，并在 `supportOpen` 时用 `PageMeta` 把整页切成 `overflow: hidden`；同时给 `SupportSheet` 的 overlay、panel 和 footer 补上 `catchMove`，让弹层优先吃掉 touchmove。
+- 影响范围：
+  `src/pages/rescue/detail/index.config.ts`、`src/pages/rescue/detail/index.tsx`、`src/components/SupportSheet.tsx` 的弹层滚动与底层页面锁定逻辑。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仅保留既有大图资源 warning。
+- 下一步 / 遗留问题：
+  需要真机再确认两件事：一是弹层内部 `ScrollView` 还能正常滚，二是 iOS 惯性滑动时底层页面是否已经完全不再串动；如果还有漏网手势，再收紧详情页根容器的锁定样式。
+
+## 2026-04-18 | 前端 | 把支出卡图片区收成固定 3 个正方形槽位
+
+- 为什么改：
+  记账已经改成新提交必须带图，但支出卡图片区仍沿用通用时间线布局：单张会变成大图，多张按实际数量自适应，视觉上不稳定，也不符合“默认展示 3 张正方形图，少图留空”的要求。
+- 改了什么：
+  在 `src/components/RescueTimelineShared.tsx` / `RescueTimelineShared.scss` 中把 `expense` 类型卡片的图片区单独收口为固定 3 个正方形槽位，只展示前 3 张；当只有 1 张或 2 张时，剩余槽位保留空白占位，不再把单张图放大成整行布局。
+- 影响范围：
+  客态详情、主态详情、草稿预览等所有复用 `RescueTimelineShared` 的支出卡片图片展示；状态更新和支持卡片的图片布局未改。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仅保留既有大图资源 warning。
+- 下一步 / 遗留问题：
+  需要真机确认 3 宫格在窄屏下的视觉密度是否合适，以及 4 张以上图片只展示前 3 张是否还需要补“更多”提示。
+
+## 2026-04-18 | 数据层 | 支出时间线在 event 丢图时回退到 expense record 证据图
+
+- 为什么改：
+  前端把支出卡图片区收成固定 3 槽位后，仍然发现部分支出卡完全拿不到图，说明问题不在布局，而在 `expense event -> timeline.assetUrls` 这条数据链本身。
+- 改了什么：
+  在 `src/domain/canonical/selectors/getPublicDetailVM.ts` 中为 `expense` 时间线增加后备图链：优先用 `case_events.assetIds`，如果 event 侧没有图，就按 `projectedEventId` 回退到同一条 `expenseRecord.evidenceItems`，把凭证图和关联动物图继续映射成 `timeline.assetUrls`；同时补了一条 selector test 覆盖这个 fallback。
+- 影响范围：
+  客态详情、主态详情等所有依赖 `PublicDetailVM.timeline` 渲染支出卡图片的页面；不改支持记录、状态更新或预算调整的图链。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 通过；新增 domain test 已覆盖“expense event 的 `assetIds` 丢失时，仍能从 `expenseRecord.evidenceItems` 回退出图片”。
+- 下一步 / 遗留问题：
+  还需要真机继续看真实 CloudBase 数据里是否仍存在 `event.assetIds` 和 `expenseRecord.evidenceItems` 都为空的旧脏记录；如果有，就得继续补数据修复或 seed 重写，而不是再改卡片样式。
+
+## 2026-04-18 | 我的页 | 改成头像选择 + 昵称填写的真实资料链路
+
+- 为什么改：
+  当前小程序已经不能再稳定依赖旧的 `getUserProfile` 拿真实头像昵称，而我的页此前也只把昵称头像当作本地展示值保存，导致救助人详情和救助人主页经常回落到默认头像。
+- 改了什么：
+  将 `src/pages/profile/index.tsx` 改成微信头像选择能力 + 昵称填写能力：头像走 `chooseAvatar`，昵称走 `input type=\"nickname\"`，并显式保存；前端会先把头像上传到 CloudBase `profile-assets/avatar/...`，再通过 `updateMyProfile` 写入 `avatarAssetId / displayName`。云函数与 profile 读链路同步补齐 `avatarAssetId` 资产回读，详情页 / 救助人主页优先使用头像资产 URL。
+- 影响范围：
+  `src/pages/profile/index.tsx`、`src/pages/profile/index.scss`、`cloudfunctions/rescueApi/index.js`、`src/domain/canonical/repository/remoteRepository.ts`、`src/domain/canonical/repository/cloudbaseClient.ts`、`docs/profile_page_ia.md`、`docs/cloudbase_backend_setup.md`、`cloudfunctions/rescueApi/README.md`。
+- 验证结果：
+  保持现有页面兼容，未改公开 VM 的使用方式，只补齐了头像资产来源；`npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：
+  还需要真机确认头像选择后的本地临时图上传和回读是否稳定，以及昵称输入在审核中的提示体验；若后续希望在联系方式页或建档流程里也能直接改头像，再决定是否复用同一套 profile 编辑组件。
+
+## 2026-04-18 | 首页 | 首页与救助人主页卡片的状态 emoji 改成和更新进展一致
+
+- 为什么改：
+  首页卡片和救助人主页复用同一张案例卡，但状态 tag 的 emoji 仍按旧文案包含关系做简化映射，像“恢复中”这类文案会错误回落成统一 emoji，和“更新进展”页里的阶段 chip 不一致。
+- 改了什么：
+  调整 `src/components/DiscoverCaseCard.tsx` / `DiscoverCaseCard.scss` 的状态 tag：映射口径对齐到更新进展页的 5 类状态，同时 chip 样式改成“emoji 小方块 + 文案”的组合表现；并在 `docs/home_page_ia.md` 里把这套 emoji 口径记下来。
+- 影响范围：
+  首页和救助人主页两处复用 `DiscoverCaseCard` 的状态 tag 视觉与 emoji 映射；不改 timeline、详情页或数据字段。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仅保留既有大图资源 warning。
+- 下一步 / 遗留问题：
+  还需要真机确认不同长度的状态文案在窄屏上是否会顶满 chip；如果“医疗救助中”这类长文案仍偏挤，再单独收紧 chip padding。
+
+## 2026-04-18 | 状态层 | 首页与详情改为按状态枚举输出标准标签
+
+- 为什么改：
+  线上数据和 Alpha seed 里同时存在“恢复中”“恢复待领养”“刚发现待安置”这类自由文案，首页和救助人主页此前直接消费 `currentStatusLabel`，导致标签池漂出“更新进展”页定义的标准阶段标签。
+- 改了什么：
+  在 `src/domain/canonical/modeling.ts` 新增标准状态文案映射，并让 `getPublicDetailVM`、`getWorkbenchVM` 与 owner detail 统一按 `currentStatus enum -> 标准标签` 输出；首页、救助人主页、详情页、工作台不再直接信任原始 `currentStatusLabel` 文案。
+- 影响范围：
+  `src/domain/canonical/modeling.ts`、`src/domain/canonical/selectors/getPublicDetailVM.ts`、`src/domain/canonical/selectors/getWorkbenchVM.ts`、`src/domain/canonical/repository/canonicalReadRepositoryCore.ts`，以及依赖这些 VM 的首页、详情、救助人主页、工作台状态标签展示。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 通过；新增 selector test 已覆盖“恢复待领养”会被标准化成“康复观察”。
+- 下一步 / 遗留问题：
+  后续如果要把 `completed` 也并入“更新进展”页的显式阶段池，需要先补产品决策；当前它仍保留为“已完成”，因为并不在现有 5 个更新进展标签里。
+
+## 2026-04-18 | 构建层 | 将写进展更新页路由从 update 改到 progress-update
+
+- 为什么改：
+  微信开发者工具报 `[app.json 文件内容错误] dist/app.json: ["pages"][10] could not find the corresponding file: "pages/rescue/update/index.wxml"`；排查后确认 `pages/rescue/update` 在 Taro 构建里只产出了 `index.js`，没有生成 `index.wxml/index.json/index.wxss`。
+- 改了什么：
+  将写进展更新页路由整体迁移到 `pages/rescue/progress-update/index`，同步更新 `src/app.config.ts`、主态详情 / 草稿预览跳转入口、qa manifest 和当前文档中的源码路径引用；页面实现本身不变，只绕开了 `update` 这条路由名在构建阶段的异常产物问题。
+- 影响范围：
+  `src/app.config.ts`、`src/pages/rescue/detail/index.tsx`、`src/pages/rescue/create/preview/index.tsx`、`qa/rescue-update.json`、`docs/figma_progress_map.md`、`docs/frontend_backend_field_matrix.md`、`docs/project_control_center.md`，以及页面目录改名为 `src/pages/rescue/progress-update/`。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；`dist/app.json` 已改为 `pages/rescue/progress-update/index`，且 `dist/pages/rescue/progress-update/` 现已完整生成 `index.js / index.json / index.wxml / index.wxss`，旧的 `dist/pages/rescue/update/` 不再存在。
+- 下一步 / 遗留问题：
+  当前只是稳定绕开构建器对 `update` 路由名的异常处理；如果后续还想追根究底，需要再单独最小化复现 Taro 对 `pages/**/update` 的产物生成问题，但这不阻塞当前开发与调试。
+
+## 2026-04-18 | 我的页 | 修复头像昵称被远端半包数据反向清空
+
+- 为什么改：
+  我的页进入时会先读本地 `profile-user:v1`，再异步读远端 `getMyProfile`；此前如果远端只有头像没有昵称，或只有昵称没有头像，会把本地另一半覆盖成空值，造成“保存了但每次进来又刷新没了”的体验。
+- 改了什么：
+  在 `src/pages/profile/index.tsx` 增加本地/远端资料 merge 逻辑，远端只按字段补全本地，不再整包覆盖；同时把昵称输入和 `chooseAvatar` 选择后的结果立即写入本地 storage，避免离页前还没点保存就完全丢失。
+- 影响范围：
+  我的页头像昵称显示与本地缓存行为；不改远端 profile 数据结构和其它页面展示 contract。
+- 验证结果：
+  `npm run typecheck`、`npm run build:weapp` 通过；构建仅保留既有大图资源 warning。
+- 下一步 / 遗留问题：
+  还需要真机继续确认昵称输入审核中的文案体验，以及头像上传失败时本地临时图在重进页面后的可见性；如果仍有“明明保存了但详情页不变”的情况，再继续查对应 OPENID 的 `user_profiles.avatarAssetId / displayName` 是否实际落库。
+
+## 2026-04-18 | 前端 | 把支出卡空图片槽位收成透明占位
+
+- 为什么改：
+  支出卡已经改成固定 3 个正方形槽位后，空槽位仍带浅色边框，视觉上像“缺图报错”，不够干净。
+- 改了什么：
+  将 `src/components/RescueTimelineShared.scss` 里空图片槽位的样式从白底描边改成透明占位，只保留布局位置，不再额外画边框。
+- 影响范围：
+  客态详情、主态详情、草稿预览等复用 `RescueTimelineShared` 的支出卡图片区视觉表现；不改数据链和图片数量规则。
+- 验证结果：
+  已完成样式调整，待构建确认页面输出正常。
+- 下一步 / 遗留问题：
+  若后续觉得透明槽位仍太“占地方”，再决定是否收紧成更小间距，但先保持 3 槽位的稳定版式。

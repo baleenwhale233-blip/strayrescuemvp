@@ -269,10 +269,7 @@ export default function ContactSettingsPage() {
         </View>
       </View>
 
-      <View
-        className="contact-settings-page__bottom"
-        style={{ bottom: `${keyboardBottomInset}px` }}
-      >
+      <View className="contact-settings-page__bottom">
         <View className="theme-button-primary contact-settings-page__submit" onTap={handleSubmit}>
           <Text>提交</Text>
           <Image className="contact-settings-page__submit-icon" mode="aspectFit" src={submitArrowIcon} />

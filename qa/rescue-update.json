@@ -1,6 +1,6 @@
 {
   "id": "rescue-update",
-  "route": "pages/rescue/update/index",
+  "route": "pages/rescue/progress-update/index",
   "query": {
     "caseId": "case_001"
   },

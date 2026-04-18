@@ -11,6 +11,7 @@ import {
   loadMyProfile,
   loadWorkbenchVMForCurrentUser,
 } from "../../domain/canonical/repository";
+import { getStandardCaseStatusLabel } from "../../domain/canonical/modeling";
 import type { WorkbenchCaseCardVM } from "../../domain/canonical/types";
 import fallbackCoverImage from "../../assets/detail/guest-hero-cat.png";
 import "./index.scss";
@@ -34,7 +35,12 @@ function getProjectSubtitle(project: WorkbenchCaseCardVM) {
       : "草稿待完善";
   }
 
-  return `${getWorkbenchStatusLabel(project.statusLabel)} · ${project.updatedAtLabel} 更新`;
+  return `${getWorkbenchStatusLabel(
+    getStandardCaseStatusLabel({
+      currentStatus: project.currentStatus,
+      fallbackLabel: project.statusLabel,
+    }),
+  )} · ${project.updatedAtLabel} 更新`;
 }
 
 function getProjectNotice(project: WorkbenchCaseCardVM) {

@@ -10,7 +10,7 @@ export default defineAppConfig({
     "pages/rescue/record-detail/index",
     "pages/rescue/expense/index",
     "pages/rescue/budget-update/index",
-    "pages/rescue/update/index",
+    "pages/rescue/progress-update/index",
     "pages/support/claim/index",
     "pages/support/review/index",
     "pages/profile/index",

@@ -315,12 +315,12 @@
 
 ### 页面文件
 
-- [`src/pages/rescue/update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/update/index.tsx)
+- [`src/pages/rescue/progress-update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/progress-update/index.tsx)
 
 ### 当前调用入口
 
-- 主态详情快捷动作：`/pages/rescue/detail/index -> /pages/rescue/update/index?caseId=...`
-- 草稿预览快捷动作：`/pages/rescue/create/preview/index -> /pages/rescue/update/index?draftId=...`
+- 主态详情快捷动作：`/pages/rescue/detail/index -> /pages/rescue/progress-update/index?caseId=...`
+- 草稿预览快捷动作：`/pages/rescue/create/preview/index -> /pages/rescue/progress-update/index?draftId=...`
 
 ### 前端字段清单
 

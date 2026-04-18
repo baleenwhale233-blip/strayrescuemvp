@@ -7,6 +7,7 @@ import type {
 import {
   getHomepageEligibility,
   getPublicCaseId,
+  getStandardCaseStatusLabel,
   getStructuredSupportEntries,
 } from "../modeling";
 import { getPublicDetailVM } from "./getPublicDetailVM";
@@ -31,7 +32,10 @@ function toWorkbenchCardVM(
     publicCaseId: getPublicCaseId(bundle.case),
     sourceKind: bundle.sourceKind,
     title: bundle.case.animalName,
-    statusLabel: bundle.case.currentStatusLabel,
+    statusLabel: getStandardCaseStatusLabel({
+      currentStatus: bundle.case.currentStatus,
+      fallbackLabel: bundle.case.currentStatusLabel,
+    }),
     statusTone: publicDetail.statusTone,
     updatedAtLabel: publicDetail.updatedAtLabel,
     visibility: bundle.case.visibility,

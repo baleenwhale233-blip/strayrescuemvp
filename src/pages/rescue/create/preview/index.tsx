@@ -910,7 +910,7 @@ export default function RescueCreatePreviewPage() {
         }
         onStatus={() =>
           Taro.navigateTo({
-            url: `/pages/rescue/update/index?draftId=${draft.id}`,
+            url: `/pages/rescue/progress-update/index?draftId=${draft.id}`,
           })
         }
       />

@@ -48,11 +48,13 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
   return (
     <View
       className="support-sheet__overlay"
+      catchMove
       onTap={onClose}
       onTouchMove={(event) => event.stopPropagation()}
     >
       <View
         className="support-sheet__panel"
+        catchMove
         onTap={(event) => event.stopPropagation()}
         onTouchMove={(event) => event.stopPropagation()}
       >
@@ -114,6 +116,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
 
         <View
           className="support-sheet__footer"
+          catchMove
           onTap={(event) => event.stopPropagation()}
         >
           <View className="theme-button-primary support-sheet__save-button" onTap={handlePrimaryAction}>

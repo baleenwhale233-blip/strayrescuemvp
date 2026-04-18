@@ -1,4 +1,4 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../components/NavBar";
@@ -10,6 +10,7 @@ import {
   loadMyProfile,
   updateRemoteMyProfile,
 } from "../../domain/canonical/repository";
+import { uploadProfileAssetImage } from "../../domain/canonical/repository/cloudbaseClient";
 import "./index.scss";
 
 type ProfileUser = {
@@ -58,21 +59,40 @@ function saveProfileUser(user: ProfileUser) {
   Taro.setStorageSync(PROFILE_USER_KEY, user);
 }
 
+function mergeProfileUser(
+  base: ProfileUser,
+  incoming?: Partial<ProfileUser>,
+) {
+  return {
+    avatarUrl: incoming?.avatarUrl || base.avatarUrl || "",
+    nickName: incoming?.nickName || base.nickName || "",
+  };
+}
+
 export default function ProfilePage() {
-  const [profileUser, setProfileUser] = useState<ProfileUser | undefined>();
+  const [profileUser, setProfileUser] = useState<ProfileUser>({
+    avatarUrl: "",
+    nickName: "",
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useDidShow(() => {
-    setProfileUser(getStoredProfileUser());
+    const localUser =
+      getStoredProfileUser() || {
+        avatarUrl: "",
+        nickName: "",
+      };
+    setProfileUser(localUser);
     loadMyProfile()
       .then((profile) => {
         if (!profile?.displayName && !profile?.avatarUrl) {
           return;
         }
 
-        const nextUser = {
+        const nextUser = mergeProfileUser(localUser, {
           avatarUrl: profile.avatarUrl || "",
           nickName: profile.displayName || "",
-        };
+        });
         saveProfileUser(nextUser);
         setProfileUser(nextUser);
       })
@@ -81,42 +101,96 @@ export default function ProfilePage() {
       });
   });
 
-  const handleLogin = async () => {
-    const getUserProfile = Taro.getUserProfile as
-      | undefined
-      | ((options: { desc: string }) => Promise<{ userInfo?: Partial<ProfileUser> }>);
+  const handleChooseAvatar = (event: { detail?: { avatarUrl?: string } }) => {
+    const avatarUrl = event.detail?.avatarUrl || "";
 
-    if (!getUserProfile) {
+    if (!avatarUrl) {
+      return;
+    }
+
+    setProfileUser((current) => {
+      const nextUser = mergeProfileUser(current, { avatarUrl });
+      saveProfileUser(nextUser);
+      return nextUser;
+    });
+  };
+
+  const handleSaveProfile = async () => {
+    const nextNickName = profileUser.nickName.trim();
+    const nextAvatarUrl = profileUser.avatarUrl.trim();
+
+    if (!nextNickName && !nextAvatarUrl) {
       Taro.showToast({
-        title: "当前环境暂不支持微信资料授权",
+        title: "请先填写昵称或选择头像",
         icon: "none",
       });
       return;
     }
 
     try {
-      const result = await getUserProfile({
-        desc: "用于在救猫咪中展示头像和昵称",
+      setSavingProfile(true);
+      Taro.showLoading({ title: "保存中" });
+
+      let avatarFileID = "";
+
+      if (
+        nextAvatarUrl &&
+        !nextAvatarUrl.startsWith("http://") &&
+        !nextAvatarUrl.startsWith("https://") &&
+        !nextAvatarUrl.startsWith("cloud://")
+      ) {
+        const uploaded = await uploadProfileAssetImage(nextAvatarUrl, "avatar");
+        avatarFileID = uploaded.isLocalFallback ? "" : uploaded.fileID;
+      }
+
+      const didSyncRemote = await updateRemoteMyProfile({
+        displayName: nextNickName,
+        avatarFileID,
       });
-      const userInfo = result.userInfo || {};
-      const nextUser = {
-        avatarUrl: userInfo.avatarUrl || "",
-        nickName: userInfo.nickName || "微信用户",
-      };
+
+      if (!didSyncRemote) {
+        saveProfileUser({
+          avatarUrl: nextAvatarUrl,
+          nickName: nextNickName,
+        });
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "已保存在本机，稍后会再同步",
+          icon: "none",
+        });
+        return;
+      }
+
+      const confirmedProfile = await loadMyProfile().catch(() => undefined);
+      const nextUser = mergeProfileUser(
+        {
+          avatarUrl: nextAvatarUrl,
+          nickName: nextNickName,
+        },
+        {
+          avatarUrl: confirmedProfile?.avatarUrl || "",
+          nickName: confirmedProfile?.displayName || "",
+        },
+      );
 
       saveProfileUser(nextUser);
       setProfileUser(nextUser);
-      updateRemoteMyProfile({
-        displayName: nextUser.nickName,
-        avatarUrl: nextUser.avatarUrl,
-      }).catch(() => {
-        // Local profile remains usable when remote sync is unavailable.
-      });
-    } catch {
+      Taro.hideLoading();
       Taro.showToast({
-        title: "未获取微信资料",
+        title: "头像昵称已保存",
         icon: "none",
       });
+    } catch (error) {
+      Taro.hideLoading();
+      Taro.showToast({
+        title:
+          error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED"
+            ? "头像上传失败，请重试"
+            : "头像昵称保存失败",
+        icon: "none",
+      });
+    } finally {
+      setSavingProfile(false);
     }
   };
 
@@ -147,24 +221,52 @@ export default function ProfilePage() {
       <NavBar title="救猫咪" />
 
       <View className="profile-page__body">
-        <View className="profile-page__user" onTap={handleLogin}>
-          <View className="profile-page__avatar-wrap">
-            {profileUser?.avatarUrl ? (
-              <Image
-                className="profile-page__avatar"
-                mode="aspectFill"
-                src={profileUser.avatarUrl}
-              />
-            ) : (
-              <View className="profile-page__avatar-placeholder">
-                <View className="profile-page__avatar-head" />
-                <View className="profile-page__avatar-body" />
-              </View>
-            )}
+        <View className="profile-page__user">
+          <Button
+            className="profile-page__avatar-button"
+            openType="chooseAvatar"
+            onChooseAvatar={handleChooseAvatar}
+          >
+            <View className="profile-page__avatar-wrap">
+              {profileUser.avatarUrl ? (
+                <Image
+                  className="profile-page__avatar"
+                  mode="aspectFill"
+                  src={profileUser.avatarUrl}
+                />
+              ) : (
+                <View className="profile-page__avatar-placeholder">
+                  <View className="profile-page__avatar-head" />
+                  <View className="profile-page__avatar-body" />
+                </View>
+              )}
+            </View>
+          </Button>
+          <Input
+            className="profile-page__name-input"
+            type="nickname"
+            maxlength={24}
+            placeholder="填写你的昵称"
+            placeholderStyle="color:#98A2B3;"
+            value={profileUser.nickName}
+            onInput={(event) =>
+              setProfileUser((current) => {
+                const nextUser = mergeProfileUser(current, {
+                  nickName: event.detail.value,
+                });
+                saveProfileUser(nextUser);
+                return nextUser;
+              })
+            }
+          />
+          <View
+            className={`theme-button-primary profile-page__save-button ${
+              savingProfile ? "profile-page__save-button--disabled" : ""
+            }`}
+            onTap={handleSaveProfile}
+          >
+            <Text>{savingProfile ? "保存中" : "保存头像昵称"}</Text>
           </View>
-          <Text className="profile-page__name">
-            {profileUser?.nickName || "点击登录"}
-          </Text>
         </View>
 
         <View className="profile-page__menu">

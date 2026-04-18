@@ -16,6 +16,7 @@ This MVP function is intentionally a single action-dispatch function so the mini
 ## Profile and support history
 
 - `getMyProfile` and `updateMyProfile` read and write the current user's `user_profiles` document by cloud function OPENID.
+- Rescuer avatars can be uploaded as CloudBase assets and linked through `user_profiles.avatarAssetId`.
 - Profile QR images are stored as CloudBase `cloud://` file IDs in `evidence_assets(kind=payment_qr)` and linked through `user_profiles.paymentQrAssetId`.
 - `hasContactProfile` now means the user has at least one usable contact channel: WeChat ID or payment QR code.
 - `getMySupportHistory` aggregates confirmed support entries for the current OPENID and returns case-level support history items.

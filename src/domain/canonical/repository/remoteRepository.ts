@@ -52,6 +52,7 @@ type BundlePayload = {
 export type MyProfileVM = {
   openid?: string;
   displayName: string;
+  avatarAssetId?: string;
   avatarUrl: string;
   wechatId: string;
   contactNote: string;
@@ -125,6 +126,7 @@ type CaseRecordDetailPayload = {
 type UpdateMyProfileInput = {
   displayName?: string;
   avatarUrl?: string;
+  avatarFileID?: string;
   wechatId?: string;
   contactNote?: string;
   paymentQrFileID?: string;

@@ -1,4 +1,4 @@
-import { Button, Image, Input, Text, View } from "@tarojs/components";
+import { Button, Image, Input, PageMeta, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter, useShareAppMessage } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
@@ -778,7 +778,7 @@ function OwnerDetail({
         onIncome={goToManage}
         onStatus={() =>
           Taro.navigateTo({
-            url: `/pages/rescue/update/index?caseId=${ownerDetail.caseId}`,
+            url: `/pages/rescue/progress-update/index?caseId=${ownerDetail.caseId}`,
           })
         }
       />
@@ -1079,6 +1079,7 @@ export default function RescueDetailPage() {
 
   return (
     <View key={reloadSeed} className="page-shell detail-page-shell">
+      <PageMeta pageStyle={supportOpen ? "overflow: hidden;" : "overflow: visible;"} />
       {mode === "guest" ? (
         <GuestDetail
           detail={publicDetail}

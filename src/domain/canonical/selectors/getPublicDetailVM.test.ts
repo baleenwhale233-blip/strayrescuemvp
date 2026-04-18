@@ -82,6 +82,40 @@ test("getPublicDetailVM falls back to the latest public progress photo when cove
   );
 });
 
+test("getPublicDetailVM falls back to expense record evidence when expense event assetIds are missing", () => {
+  const vm = getPublicDetailVM({
+    ...bundle,
+    events: bundle.events.map((event) =>
+      event.type === "expense"
+        ? {
+            ...event,
+            assetIds: [],
+          }
+        : event,
+    ),
+  });
+
+  const expenseItem = vm.timeline.find((item) => item.type === "expense");
+
+  assert.deepEqual(expenseItem?.assetUrls, [
+    "https://example.com/assets/receipt-001-watermarked.png",
+    "https://example.com/assets/progress-001-watermarked.png",
+  ]);
+});
+
+test("getPublicDetailVM normalizes arbitrary case status labels to the update-page label pool", () => {
+  const vm = getPublicDetailVM({
+    ...bundle,
+    case: {
+      ...bundle.case,
+      currentStatus: "recovery",
+      currentStatusLabel: "恢复待领养",
+    },
+  });
+
+  assert.equal(vm.statusLabel, "康复观察");
+});
+
 test("getDiscoverCardVM derives list-friendly card fields from canonical bundle", () => {
   const vm = getDiscoverCardVM(bundle);
 

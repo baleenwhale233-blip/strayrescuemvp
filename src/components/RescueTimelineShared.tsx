@@ -70,6 +70,16 @@ function canOpenReadonlyDetail(item: RescueTimelineSharedItem) {
   );
 }
 
+function getExpenseImageSlots(images: string[]) {
+  const normalized = images.slice(0, 3);
+
+  while (normalized.length < 3) {
+    normalized.push("");
+  }
+
+  return normalized;
+}
+
 export function RescueTimelineList({
   items,
   emptyState,
@@ -177,18 +187,38 @@ export function RescueTimelineList({
             ) : null}
 
             {item.images?.length ? (
-              <View
-                className={`rescue-timeline__images ${
-                  item.images.length === 1 ? "rescue-timeline__images--single" : ""
-                }`}
-              >
-                {item.images.map((src) => (
-                  <View key={src} className="rescue-timeline__image-wrap">
-                    <Image className="rescue-timeline__image" mode="aspectFill" src={src} />
-                    <Text className="rescue-timeline__watermark">透明账本·严禁盗用</Text>
-                  </View>
-                ))}
-              </View>
+              item.kind === "expense" ? (
+                <View className="rescue-timeline__images rescue-timeline__images--expense">
+                  {getExpenseImageSlots(item.images).map((src, index) => (
+                    <View
+                      key={src || `expense-empty-${item.id}-${index}`}
+                      className={`rescue-timeline__image-wrap rescue-timeline__image-wrap--expense ${
+                        src ? "" : "rescue-timeline__image-wrap--empty"
+                      }`}
+                    >
+                      {src ? (
+                        <>
+                          <Image className="rescue-timeline__image" mode="aspectFill" src={src} />
+                          <Text className="rescue-timeline__watermark">透明账本·严禁盗用</Text>
+                        </>
+                      ) : null}
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <View
+                  className={`rescue-timeline__images ${
+                    item.images.length === 1 ? "rescue-timeline__images--single" : ""
+                  }`}
+                >
+                  {item.images.map((src) => (
+                    <View key={src} className="rescue-timeline__image-wrap">
+                      <Image className="rescue-timeline__image" mode="aspectFill" src={src} />
+                      <Text className="rescue-timeline__watermark">透明账本·严禁盗用</Text>
+                    </View>
+                  ))}
+                </View>
+              )
             ) : null}
 
             {item.kind === "status" ? (

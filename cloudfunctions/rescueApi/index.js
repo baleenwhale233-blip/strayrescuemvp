@@ -418,7 +418,7 @@ async function composeBundles(caseDocs) {
       }),
       queryCollection(COLLECTIONS.assets, {
         uploadedByOpenid: _.in(rescuerIds),
-        kind: "payment_qr",
+        kind: _.in(["payment_qr", "avatar"]),
       }),
       queryCollection(COLLECTIONS.sharedEvidenceGroups, {
         caseId: _.in(caseIds),
@@ -539,7 +539,13 @@ function formatDateLabel(isoDateTime) {
   return `${month}-${day} ${hours}:${minutes}`;
 }
 
-function toProfilePayload(profile, paymentQrAsset) {
+function toProfilePayload(profile, avatarAsset, paymentQrAsset) {
+  const avatarUrl =
+    avatarAsset?._tempFileURL ||
+    avatarAsset?.fileID ||
+    avatarAsset?.originalUrl ||
+    profile.avatarUrl ||
+    "";
   const paymentQrUrl =
     paymentQrAsset?._tempFileURL ||
     paymentQrAsset?.fileID ||
@@ -549,9 +555,10 @@ function toProfilePayload(profile, paymentQrAsset) {
   return {
     openid: profile.openid || profile._openid || profile.userId || profile._id,
     displayName: profile.displayName || profile.name || "",
-    avatarUrl: profile.avatarUrl || "",
+    avatarUrl,
     wechatId: profile.wechatId || "",
     contactNote: profile.contactNote || "",
+    avatarAssetId: profile.avatarAssetId,
     paymentQrAssetId: profile.paymentQrAssetId,
     paymentQrUrl,
     hasContactProfile: hasAnyContactProfileInfo({
@@ -596,18 +603,25 @@ async function getMyProfile(openid) {
     });
   }
 
+  const avatarAsset = profile.avatarAssetId
+    ? await getOne(COLLECTIONS.assets, {
+        assetId: profile.avatarAssetId,
+      })
+    : undefined;
   const paymentQrAsset = profile.paymentQrAssetId
     ? await getOne(COLLECTIONS.assets, {
         assetId: profile.paymentQrAssetId,
       })
     : undefined;
   const tempFileURLMap = await getTempFileURLMap([
+    getAssetFileID(avatarAsset),
     getAssetFileID(paymentQrAsset),
   ]);
 
   return ok({
     profile: toProfilePayload(
       profile,
+      avatarAsset ? withTempFileURL(avatarAsset, tempFileURLMap) : undefined,
       paymentQrAsset ? withTempFileURL(paymentQrAsset, tempFileURLMap) : undefined,
     ),
   });
@@ -622,10 +636,31 @@ async function updateMyProfile(openid, input) {
     existing?.displayName || existing?.name,
   );
   const avatarUrl = pickStringField(input, "avatarUrl", existing?.avatarUrl);
+  const avatarFileID = String(input?.avatarFileID || "").trim();
   const wechatId = pickStringField(input, "wechatId", existing?.wechatId);
   const contactNote = pickStringField(input, "contactNote", existing?.contactNote);
   const paymentQrFileID = String(input?.paymentQrFileID || "").trim();
+  let avatarAssetId = existing?.avatarAssetId;
   let paymentQrAssetId = existing?.paymentQrAssetId;
+
+  if (avatarFileID) {
+    if (!isCloudFileID(avatarFileID)) {
+      return fail("INVALID_PROFILE_ASSET_FILE_ID");
+    }
+
+    avatarAssetId = `profile_${sanitizeId(openid)}_avatar`;
+    await db.collection(COLLECTIONS.assets).doc(avatarAssetId).set({
+      data: {
+        assetId: avatarAssetId,
+        fileID: avatarFileID,
+        kind: "avatar",
+        visibility: "public",
+        uploadedByOpenid: openid,
+        createdAt: existing?.createdAt || timestamp,
+        updatedAt: timestamp,
+      },
+    });
+  }
 
   if (paymentQrFileID) {
     if (!isCloudFileID(paymentQrFileID)) {
@@ -651,6 +686,7 @@ async function updateMyProfile(openid, input) {
     displayName,
     name: displayName || existing?.name || "当前用户",
     avatarUrl,
+    avatarAssetId,
     verifiedLevel: existing?.verifiedLevel || "wechat",
     joinedAt: existing?.joinedAt || existing?.createdAt || timestamp,
     createdAt: existing?.createdAt || timestamp,

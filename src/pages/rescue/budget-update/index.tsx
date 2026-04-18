@@ -325,10 +325,7 @@ export default function RescueBudgetUpdatePage() {
         </View>
       </View>
 
-      <View
-        className="rescue-budget-update-page__bottom"
-        style={{ bottom: `${keyboardBottomInset}px` }}
-      >
+      <View className="rescue-budget-update-page__bottom">
         <View className="theme-button-primary rescue-budget-update-page__bottom-submit" onTap={handleSubmit}>
           <Text>确认追加并更新时间线</Text>
           <Image className="rescue-budget-update-page__bottom-submit-icon" mode="aspectFit" src={submitArrowIcon} />

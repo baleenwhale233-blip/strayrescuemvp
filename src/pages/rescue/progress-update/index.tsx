@@ -448,10 +448,7 @@ export default function RescueStatusUpdatePage() {
         </View>
       </View>
 
-      <View
-        className="rescue-update-page__bottom"
-        style={{ bottom: `${keyboardBottomInset}px` }}
-      >
+      <View className="rescue-update-page__bottom">
         <View className="theme-button-secondary rescue-update-page__bottom-cancel" onTap={handleCancel}>
           <Text>取消</Text>
         </View>

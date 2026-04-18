@@ -124,10 +124,7 @@ export default function RescueCreateBudgetPage() {
         </View>
       </View>
 
-      <View
-        className="rescue-budget-page__footer"
-        style={{ bottom: `${keyboardBottomInset}px` }}
-      >
+      <View className="rescue-budget-page__footer">
         <View className="theme-button-primary rescue-budget-page__button" onTap={handleNext}>
           <Text>进入救助页面</Text>
           <Image

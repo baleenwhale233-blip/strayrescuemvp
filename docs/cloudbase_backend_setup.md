@@ -73,6 +73,7 @@
 
 - 使用云函数 OPENID 读写 `user_profiles`
 - 保存 `displayName / avatarUrl / wechatId / contactNote`
+- 用户头像现在支持上传为 CloudBase 资产，并关联到 `user_profiles.avatarAssetId`
 - 微信二维码上传为 `cloud://` fileID 后写入 `evidence_assets(kind=payment_qr)`
 - 将二维码 asset 关联到 `user_profiles.paymentQrAssetId`
 - 输出 `hasContactProfile`，当前口径为“微信号或二维码任一存在即可”
@@ -204,6 +205,14 @@ support-proofs/{caseId}/{timestamp}-{random}.jpg
 支持凭证默认是私有对账材料，不直接展示在公开详情页。上传失败时前端不会继续把本地临时路径作为远端 `fileID` 提交。
 
 公开展示图、进展图、凭证图和二维码在数据库里仍保存 CloudBase `fileID`；云函数读回时会调用 `getTempFileURL` 转成临时 HTTPS URL 给页面展示，同时在只读详情 VM 中保留原始 `fileID`。
+
+救助人头像现在也支持同样的资产链：
+
+- profile 页选择头像
+- 上传到 `profile-assets/avatar/...`
+- 写入 `evidence_assets(kind=avatar)`
+- 关联到 `user_profiles.avatarAssetId`
+- 详情页 / 救助人主页 / 我的页优先读取头像资产 URL
 
 当前公开主图的 canonical fallback 已统一为：
 

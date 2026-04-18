@@ -228,10 +228,7 @@ export default function RescueCreateBasicPage() {
         />
       </View>
 
-      <View
-        className="rescue-create-page__footer"
-        style={{ bottom: `${keyboardBottomInset}px` }}
-      >
+      <View className="rescue-create-page__footer">
         <View className="theme-button-primary rescue-create-page__primary" onTap={handleNext}>
           <Text>下一步：设定目标</Text>
           <Image

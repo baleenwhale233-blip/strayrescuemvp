@@ -262,10 +262,7 @@ export default function SupportClaimPage() {
         />
       </View>
 
-      <View
-        className="support-claim__bottom"
-        style={{ bottom: `${keyboardBottomInset}px` }}
-      >
+      <View className="support-claim__bottom">
         <View className="theme-button-primary support-claim__submit" onTap={handleSubmit}>
           <Text>提交支持</Text>
           <Image className="support-claim__submit-arrow" mode="aspectFit" src={submitArrowIcon} />
