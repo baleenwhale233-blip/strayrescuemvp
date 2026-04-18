@@ -89,7 +89,7 @@
 | 时间线 | `timeline` | `PublicDetailVM` | 已有 | 客态/主态共用 |
 | 最新时间线摘要 | `latestTimelineSummary` | `PublicDetailVM` | 已有 | 当前页可选 |
 | 救助人信息 | `rescuer.*` | `PublicDetailVM` | 已有 | 主页入口卡片 |
-| 联系方式弹层 | `SupportSheetData` | `getSupportSheetDataByCaseId()` | 已有 | 当前仍是旧 contact/direct 模式 |
+| 联系方式弹层 | `SupportSheetData` | `getSupportSheetDataByCaseId()` | 已有 | 当前已按“二维码 / 微信号 / 联系救助人”口径收口文案与单渠道展示 |
 
 ### 当前注意事项
 
@@ -311,7 +311,7 @@
 
 ---
 
-## 5.2 写进展更新页（rescue/update）
+## 5.2 写进展更新页（rescue/progress-update）
 
 ### 页面文件
 
@@ -391,8 +391,9 @@
 
 | 前端用途 | 字段 | 建议来源 | 当前状态 | 备注 |
 |---|---|---|---|---|
-| 用户头像 | `user_profiles.avatarUrl` / `profile-user:v1.avatarUrl` | `getMyProfile()` / 本地兜底 | 远端已接 | 默认显示 Figma 默认头像；点击用户模块后通过微信授权获取并同步远端 |
-| 用户名 | `user_profiles.displayName` / `profile-user:v1.nickName` | `getMyProfile()` / 本地兜底 | 远端已接 | 默认显示“点击登录”；点击用户模块后通过微信授权获取并同步远端 |
+| 用户头像 | `user_profiles.avatarUrl` / `profile-user:v1.avatarUrl` | `getMyProfile()` / 本地兜底 | 远端已接 | 默认显示 Figma 默认头像；当前通过 `chooseAvatar` 选择头像，并经 `avatarAssetId` 资产链同步远端 |
+| 用户头像资产 | `user_profiles.avatarAssetId` | `updateMyProfile()` / CloudBase asset | 远端已接 | 上传头像后写入 `evidence_assets(kind=avatar)`，供公开详情 / 救助人主页回读 |
+| 用户名 | `user_profiles.displayName` / `profile-user:v1.nickName` | `getMyProfile()` / 本地兜底 | 远端已接 | 当前通过 `input type="nickname"` 编辑并同步远端，不再依赖旧的整包资料授权 |
 | 支持足迹入口显隐 | `has_support_history` | 后续 support summary 聚合 | 未做 | 当前入口始终展示，点击进入支持足迹页 |
 | 联系方式设置入口 | 本地路由 | 直接页面路由 | 页面已接 | 当前入口跳转 `/pages/profile/contact-settings/index` |
 | 使用说明入口 | 静态文档页路由 | 本地页面 | 页面已接 | 当前入口跳转 `/pages/profile/guide/index`；用户文案见 `docs/rescue_ledger_usage_guide.md` |
@@ -422,15 +423,15 @@
 
 | 前端用途 | 字段 | 建议来源 | 当前状态 | 备注 |
 |---|---|---|---|---|
-| 微信号 | `user_profiles.wechatId` / `rescuer-contact-profile:v1.wechatId` | `getMyProfile()` / 本地兜底 | 远端已接 | 必填；当前不自动获取微信号，placeholder 为“请填写微信号” |
-| 微信二维码图片 | `user_profiles.paymentQrAssetId` / `paymentQrUrl` | CloudBase asset / 本地兜底 | 远端已接 | 必填；提交时上传为 `cloud://` fileID 并写入 `evidence_assets(kind=payment_qr)` |
+| 微信号 | `user_profiles.wechatId` / `rescuer-contact-profile:v1.wechatId` | `getMyProfile()` / 本地兜底 | 远端已接 | 当前不自动获取微信号，placeholder 为“请填写微信号” |
+| 微信二维码图片 | `user_profiles.paymentQrAssetId` / `paymentQrUrl` | CloudBase asset / 本地兜底 | 远端已接 | 提交时上传为 `cloud://` fileID 并写入 `evidence_assets(kind=payment_qr)` |
 | 备注 | `user_profiles.contactNote` / `rescuer-contact-profile:v1.note` | `getMyProfile()` / 本地兜底 | 远端已接 | 选填 |
 
 当前注意事项：
 
 - 新建救助档案前会优先调用 `loadMyProfile()` 读取远端 `hasContactProfile`，CloudBase 不可用时才调用 `hasCompleteRescuerContactProfile()` 做本地兜底
-- 如果缺微信号或二维码，会先引导到联系方式设置页，保存后再进入建档第一步
-- 当前已接正式后端 profile settings；新建救助前置校验已改为远端 `getMyProfile.hasContactProfile` 优先、本地兜底
+- 如果微信号和二维码都缺，会先引导到联系方式设置页，保存后再进入建档第一步
+- 当前已接正式后端 profile settings；新建救助前置校验已改为远端 `getMyProfile.hasContactProfile` 优先、本地兜底，口径为“微信号 / 二维码任一即可”
 
 ### 6.4 “我已支持”登记页（support/claim）
 

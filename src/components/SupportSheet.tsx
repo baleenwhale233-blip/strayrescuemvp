@@ -31,7 +31,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
   const handlePrimaryAction = async () => {
     if (hasPaymentQr) {
       Taro.showToast({
-        title: "请长按二维码保存",
+        title: "请长按二维码保存并联系救助人",
         icon: "none",
       });
       return;

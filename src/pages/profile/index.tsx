@@ -1,6 +1,6 @@
 import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NavBar } from "../../components/NavBar";
 import supportHistoryIcon from "../../assets/profile/support-history.svg";
 import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
@@ -38,6 +38,30 @@ const MENU_ITEMS = [
   },
 ] as const;
 
+function isTemporaryCloudAvatarUrl(avatarUrl: string) {
+  if (!avatarUrl.startsWith("http://") && !avatarUrl.startsWith("https://")) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(avatarUrl);
+    const isCloudAssetHost =
+      parsed.hostname.endsWith("tcb.qcloud.la") ||
+      parsed.hostname.endsWith("tcb.qcloud.com");
+
+    return (
+      isCloudAssetHost &&
+      (parsed.searchParams.has("sign") || parsed.searchParams.has("t"))
+    );
+  } catch {
+    return avatarUrl.includes("tcb.qcloud") && avatarUrl.includes("sign=");
+  }
+}
+
+function sanitizeStoredAvatarUrl(avatarUrl: string) {
+  return isTemporaryCloudAvatarUrl(avatarUrl) ? "" : avatarUrl;
+}
+
 function getStoredProfileUser() {
   const stored = Taro.getStorageSync(PROFILE_USER_KEY);
   if (!stored || typeof stored !== "object") {
@@ -49,14 +73,23 @@ function getStoredProfileUser() {
     return undefined;
   }
 
-  return {
-    avatarUrl: candidate.avatarUrl || "",
+  const sanitizedUser = {
+    avatarUrl: sanitizeStoredAvatarUrl(candidate.avatarUrl || ""),
     nickName: candidate.nickName || "",
   };
+
+  if (sanitizedUser.avatarUrl !== (candidate.avatarUrl || "")) {
+    Taro.setStorageSync(PROFILE_USER_KEY, sanitizedUser);
+  }
+
+  return sanitizedUser;
 }
 
 function saveProfileUser(user: ProfileUser) {
-  Taro.setStorageSync(PROFILE_USER_KEY, user);
+  Taro.setStorageSync(PROFILE_USER_KEY, {
+    ...user,
+    avatarUrl: sanitizeStoredAvatarUrl(user.avatarUrl),
+  });
 }
 
 function mergeProfileUser(
@@ -69,12 +102,21 @@ function mergeProfileUser(
   };
 }
 
+function shouldUploadAvatar(avatarUrl: string) {
+  return (
+    Boolean(avatarUrl) &&
+    !avatarUrl.startsWith("https://") &&
+    !avatarUrl.startsWith("cloud://")
+  );
+}
+
 export default function ProfilePage() {
   const [profileUser, setProfileUser] = useState<ProfileUser>({
     avatarUrl: "",
     nickName: "",
   });
   const [savingProfile, setSavingProfile] = useState(false);
+  const menuNavigationLockRef = useRef(false);
 
   useDidShow(() => {
     const localUser =
@@ -95,6 +137,57 @@ export default function ProfilePage() {
         });
         saveProfileUser(nextUser);
         setProfileUser(nextUser);
+
+        const shouldBackfillAvatar =
+          Boolean(localUser.avatarUrl) &&
+          !profile.avatarUrl &&
+          shouldUploadAvatar(localUser.avatarUrl);
+        const shouldBackfillNickName =
+          Boolean(localUser.nickName.trim()) && !profile.displayName;
+
+        if (!shouldBackfillAvatar && !shouldBackfillNickName) {
+          return;
+        }
+
+        void (async () => {
+          try {
+            let avatarFileID = "";
+
+            if (shouldBackfillAvatar) {
+              const uploaded = await uploadProfileAssetImage(localUser.avatarUrl, "avatar");
+              avatarFileID = uploaded.isLocalFallback ? "" : uploaded.fileID;
+            }
+
+            const didSyncRemote = await updateRemoteMyProfile({
+              displayName: shouldBackfillNickName ? localUser.nickName.trim() : undefined,
+              avatarUrl:
+                !shouldBackfillAvatar &&
+                (localUser.avatarUrl.startsWith("https://") ||
+                  localUser.avatarUrl.startsWith("cloud://"))
+                  ? localUser.avatarUrl
+                  : undefined,
+              avatarFileID,
+            });
+
+            if (!didSyncRemote) {
+              return;
+            }
+
+            const confirmedProfile = await loadMyProfile().catch(() => undefined);
+            if (!confirmedProfile) {
+              return;
+            }
+
+            const confirmedUser = mergeProfileUser(localUser, {
+              avatarUrl: confirmedProfile.avatarUrl || "",
+              nickName: confirmedProfile.displayName || "",
+            });
+            saveProfileUser(confirmedUser);
+            setProfileUser(confirmedUser);
+          } catch {
+            // Keep local profile when backfill fails.
+          }
+        })();
       })
       .catch(() => {
         // Keep local profile as a fallback.
@@ -133,18 +226,18 @@ export default function ProfilePage() {
 
       let avatarFileID = "";
 
-      if (
-        nextAvatarUrl &&
-        !nextAvatarUrl.startsWith("http://") &&
-        !nextAvatarUrl.startsWith("https://") &&
-        !nextAvatarUrl.startsWith("cloud://")
-      ) {
+      if (shouldUploadAvatar(nextAvatarUrl)) {
         const uploaded = await uploadProfileAssetImage(nextAvatarUrl, "avatar");
         avatarFileID = uploaded.isLocalFallback ? "" : uploaded.fileID;
       }
 
       const didSyncRemote = await updateRemoteMyProfile({
         displayName: nextNickName,
+        avatarUrl:
+          !avatarFileID &&
+          (nextAvatarUrl.startsWith("https://") || nextAvatarUrl.startsWith("cloud://"))
+            ? nextAvatarUrl
+            : undefined,
         avatarFileID,
       });
 
@@ -195,25 +288,30 @@ export default function ProfilePage() {
   };
 
   const handleMenuTap = (key: (typeof MENU_ITEMS)[number]["key"]) => {
-    if (key === "support-history") {
-      Taro.navigateTo({
-        url: "/pages/profile/support-history/index",
-      });
+    if (menuNavigationLockRef.current) {
       return;
     }
 
-    if (key === "contact-settings") {
-      Taro.navigateTo({
-        url: "/pages/profile/contact-settings/index",
-      });
+    const urlMap: Record<(typeof MENU_ITEMS)[number]["key"], string> = {
+      "support-history": "/pages/profile/support-history/index",
+      "contact-settings": "/pages/profile/contact-settings/index",
+      guide: "/pages/profile/guide/index",
+    };
+    const nextUrl = urlMap[key];
+
+    if (!nextUrl) {
       return;
     }
 
-    if (key === "guide") {
-      Taro.navigateTo({
-        url: "/pages/profile/guide/index",
-      });
-    }
+    menuNavigationLockRef.current = true;
+
+    void Taro.navigateTo({
+      url: nextUrl,
+    }).finally(() => {
+      setTimeout(() => {
+        menuNavigationLockRef.current = false;
+      }, 300);
+    });
   };
 
   return (

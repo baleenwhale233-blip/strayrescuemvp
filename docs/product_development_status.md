@@ -73,7 +73,7 @@
 - 支持登记 thread / entry 聚合
 - 案例 ID 精确搜索数据能力
 - draft 结构化存储 + 兼容旧 timeline 投影
-- 联系方式完整性口径已收口为：微信号或收款码任一即可通过建档前置校验
+- 联系方式完整性口径已收口为：微信号或二维码任一即可通过建档前置校验
 - 公开详情主图 fallback 已统一为：案例封面 -> 动物 face 图 -> 最新公开进展图
 - CloudBase 接入骨架：前端远端 repository facade、`rescueApi` 云函数、云存储支持凭证上传入口
 - CloudBase 开发环境：`cloud1-9gl5sric0e5b386b`

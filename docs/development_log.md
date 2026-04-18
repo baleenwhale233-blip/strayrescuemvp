@@ -24,6 +24,45 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
+
+- 为什么改：
+  按 `docs/alpha_test_plan.md` 重跑 Round 0 时，发现“我的”页会把 CloudBase 返回的临时头像链接写进本地缓存，重新进页后图片 403；同时 Alpha 计划和 smoke manifest 仍引用旧案例号 `JM482731`，与当前 seed 环境不一致。
+- 改了什么：
+  在 `src/pages/profile/index.tsx` 增加临时签名头像 URL 识别与本地缓存净化，避免把 `tcb.qcloud.*` 的临时链接持久化；同步把 `docs/alpha_test_plan.md` 与 `qa/alpha-smoke-manifest.json` 的案例号检查改成当前 seed 使用的 `JM520101 / 520101`。
+- 影响范围：
+  我的页头像昵称缓存策略、Alpha Round 0 smoke 放行标准和查档用例说明；不改数据模型和页面 IA，只收口运行态稳定性与测试口径。
+- 验证结果：
+  `npm run typecheck` 通过，`npm run test:domain` 通过；微信开发者工具复测后，“我的”页不再继续把临时头像 URL 写回本地缓存，Alpha 计划中的查档案例号也与当前 seed 卡片一致。
+- 下一步 / 遗留问题：
+  还需要继续追 `我的支持足迹` 偶发 `navigateTo:fail timeout` 和 `support-review-pending` 的稳定 pending 场景；如果后续要做更稳的离线头像体验，可再补 `avatarAssetId -> 临时 URL` 的前端即时换算层。
+
+## 2026-04-18 | Profile | 给我的页菜单补导航锁
+
+- 为什么改：
+  继续复测 Alpha Round 0 时，“我的支持足迹”从 Profile 页点击后会偶发 `navigateTo:fail timeout`，但页面随后又会打开，症状更像重复跳转或连续点击造成的竞态。
+- 改了什么：
+  在 `src/pages/profile/index.tsx` 的菜单入口加了轻量导航锁，统一拦住 `support-history / contact-settings / guide` 的重复 `navigateTo`，等本次跳转请求完成后再释放。
+- 影响范围：
+  我的页三个二级入口的点击行为；不改页面结构、路由配置和数据读取逻辑，只减少重复跳转竞态。
+- 验证结果：
+  `npm run typecheck` 通过；代码路径已收口到单次路由请求，便于继续在开发者工具里复测 `support-history` 是否还会抛 timeout。
+- 下一步 / 遗留问题：
+  还需要继续盯开发者工具里的 `support-history` 超时是否彻底消失；如果仍偶发，再继续查页面打开时的运行态负载或 DevTools 自身会话问题。
+
+## 2026-04-18 | QA 场景 | 把 Alpha smoke 场景切到当前 seed caseId
+
+- 为什么改：
+  继续追 `support-review-pending` 不稳定时，发现 `qa/` 里的多个场景还停留在本地样例 `case_001`；而当前真 Alpha 环境开启 CloudBase 后，稳定数据来自 `seed_case_owner_*`。这会让 smoke 和原生截图流程在真环境里拿到空 bundle 或错误案例。
+- 改了什么：
+  将 `qa/rescue-detail-guest.json`、`qa/support-claim.json`、`qa/support-review-pending.json`、`qa/support-review-manual.json`、`qa/rescue-expense.json`、`qa/rescue-update.json` 统一切到当前 Alpha seed 的真实 caseId，其中栗子使用 `seed_case_owner_lizi_001`，写进展场景使用 `seed_case_owner_tuantuan_003`；同时同步更新 fixture / notes，明确这些场景现在对应 `JM520101 / JM520103`。
+- 影响范围：
+  Alpha Round 0 smoke、原生小程序 QA 截图场景、后续复测脚本口径；不改业务逻辑，只修测试场景配置。
+- 验证结果：
+  `node scripts/run-alpha-preflight.mjs --skip-build` 通过，smoke manifest 校验仍为 8 条场景全部匹配 `src/app.config.ts`；场景文件已不再引用旧的 `case_001`。
+- 下一步 / 遗留问题：
+  后续如果再换 seed 数据或公开案例编号，优先先改 `qa/*.json` 和 `docs/alpha_test_plan.md`，避免开发者工具验收和文档口径再次脱节。
+
 ## 2026-04-18 | 仓库安全 | 让安全扫描兼容本地 skip-worktree AppID
 
 - 为什么改：
@@ -1365,6 +1404,58 @@
 - 下一步 / 遗留问题：
   还需要真机继续确认昵称输入审核中的文案体验，以及头像上传失败时本地临时图在重进页面后的可见性；如果仍有“明明保存了但详情页不变”的情况，再继续查对应 OPENID 的 `user_profiles.avatarAssetId / displayName` 是否实际落库。
 
+## 2026-04-18 | 文案 | 去掉支持半弹层里的“收款码”表述
+
+- 为什么改：
+  “我要支持”半弹层里的二维码实际是救助人的微信加好友二维码，而不是平台定义的付款码；继续出现“收款码/收款方式”这类字眼，会增加审核风险，也会误导用户。
+- 改了什么：
+  将 `src/domain/canonical/contactProfileSemantics.ts` 里的统一 copy 收口为“二维码 / 联系救助人 / 确认支持方式”，同时同步更新 `src/pages/profile/guide/index.tsx` 里的用户说明文案；相关 domain test 断言也改成检查“未提供二维码”而不是“未提供收款码”。
+- 影响范围：
+  支持半弹层、使用说明页以及对应的文案测试；不改二维码数据字段和交互逻辑。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 通过；domain tests 现已不再出现“收款码”断言。
+- 下一步 / 遗留问题：
+  后续继续扫一遍所有用户可见文案，把“收款”相关字样只保留在内部文档和技术字段里，不再出现在审核可见页面。
+
+## 2026-04-18 | 文档 | 同步总控、Figma、字段契约和 CloudBase 说明到最新 Alpha 实际状态
+
+- 为什么改：
+  这几轮 Alpha bug sweep 后，项目的真实现状已经从旧口径明显前移：写进展更新页路由改成了 `progress-update`，状态标签池不再直接吃自由文案，头像昵称改成 `chooseAvatar + nickname + avatarAssetId` 资产链，支持半弹层文案也去掉了“收款/收款码”。如果不统一更新文档，后续线程恢复和前后端协作会继续被旧说明误导。
+- 改了什么：
+  统一更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`、`docs/cloudbase_backend_setup.md`：把联系方式口径改成“微信号 / 二维码任一即可”，把我的页资料链改成 `chooseAvatar + nickname + avatarAssetId`，把状态标签收口到标准标签池，把写进展更新页路径改成 `rescue/progress-update`，并把支持半弹层改成审核友好的“二维码 / 联系救助人 / 确认支持方式”表述。
+- 影响范围：
+  项目总控、Figma 完成度、字段待办、前后端字段对照、CloudBase 接入说明这 5 份长期真相源文档；未改业务逻辑，只收口文档口径。
+- 验证结果：
+  文档已与当前代码和最近几轮开发日志保持一致：`progress-update` 路由、`avatarAssetId` 头像资产链、`hasContactProfile` OR 语义、状态标签标准化、支出图 fallback 与支持半弹层文案都已写入长期文档。
+- 下一步 / 遗留问题：
+  后续如果再改审核相关文案或 profile / support / status 的读写链，优先继续同步这 5 份文档，再追加开发日志，避免“代码已变、总控未变”的滞后再次出现。
+
+## 2026-04-18 | 文档 | 收口总控、Figma、字段契约与 CloudBase 说明的最新口径
+
+- 为什么改：
+  最近几轮 Alpha 修复已经把项目的真实状态推进到了新阶段：进展页路由已改成 `progress-update`，头像昵称改成 `chooseAvatar + nickname + avatarAssetId` 资产链，状态标签统一按标准标签池输出，支持半弹层运行时文案也去掉了“收款/收款码”。这些变化如果不同步到长期文档，后续新线程恢复和前后端对接会继续吃旧说明。
+- 改了什么：
+  统一更新 `docs/project_control_center.md`、`docs/figma_progress_map.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`、`docs/cloudbase_backend_setup.md`：把联系方式口径改成“微信号 / 二维码任一即可”，把我的页资料链改成 `chooseAvatar + nickname + avatarAssetId`，把写进展更新页路径改成 `rescue/progress-update`，并补齐支持半弹层的审核友好文案说明。
+- 影响范围：
+  项目总控、Figma 覆盖进度、字段待办、前后端字段对照、CloudBase 接入说明这 5 份长期真相源文档；代码逻辑未改。
+- 验证结果：
+  上述文档现已与当前代码状态对齐：`progress-update` 路由、`avatarAssetId` 头像资产链、`hasContactProfile` OR 语义、状态标签标准化和支持半弹层二维码文案均已写入。
+- 下一步 / 遗留问题：
+  后续如果再调整审核相关文案或 profile / support / status 的读写链，继续优先同步这 5 份长期文档，再追加开发日志，避免口径再次漂移。
+
+## 2026-04-18 | 文档 | 补产品总览与 IA 的审核友好口径
+
+- 为什么改：
+  前面已经把总控、字段契约和 CloudBase 说明更新到了最新实现，但产品总文档和 IA 里还残留“收款码 / 收款方式”“恢复中 / 恢复待领养”这类旧口径，会继续误导后续产品判断、设计贴稿和审核文案。
+- 改了什么：
+  更新 `docs/product_development_status.md`、`docs/main_info_arch_v3.2.md`、`docs/home_page_ia.md`、`docs/case_detail_page_ia.md`、`docs/rescue_ledger_usage_guide.md`：把联系方式口径统一成“微信号 / 二维码任一即可”，把“收款码 / 收款方式”改成审核友好的“二维码 / 联系方式 / 付款入口”，并把首页状态 emoji 说明收口到标准标签池，不再保留“恢复中 / 恢复待领养”这类自由文案。
+- 影响范围：
+  产品总览、主信息架构、首页 IA、详情页 IA、用户说明文案这 5 份产品/IA 文档；代码逻辑未改。
+- 验证结果：
+  产品总文档和 IA 已与当前实现对齐：联系方式 OR 语义、支持半弹层审核友好文案、标准状态标签池和“不前置公开付款入口”的产品表述都已同步。
+- 下一步 / 遗留问题：
+  如果后续再调整用户可见文案，除了更新总控/字段文档，也要继续回看这几份产品/IA 文档，避免审核口径只在代码里变、文档还停在旧版本。
+
 ## 2026-04-18 | 前端 | 把支出卡空图片槽位收成透明占位
 
 - 为什么改：
@@ -1377,3 +1468,16 @@
   已完成样式调整，待构建确认页面输出正常。
 - 下一步 / 遗留问题：
   若后续觉得透明槽位仍太“占地方”，再决定是否收紧成更小间距，但先保持 3 槽位的稳定版式。
+
+## 2026-04-18 | 文档 | 补齐 Alpha 测试与客态详情的现行口径
+
+- 为什么改：
+  继续对照最新开发日志复查后，`alpha_test_plan` 和客态详情补充 IA 里还残留旧状态标签与旧支持文案，容易让真机测试、审核自查和后续线程恢复继续吃到过期说明。
+- 改了什么：
+  更新 `docs/alpha_test_plan.md`、`docs/rescue_page_guest.md`、`docs/main_info_arch_v3.2.md`、`docs/project_control_center.md`、`docs/pending_field_contracts.md`；把演示案例状态统一成“紧急送医 / 康复观察 / 寻找领养”，并将支持链路统一描述为“二维码 / 微信号 / 联系救助人确认支持方式 / 不前置公开付款入口”。
+- 影响范围：
+  Alpha 测试执行表、客态详情补充说明、主信息架构、项目总控与字段契约文档；代码逻辑未改，只收口长期说明。
+- 验证结果：
+  重新检索当前活跃产品文档与 IA，确认这几份文件已与 `progress-update`、标准状态标签池、联系方式 OR 语义和审核友好支持文案保持一致。
+- 下一步 / 遗留问题：
+  历史评审稿和旧版 IA 仍保留原始表述作为存档；后续如要彻底分层 archive / current 文档，再单独做一次清理。

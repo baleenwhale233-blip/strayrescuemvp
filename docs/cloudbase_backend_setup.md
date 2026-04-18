@@ -1,6 +1,6 @@
 # CloudBase 后端接入说明
 
-最后更新：2026-04-17
+最后更新：2026-04-18
 
 ## 当前状态
 
@@ -77,6 +77,7 @@
 - 微信二维码上传为 `cloud://` fileID 后写入 `evidence_assets(kind=payment_qr)`
 - 将二维码 asset 关联到 `user_profiles.paymentQrAssetId`
 - 输出 `hasContactProfile`，当前口径为“微信号或二维码任一存在即可”
+- `getMyProfile` 与 `composeBundles` 当前都会优先按 `avatarAssetId / paymentQrAssetId` 精确回读 profile 资产，而不是只按 OPENID 扫描资产列表
 
 `getMySupportHistory` 当前会：
 
@@ -236,7 +237,7 @@ npm run seed:alpha
 - 以 `cleanupMode=reset_alpha_environment` 重置 `user_profiles / rescue_cases / case_events / expense_records / support_entries / support_threads / evidence_assets / shared_evidence_groups`
 - 写入演示救助人、公开案例、草稿案例、支持记录、支出记录、进展记录和 `evidence_assets`
 
-Alpha 图片均为测试素材，凭证和二维码明确标注测试用途，不应作为真实票据或付款二维码使用。
+Alpha 图片均为测试素材，凭证和二维码明确标注测试用途，不应作为真实票据或真实联系二维码使用。
 
 也可以手动把 `docs/cloudbase_seed/` 中的最小开发数据导入开发环境，避免接上 CloudBase 后首页为空。
 

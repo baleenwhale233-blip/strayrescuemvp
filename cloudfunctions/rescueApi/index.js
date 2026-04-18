@@ -396,11 +396,18 @@ async function composeBundles(caseDocs) {
     return [];
   }
 
-  const [profiles, events, expenses, supportEntries, supportThreads, assets, profileAssets, sharedGroups] =
+  const profiles = await queryCollection(COLLECTIONS.profiles, {
+    openid: _.in(rescuerIds),
+  });
+  const profileAssetIds = [
+    ...new Set(
+      profiles.flatMap((profile) =>
+        [profile.avatarAssetId, profile.paymentQrAssetId].filter(Boolean),
+      ),
+    ),
+  ];
+  const [events, expenses, supportEntries, supportThreads, assets, profileAssets, sharedGroups] =
     await Promise.all([
-      queryCollection(COLLECTIONS.profiles, {
-        openid: _.in(rescuerIds),
-      }),
       queryCollection(COLLECTIONS.events, {
         caseId: _.in(caseIds),
       }),
@@ -416,10 +423,11 @@ async function composeBundles(caseDocs) {
       queryCollection(COLLECTIONS.assets, {
         caseId: _.in(caseIds),
       }),
-      queryCollection(COLLECTIONS.assets, {
-        uploadedByOpenid: _.in(rescuerIds),
-        kind: _.in(["payment_qr", "avatar"]),
-      }),
+      profileAssetIds.length
+        ? queryCollection(COLLECTIONS.assets, {
+            assetId: _.in(profileAssetIds),
+          })
+        : Promise.resolve([]),
       queryCollection(COLLECTIONS.sharedEvidenceGroups, {
         caseId: _.in(caseIds),
       }),

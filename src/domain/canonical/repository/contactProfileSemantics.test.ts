@@ -30,6 +30,6 @@ test("support sheet copy reflects when only one contact channel is available", (
     paymentQrUrl: "https://example.com/assets/payment-qr.png",
   });
 
-  assert.match(wechatOnlyCopy.directHint, /未提供收款码/);
+  assert.match(wechatOnlyCopy.directHint, /未提供二维码/);
   assert.match(qrOnlyCopy.contactHint, /未提供微信号/);
 });

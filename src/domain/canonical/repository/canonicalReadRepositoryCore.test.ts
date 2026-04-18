@@ -147,7 +147,7 @@ test("support sheet copy adapts to qr-only and wechat-only cases", () => {
   );
 
   assert.match(qrOnlySupport?.contactHint || "", /未提供微信号/);
-  assert.match(wechatOnlySupport?.directHint || "", /未提供收款码/);
+  assert.match(wechatOnlySupport?.directHint || "", /未提供二维码/);
 });
 
 test("public case id exact search supports prefixed and digits-only input", () => {

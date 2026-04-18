@@ -2,10 +2,10 @@
   "id": "rescue-expense",
   "route": "pages/rescue/expense/index",
   "query": {
-    "caseId": "case_001",
+    "caseId": "seed_case_owner_lizi_001",
     "qaPreset": "design"
   },
-  "fixture": "seed-case-001",
+  "fixture": "alpha-case-lizi",
   "viewport": {
     "width": 390,
     "height": 844,
@@ -49,7 +49,7 @@
   },
   "ignoreRegions": [],
   "notes": [
-    "记账页当前以本地页面状态为主，不依赖后端返回。",
+    "记账页当前固定使用 Alpha seed 的栗子案例（JM520101）。",
     "qaPreset=design 会注入设计对照用的上传图与金额示例，不触发页面缓存恢复弹窗。",
     "本场景主要用于验结构、文案、固定按钮、上传区和卡片分区。"
   ]

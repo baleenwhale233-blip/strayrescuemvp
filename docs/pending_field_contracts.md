@@ -242,14 +242,16 @@
 
 | 字段 | 建议层级 | 文字标注 | 当前状态 | 建议来源 |
 |---|---|---|---|---|
-| `user_avatar_url` | canonical profile / VM | 当前登录用户头像 | 远端已接 | 当前 profile 页默认显示默认头像，点击登录后通过微信授权获取，并同步 `user_profiles.avatarUrl`；本地 storage 只作兜底 |
-| `user_display_name` | canonical profile / VM | 当前登录用户昵称 | 远端已接 | 当前 profile 页默认显示“点击登录”，点击登录后通过微信授权获取，并同步 `user_profiles.displayName`；本地 storage 只作兜底 |
+| `user_avatar_url` | canonical profile / VM | 当前登录用户头像 | 远端已接 | 当前 profile 页通过 `chooseAvatar` 选择头像，并同步 `avatarAssetId -> avatarUrl`；本地 storage 只作兜底 |
+| `user_display_name` | canonical profile / VM | 当前登录用户昵称 | 远端已接 | 当前 profile 页通过 `input type="nickname"` 输入昵称，并同步 `user_profiles.displayName`；本地 storage 只作兜底 |
+| `user_avatar_asset_id` | canonical profile + asset | 当前登录用户头像资产 id | 远端已接 | `updateMyProfile` 上传头像后写入 `user_profiles.avatarAssetId`，公开详情 / 救助人主页优先按这个 asset 回读头像 |
 | `has_support_history` | selector / VM | 是否已有支持足迹，用于空状态和入口提示 | 未做 | 从 support history summary 聚合 |
-| `has_contact_profile` | selector / VM | 是否已填写救助联系方式 | 远端已接 | `getMyProfile.hasContactProfile` 已由 `wechatId + paymentQrAssetId` 派生；新建救助前置校验已远端优先、本地兜底 |
+| `has_contact_profile` | selector / VM | 是否已填写救助联系方式 | 远端已接 | `getMyProfile.hasContactProfile` 当前按 `wechatId || paymentQrAssetId` 派生；新建救助前置校验已远端优先、本地兜底 |
 
 本轮补充说明：
 
 - 我的页已经有正式入口页壳，头像 / 昵称已接 `user_profiles`
+- 头像当前通过 `chooseAvatar` 选取后先落本地，再上传到 `profile-assets/avatar/...`，最终经 `avatarAssetId` 资产链回读到公开详情 / 救助人主页
 - “我的支持足迹 / 救助联系方式设置”当前已有页面骨架，且已接正式 profile / support history 远端 VM；“救助账本使用说明”已接静态页面，不依赖新增后端字段
 
 ### 6.2 支持足迹页
@@ -283,6 +285,7 @@
 - 头像 / 用户名属于 `user_profiles`
 - 联系方式也属于 `user_profiles`
 - 二维码图不要只存页面本地路径，最终必须能映射到 asset / fileID
+- 支持半弹层的运行时文案只使用“二维码 / 联系救助人 / 确认支持方式”，不再出现带支付指向的表述
 - 当前新建救助前置校验已优先读取 `getMyProfile.hasContactProfile`；CloudBase 不可用时才回落本地 `rescuer-contact-profile:v1`
 
 ---
@@ -413,7 +416,7 @@
 
 ---
 
-## 10.1 写进展更新页（rescue/update）
+## 10.1 写进展更新页（rescue/progress-update）
 
 目标：
 

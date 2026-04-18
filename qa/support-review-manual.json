@@ -2,10 +2,10 @@
   "id": "support-review-manual",
   "route": "pages/support/review/index",
   "query": {
-    "id": "case_001",
+    "id": "seed_case_owner_lizi_001",
     "tab": "manual"
   },
-  "fixture": "seed-case-001",
+  "fixture": "alpha-case-lizi-manual",
   "viewport": {
     "width": 390,
     "height": 844,
@@ -43,7 +43,7 @@
   },
   "ignoreRegions": [],
   "notes": [
-    "当前使用本地 seed case_001 作为稳定 QA 场景。",
+    "当前固定使用 Alpha seed 的栗子案例（JM520101）作为稳定 QA 场景。",
     "当前页面通过路由参数直接进入手动记一笔 tab。",
     "手动记一笔 tab 已接 createManualSupportEntry 远端写链路，提交后应能回写主态详情。"
   ]

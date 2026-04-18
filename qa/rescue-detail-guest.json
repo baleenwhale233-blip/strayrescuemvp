@@ -2,10 +2,10 @@
   "id": "rescue-detail-guest",
   "route": "pages/rescue/detail/index",
   "query": {
-    "id": "case_001",
+    "id": "seed_case_owner_lizi_001",
     "mode": "guest"
   },
-  "fixture": "seed-case-001",
+  "fixture": "alpha-case-lizi",
   "viewport": {
     "width": 390,
     "height": 844,
@@ -44,6 +44,6 @@
   "ignoreRegions": [],
   "notes": [
     "Round 0 smoke 重点是客态详情的主图、资金区、时间线和底部操作栏。",
-    "后续 Round 1 和 Round 2 的 happy path 也默认从这个页面继续往下走。"
+    "当前固定使用 Alpha seed 的栗子案例（JM520101），后续 Round 1 和 Round 2 的 happy path 也默认从这个页面继续往下走。"
   ]
 }

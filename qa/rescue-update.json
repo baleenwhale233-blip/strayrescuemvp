@@ -2,9 +2,9 @@
   "id": "rescue-update",
   "route": "pages/rescue/progress-update/index",
   "query": {
-    "caseId": "case_001"
+    "caseId": "seed_case_owner_tuantuan_003"
   },
-  "fixture": "seed-case-001",
+  "fixture": "alpha-case-tuantuan",
   "viewport": {
     "width": 390,
     "height": 844,
@@ -47,6 +47,7 @@
   "ignoreRegions": [],
   "notes": [
     "Round 0 smoke 重点是进展页能正常取到案例上下文，并看到阶段、描述、图片和提交区。",
+    "当前固定使用 Alpha seed 的团团案例（JM520103），更贴近 Round 3 的工作台提醒和写进展链路。",
     "Round 3 会在这个页面补真实上传和发布后的详情同步验证。"
   ]
 }
