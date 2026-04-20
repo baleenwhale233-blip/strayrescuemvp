@@ -2,6 +2,7 @@ import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
   HomepageCaseCardVM,
+  PublicDetailVM,
   WorkbenchCaseCardVM,
   WorkbenchVM,
 } from "../../types";
@@ -24,6 +25,16 @@ type ReadHelperDeps = {
     card: WorkbenchCaseCardVM,
     input: { caseId?: string },
   ) => WorkbenchCaseCardVM;
+  formatCurrency?: (amount: number) => string;
+  localSupporterId?: string;
+  resolvePresentedCover?: (input: {
+    caseId?: string;
+    fallback?: string;
+  }) => string | undefined;
+  resolvePresentedTitle?: (input: {
+    caseId?: string;
+    fallback?: string;
+  }) => string | undefined;
 };
 
 export function finalizeWorkbenchVM(
@@ -97,5 +108,85 @@ export function buildRescuerHomepageVMFromBundles(
       ),
     ),
     profileEntryEnabled: true,
+  };
+}
+
+type SupportHistorySummary = {
+  totalSupportedAmount: number;
+  totalSupportedAmountLabel: string;
+  supportCases: Array<{
+    caseId: string;
+    publicCaseId?: string;
+    animalName: string;
+    animalCoverImageUrl: string;
+    myTotalSupportedAmount: number;
+    myTotalSupportedAmountLabel: string;
+    latestSupportedAtLabel: string;
+  }>;
+};
+
+export function applySupportHistoryPresentation(
+  summary: SupportHistorySummary,
+  deps: Pick<ReadHelperDeps, "resolvePresentedCover" | "resolvePresentedTitle">,
+) {
+  return {
+    ...summary,
+    supportCases: summary.supportCases.map((item) => ({
+      ...item,
+      animalName:
+        deps.resolvePresentedTitle?.({
+          caseId: item.caseId,
+          fallback: item.animalName,
+        }) || item.animalName,
+      animalCoverImageUrl:
+        deps.resolvePresentedCover?.({
+          caseId: item.caseId,
+          fallback: item.animalCoverImageUrl,
+        }) || item.animalCoverImageUrl,
+    })),
+  };
+}
+
+export function buildMySupportHistoryFromDetails(
+  details: PublicDetailVM[],
+  deps: Pick<ReadHelperDeps, "formatCurrency" | "localSupporterId">,
+) {
+  const localSupporterId = deps.localSupporterId || "supporter_current_user";
+  const formatCurrency = deps.formatCurrency || ((amount: number) => `¥${amount}`);
+  const supportCases = details
+    .map((detail) => {
+      const thread = detail.supportSummary.threads.find(
+        (item) => item.supporterUserId === localSupporterId,
+      );
+      const amount =
+        thread?.entries
+          .filter((entry) => entry.status === "confirmed")
+          .reduce((sum, entry) => sum + entry.amount, 0) || 0;
+
+      return {
+        caseId: detail.caseId,
+        publicCaseId: detail.publicCaseId,
+        animalName: detail.title,
+        animalCoverImageUrl: detail.heroImageUrl || "",
+        myTotalSupportedAmount: amount,
+        myTotalSupportedAmountLabel: formatCurrency(amount),
+        latestSupportedAtLabel:
+          thread?.latestEntryAtLabel || detail.updatedAtLabel,
+      };
+    })
+    .filter((item) => item.myTotalSupportedAmount > 0)
+    .sort(
+      (left, right) =>
+        right.myTotalSupportedAmount - left.myTotalSupportedAmount,
+    );
+  const totalSupportedAmount = supportCases.reduce(
+    (sum, item) => sum + item.myTotalSupportedAmount,
+    0,
+  );
+
+  return {
+    totalSupportedAmount,
+    totalSupportedAmountLabel: formatCurrency(totalSupportedAmount),
+    supportCases,
   };
 }

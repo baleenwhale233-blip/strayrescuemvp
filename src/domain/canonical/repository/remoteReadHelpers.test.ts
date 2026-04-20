@@ -4,11 +4,14 @@ import test from "node:test";
 import type {
   CanonicalCaseBundle,
   HomepageCaseCardVM,
+  PublicDetailVM,
   WorkbenchCaseCardVM,
   WorkbenchVM,
 } from "../types";
 import {
+  applySupportHistoryPresentation,
   buildRescuerHomepageVMFromBundles,
+  buildMySupportHistoryFromDetails,
   finalizeWorkbenchVM,
 } from "./remote/readHelpers";
 
@@ -214,5 +217,87 @@ test("finalizeWorkbenchVM applies presentation finalizer to all card buckets", (
   assert.deepEqual(
     result?.archivedCases.map((card: WorkbenchCaseCardVM) => card.updatedAtLabel),
     ["2026-04-01T00:00:00.000Z#final"],
+  );
+});
+
+test("support history helpers preserve local totals and presentation overrides", () => {
+  const summary = applySupportHistoryPresentation(
+    {
+      totalSupportedAmount: 88,
+      totalSupportedAmountLabel: "¥88",
+      supportCases: [
+        {
+          caseId: "case_1",
+          publicCaseId: "JM000001",
+          animalName: "原始名字",
+          animalCoverImageUrl: "https://example.com/original-cover.png",
+          myTotalSupportedAmount: 88,
+          myTotalSupportedAmountLabel: "¥88",
+          latestSupportedAtLabel: "04-20 10:00",
+        },
+      ],
+    },
+    {
+      resolvePresentedTitle: () => "展示名",
+      resolvePresentedCover: () => "https://example.com/presented-cover.png",
+    },
+  );
+
+  assert.equal(summary.supportCases[0]?.animalName, "展示名");
+  assert.equal(
+    summary.supportCases[0]?.animalCoverImageUrl,
+    "https://example.com/presented-cover.png",
+  );
+
+  const built = buildMySupportHistoryFromDetails(
+    [
+      {
+        caseId: "case_1",
+        publicCaseId: "JM000001",
+        title: "小橘",
+        heroImageUrl: "https://example.com/case_1.png",
+        updatedAtLabel: "04-20 10:00",
+        supportSummary: {
+          confirmedSupportAmount: 88,
+          confirmedSupportAmountLabel: "¥88",
+          pendingSupportEntryCount: 0,
+          unmatchedSupportEntryCount: 0,
+          threads: [
+            {
+              id: "thread_1",
+              supporterUserId: "supporter_current_user",
+              confirmedAmount: 88,
+              confirmedAmountLabel: "¥88",
+              pendingCount: 0,
+              unmatchedCount: 0,
+              latestEntryAtLabel: "04-20 10:00",
+              entries: [
+                {
+                  id: "entry_1",
+                  amount: 88,
+                  amountLabel: "¥88",
+                  status: "confirmed",
+                  statusLabel: "已确认",
+                  supportedAtLabel: "04-20 10:00",
+                  hasScreenshot: true,
+                  screenshotUrls: [],
+                },
+              ],
+            },
+          ],
+        },
+      } as unknown as PublicDetailVM,
+    ],
+    {
+      formatCurrency: (amount) => `¥${amount}`,
+      localSupporterId: "supporter_current_user",
+    },
+  );
+
+  assert.equal(built.totalSupportedAmount, 88);
+  assert.equal(built.totalSupportedAmountLabel, "¥88");
+  assert.deepEqual(
+    built.supportCases.map((item) => item.caseId),
+    ["case_1"],
   );
 });

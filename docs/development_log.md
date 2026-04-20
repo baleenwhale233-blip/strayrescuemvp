@@ -64,6 +64,14 @@
 - 验证结果：新增 `remoteFallback.test.ts` 和 `remoteReadHelpers.test.ts` 先红后绿，`npm run typecheck` 与 `npm run test:domain` 现在都通过，其中 domain tests 累计到 40 项，覆盖 domain error 不回落、本地 infra error 回落、rescuer homepage published 过滤和 workbench card finalizer。
 - 下一步 / 遗留问题：下一刀再拆 `remoteRepository` 的读 API 到独立模块，优先处理 `homepage / rescuer homepage / public detail / owner detail / workbench` 这组纯读路径，不和写 API 混拆。
 
+## 2026-04-20 | Repository 重构 | 抽出 remote read facade 与远端类型定义
+
+- 为什么改：`remoteRepository.ts` 在抽完 fallback 和 read helper 后，仍同时堆着一整组 read facade 导出和 write facade 导出，文件职责还不够清楚；继续在同一文件里追加只会拖慢后续收窄 export 面。
+- 改了什么：新增 `src/domain/canonical/repository/remote/readRepository.ts` 承接 `homepage / rescuer homepage / public detail / owner detail / support sheet / workbench / my profile / support history / record detail` 的远端读入口；新增 `src/domain/canonical/repository/remote/types.ts` 收纳 `MyProfileVM / MySupportHistoryVM / RescuerHomepageVM / CaseRecordDetailVM`；`remoteRepository.ts` 现在只保留 write API 和对 read facade 的 re-export。
+- 影响范围：仅影响 canonical remote repository 的内部文件组织和类型落点；页面 import 路径、对外函数名、fallback 语义、VM 字段 contract 和 CloudBase action 名保持不变。
+- 验证结果：`npm run typecheck`、`npm run test:domain` 通过，domain tests 现在累计到 41 项；`remoteReadHelpers.test.ts` 继续覆盖 rescuer homepage published 过滤、workbench finalizer 和 support history 本地汇总 helper。
+- 下一步 / 遗留问题：下一阶段可以继续拆 write facade，或先回头收窄 `src/domain/canonical/repository/index.ts` 的 barrel export 面；两者里更安全的顺序仍是先抽 write facade 再收窄 barrel。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
