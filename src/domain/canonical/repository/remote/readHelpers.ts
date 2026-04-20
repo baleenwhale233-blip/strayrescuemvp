@@ -1,0 +1,101 @@
+import type {
+  CanonicalCaseBundle,
+  CanonicalRescuer,
+  HomepageCaseCardVM,
+  WorkbenchCaseCardVM,
+  WorkbenchVM,
+} from "../../types";
+
+type BuildRescuerHomepageInput = {
+  rescuer?: CanonicalRescuer;
+  bundles: CanonicalCaseBundle[];
+  rescuerId?: string;
+  caseId?: string;
+};
+
+type ReadHelperDeps = {
+  resolveBundlesPresentation: (bundles: CanonicalCaseBundle[]) => CanonicalCaseBundle[];
+  getHomepageCaseCardVM: (bundle: CanonicalCaseBundle) => HomepageCaseCardVM;
+  finalizeHomepageCaseCardPresentation: (
+    card: HomepageCaseCardVM,
+    input: { caseId?: string },
+  ) => HomepageCaseCardVM;
+  finalizeWorkbenchCaseCardPresentation: (
+    card: WorkbenchCaseCardVM,
+    input: { caseId?: string },
+  ) => WorkbenchCaseCardVM;
+};
+
+export function finalizeWorkbenchVM(
+  vm: WorkbenchVM | undefined,
+  deps: ReadHelperDeps,
+) {
+  if (!vm) {
+    return undefined;
+  }
+
+  return {
+    ...vm,
+    activeCases: vm.activeCases.map((card) =>
+      deps.finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
+    ),
+    draftCases: vm.draftCases.map((card) =>
+      deps.finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
+    ),
+    archivedCases: vm.archivedCases.map((card) =>
+      deps.finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
+    ),
+  };
+}
+
+export function buildRescuerHomepageVMFromBundles(
+  input: BuildRescuerHomepageInput,
+  deps: ReadHelperDeps,
+) {
+  const resolvedBundles = deps.resolveBundlesPresentation(input.bundles);
+  const targetRescuerId =
+    input.rescuerId ||
+    input.rescuer?.id ||
+    (input.caseId
+      ? resolvedBundles.find((bundle) => bundle.case.id === input.caseId)?.rescuer.id
+      : undefined) ||
+    resolvedBundles[0]?.rescuer.id;
+
+  if (!targetRescuerId) {
+    return undefined;
+  }
+
+  const rescuerBundles = resolvedBundles
+    .filter(
+      (bundle) =>
+        bundle.rescuer.id === targetRescuerId &&
+        bundle.case.visibility === "published",
+    )
+    .sort((left, right) => right.case.updatedAt.localeCompare(left.case.updatedAt));
+  const rescuer =
+    input.rescuer ||
+    rescuerBundles[0]?.rescuer ||
+    resolvedBundles.find((bundle) => bundle.rescuer.id === targetRescuerId)?.rescuer;
+
+  if (!rescuer) {
+    return undefined;
+  }
+
+  return {
+    rescuer: {
+      id: rescuer.id,
+      name: rescuer.name,
+      avatarUrl: rescuer.avatarUrl,
+      stats: rescuer.stats,
+    },
+    cards: rescuerBundles.map((bundle) =>
+      deps.finalizeHomepageCaseCardPresentation(
+        deps.getHomepageCaseCardVM(bundle),
+        {
+          caseId: bundle.case.id,
+        },
+      ),
+    ),
+    profileEntryEnabled: true,
+  };
+}

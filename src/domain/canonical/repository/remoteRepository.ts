@@ -48,6 +48,10 @@ import {
   withRemoteFallback,
   writeRemoteOrFallback,
 } from "./remote/fallback";
+import {
+  buildRescuerHomepageVMFromBundles,
+  finalizeWorkbenchVM,
+} from "./remote/readHelpers";
 
 type BundlesPayload = {
   bundles: CanonicalCaseBundle[];
@@ -234,10 +238,6 @@ function formatCurrency(amount: number) {
   return `¥${amount.toLocaleString("zh-CN")}`;
 }
 
-function resolveBundlesPresentation(bundles: CanonicalCaseBundle[]) {
-  return bundles.map(resolveBundlePresentation);
-}
-
 function getRemoteFallbackOptions() {
   return {
     canUseCloudBase: canUseCloudBase(),
@@ -245,23 +245,8 @@ function getRemoteFallbackOptions() {
   };
 }
 
-function finalizeWorkbenchVM(vm: WorkbenchVM | undefined) {
-  if (!vm) {
-    return undefined;
-  }
-
-  return {
-    ...vm,
-    activeCases: vm.activeCases.map((card) =>
-      finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
-    ),
-    draftCases: vm.draftCases.map((card) =>
-      finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
-    ),
-    archivedCases: vm.archivedCases.map((card) =>
-      finalizeWorkbenchCaseCardPresentation(card, { caseId: card.caseId }),
-    ),
-  };
+function resolveBundlesPresentation(bundles: CanonicalCaseBundle[]) {
+  return bundles.map(resolveBundlePresentation);
 }
 
 export async function loadHomepageCaseCardVMs(): Promise<HomepageCaseCardVM[]> {
@@ -277,56 +262,6 @@ export async function loadHomepageCaseCardVMs(): Promise<HomepageCaseCardVM[]> {
   );
 }
 
-function buildRescuerHomepageVMFromBundles(input: {
-  rescuer?: CanonicalRescuer;
-  bundles: CanonicalCaseBundle[];
-  rescuerId?: string;
-  caseId?: string;
-}): RescuerHomepageVM | undefined {
-  const resolvedBundles = resolveBundlesPresentation(input.bundles);
-  const targetRescuerId =
-    input.rescuerId ||
-    input.rescuer?.id ||
-    (input.caseId
-      ? resolvedBundles.find((bundle) => bundle.case.id === input.caseId)?.rescuer.id
-      : undefined) ||
-    resolvedBundles[0]?.rescuer.id;
-
-  if (!targetRescuerId) {
-    return undefined;
-  }
-
-  const rescuerBundles = resolvedBundles
-    .filter(
-      (bundle) =>
-        bundle.rescuer.id === targetRescuerId &&
-        bundle.case.visibility === "published",
-    )
-    .sort((left, right) => right.case.updatedAt.localeCompare(left.case.updatedAt));
-  const rescuer =
-    input.rescuer ||
-    rescuerBundles[0]?.rescuer ||
-    resolvedBundles.find((bundle) => bundle.rescuer.id === targetRescuerId)?.rescuer;
-
-  if (!rescuer) {
-    return undefined;
-  }
-
-  return {
-    rescuer: {
-      id: rescuer.id,
-      name: rescuer.name,
-      avatarUrl: rescuer.avatarUrl,
-      stats: rescuer.stats,
-    },
-    cards: rescuerBundles.map((bundle) =>
-      finalizeHomepageCaseCardPresentation(getHomepageCaseCardVM(bundle), {
-        caseId: bundle.case.id,
-      }),
-    ),
-    profileEntryEnabled: true,
-  };
-}
 
 export async function loadRescuerHomepageVM(input: {
   rescuerId?: string;
@@ -342,6 +277,11 @@ export async function loadRescuerHomepageVM(input: {
         ...payload,
         rescuerId: input.rescuerId,
         caseId: input.caseId,
+      }, {
+        resolveBundlesPresentation,
+        getHomepageCaseCardVM,
+        finalizeHomepageCaseCardPresentation,
+        finalizeWorkbenchCaseCardPresentation,
       });
     },
     () =>
@@ -349,6 +289,11 @@ export async function loadRescuerHomepageVM(input: {
         bundles: getCanonicalBundles(),
         rescuerId: input.rescuerId,
         caseId: input.caseId,
+      }, {
+        resolveBundlesPresentation,
+        getHomepageCaseCardVM,
+        finalizeHomepageCaseCardPresentation,
+        finalizeWorkbenchCaseCardPresentation,
       }),
     getRemoteFallbackOptions(),
   );
@@ -459,6 +404,12 @@ export async function loadWorkbenchVMForCurrentUser(): Promise<
       const { bundles } = await callRescueApi<BundlesPayload>("getOwnerWorkbench");
       return finalizeWorkbenchVM(
         getWorkbenchVMFromBundles(resolveBundlesPresentation(bundles)),
+        {
+          resolveBundlesPresentation,
+          getHomepageCaseCardVM,
+          finalizeHomepageCaseCardPresentation,
+          finalizeWorkbenchCaseCardPresentation,
+        },
       );
     },
     () => getWorkbenchVMForCurrentUser(),

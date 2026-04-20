@@ -56,6 +56,14 @@
 - 验证结果：records service Node tests 先红后绿，覆盖记录类型归一、图片去重、支出明细 fallback、非法进展/无图记账拦截、支出写入和 support entry 详情回读；新增云函数模块测试、`node --check`、`typecheck` 和 `test:domain` 均通过。
 - 下一步 / 遗留问题：`rescueApi/index.js` 已从近 2000 行降到约 600 行；下一阶段再拆 `remoteRepository.ts`，不要继续在本轮改前端 facade。
 
+## 2026-04-20 | Repository 重构 | 抽出 remoteRepository fallback 与 read helper
+
+- 为什么改：`src/domain/canonical/repository/remoteRepository.ts` 同时承载 CloudBase fallback 策略和读侧 VM 组装 helper，继续在一个文件里演化会让后续拆 `readRepository / writeRepository` 时很容易混入行为变化。
+- 改了什么：新增 `src/domain/canonical/repository/remote/fallback.ts`，抽出 `getRemoteErrorCode / shouldFallbackToLocal / withRemoteFallback / writeRemoteOrFallback`；新增 `src/domain/canonical/repository/remote/readHelpers.ts`，抽出 `buildRescuerHomepageVMFromBundles / finalizeWorkbenchVM`，`remoteRepository.ts` 改为复用这两个模块但保持现有导出函数名不变。
+- 影响范围：仅影响 canonical remote repository 的内部模块边界与新增 domain tests；不改页面 import、CloudBase action 名、fallback 语义、VM 字段 contract 或页面交互。
+- 验证结果：新增 `remoteFallback.test.ts` 和 `remoteReadHelpers.test.ts` 先红后绿，`npm run typecheck` 与 `npm run test:domain` 现在都通过，其中 domain tests 累计到 40 项，覆盖 domain error 不回落、本地 infra error 回落、rescuer homepage published 过滤和 workbench card finalizer。
+- 下一步 / 遗留问题：下一刀再拆 `remoteRepository` 的读 API 到独立模块，优先处理 `homepage / rescuer homepage / public detail / owner detail / workbench` 这组纯读路径，不和写 API 混拆。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
