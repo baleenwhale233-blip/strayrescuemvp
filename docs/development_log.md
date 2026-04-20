@@ -120,6 +120,14 @@
 - 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseStatusSubmissions` 仍从 public barrel 暴露给页面使用。
 - 下一步 / 遗留问题：最后再处理 `expense` overlay 清理，需要重点确认远端凭证上传成功和本地图片 fallback 的分界，避免误删上传失败后的离线回显。
 
+## 2026-04-20 | Repository 重构 | 远端记账成功后清理本地 expense overlay
+
+- 为什么改：记账主态 `caseId` 远端写成功后，本地 `case-expense-submissions:{caseId}` overlay 仍会保留，未来进入本地 fallback 时可能继续把旧支出标题、金额和凭证缩略图压回详情时间线。
+- 改了什么：在 `localPresentation` 新增 `clearCaseExpenseSubmissions(caseId)`，清理对应 case 的支出 overlay storage key；`rescue/expense` 在 `createRemoteExpenseRecordByCaseId` 成功后调用清理，远端失败时继续保留 `saveCaseExpenseSubmission` 本地兜底。
+- 影响范围：只影响主态记账远端写成功后的本地 expense overlay 清理；草稿 `draftId` 记账、本地 fallback、title/cover/status/budget 清理逻辑均不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseExpenseSubmissions` 仍从 public barrel 暴露给页面使用。
+- 下一步 / 遗留问题：第 4 项这一轮的最小收薄已经完成，后续如果继续收口，可以考虑 profile 远端写成功后的本地 fallback 清理策略，或把 `localPresentation` 的读写 API 再按 overlay 类型拆分。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：

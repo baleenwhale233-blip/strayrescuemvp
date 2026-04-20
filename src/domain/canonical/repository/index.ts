@@ -71,6 +71,7 @@ export {
   buildExpenseEvidenceItems,
   clearCaseBudgetAdjustments,
   clearCaseCoverOverride,
+  clearCaseExpenseSubmissions,
   clearCaseStatusSubmissions,
   clearCaseTitleOverride,
   saveCaseBudgetAdjustment,

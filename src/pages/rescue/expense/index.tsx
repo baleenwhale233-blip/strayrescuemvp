@@ -6,6 +6,7 @@ import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
   addExpenseRecord,
   buildExpenseEvidenceItems,
+  clearCaseExpenseSubmissions,
   saveCaseExpenseSubmission,
   type LocalExpenseSubmission,
 } from "../../../domain/canonical/repository";
@@ -394,6 +395,8 @@ export default function RescueExpensePage() {
           };
 
           saveCaseExpenseSubmission(caseId, submission);
+        } else {
+          clearCaseExpenseSubmissions(caseId);
         }
       } else {
         Taro.hideLoading();
