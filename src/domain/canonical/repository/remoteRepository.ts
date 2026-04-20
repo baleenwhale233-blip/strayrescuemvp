@@ -24,7 +24,6 @@ import {
 } from "./canonicalReadRepositoryCore";
 import { getHomepageCaseCardVM } from "../selectors/getDiscoverCardVM";
 import { callRescueApi, canUseCloudBase } from "./cloudbaseClient";
-import { isDomainErrorCode } from "./domainErrorCodes";
 import {
   finalizeHomepageCaseCardPresentation,
   finalizeOwnerDetailPresentation,
@@ -45,6 +44,10 @@ import type {
   WorkbenchVM,
 } from "../types";
 import type { OwnerDetailVM } from "./canonicalReadRepositoryCore";
+import {
+  withRemoteFallback,
+  writeRemoteOrFallback,
+} from "./remote/fallback";
 
 type BundlesPayload = {
   bundles: CanonicalCaseBundle[];
@@ -227,58 +230,19 @@ function toRemoteDraftPayload(
 const LOCAL_SUPPORTER_ID = "supporter_current_user";
 const LOCAL_RESCUER_ID = "rescuer_current_user";
 
-function getErrorCode(error: unknown) {
-  return error instanceof Error ? error.message : "";
-}
-
-function shouldFallbackToLocal(error: unknown) {
-  return !isDomainErrorCode(getErrorCode(error));
-}
-
-async function withRemoteFallback<T>(
-  remote: () => Promise<T>,
-  fallback: () => T,
-): Promise<T> {
-  if (!canUseCloudBase()) {
-    return fallback();
-  }
-
-  try {
-    return await remote();
-  } catch (error) {
-    if (!shouldFallbackToLocal(error)) {
-      throw error;
-    }
-
-    console.warn("[remoteRepository] Falling back to local repository", error);
-    return fallback();
-  }
-}
-
-async function writeRemoteOrFallback(remote: () => Promise<void>): Promise<boolean> {
-  if (!canUseCloudBase()) {
-    return false;
-  }
-
-  try {
-    await remote();
-    return true;
-  } catch (error) {
-    if (!shouldFallbackToLocal(error)) {
-      throw error;
-    }
-
-    console.warn("[remoteRepository] Falling back to local write overlay", error);
-    return false;
-  }
-}
-
 function formatCurrency(amount: number) {
   return `¥${amount.toLocaleString("zh-CN")}`;
 }
 
 function resolveBundlesPresentation(bundles: CanonicalCaseBundle[]) {
   return bundles.map(resolveBundlePresentation);
+}
+
+function getRemoteFallbackOptions() {
+  return {
+    canUseCloudBase: canUseCloudBase(),
+    log: (...args: unknown[]) => console.warn(...args),
+  };
 }
 
 function finalizeWorkbenchVM(vm: WorkbenchVM | undefined) {
@@ -309,6 +273,7 @@ export async function loadHomepageCaseCardVMs(): Promise<HomepageCaseCardVM[]> {
       );
     },
     () => getHomepageCaseCardVMs(),
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -385,6 +350,7 @@ export async function loadRescuerHomepageVM(input: {
         rescuerId: input.rescuerId,
         caseId: input.caseId,
       }),
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -398,6 +364,7 @@ export async function searchCaseByPublicIdExact(input?: string) {
       return bundle ? resolveBundlePresentation(bundle) : undefined;
     },
     () => getCaseByPublicIdExact(input),
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -420,6 +387,7 @@ export async function loadPublicDetailVMByCaseId(
       );
     },
     () => getPublicDetailVMByCaseId(caseId),
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -437,6 +405,7 @@ export async function loadCaseRecordDetail(input: {
       return record;
     },
     () => undefined,
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -456,6 +425,7 @@ export async function loadSupportSheetDataByCaseId(
         : undefined;
     },
     () => getSupportSheetDataByCaseId(caseId),
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -477,6 +447,7 @@ export async function loadOwnerDetailVMByCaseId(
       );
     },
     () => getOwnerDetailVMByCaseId(caseId),
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -491,6 +462,7 @@ export async function loadWorkbenchVMForCurrentUser(): Promise<
       );
     },
     () => getWorkbenchVMForCurrentUser(),
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -501,13 +473,17 @@ export async function loadMyProfile(): Promise<MyProfileVM | undefined> {
       return profile;
     },
     () => undefined,
+    getRemoteFallbackOptions(),
   );
 }
 
 export async function updateRemoteMyProfile(input: UpdateMyProfileInput) {
-  return writeRemoteOrFallback(async () => {
-    await callRescueApi<ProfilePayload>("updateMyProfile", input);
-  });
+  return writeRemoteOrFallback(
+    async () => {
+      await callRescueApi<ProfilePayload>("updateMyProfile", input);
+    },
+    getRemoteFallbackOptions(),
+  );
 }
 
 export async function loadMySupportHistory(): Promise<
@@ -581,6 +557,7 @@ export async function loadMySupportHistory(): Promise<
         supportCases,
       };
     },
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -588,12 +565,15 @@ export async function updateRemoteCaseProfileByCaseId(
   caseId: string | undefined,
   input: UpdateCaseProfileInput,
 ) {
-  return writeRemoteOrFallback(async () => {
-    await callRescueApi<BundlePayload>("updateCaseProfile", {
-      caseId,
-      ...input,
-    });
-  });
+  return writeRemoteOrFallback(
+    async () => {
+      await callRescueApi<BundlePayload>("updateCaseProfile", {
+        caseId,
+        ...input,
+      });
+    },
+    getRemoteFallbackOptions(),
+  );
 }
 
 export async function createRemoteSupportEntryByCaseId(
@@ -617,6 +597,7 @@ export async function createRemoteSupportEntryByCaseId(
         screenshotImages: input.localScreenshotPaths ?? input.screenshotFileIds ?? [],
       });
     },
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -646,6 +627,7 @@ export async function reviewRemoteSupportEntryByCaseId(
         note: input.note,
       });
     },
+    getRemoteFallbackOptions(),
   );
 }
 
@@ -653,12 +635,15 @@ export async function createRemoteManualSupportEntryByCaseId(
   caseId: string | undefined,
   input: CreateManualSupportEntryInput,
 ) {
-  return writeRemoteOrFallback(async () => {
-    await callRescueApi<BundlePayload>("createManualSupportEntry", {
-      caseId,
-      ...input,
-    });
-  }).then((didSyncRemote) => {
+  return writeRemoteOrFallback(
+    async () => {
+      await callRescueApi<BundlePayload>("createManualSupportEntry", {
+        caseId,
+        ...input,
+      });
+    },
+    getRemoteFallbackOptions(),
+  ).then((didSyncRemote) => {
     if (didSyncRemote) {
       return true;
     }
@@ -679,36 +664,45 @@ export async function createRemoteProgressUpdateByCaseId(
   caseId: string | undefined,
   input: CreateProgressUpdateInput,
 ) {
-  return writeRemoteOrFallback(async () => {
-    await callRescueApi<BundlePayload>("createProgressUpdate", {
-      caseId,
-      ...input,
-    });
-  });
+  return writeRemoteOrFallback(
+    async () => {
+      await callRescueApi<BundlePayload>("createProgressUpdate", {
+        caseId,
+        ...input,
+      });
+    },
+    getRemoteFallbackOptions(),
+  );
 }
 
 export async function createRemoteExpenseRecordByCaseId(
   caseId: string | undefined,
   input: CreateExpenseRecordInput,
 ) {
-  return writeRemoteOrFallback(async () => {
-    await callRescueApi<BundlePayload>("createExpenseRecord", {
-      caseId,
-      ...input,
-    });
-  });
+  return writeRemoteOrFallback(
+    async () => {
+      await callRescueApi<BundlePayload>("createExpenseRecord", {
+        caseId,
+        ...input,
+      });
+    },
+    getRemoteFallbackOptions(),
+  );
 }
 
 export async function createRemoteBudgetAdjustmentByCaseId(
   caseId: string | undefined,
   input: CreateBudgetAdjustmentInput,
 ) {
-  return writeRemoteOrFallback(async () => {
-    await callRescueApi<BundlePayload>("createBudgetAdjustment", {
-      caseId,
-      ...input,
-    });
-  });
+  return writeRemoteOrFallback(
+    async () => {
+      await callRescueApi<BundlePayload>("createBudgetAdjustment", {
+        caseId,
+        ...input,
+      });
+    },
+    getRemoteFallbackOptions(),
+  );
 }
 
 export async function saveRemoteDraftCase(
@@ -729,5 +723,6 @@ export async function saveRemoteDraftCase(
       }
     },
     () => undefined,
+    getRemoteFallbackOptions(),
   );
 }
