@@ -267,6 +267,7 @@ test("case presentation override cleanup removes case overlays without touching 
   const cleaned = clearCasePresentationOverrides(
     {
       caseId: CASE_ID,
+      draftId: "draft_1",
       byCaseId: {
         [CASE_ID]: "本地案例名",
       },
@@ -288,8 +289,8 @@ test("case presentation override cleanup removes case overlays without touching 
 
   assert.equal(cleaned.byCaseId[CASE_ID], undefined);
   assert.equal(cleaned.coverByCaseId[CASE_ID], undefined);
-  assert.equal(cleaned.byDraftId.draft_1, "本地草稿名");
-  assert.equal(cleaned.coverByDraftId.draft_1, "https://local.test/draft-cover.png");
+  assert.equal(cleaned.byDraftId.draft_1, undefined);
+  assert.equal(cleaned.coverByDraftId.draft_1, undefined);
   assert.equal(
     resolvePresentedDraftCore(
       {
@@ -325,10 +326,10 @@ test("case presentation override cleanup removes case overlays without touching 
         updatedAt: "2026-04-20T00:00:00Z",
       },
       {
-        titleOverride: cleaned.byDraftId.draft_1,
-        coverOverride: cleaned.coverByDraftId.draft_1,
+        titleOverride: "另一条草稿名",
+        coverOverride: "https://local.test/other-draft-cover.png",
       },
     )?.name,
-    "本地草稿名",
+    "另一条草稿名",
   );
 });

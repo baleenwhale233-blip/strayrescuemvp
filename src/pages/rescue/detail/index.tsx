@@ -814,7 +814,7 @@ export default function RescueDetailPage() {
           draftId: ownerDetail?.draftId,
         });
       } else {
-        clearCaseTitleOverride(caseId);
+        clearCaseTitleOverride(caseId, ownerDetail?.draftId);
       }
 
       setOwnerDetail((current) =>
@@ -896,7 +896,7 @@ export default function RescueDetailPage() {
           draftId: ownerDetail?.draftId,
         });
       } else {
-        clearCaseCoverOverride(caseId);
+        clearCaseCoverOverride(caseId, ownerDetail?.draftId);
       }
       Taro.hideLoading();
 

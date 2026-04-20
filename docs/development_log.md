@@ -128,6 +128,14 @@
 - 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseExpenseSubmissions` 仍从 public barrel 暴露给页面使用。
 - 下一步 / 遗留问题：第 4 项这一轮的最小收薄已经完成，后续如果继续收口，可以考虑 profile 远端写成功后的本地 fallback 清理策略，或把 `localPresentation` 的读写 API 再按 overlay 类型拆分。
 
+## 2026-04-20 | Repository 重构 | 修掉 draftId 残留 override 并补 localPresentation 清单
+
+- 为什么改：主态详情页远端改名 / 换封面成功后此前只清理 `caseId` 级覆盖，如果本地仍保留同 case 的 `draftId` 覆盖，读取优先级仍可能让旧草稿值继续压过远端真值；同时 `localPresentation` 经过多轮收口后，需要一份仓库内清单明确哪些能力还必须保留。
+- 改了什么：将 `clearCasePresentationOverrides`、`clearCaseTitleOverride`、`clearCaseCoverOverride` 扩成支持同时清理 `caseId + draftId`，主态详情页远端成功分支传入 `ownerDetail?.draftId` 一并删除；新增 `docs/local_presentation_residual_checklist.md`，把 `draft` 链路必保留、CloudBase 不可用兜底、已收薄项和后续可删项拆开写清楚。
+- 影响范围：影响主态详情页 title/cover 远端成功后的本地覆盖清理，以及后续线程恢复上下文时对 `localPresentation` 剩余职责的判断；产品逻辑、页面结构和 CloudBase 行为未改。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 仍为 46 项；`case presentation override cleanup removes case overlays without touching draft overlays` 现在已覆盖 `draftId` 一并清理。
+- 下一步 / 遗留问题：如果后续继续清理 `localPresentation`，优先围绕文档里列出的“case 级 overlay 可删项”推进；`draft` 级展示覆盖现在仍属于必须保留能力。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：

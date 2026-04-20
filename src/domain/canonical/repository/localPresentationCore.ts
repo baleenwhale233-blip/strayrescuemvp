@@ -59,7 +59,7 @@ export type CasePresentationOverrideStore = {
 };
 
 export function clearCasePresentationOverrides(
-  store: CasePresentationOverrideStore & { caseId: string },
+  store: CasePresentationOverrideStore & { caseId: string; draftId?: string },
   options: {
     clearTitle?: boolean;
     clearCover?: boolean;
@@ -73,11 +73,21 @@ export function clearCasePresentationOverrides(
   };
 
   if (options.clearTitle) {
-    delete next.byCaseId[store.caseId];
+    if (store.caseId) {
+      delete next.byCaseId[store.caseId];
+    }
+    if (store.draftId) {
+      delete next.byDraftId[store.draftId];
+    }
   }
 
   if (options.clearCover) {
-    delete next.coverByCaseId[store.caseId];
+    if (store.caseId) {
+      delete next.coverByCaseId[store.caseId];
+    }
+    if (store.draftId) {
+      delete next.coverByDraftId[store.draftId];
+    }
   }
 
   return next;

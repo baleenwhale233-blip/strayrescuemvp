@@ -445,8 +445,8 @@ export function saveCaseCoverOverride(input: {
   writeStore(store);
 }
 
-export function clearCaseTitleOverride(caseId?: string) {
-  if (!caseId) {
+export function clearCaseTitleOverride(caseId?: string, draftId?: string) {
+  if (!caseId && !draftId) {
     return;
   }
 
@@ -454,15 +454,16 @@ export function clearCaseTitleOverride(caseId?: string) {
   writeStore(
     clearCasePresentationOverrides({
       ...store,
-      caseId,
+      caseId: caseId || "",
+      draftId,
     }, {
       clearTitle: true,
     }),
   );
 }
 
-export function clearCaseCoverOverride(caseId?: string) {
-  if (!caseId) {
+export function clearCaseCoverOverride(caseId?: string, draftId?: string) {
+  if (!caseId && !draftId) {
     return;
   }
 
@@ -470,7 +471,8 @@ export function clearCaseCoverOverride(caseId?: string) {
   writeStore(
     clearCasePresentationOverrides({
       ...store,
-      caseId,
+      caseId: caseId || "",
+      draftId,
     }, {
       clearCover: true,
     }),
