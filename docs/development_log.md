@@ -96,6 +96,14 @@
 - 验证结果：新增 `local presentation can be disabled for formal remote read paths` 测试先红后绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 45 项。
 - 下一步 / 遗留问题：下一步可继续拆掉正式写成功后的历史 overlay 残留策略，例如远端 title/cover/profile 写成功后清理对应本地覆盖；这要按 overlay 类型逐项做，避免误删离线未同步内容。
 
+## 2026-04-20 | Repository 重构 | 远端档案编辑成功后清理本地 title / cover 覆盖
+
+- 为什么改：正式远端读路径已经不再吃本地 overlay，但主态详情页在远端改名或换头像成功后，旧的本地 title/cover override 仍会留在 storage 里，未来一旦进入本地 fallback 仍可能看到过期展示值。
+- 改了什么：在 `localPresentationCore` 增加 `clearCasePresentationOverrides` 纯函数，在 `localPresentation` 暴露 `clearCaseTitleOverride / clearCaseCoverOverride`；主态详情页 `updateRemoteCaseProfileByCaseId` 成功后分别清理 caseId 级 title/cover override，远端失败时仍保留原本 `saveCaseTitleOverride / saveCaseCoverOverride` 本地兜底。
+- 影响范围：只影响主态详情页已发布案例 `caseId` 的 title/cover 本地展示覆盖清理；草稿 `draftId` 覆盖和 CloudBase 不可用 fallback 不变，status/expense/budget overlay 也不在本轮处理。
+- 验证结果：新增 `case presentation override cleanup removes case overlays without touching draft overlays` 测试先红后绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 46 项。
+- 下一步 / 遗留问题：下一步可继续处理远端 P0-B 写成功后的 status/expense/budget overlay 残留，但要逐项确认不会误删离线未同步提交。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：

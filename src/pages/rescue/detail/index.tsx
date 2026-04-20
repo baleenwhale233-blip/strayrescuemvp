@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
 import { NavBar } from "../../../components/NavBar";
 import {
+  clearCaseCoverOverride,
+  clearCaseTitleOverride,
   saveCaseCoverOverride,
   saveCaseTitleOverride,
 } from "../../../domain/canonical/repository";
@@ -811,6 +813,8 @@ export default function RescueDetailPage() {
           caseId,
           draftId: ownerDetail?.draftId,
         });
+      } else {
+        clearCaseTitleOverride(caseId);
       }
 
       setOwnerDetail((current) =>
@@ -891,6 +895,8 @@ export default function RescueDetailPage() {
           caseId,
           draftId: ownerDetail?.draftId,
         });
+      } else {
+        clearCaseCoverOverride(caseId);
       }
       Taro.hideLoading();
 

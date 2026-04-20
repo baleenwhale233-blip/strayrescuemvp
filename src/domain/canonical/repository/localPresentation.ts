@@ -1,6 +1,4 @@
-import {
-  getStructuredExpenseRecords,
-} from "../modeling";
+import { getStructuredExpenseRecords } from "../modeling";
 import type {
   CanonicalAsset,
   CanonicalCaseBundle,
@@ -15,6 +13,7 @@ import type {
 import type { OwnerDetailVM } from "./canonicalReadRepositoryCore";
 import { caseIdToDraftId } from "./localRepositoryCore";
 import { getDraftByCaseId, getDraftById, type RescueCreateDraft } from "./draftRepository";
+import { clearCasePresentationOverrides } from "./localPresentationCore";
 
 const CASE_TITLE_OVERRIDE_KEY = "case-title-overrides:v1";
 const CASE_STATUS_SUBMISSION_KEY = "case-status-submissions";
@@ -444,6 +443,38 @@ export function saveCaseCoverOverride(input: {
   }
 
   writeStore(store);
+}
+
+export function clearCaseTitleOverride(caseId?: string) {
+  if (!caseId) {
+    return;
+  }
+
+  const store = readStore();
+  writeStore(
+    clearCasePresentationOverrides({
+      ...store,
+      caseId,
+    }, {
+      clearTitle: true,
+    }),
+  );
+}
+
+export function clearCaseCoverOverride(caseId?: string) {
+  if (!caseId) {
+    return;
+  }
+
+  const store = readStore();
+  writeStore(
+    clearCasePresentationOverrides({
+      ...store,
+      caseId,
+    }, {
+      clearCover: true,
+    }),
+  );
 }
 
 export function saveCaseStatusSubmission(

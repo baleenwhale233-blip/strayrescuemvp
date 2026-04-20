@@ -69,6 +69,8 @@ export type {
 
 export {
   buildExpenseEvidenceItems,
+  clearCaseCoverOverride,
+  clearCaseTitleOverride,
   saveCaseBudgetAdjustment,
   saveCaseCoverOverride,
   saveCaseExpenseSubmission,

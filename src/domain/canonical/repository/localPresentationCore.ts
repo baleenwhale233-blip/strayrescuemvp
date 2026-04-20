@@ -51,6 +51,38 @@ export type LocalPresentationSnapshot = {
   budgetAdjustments?: LocalBudgetAdjustmentSubmission[];
 };
 
+export type CasePresentationOverrideStore = {
+  byCaseId: Record<string, string>;
+  byDraftId: Record<string, string>;
+  coverByCaseId: Record<string, string>;
+  coverByDraftId: Record<string, string>;
+};
+
+export function clearCasePresentationOverrides(
+  store: CasePresentationOverrideStore & { caseId: string },
+  options: {
+    clearTitle?: boolean;
+    clearCover?: boolean;
+  },
+): CasePresentationOverrideStore {
+  const next: CasePresentationOverrideStore = {
+    byCaseId: { ...store.byCaseId },
+    byDraftId: { ...store.byDraftId },
+    coverByCaseId: { ...store.coverByCaseId },
+    coverByDraftId: { ...store.coverByDraftId },
+  };
+
+  if (options.clearTitle) {
+    delete next.byCaseId[store.caseId];
+  }
+
+  if (options.clearCover) {
+    delete next.coverByCaseId[store.caseId];
+  }
+
+  return next;
+}
+
 function formatCurrency(amount: number) {
   return `¥${amount.toLocaleString("zh-CN", {
     minimumFractionDigits: 2,

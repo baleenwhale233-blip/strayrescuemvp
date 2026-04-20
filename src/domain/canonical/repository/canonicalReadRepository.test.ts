@@ -6,9 +6,11 @@ import { getPublicDetailVM } from "../selectors/getPublicDetailVM";
 import type { CanonicalCaseBundle } from "../types";
 import { getWorkbenchVMFromBundles } from "./canonicalReadRepositoryCore";
 import {
+  clearCasePresentationOverrides,
   finalizeHomepageCaseCardPresentationCore,
   finalizePublicDetailPresentationCore,
   finalizeWorkbenchCaseCardPresentationCore,
+  resolvePresentedDraftCore,
   resolveBundlePresentationCore,
 } from "./localPresentationCore";
 
@@ -258,5 +260,75 @@ test("local presentation can be disabled for formal remote read paths", () => {
   assert.equal(
     detail.timeline.some((item) => item.id.startsWith("overlay:")),
     false,
+  );
+});
+
+test("case presentation override cleanup removes case overlays without touching draft overlays", () => {
+  const cleaned = clearCasePresentationOverrides(
+    {
+      caseId: CASE_ID,
+      byCaseId: {
+        [CASE_ID]: "本地案例名",
+      },
+      byDraftId: {
+        draft_1: "本地草稿名",
+      },
+      coverByCaseId: {
+        [CASE_ID]: "https://local.test/case-cover.png",
+      },
+      coverByDraftId: {
+        draft_1: "https://local.test/draft-cover.png",
+      },
+    },
+    {
+      clearTitle: true,
+      clearCover: true,
+    },
+  );
+
+  assert.equal(cleaned.byCaseId[CASE_ID], undefined);
+  assert.equal(cleaned.coverByCaseId[CASE_ID], undefined);
+  assert.equal(cleaned.byDraftId.draft_1, "本地草稿名");
+  assert.equal(cleaned.coverByDraftId.draft_1, "https://local.test/draft-cover.png");
+  assert.equal(
+    resolvePresentedDraftCore(
+      {
+        id: "draft_1",
+        publicCaseId: "JM000001",
+        name: "原草稿名",
+        summary: "",
+        coverPath: "",
+        budget: 0,
+        budgetNote: "",
+        species: "cat",
+        currentStatus: "draft",
+        currentStatusLabel: "草稿中",
+        rescuerName: "",
+        rescuerAvatarUrl: "",
+        rescuerVerifiedLevel: "wechat",
+        rescuerJoinedAt: "2026-04-20T00:00:00Z",
+        rescuerStats: {
+          publishedCaseCount: 0,
+          verifiedReceiptCount: 0,
+        },
+        status: "draft",
+        timeline: [],
+        sharedEvidenceGroups: [],
+        expenseRecords: [],
+        supportThreads: [],
+        supportEntries: [],
+        homepageEligibility: {
+          status: "public_but_not_eligible",
+          reason: "",
+        },
+        createdAt: "2026-04-20T00:00:00Z",
+        updatedAt: "2026-04-20T00:00:00Z",
+      },
+      {
+        titleOverride: cleaned.byDraftId.draft_1,
+        coverOverride: cleaned.coverByDraftId.draft_1,
+      },
+    )?.name,
+    "本地草稿名",
   );
 });
