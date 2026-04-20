@@ -104,6 +104,14 @@
 - 验证结果：新增 `case presentation override cleanup removes case overlays without touching draft overlays` 测试先红后绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 46 项。
 - 下一步 / 遗留问题：下一步可继续处理远端 P0-B 写成功后的 status/expense/budget overlay 残留，但要逐项确认不会误删离线未同步提交。
 
+## 2026-04-20 | Repository 重构 | 远端预算调整成功后清理本地 budget overlay
+
+- 为什么改：追加预算主态 `caseId` 远端写成功后，本地 `case-budget-adjustments:{caseId}` overlay 仍会留在 storage，未来进入本地 fallback 时可能继续把旧预算覆盖到当前档案。
+- 改了什么：在 `localPresentation` 新增 `clearCaseBudgetAdjustments(caseId)`，直接清理对应 case 的预算 overlay storage key；`rescue/budget-update` 在 `createRemoteBudgetAdjustmentByCaseId` 成功后调用清理，远端失败时继续保留 `saveCaseBudgetAdjustment` 兜底。
+- 影响范围：只影响主态追加预算远端写成功后的本地预算 overlay 清理；草稿 `draftId` 预算更新、本地 fallback、status/expense overlay 均不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseBudgetAdjustments` 仍从 public barrel 暴露给页面使用。
+- 下一步 / 遗留问题：继续处理 `status` 和 `expense` overlay 清理时要更谨慎，因为它们涉及图片、timeline 排序和凭证图回显，建议先做 status 再做 expense。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：

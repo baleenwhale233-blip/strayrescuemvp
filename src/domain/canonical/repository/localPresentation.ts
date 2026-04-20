@@ -516,6 +516,14 @@ export function saveCaseBudgetAdjustment(
   getStorage().setStorageSync(key, [submission, ...list]);
 }
 
+export function clearCaseBudgetAdjustments(caseId?: string) {
+  if (!caseId) {
+    return;
+  }
+
+  getStorage().removeStorageSync(getStorageKey(CASE_BUDGET_ADJUSTMENT_KEY, caseId));
+}
+
 export function resetLocalPresentationStorageForTests(caseId?: string) {
   getStorage().removeStorageSync(CASE_TITLE_OVERRIDE_KEY);
 

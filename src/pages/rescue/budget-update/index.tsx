@@ -6,6 +6,7 @@ import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWith
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
+  clearCaseBudgetAdjustments,
   saveCaseBudgetAdjustment,
   type LocalBudgetAdjustmentSubmission,
 } from "../../../domain/canonical/repository";
@@ -219,6 +220,8 @@ export default function RescueBudgetUpdatePage() {
           };
 
           saveCaseBudgetAdjustment(caseId, submission);
+        } else {
+          clearCaseBudgetAdjustments(caseId);
         }
       } else {
         Taro.hideLoading();
