@@ -27,14 +27,6 @@ type ReadHelperDeps = {
   ) => WorkbenchCaseCardVM;
   formatCurrency?: (amount: number) => string;
   localSupporterId?: string;
-  resolvePresentedCover?: (input: {
-    caseId?: string;
-    fallback?: string;
-  }) => string | undefined;
-  resolvePresentedTitle?: (input: {
-    caseId?: string;
-    fallback?: string;
-  }) => string | undefined;
 };
 
 export function finalizeWorkbenchVM(
@@ -108,42 +100,6 @@ export function buildRescuerHomepageVMFromBundles(
       ),
     ),
     profileEntryEnabled: true,
-  };
-}
-
-type SupportHistorySummary = {
-  totalSupportedAmount: number;
-  totalSupportedAmountLabel: string;
-  supportCases: Array<{
-    caseId: string;
-    publicCaseId?: string;
-    animalName: string;
-    animalCoverImageUrl: string;
-    myTotalSupportedAmount: number;
-    myTotalSupportedAmountLabel: string;
-    latestSupportedAtLabel: string;
-  }>;
-};
-
-export function applySupportHistoryPresentation(
-  summary: SupportHistorySummary,
-  deps: Pick<ReadHelperDeps, "resolvePresentedCover" | "resolvePresentedTitle">,
-) {
-  return {
-    ...summary,
-    supportCases: summary.supportCases.map((item) => ({
-      ...item,
-      animalName:
-        deps.resolvePresentedTitle?.({
-          caseId: item.caseId,
-          fallback: item.animalName,
-        }) || item.animalName,
-      animalCoverImageUrl:
-        deps.resolvePresentedCover?.({
-          caseId: item.caseId,
-          fallback: item.animalCoverImageUrl,
-        }) || item.animalCoverImageUrl,
-    })),
   };
 }
 

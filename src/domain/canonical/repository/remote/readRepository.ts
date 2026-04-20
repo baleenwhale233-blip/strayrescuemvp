@@ -22,8 +22,6 @@ import {
   finalizePublicDetailPresentation,
   finalizeWorkbenchCaseCardPresentation,
   resolveBundlePresentation,
-  resolvePresentedCover,
-  resolvePresentedTitle,
 } from "../localPresentation";
 import type {
   CanonicalCaseBundle,
@@ -39,7 +37,6 @@ import {
   withRemoteFallback,
 } from "./fallback";
 import {
-  applySupportHistoryPresentation,
   buildMySupportHistoryFromDetails,
   buildRescuerHomepageVMFromBundles,
   finalizeWorkbenchVM,
@@ -300,8 +297,6 @@ export async function loadWorkbenchVMForCurrentUser(): Promise<
             finalizeRemoteWorkbenchCaseCardPresentation(card),
           formatCurrency,
           localSupporterId: LOCAL_SUPPORTER_ID,
-          resolvePresentedCover,
-          resolvePresentedTitle,
         },
       );
     },
@@ -329,10 +324,7 @@ export async function loadMySupportHistory(): Promise<
       const { summary } = await callRescueApi<SupportHistoryPayload>(
         "getMySupportHistory",
       );
-      return applySupportHistoryPresentation(summary, {
-        resolvePresentedTitle,
-        resolvePresentedCover,
-      });
+      return summary;
     },
     () => {
       const resolvedBundles = resolveBundlesPresentation(getCanonicalBundles());

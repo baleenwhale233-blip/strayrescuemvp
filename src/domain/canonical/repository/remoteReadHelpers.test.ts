@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import * as readHelpers from "./remote/readHelpers";
 
 import type {
   CanonicalCaseBundle,
@@ -9,11 +10,14 @@ import type {
   WorkbenchVM,
 } from "../types";
 import {
-  applySupportHistoryPresentation,
   buildRescuerHomepageVMFromBundles,
   buildMySupportHistoryFromDetails,
   finalizeWorkbenchVM,
 } from "./remote/readHelpers";
+
+test("remote read helpers no longer export overlay-based remote support history patching", () => {
+  assert.equal("applySupportHistoryPresentation" in readHelpers, false);
+});
 
 const makeBundle = (overrides: Partial<CanonicalCaseBundle>): CanonicalCaseBundle => ({
   sourceKind: "remote",
@@ -220,35 +224,7 @@ test("finalizeWorkbenchVM applies presentation finalizer to all card buckets", (
   );
 });
 
-test("support history helpers preserve local totals and presentation overrides", () => {
-  const summary = applySupportHistoryPresentation(
-    {
-      totalSupportedAmount: 88,
-      totalSupportedAmountLabel: "¥88",
-      supportCases: [
-        {
-          caseId: "case_1",
-          publicCaseId: "JM000001",
-          animalName: "原始名字",
-          animalCoverImageUrl: "https://example.com/original-cover.png",
-          myTotalSupportedAmount: 88,
-          myTotalSupportedAmountLabel: "¥88",
-          latestSupportedAtLabel: "04-20 10:00",
-        },
-      ],
-    },
-    {
-      resolvePresentedTitle: () => "展示名",
-      resolvePresentedCover: () => "https://example.com/presented-cover.png",
-    },
-  );
-
-  assert.equal(summary.supportCases[0]?.animalName, "展示名");
-  assert.equal(
-    summary.supportCases[0]?.animalCoverImageUrl,
-    "https://example.com/presented-cover.png",
-  );
-
+test("support history helper preserves local totals from detail vm list", () => {
   const built = buildMySupportHistoryFromDetails(
     [
       {

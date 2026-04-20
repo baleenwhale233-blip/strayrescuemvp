@@ -1733,3 +1733,16 @@
   已对照当前实现复查首页、工作台、详情页、登记页、处理页、Profile 入口与建档页的用户可见命名，再同步更新文档；本轮重点文档现在与当前前台文案一致，不再把“发现 / 我的记录 / 登记一笔 / 处理登记”写回旧词。
 - 下一步 / 遗留问题：
   `docs/` 下仍有一批历史稿、seed 数据说明、旧 IA 备份和过期设计稿在保留旧术语，这些不作为当前真相源；如果后续要继续做彻底清仓，可再单独开一轮“历史文档归档 / 标注过期 / 统一词表”整理。
+
+## 2026-04-20 | Repository 重构 | 删除远端支持足迹成功分支的 overlay 补丁
+
+- 为什么改：
+  `loadMySupportHistory()` 的远端成功分支此前还会对后端 summary 再套一层本机 `title / cover` 展示覆盖，这和“正式远端成功读链路不再注入 overlay”的原则冲突，也让 `remoteReadHelpers` 多保留了一块已经没有生产职责的残留能力。
+- 改了什么：
+  删除 `remoteReadHelpers.applySupportHistoryPresentation`，并将 `remote/readRepository` 的 `loadMySupportHistory()` 远端成功分支改成直接返回后端 summary；本地 fallback 分支仍继续通过 `buildMySupportHistoryFromDetails()` 聚合本地 detail vm；同步把 `docs/local_presentation_residual_checklist.md` 标记为已删除这块残留补丁。
+- 影响范围：
+  只影响支持足迹页在 CloudBase 成功读链路下的 title / cover 真值来源；正式远端成功时以后端 summary 为准，本地 fallback 仍保持原先本地聚合与展示逻辑。
+- 验证结果：
+  `npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 47 项；新增测试已确认 `remoteReadHelpers` 不再导出 overlay-based remote support history patching。
+- 下一步 / 遗留问题：
+  如果继续做“真正删掉”的减法，下一步可以评估 `localPresentation` 的 case 级 title / cover 读取是否还需要保留给本地 fallback；前提是先确认没有页面再依赖这些残留覆盖做离线回显。

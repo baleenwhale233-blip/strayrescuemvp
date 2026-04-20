@@ -133,6 +133,7 @@
 当前状态：
 
 - 已通过 `applyLocalOverlays: false` 关闭
+- `loadMySupportHistory()` 的远端成功分支也已不再额外套本机 `title / cover` 展示补丁，正式远端 summary 直接作为真值
 
 影响范围：
 
