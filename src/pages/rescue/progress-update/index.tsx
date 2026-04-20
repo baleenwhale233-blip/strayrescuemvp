@@ -6,6 +6,7 @@ import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWith
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
+  clearCaseStatusSubmissions,
   saveCaseStatusSubmission,
   type LocalStatusSubmission,
 } from "../../../domain/canonical/repository";
@@ -278,6 +279,8 @@ export default function RescueStatusUpdatePage() {
           };
 
           saveCaseStatusSubmission(caseId, submission);
+        } else {
+          clearCaseStatusSubmissions(caseId);
         }
       } else {
         Taro.hideLoading();

@@ -490,6 +490,14 @@ export function saveCaseStatusSubmission(
   getStorage().setStorageSync(key, [submission, ...list]);
 }
 
+export function clearCaseStatusSubmissions(caseId?: string) {
+  if (!caseId) {
+    return;
+  }
+
+  getStorage().removeStorageSync(getStorageKey(CASE_STATUS_SUBMISSION_KEY, caseId));
+}
+
 export function saveCaseExpenseSubmission(
   caseId: string | undefined,
   submission: LocalExpenseSubmission,

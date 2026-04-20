@@ -18,4 +18,5 @@ test("repository barrel keeps page-facing APIs and hides internal-only helpers",
   assert.equal(source.includes("getCurrentDraft"), true);
   assert.equal(source.includes("saveCaseStatusSubmission"), true);
   assert.equal(source.includes("clearCaseBudgetAdjustments"), true);
+  assert.equal(source.includes("clearCaseStatusSubmissions"), true);
 });

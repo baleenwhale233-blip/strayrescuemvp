@@ -112,6 +112,14 @@
 - 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseBudgetAdjustments` 仍从 public barrel 暴露给页面使用。
 - 下一步 / 遗留问题：继续处理 `status` 和 `expense` overlay 清理时要更谨慎，因为它们涉及图片、timeline 排序和凭证图回显，建议先做 status 再做 expense。
 
+## 2026-04-20 | Repository 重构 | 远端进展发布成功后清理本地 status overlay
+
+- 为什么改：进展更新主态 `caseId` 远端写成功后，本地 `case-status-submissions:{caseId}` overlay 仍会保留，未来进入本地 fallback 时可能把旧状态文案、时间和图片继续覆盖到详情与工作台。
+- 改了什么：在 `localPresentation` 新增 `clearCaseStatusSubmissions(caseId)`，清理对应 case 的状态 overlay storage key；`rescue/progress-update` 在 `createRemoteProgressUpdateByCaseId` 成功后调用清理，远端失败时仍保留 `saveCaseStatusSubmission` 本地兜底。
+- 影响范围：只影响主态写进展远端成功后的本地状态 overlay 清理；草稿 `draftId` 进展更新、本地 fallback、budget/expense overlay 均不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseStatusSubmissions` 仍从 public barrel 暴露给页面使用。
+- 下一步 / 遗留问题：最后再处理 `expense` overlay 清理，需要重点确认远端凭证上传成功和本地图片 fallback 的分界，避免误删上传失败后的离线回显。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
