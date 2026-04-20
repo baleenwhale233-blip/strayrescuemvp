@@ -37,7 +37,7 @@ export default defineAppConfig({
       },
       {
         pagePath: "pages/rescue/index",
-        text: "救助",
+        text: "我的记录",
         iconPath: "assets/tabbar/rescue.png",
         selectedIconPath: "assets/tabbar/rescue-active.png",
       },

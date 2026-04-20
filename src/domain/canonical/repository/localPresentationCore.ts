@@ -97,6 +97,7 @@ function inferCaseCurrentStatus(label?: string): CaseCurrentStatus | undefined {
       return "draft";
     case "紧急送医":
       return "newly_found";
+    case "医疗处理中":
     case "医疗救助中":
       return "medical";
     case "康复观察":

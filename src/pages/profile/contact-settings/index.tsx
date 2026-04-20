@@ -216,7 +216,7 @@ export default function ContactSettingsPage() {
       className="page-shell contact-settings-page"
       style={{ paddingBottom: `${128 + keyboardBottomInset}px` }}
     >
-      <NavBar showBack title="救助联系方式" />
+      <NavBar showBack title="联系信息" />
 
       <View className="contact-settings-page__body">
         <View className="contact-settings-page__field">
@@ -260,7 +260,7 @@ export default function ContactSettingsPage() {
             wrapperClassName="contact-settings-page__textarea-card"
             textareaClassName="contact-settings-page__textarea"
             placeholderClassName="contact-settings-page__textarea-placeholder"
-            placeholder="如果要联系您有什么特别的注意事项"
+            placeholder="如果需要联系您，有什么要提前说明的"
             cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={120}
             value={note}
@@ -271,7 +271,7 @@ export default function ContactSettingsPage() {
 
       <View className="contact-settings-page__bottom">
         <View className="theme-button-primary contact-settings-page__submit" onTap={handleSubmit}>
-          <Text>提交</Text>
+          <Text>保存</Text>
           <Image className="contact-settings-page__submit-icon" mode="aspectFit" src={submitArrowIcon} />
         </View>
       </View>

@@ -32,4 +32,6 @@ test("support sheet copy reflects when only one contact channel is available", (
 
   assert.match(wechatOnlyCopy.directHint, /未提供二维码/);
   assert.match(qrOnlyCopy.contactHint, /未提供微信号/);
+  assert.match(wechatOnlyCopy.directTip, /登记一笔/);
+  assert.match(qrOnlyCopy.directHint, /联系信息/);
 });

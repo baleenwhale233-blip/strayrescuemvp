@@ -29,7 +29,7 @@ export const sampleCaseBundle: CanonicalCaseBundle = {
     foundLocationText: "xx小区草丛",
     initialSummary: "发现时流口水严重，疑似口炎，精神差",
     currentStatus: "medical",
-    currentStatusLabel: "医疗救助中",
+    currentStatusLabel: "医疗处理中",
     targetAmount: 4200,
     visibility: "published",
     createdAt: "2026-03-28T08:35:00Z",
@@ -94,7 +94,7 @@ export const sampleCaseBundle: CanonicalCaseBundle = {
       currency: "CNY",
       supportSource: "donor_claim",
       supporterNameMasked: "李**",
-      message: "先认领一下，等救助人确认",
+      message: "先登记一下，等记录维护者处理",
       verificationStatus: "pending",
       assetIds: ["asset_support_002"],
       visibility: "private",
@@ -213,7 +213,7 @@ export const sampleCaseBundle: CanonicalCaseBundle = {
       amount: 60,
       currency: "CNY",
       supportedAt: "2026-03-29T13:30:00Z",
-      note: "先登记一下，等救助人确认",
+      note: "先登记一下，等记录维护者处理",
       screenshotItems: [
         {
           id: "support-evidence-002",

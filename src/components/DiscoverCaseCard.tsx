@@ -132,7 +132,7 @@ export function DiscoverCaseCard({
         <View className="discover-card__ledger-meta">
           <View className="discover-card__ledger-meta-item">
             <View className="discover-card__ledger-meta-dot discover-card__ledger-meta-dot--brand" />
-            <Text className="discover-card__ledger-meta-label">已确认支持</Text>
+            <Text className="discover-card__ledger-meta-label">已确认登记</Text>
             <Text className="discover-card__ledger-meta-value">{item.supportedAmountLabel}</Text>
           </View>
           <View className="discover-card__ledger-meta-item discover-card__ledger-meta-item--end">

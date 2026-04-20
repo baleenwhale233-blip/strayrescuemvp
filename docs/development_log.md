@@ -24,6 +24,30 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-20 | 云函数重构 | 抽出 rescueApi runtime 与 canonical adapter
+
+- 为什么改：`cloudfunctions/rescueApi/index.js` 已接近 2000 行，运行时 helper、DB 查询、canonical 映射和业务 action 混在一起，继续追加 Alpha 写链会让回归风险变高。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/runtime.js` 和 `src/adapters/canonical.js`，把 envelope、ID/文件校验、查询封装、临时 URL 转换和 `toCanonical* / recomputeThreads / hero fallback` 映射从 `index.js` 抽出；`index.js` 仍保留原 action 表和业务流程。
+- 影响范围：仅影响 `rescueApi` 云函数内部模块边界与新增 characterization tests；不改 CloudBase 集合 schema、action 名、返回 envelope、前端 repository、页面交互或产品逻辑。
+- 验证结果：新增 runtime / adapter Node tests 先红后绿；`node --check cloudfunctions/rescueApi/index.js` 通过；后续继续跑 `npm run typecheck`、`npm run test:domain` 和新增云函数模块测试。
+- 下一步 / 遗留问题：下一轮再按同样方式拆 `profile/support/records` services；拆服务前继续保持 `handlers` action 名和错误码不变。
+
+## 2026-04-20 | 云函数重构 | 拆出 rescueApi profile service
+
+- 为什么改：Batch 1 已把 runtime 和 canonical adapter 抽出，下一块最低风险的服务边界是 `getMyProfile / updateMyProfile / getProfileByOpenid`；它独立于案例写链和登记核实主路径，适合先拆。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/services/profile.js`，把 profile payload、资料读取、头像/二维码 asset 写入和 profile upsert 从 `index.js` 移出；`index.js` 通过 `createProfileService()` 注入 `db / collections / runtime helper`，handler 名保持不变。
+- 影响范围：仅影响 `rescueApi` 内部 profile 模块边界和新增 profile service characterization tests；不改 `user_profiles / evidence_assets` 字段、前端 `getMyProfile / updateMyProfile` 调用、页面文案或产品逻辑。
+- 验证结果：profile service Node tests 先红后绿，覆盖空 profile 默认回包、非法 profile asset 拦截、合法头像 asset 写入与回读；新增云函数模块测试和 `node --check` 均通过。
+- 下一步 / 遗留问题：Batch 2 还剩 support 与 records service 拆分；下一刀建议先拆 support，因为 `createSupportEntry / reviewSupportEntry / createManualSupportEntry` 共享 thread/event 投影逻辑。
+
+## 2026-04-20 | 云函数重构 | 拆出 rescueApi support service
+
+- 为什么改：支持登记、手动登记和核实链路共享 support thread 聚合与 projected support event 投影，继续留在 `index.js` 会让后续 records service 拆分和错误码回归更难控。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/services/support.js`，把 `createSupportEntry / createManualSupportEntry / reviewSupportEntry / updateSupportThread / upsertSupportEvent` 从 `index.js` 移出；`index.js` 只通过 `createSupportService()` 注入 CloudBase 依赖并保留原 handler 名。
+- 影响范围：仅影响 `rescueApi` 内部 support 模块边界和新增 support service characterization tests；不改 `support_entries / support_threads / case_events` 字段、错误码、限流/重复凭证规则、前端 repository 或页面交互。
+- 验证结果：support service Node tests 先红后绿，覆盖 support event 投影、非法本地截图拦截、pending 支持登记写入与私有投影事件；新增云函数模块测试、`node --check`、`typecheck` 和 `test:domain` 均通过。
+- 下一步 / 遗留问题：Batch 2 还剩 records service 拆分，建议下一刀再拆 `getCaseRecordDetail / createProgressUpdate / createExpenseRecord / createBudgetAdjustment`，不要和 remoteRepository 同轮改。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
@@ -1496,3 +1520,120 @@
   `npm run typecheck`、`npm run test:domain`、`npx tsc --noEmit --noUnusedLocals --noUnusedParameters` 通过；额外用 `rg` 复查页面层已不再引用已删除的 overlay facade、selector 直连和 `localRepository.ts`。
 - 下一步 / 遗留问题：
   远端 `getMySupportHistory` / `getRescuerHomepage` 现在已经在 repository 内补本地展示覆盖，但如果后续把 title/cover/status 正式沉到后端字段，还要继续评估是否可以把这层本地 presentation resolver 再收薄一轮。
+
+## 2026-04-19 | 客态详情 | 按 Figma 把底栏动作改成独立按钮并补短导航锁
+
+- 为什么改：
+  客态详情底栏原来把“我已支持”“我要支持”写成点击 `View`，在微信开发者工具的可访问性树里经常被合并成一段文本，电脑操控和辅助技术都不容易稳定识别；同时 Figma 最新节点 `29:785` 已把次按钮宽度收成 `120px`，主按钮改成吃剩余宽度。
+- 改了什么：
+  将 `src/pages/rescue/detail/index.tsx` 的两个客态动作改成独立 `Button`，并在页面层新增 300ms 的 guest action lock，防止重复点击连续触发 `navigateTo` / 打开半弹层；同步调整 `src/pages/rescue/detail/index.scss`，把分享按钮宽度改成 `48px`，`我已支持` 固定成 `120px`，`我要支持` 改为 `flex: 1`，补上 ghost 按钮描边并清掉 Button 默认 `::after` 描边。
+- 影响范围：
+  仅影响客态详情页底栏交互语义、命中区域和视觉尺寸；未改 selector、repository、云函数或产品口径。
+- 验证结果：
+  重新读取 Figma 节点 `29:785` 与截图确认最新宽度已生效；`npm run typecheck` 通过；微信开发者工具热更新后底栏视觉已对齐到“分享 48 / 我已支持 120 / 我要支持自适应”的新版结构。
+- 下一步 / 遗留问题：
+  微信开发者工具的无障碍树仍可能把两个按钮合并成一段文本，这更像 DevTools 预览层的暴露问题；后续若要继续往盲人友好方向推进，可以再补 `aria-label`/可读文案和一次真机读屏验证。
+
+## 2026-04-19 | 客态详情 | 按 Figma 把底栏容器高度抬回 99 的节奏
+
+- 为什么改：
+  上一轮把底栏按钮尺寸和语义先对齐后，footer 外层 padding 还沿用了旧值，导致整个底栏看起来偏矮，和 Figma 节点 `29:786` 的高度感不一致。
+- 改了什么：
+  将 `src/pages/rescue/detail/index.scss` 中 `guest-bottom-bar` 的 padding 从 `12px 16px 20px` 调整为 `17px 16px 32px`，对应 Figma footer 的 `pt 17 / pb 32 / px 16`。
+- 影响范围：
+  仅影响客态详情页底栏容器的整体高度与留白，不改按钮宽度、交互逻辑、数据链或产品口径。
+- 验证结果：
+  微信开发者工具热更新后复看，底栏已不再贴底发矮，整体高度和 Figma 当前节点更接近；本轮为纯样式修正，未新增类型或数据层风险。
+- 下一步 / 遗留问题：
+  后续若真机安全区表现与开发者工具仍有偏差，再单独按设备底部 inset 微调，但先以当前 Figma 版式为准。
+
+## 2026-04-19 | 客态详情 | 修正 footer 被误并入通用 flex 规则，并补底部 safe area
+
+- 为什么改：
+  继续复看后发现底栏看起来仍偏矮，不只是 padding 数值问题；`guest-bottom-bar` 之前被错误并入详情页上方几组通用 `display:flex / justify-content` 规则，同时 footer 也没把 iPhone 底部安全区算进去，导致设计稿里的下留白被 home indicator 吃掉一截。
+- 改了什么：
+  从 `src/pages/rescue/detail/index.scss` 的三组通用布局规则里移除 `.guest-bottom-bar`，并在 footer 本体显式声明 `display: block`、`box-sizing: border-box`；同时把底部留白改成 `padding-bottom: calc(32px + env(safe-area-inset-bottom))`，保留 `constant(...)` 兼容写法。
+- 影响范围：
+  仅影响客态详情页底栏容器的版式与 iPhone 底部安全区适配；按钮尺寸、交互逻辑、数据链和文案不变。
+- 验证结果：
+  `npm run typecheck` 通过；微信开发者工具热更新后复看，底栏下沿可见留白明显恢复，整体高度比上一版更接近 Figma 的 footer 节奏。
+- 下一步 / 遗留问题：
+  还需要真机再确认 Android 无 home indicator 设备上不会显得过高；如果 Android 端过松，再补平台条件分支，但先以 iPhone 主场景对齐设计稿。
+
+## 2026-04-19 | 客态详情 | 追到真正运行时：微信开发者工具吃的是 dist，不是 src 幻觉
+
+- 为什么改：
+  继续肉眼看底栏仍偏矮后，直接读小程序运行时样式发现 footer 实际仍是旧值：高度 `88px`、`padding-top 13px`、`padding-bottom 22px`、背景 `rgba(255,255,255,0.96)`；说明问题不只是 SCSS 写法，而是当前预览还在吃旧 `dist`，不能只盯 `src`。
+- 改了什么：
+  增加一次性的运行时检查脚本验证 `.guest-bottom-bar` / `.guest-bottom-bar__inner` / 按钮的真实尺寸；随后重新执行 `npm run build:weapp` 让 `src/pages/rescue/detail/index.scss` 的 footer 新规则重新编进 `dist/pages/rescue/detail/index.wxss`，确认编译产物已包含 `min-height: 99px`、`padding: 17 16 32`、按钮 48 高、宽度 120/自适应和毛玻璃背景。
+- 影响范围：
+  影响客态详情页底栏在微信开发者工具和后续真机包里的真正运行时样式来源判断；不改数据链、交互口径和页面结构，只把“源码已改但未进 dist”的误判链路查清。
+- 验证结果：
+  `npm run build:weapp` 成功；重新查看 `dist/pages/rescue/detail/index.wxss`，底栏已是最新规则；微信开发者工具刷新后终于开始吃到新包，底栏观感明显向 Figma 靠拢。此次构建额外暴露 `postcss-calc` 对 `env()/constant()` 的 warning，但未阻塞产物生成。
+- 下一步 / 遗留问题：
+  如果后续还要继续精抠底栏，优先以 `dist` 和运行时 element inspection 为准，不再只凭 `src` 推断；若要彻底消掉 `env()/constant()` 的编译 warning，下一轮应改成 JS 注入安全区 inset，而不是继续让 `postcss-calc` 硬吃 CSS `calc()`。
+
+## 2026-04-19 | 客态详情 | 把 footer 从 143px 拉回接近 Figma 的 98px
+
+- 为什么改：
+  在去掉重复 safe area 后，运行时 footer 仍有 `109px`，继续读 element inspection 才发现真正多出来的是我加的 `min-height: 99px`；Taro 会把源码 px 再换算成 rpx，导致这条“看上去合理”的硬高度在 iPhone 15 Pro Max 预览里被放大。
+- 改了什么：
+  移除 `src/pages/rescue/detail/index.scss` 里 `guest-bottom-bar` 的 `min-height: 99px`，并把底部 padding 从 `32px` 收到 `25px`，保留现有 52px 按钮行、玻璃背景和独立 Button 语义不变。
+- 影响范围：
+  仅影响客态详情页底栏容器总高度和底部留白；不改按钮宽度、交互逻辑、数据链或 Figma 对齐策略。
+- 验证结果：
+  重新 `npm run build:weapp` 后，用运行时检查脚本再次读取 `.guest-bottom-bar`，当前真实尺寸已变为：总高度 `98px`、`padding-top 18px`、`padding-bottom 27px`、按钮行 `52px`；已经从上一版的 `143px` / `109px` 拉回接近 Figma 的 `99px` 体感。
+- 下一步 / 遗留问题：
+  这页以后再做视觉精修时，优先盯运行时尺寸而不是直接照搬设计稿 px；如果真机上仍比开发者工具更松或更紧，再按真机 runtime 继续微调，而不是重新加固定高。
+
+## 2026-04-19 | 文案合规 | 将前台语义统一收口到“记录 / 明细 / 登记”
+
+- 为什么改：
+  微信审核反馈个人小程序不适合呈现“发起救助 / 参与救助 / 我要支持”这类容易被理解成提供服务或撮合支持的表述；需要把前台语义改成更中性的记录工具口径。
+- 改了什么：
+  将 tab、NavBar、底部按钮、工作台主 CTA、联系方式半弹层、登记处理页、使用说明和建档链路文案统一改成“查档 / 我的记录 / 新建记录 / 查看联系方式 / 登记一笔 / 处理登记 / 记录票据 / 更新进展”；同时把前台可见的资金状态、高频 fallback 文案和相关 IA / 进度总览同步到新口径。
+- 影响范围：
+  影响 `app.config`、发现页、工作台、客态详情、登记页、处理页、Profile 相关页面、建档与进展页，以及 `main_info_arch_v3.2`、页面 IA、`product_development_status.md`；不改 API action、repository 接口名、云函数 schema 和路由结构。
+- 验证结果：
+  已补共享联系方式文案相关测试口径，并计划执行 `npm run typecheck`、`npm run test:domain` 与敏感词 `rg` 复查；预期前台首屏不再出现“我要支持 / 我已支持 / 新建救助档案”等高风险词。
+- 下一步 / 遗留问题：
+  仍需真机复看微信开发者工具中的导航标题、分享文案和静态说明页；当前状态标签中的“医疗处理中”已一并收口，如果审核继续卡“账本”语义，再评估第二轮把“透明账本”进一步收成“记录明细”。
+
+## 2026-04-19 | 文案合规 | 将首页 tab 从“查档”回调为“发现”
+
+- 为什么改：
+  第一轮文案收口里把首页 tab 改成了“查档”，虽然更直白，但实际使用里会显得偏硬；用户确认“发现”也能保留入口感，同时不影响整体记录工具语义。
+- 改了什么：
+  将 `src/app.config.ts` 的首页 tab 文案从“查档”改回“发现”，并同步更新 `docs/home_page_ia.md` 与 `docs/main_info_arch_v3.2.md` 中对应的 tab 命名，避免实现和 IA 再次分叉。
+- 影响范围：
+  仅影响首页 tab 的对外名称和相关 IA 文档，不改页面结构、数据模型、selector、repository 或流程文案。
+- 验证结果：
+  计划重新执行 `npm run build:weapp`，确认 `dist/app.json` 已回写为“发现”，并继续用开发者工具复查底部 tab 显示。
+- 下一步 / 遗留问题：
+  首页页面内部仍保留“案例 ID 查档”这类能力描述；如果后续还要继续弱化“查档”感，可以再评估首页说明文案是否也要从“查档入口”改成“发现入口”。
+
+## 2026-04-19 | 文案合规 | 补齐首页页内导航标题为“发现”
+
+- 为什么改：
+  上一轮只把首页 tab 从“查档”改回了“发现”，但 `src/pages/discover/index.tsx` 里的页内 `NavBar` 仍保留旧词，导致底部 tab 和页面顶部标题不一致。
+- 改了什么：
+  将首页页内导航标题从“查档”改为“发现”，让首页 tab、页内标题和当前 IA 命名保持一致。
+- 影响范围：
+  仅影响首页顶部导航标题和相关运行时显示，不改页面结构、数据模型、selector、repository 或其他页面文案。
+- 验证结果：
+  计划重新执行 `npm run build:weapp`，并复查 `dist/pages/discover/index.js` 中的 `NavBar title` 已更新为“发现”。
+- 下一步 / 遗留问题：
+  如果后续首页对外定位继续从“查档入口”往“发现入口”收口，还可以再顺手调整首页说明文案，但这不影响当前标题一致性。
+
+## 2026-04-20 | 文档同步 | 收口总控中心与产品文档到最新“发现 / 记录 / 登记”口径
+
+- 为什么改：
+  代码里的前台文案已经切到“发现 / 我的记录 / 查看联系方式 / 登记一笔 / 处理登记 / 记录票据 / 更新进展”，但 `project_control_center`、`ui_priority_matrix`、`rescue_ledger_usage_guide`、`profile_page_ia`、`figma_progress_map` 仍混用旧的“待支持 / 救助 / 我要支持 / 我已支持 / 救助联系方式”等词，后续新线程恢复上下文和设计协作容易继续被旧口径带偏。
+- 改了什么：
+  更新 `docs/project_control_center.md` 的阶段目标、页面优先级与页面名称；更新 `docs/ui_priority_matrix.md` 的页面标题、CTA 和目标描述；更新 `docs/rescue_ledger_usage_guide.md` 的使用说明角色与操作文案；更新 `docs/profile_page_ia.md` 的“我的 / 登记记录 / 联系信息 / 使用说明”结构；更新 `docs/figma_progress_map.md` 的页面命名和现状描述，让当前 docs 中最常被读取的产品与开发文档统一到最新前台口径。
+- 影响范围：
+  影响后续上下文恢复、设计协作、Figma 对照和产品判断文档；不改代码、数据模型、VM、selector、repository 或云函数行为。
+- 验证结果：
+  已对照当前实现复查首页、工作台、详情页、登记页、处理页、Profile 入口与建档页的用户可见命名，再同步更新文档；本轮重点文档现在与当前前台文案一致，不再把“发现 / 我的记录 / 登记一笔 / 处理登记”写回旧词。
+- 下一步 / 遗留问题：
+  `docs/` 下仍有一批历史稿、seed 数据说明、旧 IA 备份和过期设计稿在保留旧术语，这些不作为当前真相源；如果后续要继续做彻底清仓，可再单独开一轮“历史文档归档 / 标注过期 / 统一词表”整理。

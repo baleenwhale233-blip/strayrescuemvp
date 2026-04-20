@@ -69,7 +69,7 @@ export default function RescueCreateBudgetPage() {
       className="page-shell rescue-budget-page"
       style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
     >
-      <NavBar showBack title="新建救助" onBack={handleBack} />
+      <NavBar showBack title="新建记录" onBack={handleBack} />
 
       <View className="rescue-budget-page__steps">
         <View className="rescue-budget-page__step" />
@@ -85,13 +85,13 @@ export default function RescueCreateBudgetPage() {
             src={coverPath || coverFallback}
           />
         </View>
-        <Text className="rescue-budget-page__name">{name || "未命名救助"}</Text>
+        <Text className="rescue-budget-page__name">{name || "未命名档案"}</Text>
       </View>
 
       <View className="rescue-budget-page__card theme-card">
         <Text className="rescue-budget-page__title">设定预估金额</Text>
         <Text className="rescue-budget-page__subtitle">
-          请预估一下救治大概需要多少钱？
+          请预估一下后续记录里大概会涉及多少费用？
         </Text>
 
         <View className="rescue-budget-page__field">
@@ -126,7 +126,7 @@ export default function RescueCreateBudgetPage() {
 
       <View className="rescue-budget-page__footer">
         <View className="theme-button-primary rescue-budget-page__button" onTap={handleNext}>
-          <Text>进入救助页面</Text>
+          <Text>进入记录页</Text>
           <Image
             className="rescue-budget-page__button-icon"
             mode="aspectFit"
@@ -134,7 +134,7 @@ export default function RescueCreateBudgetPage() {
           />
         </View>
         <Text className="rescue-budget-page__footer-hint">
-          稍后您可以在工作台随时调整此预估金额
+          稍后您可以在“我的记录”里随时调整此预估金额
         </Text>
       </View>
     </View>

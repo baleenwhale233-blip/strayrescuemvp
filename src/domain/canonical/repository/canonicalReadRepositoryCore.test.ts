@@ -148,6 +148,8 @@ test("support sheet copy adapts to qr-only and wechat-only cases", () => {
 
   assert.match(qrOnlySupport?.contactHint || "", /未提供微信号/);
   assert.match(wechatOnlySupport?.directHint || "", /未提供二维码/);
+  assert.match(qrOnlySupport?.directTip || "", /登记一笔/);
+  assert.match(wechatOnlySupport?.contactTip || "", /记录/);
 });
 
 test("public case id exact search supports prefixed and digits-only input", () => {
@@ -220,7 +222,7 @@ test("homepage funding status becomes high pressure when gap exceeds 2000", () =
 
   const [card] = getHomepageCaseCardVMsFromBundles([highPressureBundle]);
 
-  assert.equal(card?.fundingStatusSummary, "‼️ 救助人垫付较多");
+  assert.equal(card?.fundingStatusSummary, "‼️ 当前垫付较多");
 });
 
 test("support entries are grouped into threads", () => {

@@ -86,7 +86,7 @@ function getDraftPublicCaseId(draft: RescueCreateDraft) {
 }
 
 function getDraftStatusLabel(draft: RescueCreateDraft) {
-  return draft.currentStatusLabel || "医疗救助中";
+  return draft.currentStatusLabel || "医疗处理中";
 }
 
 function matchesDraftRoute(
@@ -187,7 +187,7 @@ function buildPreviewTimelineEntries(draft: RescueCreateDraft): PreviewTimelineE
       id: `support-${entry.id}`,
       tone: "income" as const,
       label: "场外收入",
-      title: `${entry.supporterNameMasked || "爱心人士"} 的支持`,
+      title: `${entry.supporterNameMasked || "登记用户"} 的登记`,
       description: entry.note ? `备注：${entry.note}` : undefined,
       timestamp: formatTimelineTimestamp(new Date(entry.supportedAt)),
       amount: entry.amount,
@@ -204,7 +204,7 @@ function isDraftBootstrapEntry(entry: RescueCreateDraft["timeline"][number]) {
     entry.tone === "status" &&
     entry.title === "已创建基础档案，等待补充第一条进展" &&
     entry.description ===
-      "完成封面、代号和事件简述后，就可以继续设定预算并进入救助页预览。"
+      "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。"
   );
 }
 
@@ -217,7 +217,7 @@ function getPreviewOverviewProps(
 
   return {
     paragraphs: [
-      draft.summary || "等待补充救助情况介绍。",
+      draft.summary || "等待补充这条记录的情况介绍。",
       `当前总预算为${formatCurrency(draft.budget || 0)}。`,
     ],
     expenseLabel: `-${formatCurrency(ledger.expense)}`,
@@ -381,7 +381,7 @@ function ActionSheet({
     },
     income: {
       title: "记录场外收入",
-      titlePlaceholder: "如：爱心人士支持到账",
+      titlePlaceholder: "如：线下登记已到账",
       descriptionPlaceholder: "可补充来源、留言或对账说明",
       amountPlaceholder: "200.00",
       amountLabel: "收入金额",
@@ -774,7 +774,7 @@ export default function RescueCreatePreviewPage() {
     }
 
     Taro.showToast({
-      title: saved.status === "published" ? "救助已发布" : "已更新",
+      title: saved.status === "published" ? "记录已发布" : "已更新",
       icon: "none",
     });
 
@@ -853,7 +853,7 @@ export default function RescueCreatePreviewPage() {
 
   return (
     <View className="page-shell rescue-preview-page">
-      <NavBar showBack title="救助记录管理" />
+      <NavBar showBack title="记录管理" />
 
       <RescueOwnerSummaryCard
         budgetLabel={formatCurrency(budget)}
@@ -870,7 +870,7 @@ export default function RescueCreatePreviewPage() {
         thirdLabel={fundingCompare.thirdLabel}
         thirdMode={fundingCompare.thirdMode}
         thirdValue={fundingCompare.thirdValue}
-        title={draft.name || "未命名救助"}
+        title={draft.name || "未命名档案"}
         onEditCover={handleChangeCover}
         onEditTitle={() => setEditingTitle(true)}
       />
@@ -908,7 +908,7 @@ export default function RescueCreatePreviewPage() {
             emptyState={{
               title: "还没有第一条记录",
               description:
-                "可以先记录一笔支出、写进展更新，或者补上一笔场外收入。",
+                "可以先记录一笔支出、更新进展，或者补上一笔场外登记。",
             }}
             items={toPreviewTimelineItems(draft)}
           />
@@ -926,7 +926,7 @@ export default function RescueCreatePreviewPage() {
           className="theme-button-primary rescue-preview__footer-primary"
           onTap={handlePublish}
         >
-          <Text>发布救助</Text>
+          <Text>发布记录</Text>
           <View className="rescue-preview__footer-arrow">
             <Image className="rescue-preview__footer-arrow-icon" mode="aspectFit" src={ownerFooterArrowIcon} />
           </View>

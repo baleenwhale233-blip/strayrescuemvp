@@ -215,7 +215,7 @@ function toRemoteDraftPayload(
     currentStatus:
       draft.currentStatus || (status === "published" ? "medical" : "draft"),
     currentStatusLabel:
-      draft.currentStatusLabel || (status === "published" ? "医疗救助中" : "草稿中"),
+      draft.currentStatusLabel || (status === "published" ? "医疗处理中" : "草稿中"),
     budget: draft.budget,
     targetAmount: draft.budget,
     coverFileID: draft.coverPath?.startsWith("cloud://") ? draft.coverPath : undefined,
@@ -665,7 +665,7 @@ export async function createRemoteManualSupportEntryByCaseId(
 
     createSupportEntryByCaseId(caseId, {
       supporterUserId: `manual-supporter:${Date.now()}`,
-      supporterNameMasked: input.supporterNameMasked || "线下支持",
+      supporterNameMasked: input.supporterNameMasked || "线下记录",
       amount: input.amount,
       supportedAt: input.supportedAt,
       note: input.note,
