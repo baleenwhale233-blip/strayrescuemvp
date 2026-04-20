@@ -72,6 +72,14 @@
 - 验证结果：`npm run typecheck`、`npm run test:domain` 通过，domain tests 现在累计到 41 项；`remoteReadHelpers.test.ts` 继续覆盖 rescuer homepage published 过滤、workbench finalizer 和 support history 本地汇总 helper。
 - 下一步 / 遗留问题：下一阶段可以继续拆 write facade，或先回头收窄 `src/domain/canonical/repository/index.ts` 的 barrel export 面；两者里更安全的顺序仍是先抽 write facade 再收窄 barrel。
 
+## 2026-04-20 | Repository 重构 | 抽出 remote write facade 与写侧 helper
+
+- 为什么改：`remoteRepository.ts` 继续同时承载写 API 和 facade re-export，且 `toRemoteDraftPayload / manual support fallback` 这类写侧约定容易随着页面需求悄悄漂移，需要单独收口。
+- 改了什么：新增 `src/domain/canonical/repository/remote/writeHelpers.ts`，抽出 `toRemoteDraftPayload` 和本地手动登记 fallback 输入构造；新增 `src/domain/canonical/repository/remote/writeRepository.ts` 承接 `updateRemoteMyProfile / updateRemoteCaseProfileByCaseId / createRemoteSupportEntryByCaseId / reviewRemoteSupportEntryByCaseId / createRemoteManualSupportEntryByCaseId / createRemoteProgressUpdateByCaseId / createRemoteExpenseRecordByCaseId / createRemoteBudgetAdjustmentByCaseId / saveRemoteDraftCase`；`remoteRepository.ts` 现在收成 read/write facade 的统一 re-export 薄壳。
+- 影响范围：仅影响 canonical remote repository 的内部文件组织、写侧 helper 位置和远端输入类型落点；页面 import 路径、对外函数名、fallback 语义、CloudBase action 名和现有页面 contract 不变。
+- 验证结果：新增 `remoteWriteHelpers.test.ts` 先红后绿，覆盖 draft 到远端 payload 映射和手动登记本地 fallback 语义；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 累计到 43 项。
+- 下一步 / 遗留问题：`remoteRepository.ts` 已经基本变成纯 facade，下一步更合适的是收窄 `src/domain/canonical/repository/index.ts` 的 barrel export 面，再逐步把页面从总出口迁到更明确的 public export。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：

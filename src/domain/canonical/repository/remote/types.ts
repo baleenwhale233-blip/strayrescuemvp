@@ -67,3 +67,68 @@ export type CaseRecordDetailVM = {
   budgetPreviousLabel?: string;
   budgetCurrentLabel?: string;
 };
+
+export type UpdateMyProfileInput = {
+  displayName?: string;
+  avatarUrl?: string;
+  avatarFileID?: string;
+  wechatId?: string;
+  contactNote?: string;
+  paymentQrFileID?: string;
+};
+
+export type UpdateCaseProfileInput = {
+  animalName?: string;
+  coverFileID?: string;
+};
+
+export type CreateSupportEntryInput = {
+  supporterNameMasked?: string;
+  amount: number;
+  supportedAt: string;
+  note?: string;
+  screenshotFileIds?: string[];
+  localScreenshotPaths?: string[];
+};
+
+export type ReviewSupportEntryInput = {
+  entryId: string;
+  status: "confirmed" | "unmatched";
+  reason?: import("../../types").SupportUnmatchedReason;
+  note?: string;
+};
+
+export type CreateManualSupportEntryInput = {
+  supporterNameMasked?: string;
+  amount: number;
+  supportedAt: string;
+  note?: string;
+};
+
+export type CreateProgressUpdateInput = {
+  status: import("../../types").CaseCurrentStatus;
+  statusLabel: string;
+  text: string;
+  occurredAt: string;
+  assetFileIds?: string[];
+};
+
+export type CreateExpenseRecordInput = {
+  amount: number;
+  spentAt: string;
+  summary: string;
+  note?: string;
+  category?: "medical" | "medication" | "food_supply" | "transport_other";
+  evidenceFileIds?: string[];
+  expenseItems?: Array<{
+    description: string;
+    amount: number;
+  }>;
+};
+
+export type CreateBudgetAdjustmentInput = {
+  previousTargetAmount: number;
+  newTargetAmount: number;
+  reason: string;
+  occurredAt: string;
+};
