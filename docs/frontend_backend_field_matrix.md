@@ -10,6 +10,8 @@
 
 - 如果你要看“还没补完、但应该先定契约的字段”，优先看：
   [`docs/pending_field_contracts.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/pending_field_contracts.md)
+- 如果你要看“同一个产品字段在页面 / 草稿 / canonical / 云端 / VM 各层分别叫什么”，优先看：
+  [`docs/field_contract_matrix.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/field_contract_matrix.md)
 
 说明：
 

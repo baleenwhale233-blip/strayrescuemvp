@@ -1496,3 +1496,29 @@
   `npm run typecheck`、`npm run test:domain`、`npx tsc --noEmit --noUnusedLocals --noUnusedParameters` 通过；额外用 `rg` 复查页面层已不再引用已删除的 overlay facade、selector 直连和 `localRepository.ts`。
 - 下一步 / 遗留问题：
   远端 `getMySupportHistory` / `getRescuerHomepage` 现在已经在 repository 内补本地展示覆盖，但如果后续把 title/cover/status 正式沉到后端字段，还要继续评估是否可以把这层本地 presentation resolver 再收薄一轮。
+
+## 2026-04-20 | 文档 | 新增全局字段契约总表，收口字段生命周期入口
+
+- 为什么改：
+  现有 `frontend_backend_field_matrix.md` 更偏“页面吃哪些字段”，`pending_field_contracts.md` 更偏“哪些字段还没定”；但现在要系统核对字段映射，需要一份能从页面输入一路看到草稿、canonical、云端和 VM 的全局对照表。
+- 改了什么：
+  新增 `docs/field_contract_matrix.md`，按“案例 / 建档、救助人资料、支出与进展、支持登记、资产图片”整理字段生命周期总表，并补一节“增删改查入口速查”；同时在 `docs/frontend_backend_field_matrix.md` 顶部增加跳转入口。
+- 影响范围：
+  长期文档入口从“两份页面导向文档”扩成“三份字段文档协同”：页面消费看 `frontend_backend_field_matrix`，待补契约看 `pending_field_contracts`，全局映射和真相源判断看 `field_contract_matrix`；代码逻辑未改。
+- 验证结果：
+  已按当前代码中的 `localDraftPersistence`、`types.ts`、`remoteRepository`、`cloudbaseClient`、`rescueApi` 和主要页面提交链路梳理字段来源，确保新文档能对照到实际文件路径。
+- 下一步 / 遗留问题：
+  下一轮可以按这份总表先从“建档字段”和“支持登记字段”开始逐项核对语义与命名；如果后续字段映射长期以这份文档为准，再考虑把更多页面文档里的重复字段描述继续收口。
+
+## 2026-04-20 | 文档 | 把字段总表改成窄表结构，提升 Markdown 可读性
+
+- 为什么改：
+  第一版 `field_contract_matrix` 直接把页面、草稿、canonical、云端、VM、管理文件都塞进宽表，虽然信息完整，但在 Markdown 渲染里可读性很差，核对时容易横向滚动丢上下文。
+- 改了什么：
+  将 `docs/field_contract_matrix.md` 重排为“窄表 + 补充说明”结构：表格只保留最核心的字段映射，云端字段、VM 字段和管理文件拆到表格下的短列表中，并按案例、资料、时间线、支持、资产分块整理。
+- 影响范围：
+  仅影响字段文档的阅读体验和后续核对效率，不改任何业务逻辑或字段契约本身。
+- 验证结果：
+  已检查新文档在标准 Markdown 语法下只使用常规表格和短列表，不再依赖超宽表格显示；同时保留原有字段语义与管理入口信息。
+- 下一步 / 遗留问题：
+  如果后续某个分块字段继续膨胀，可以再拆成独立小节或对象级子文档，但先保持单文件集中核对入口。
