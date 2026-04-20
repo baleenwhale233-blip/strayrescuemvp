@@ -62,6 +62,10 @@ type CasePresentationInput = {
   draftValue?: string;
 };
 
+type LocalPresentationOptions = {
+  applyLocalOverlays?: boolean;
+};
+
 type SyncStorageAPI = {
   getStorageSync(key: string): unknown;
   setStorageSync(key: string, value: unknown): void;
@@ -517,8 +521,13 @@ export function resolvePresentedCover(input: CasePresentationInput) {
 export function resolvePresentedDraft(
   draft: RescueCreateDraft | undefined,
   caseId?: string,
+  options: LocalPresentationOptions = {},
 ): RescueCreateDraft | undefined {
   if (!draft) {
+    return draft;
+  }
+
+  if (options.applyLocalOverlays === false) {
     return draft;
   }
 
@@ -541,7 +550,14 @@ export function resolvePresentedDraft(
   };
 }
 
-export function resolveBundlePresentation(bundle: CanonicalCaseBundle) {
+export function resolveBundlePresentation(
+  bundle: CanonicalCaseBundle,
+  options: LocalPresentationOptions = {},
+) {
+  if (options.applyLocalOverlays === false) {
+    return bundle;
+  }
+
   const caseId = bundle.case.id;
   const draftId = getOverlayDraftId(bundle);
   const savedDraft = getSavedDraftPresentation({ caseId, draftId });
@@ -680,9 +696,13 @@ export function resolveBundlePresentation(bundle: CanonicalCaseBundle) {
 
 export function finalizePublicDetailPresentation(
   detail: PublicDetailVM | undefined,
-  input?: { caseId?: string },
+  input?: { caseId?: string } & LocalPresentationOptions,
 ): PublicDetailVM | undefined {
   if (!detail) {
+    return detail;
+  }
+
+  if (input?.applyLocalOverlays === false) {
     return detail;
   }
 
@@ -699,8 +719,13 @@ export function finalizePublicDetailPresentation(
 
 export function finalizeOwnerDetailPresentation(
   detail: OwnerDetailVM | undefined,
+  options: LocalPresentationOptions = {},
 ): OwnerDetailVM | undefined {
   if (!detail) {
+    return detail;
+  }
+
+  if (options.applyLocalOverlays === false) {
     return detail;
   }
 
@@ -713,8 +738,12 @@ export function finalizeOwnerDetailPresentation(
 
 export function finalizeHomepageCaseCardPresentation(
   card: HomepageCaseCardVM,
-  input: { caseId?: string },
+  input: { caseId?: string } & LocalPresentationOptions,
 ): HomepageCaseCardVM {
+  if (input.applyLocalOverlays === false) {
+    return card;
+  }
+
   const latestStatus = getLatestStatusSubmission(input.caseId || card.caseId);
 
   if (!latestStatus) {
@@ -730,8 +759,12 @@ export function finalizeHomepageCaseCardPresentation(
 
 export function finalizeWorkbenchCaseCardPresentation(
   card: WorkbenchCaseCardVM,
-  input: { caseId?: string },
+  input: { caseId?: string } & LocalPresentationOptions,
 ): WorkbenchCaseCardVM {
+  if (input.applyLocalOverlays === false) {
+    return card;
+  }
+
   const latestStatus = getLatestStatusSubmission(input.caseId || card.caseId);
 
   if (!latestStatus) {

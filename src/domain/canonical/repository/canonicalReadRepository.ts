@@ -40,7 +40,7 @@ export function getCanonicalBundles() {
 }
 
 function getResolvedCanonicalBundles() {
-  return getCanonicalBundles().map(resolveBundlePresentation);
+  return getCanonicalBundles().map((bundle) => resolveBundlePresentation(bundle));
 }
 
 export function getCanonicalBundleByCaseId(caseId?: string) {

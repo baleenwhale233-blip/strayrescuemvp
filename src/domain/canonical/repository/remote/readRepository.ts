@@ -31,6 +31,7 @@ import type {
   HomepageCaseCardVM,
   PublicDetailVM,
   SupportSheetData,
+  WorkbenchCaseCardVM,
   WorkbenchVM,
 } from "../../types";
 import type { OwnerDetailVM } from "../canonicalReadRepositoryCore";
@@ -89,15 +90,51 @@ function getRemoteFallbackOptions() {
 }
 
 function resolveBundlesPresentation(bundles: CanonicalCaseBundle[]) {
-  return bundles.map(resolveBundlePresentation);
+  return bundles.map((bundle) => resolveBundlePresentation(bundle));
+}
+
+function resolveRemoteBundlesCanonical(bundles: CanonicalCaseBundle[]) {
+  return bundles.map((bundle) =>
+    resolveBundlePresentation(bundle, { applyLocalOverlays: false }),
+  );
+}
+
+function finalizeRemoteHomepageCaseCardPresentation(card: HomepageCaseCardVM) {
+  return finalizeHomepageCaseCardPresentation(card, {
+    caseId: card.caseId,
+    applyLocalOverlays: false,
+  });
+}
+
+function finalizeRemotePublicDetailPresentation(
+  detail: PublicDetailVM | undefined,
+  input: { caseId?: string },
+) {
+  return finalizePublicDetailPresentation(detail, {
+    ...input,
+    applyLocalOverlays: false,
+  });
+}
+
+function finalizeRemoteOwnerDetailPresentation(detail: OwnerDetailVM | undefined) {
+  return finalizeOwnerDetailPresentation(detail, {
+    applyLocalOverlays: false,
+  });
+}
+
+function finalizeRemoteWorkbenchCaseCardPresentation(card: WorkbenchCaseCardVM) {
+  return finalizeWorkbenchCaseCardPresentation(card, {
+    caseId: card.caseId,
+    applyLocalOverlays: false,
+  });
 }
 
 export async function loadHomepageCaseCardVMs(): Promise<HomepageCaseCardVM[]> {
   return withRemoteFallback(
     async () => {
       const { bundles } = await callRescueApi<BundlesPayload>("listHomepageCases");
-      return getHomepageCaseCardVMsFromBundles(resolveBundlesPresentation(bundles)).map(
-        (card) => finalizeHomepageCaseCardPresentation(card, { caseId: card.caseId }),
+      return getHomepageCaseCardVMsFromBundles(resolveRemoteBundlesCanonical(bundles)).map(
+        (card) => finalizeRemoteHomepageCaseCardPresentation(card),
       );
     },
     () => getHomepageCaseCardVMs(),
@@ -122,10 +159,12 @@ export async function loadRescuerHomepageVM(input: {
           caseId: input.caseId,
         },
         {
-          resolveBundlesPresentation,
+          resolveBundlesPresentation: resolveRemoteBundlesCanonical,
           getHomepageCaseCardVM,
-          finalizeHomepageCaseCardPresentation,
-          finalizeWorkbenchCaseCardPresentation,
+          finalizeHomepageCaseCardPresentation: (card) =>
+            finalizeRemoteHomepageCaseCardPresentation(card),
+          finalizeWorkbenchCaseCardPresentation: (card) =>
+            finalizeRemoteWorkbenchCaseCardPresentation(card),
         },
       );
     },
@@ -154,7 +193,7 @@ export async function searchCaseByPublicIdExact(input?: string) {
         "searchCaseByPublicId",
         { publicCaseId: input },
       );
-      return bundle ? resolveBundlePresentation(bundle) : undefined;
+      return bundle ? resolveRemoteBundlesCanonical([bundle])[0] : undefined;
     },
     () => getCaseByPublicIdExact(input),
     getRemoteFallbackOptions(),
@@ -169,10 +208,10 @@ export async function loadPublicDetailVMByCaseId(
       const { bundle } = await callRescueApi<BundlePayload>("getCaseDetail", {
         caseId,
       });
-      return finalizePublicDetailPresentation(
+      return finalizeRemotePublicDetailPresentation(
         bundle
           ? getPublicDetailVMByCaseIdFromBundles(
-              [resolveBundlePresentation(bundle)],
+              resolveRemoteBundlesCanonical([bundle]),
               caseId,
             )
           : undefined,
@@ -212,7 +251,7 @@ export async function loadSupportSheetDataByCaseId(
       });
       return bundle
         ? getSupportSheetDataByCaseIdFromBundles(
-            [resolveBundlePresentation(bundle)],
+            resolveRemoteBundlesCanonical([bundle]),
             caseId,
           )
         : undefined;
@@ -230,10 +269,10 @@ export async function loadOwnerDetailVMByCaseId(
       const { bundle } = await callRescueApi<BundlePayload>("getOwnerCaseDetail", {
         caseId,
       });
-      return finalizeOwnerDetailPresentation(
+      return finalizeRemoteOwnerDetailPresentation(
         bundle
           ? getOwnerDetailVMByCaseIdFromBundles(
-              [resolveBundlePresentation(bundle)],
+              resolveRemoteBundlesCanonical([bundle]),
               caseId,
             )
           : undefined,
@@ -251,12 +290,14 @@ export async function loadWorkbenchVMForCurrentUser(): Promise<
     async () => {
       const { bundles } = await callRescueApi<BundlesPayload>("getOwnerWorkbench");
       return finalizeWorkbenchVM(
-        getWorkbenchVMFromBundles(resolveBundlesPresentation(bundles)),
+        getWorkbenchVMFromBundles(resolveRemoteBundlesCanonical(bundles)),
         {
-          resolveBundlesPresentation,
+          resolveBundlesPresentation: resolveRemoteBundlesCanonical,
           getHomepageCaseCardVM,
-          finalizeHomepageCaseCardPresentation,
-          finalizeWorkbenchCaseCardPresentation,
+          finalizeHomepageCaseCardPresentation: (card) =>
+            finalizeRemoteHomepageCaseCardPresentation(card),
+          finalizeWorkbenchCaseCardPresentation: (card) =>
+            finalizeRemoteWorkbenchCaseCardPresentation(card),
           formatCurrency,
           localSupporterId: LOCAL_SUPPORTER_ID,
           resolvePresentedCover,

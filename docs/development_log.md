@@ -88,6 +88,14 @@
 - 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 44 项；新增测试已覆盖 `index.ts` 不再出现 4 个 `export *`，同时仍保留 `loadHomepageCaseCardVMs / updateRemoteMyProfile / getCurrentDraft / saveCaseStatusSubmission` 等页面入口。
 - 下一步 / 遗留问题：下一阶段可以继续把页面逐步从 `repository/index.ts` 迁到更明确的 `remote/readRepository`、`remote/writeRepository` 或 draft/public module，但这已经属于可选整理，不再是当前结构风险阻塞项。
 
+## 2026-04-20 | Repository 重构 | 为正式远端读路径关闭本地 overlay 注入
+
+- 为什么改：本地 `localPresentation` overlay 曾用于 Alpha 阶段的离线 / CloudBase 不可用兜底，但同一套 resolver 也会覆盖正式远端成功回包，导致本机旧 title/cover/status/expense/budget 可能长期压过远端真值。
+- 改了什么：在 `localPresentationCore` 与 `localPresentation` wrapper 增加 `applyLocalOverlays` 策略开关，默认保持旧行为；`remote/readRepository` 的 CloudBase 成功分支改为 `applyLocalOverlays:false`，远端成功回包不再注入本机 overlay，本地 fallback 和 draft 链路仍继续保留 overlay。
+- 影响范围：影响远端成功读取的首页、详情、owner 详情、工作台、联系方式半弹层、案例 ID 搜索和救助人主页的本地 overlay 优先级；不改本地 fallback、不改草稿 draftId 链路、不改 CloudBase action、VM 字段或页面 import。
+- 验证结果：新增 `local presentation can be disabled for formal remote read paths` 测试先红后绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 45 项。
+- 下一步 / 遗留问题：下一步可继续拆掉正式写成功后的历史 overlay 残留策略，例如远端 title/cover/profile 写成功后清理对应本地覆盖；这要按 overlay 类型逐项做，避免误删离线未同步内容。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
