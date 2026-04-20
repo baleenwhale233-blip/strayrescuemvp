@@ -48,6 +48,14 @@
 - 验证结果：support service Node tests 先红后绿，覆盖 support event 投影、非法本地截图拦截、pending 支持登记写入与私有投影事件；新增云函数模块测试、`node --check`、`typecheck` 和 `test:domain` 均通过。
 - 下一步 / 遗留问题：Batch 2 还剩 records service 拆分，建议下一刀再拆 `getCaseRecordDetail / createProgressUpdate / createExpenseRecord / createBudgetAdjustment`，不要和 remoteRepository 同轮改。
 
+## 2026-04-20 | 云函数重构 | 拆出 rescueApi records service
+
+- 为什么改：只读记录详情和 P0-B 三条内容写链都集中在 `index.js`，且共享图片回读、资产写入、记录详情 payload 与错误码校验；继续留在主文件会阻塞后续 remoteRepository 拆分。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/services/records.js`，把 `getCaseRecordDetail / createProgressUpdate / createExpenseRecord / createBudgetAdjustment` 及记录详情 helper 从 `index.js` 移出；`index.js` 保留 action handler 名，通过 `createRecordsService()` 注入 CloudBase 依赖。
+- 影响范围：仅影响 `rescueApi` 内部 records 模块边界和新增 records characterization tests；不改 `case_events / expense_records / evidence_assets / rescue_cases` 字段、错误码、写入规则、前端 repository 或页面交互。
+- 验证结果：records service Node tests 先红后绿，覆盖记录类型归一、图片去重、支出明细 fallback、非法进展/无图记账拦截、支出写入和 support entry 详情回读；新增云函数模块测试、`node --check`、`typecheck` 和 `test:domain` 均通过。
+- 下一步 / 遗留问题：`rescueApi/index.js` 已从近 2000 行降到约 600 行；下一阶段再拆 `remoteRepository.ts`，不要继续在本轮改前端 facade。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
