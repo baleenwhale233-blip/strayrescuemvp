@@ -1,5 +1,31 @@
 const cloud = require("wx-server-sdk");
 const { seedMockData } = require("./mockSeed");
+const {
+  createId,
+  createRuntime,
+  fail,
+  getAssetFileID,
+  getCaseId,
+  hasOnlyCloudFileIDs,
+  isCloudFileID,
+  nowIso,
+  ok,
+  sanitizeId,
+} = require("./src/runtime");
+const {
+  getHeroImageUrlFromBundle,
+  profileKey,
+  recomputeThread,
+  recomputeThreads,
+  toCanonicalAsset,
+  toCanonicalCase,
+  toCanonicalEvent,
+  toCanonicalExpenseRecord,
+  toCanonicalRescuer,
+  toCanonicalSharedEvidenceGroup,
+  toCanonicalSupportEntry,
+} = require("./src/adapters/canonical");
+const { createProfileService } = require("./src/services/profile");
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -7,6 +33,13 @@ cloud.init({
 
 const db = cloud.database();
 const _ = db.command;
+const {
+  getOpenid,
+  getOne,
+  getTempFileURLMap,
+  queryCollection,
+  withTempFileURL,
+} = createRuntime({ cloud, db });
 
 const COLLECTIONS = {
   profiles: "user_profiles",
@@ -18,374 +51,18 @@ const COLLECTIONS = {
   assets: "evidence_assets",
   sharedEvidenceGroups: "shared_evidence_groups",
 };
-
-function ok(data) {
-  return { ok: true, data };
-}
-
-function fail(error, message) {
-  return { ok: false, error, message };
-}
-
-function nowIso() {
-  return new Date().toISOString();
-}
-
-function createId(prefix) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function sanitizeId(value) {
-  return String(value || "unknown").replace(/[^a-zA-Z0-9_-]/g, "_");
-}
-
-function isCloudFileID(value) {
-  return typeof value === "string" && value.startsWith("cloud://");
-}
-
-function hasOnlyCloudFileIDs(values = []) {
-  return Array.isArray(values) && values.every((fileID) => isCloudFileID(fileID));
-}
-
-function hasText(value) {
-  return typeof value === "string" && value.trim().length > 0;
-}
-
-function hasAnyContactProfileInfo(input = {}) {
-  return Boolean(
-    hasText(input.wechatId) ||
-      hasText(input.paymentQrAssetId) ||
-      hasText(input.paymentQrUrl) ||
-      hasText(input.qrImagePath),
-  );
-}
-
-function getAssetFileID(doc = {}) {
-  return [doc.fileID, doc.originalUrl, doc.watermarkedUrl, doc.thumbnailUrl].find(
-    (value) => isCloudFileID(value),
-  );
-}
-
-async function getTempFileURLMap(fileIDs = []) {
-  const uniqueFileIDs = [...new Set(fileIDs.filter(isCloudFileID))];
-  if (!uniqueFileIDs.length) {
-    return new Map();
-  }
-
-  try {
-    const result = await cloud.getTempFileURL({
-      fileList: uniqueFileIDs,
-    });
-    const fileList = result.fileList || [];
-
-    return new Map(
-      fileList
-        .filter((item) => item.fileID && item.tempFileURL)
-        .map((item) => [item.fileID, item.tempFileURL]),
-    );
-  } catch (error) {
-    console.warn("[rescueApi] getTempFileURL failed", error);
-    return new Map();
-  }
-}
-
-function withTempFileURL(doc, tempFileURLMap) {
-  const fileID = getAssetFileID(doc);
-
-  if (!fileID) {
-    return doc;
-  }
-
-  return {
-    ...doc,
-    _fileID: fileID,
-    _tempFileURL: tempFileURLMap.get(fileID),
-  };
-}
-
-function normalizeOpenid(value) {
-  return value || "anonymous";
-}
-
-function getCaseId(doc) {
-  return doc.caseId || doc.id || doc._id;
-}
-
-function getOpenid(event) {
-  const context = cloud.getWXContext();
-  return normalizeOpenid(context.OPENID || event?.openid);
-}
-
-async function queryCollection(name, where = {}, limit = 100) {
-  try {
-    const result = await db.collection(name).where(where).limit(limit).get();
-    return result.data || [];
-  } catch (error) {
-    console.warn(`[rescueApi] ${name} query failed`, error);
-    return [];
-  }
-}
-
-async function getOne(name, where) {
-  const items = await queryCollection(name, where, 1);
-  return items[0];
-}
-
-function profileKey(profile) {
-  return profile.openid || profile._openid || profile.userId || profile.id || profile._id;
-}
-
-function toCanonicalRescuer(profile, rescuerOpenid) {
-  return {
-    id: profileKey(profile) || rescuerOpenid,
-    name: profile.displayName || profile.name || "当前救助人",
-    avatarUrl: profile.avatarUrl,
-    avatarAssetId: profile.avatarAssetId,
-    verifiedLevel: profile.verifiedLevel || "wechat",
-    joinedAt: profile.joinedAt || profile.createdAt || nowIso(),
-    wechatId: profile.wechatId,
-    paymentQrAssetId: profile.paymentQrAssetId,
-    contactNote: profile.contactNote,
-    stats: profile.stats || {
-      publishedCaseCount: 0,
-      verifiedReceiptCount: 0,
-    },
-  };
-}
-
-function toCanonicalCase(doc) {
-  const caseId = getCaseId(doc);
-
-  return {
-    id: caseId,
-    publicCaseId: doc.publicCaseId,
-    rescuerId: doc.rescuerId || doc.rescuerOpenid || doc._openid,
-    animalName: doc.animalName || doc.name || "未命名救助",
-    species: doc.species || "cat",
-    coverAssetId: doc.coverAssetId || (doc.coverFileID ? `${caseId}_cover` : undefined),
-    faceIdAssetId: doc.faceIdAssetId,
-    foundAt: doc.foundAt,
-    foundLocationText: doc.foundLocationText,
-    initialSummary: doc.initialSummary || doc.summary || "待补充事件说明",
-    currentStatus: doc.currentStatus || "medical",
-    currentStatusLabel: doc.currentStatusLabel || doc.statusLabel || "医疗救助中",
-    targetAmount: Number(doc.targetAmount ?? doc.budget ?? 0),
-    visibility: doc.visibility || doc.caseVisibility || "draft",
-    createdAt: doc.createdAt || nowIso(),
-    updatedAt: doc.updatedAt || doc.createdAt || nowIso(),
-  };
-}
-
-function toCanonicalEvent(doc) {
-  const caseId = doc.caseId;
-  const base = {
-    id: doc.eventId || doc.id || doc._id,
-    caseId,
-    type: doc.type,
-    occurredAt: doc.occurredAt || doc.createdAt || nowIso(),
-    assetIds: doc.assetIds || [],
-    visibility: doc.visibility || "public",
-  };
-
-  if (doc.type === "expense") {
-    return {
-      ...base,
-      amount: Number(doc.amount || 0),
-      currency: doc.currency || "CNY",
-      merchantName: doc.merchantName,
-      expenseItemsText: doc.expenseItemsText || doc.summary || "",
-      verificationStatus: doc.verificationStatus || "manual",
-    };
-  }
-
-  if (doc.type === "support") {
-    return {
-      ...base,
-      supporterUserId: doc.supporterUserId || doc.supporterOpenid,
-      amount: Number(doc.amount || 0),
-      currency: doc.currency || "CNY",
-      supportSource: doc.supportSource || "platform_form",
-      supporterNameMasked: doc.supporterNameMasked,
-      message: doc.message || doc.note,
-      verificationStatus: doc.verificationStatus || "pending",
-    };
-  }
-
-  if (doc.type === "budget_adjustment") {
-    return {
-      ...base,
-      previousTargetAmount: Number(doc.previousTargetAmount || 0),
-      newTargetAmount: Number(doc.newTargetAmount || 0),
-      reason: doc.reason || "",
-    };
-  }
-
-  return {
-    ...base,
-    text: doc.text || doc.summary || "",
-    statusLabel: doc.statusLabel,
-  };
-}
-
-function toEvidenceItem(fileID, index, prefix = "evidence") {
-  return {
-    id: `${prefix}-${index}`,
-    kind: "payment_screenshot",
-    imageUrl: fileID,
-    hash: fileID,
-  };
-}
-
-function toCanonicalExpenseRecord(doc) {
-  return {
-    id: doc.recordId || doc.id || doc._id,
-    caseId: doc.caseId,
-    amount: Number(doc.amount || 0),
-    currency: doc.currency || "CNY",
-    spentAt: doc.spentAt || doc.createdAt || nowIso(),
-    category: doc.category || "medical",
-    summary: doc.summary || "",
-    note: doc.note,
-    merchantName: doc.merchantName,
-    expenseItems: Array.isArray(doc.expenseItems) ? doc.expenseItems : [],
-    evidenceItems: doc.evidenceItems || (doc.fileIDs || []).map(toEvidenceItem),
-    sharedEvidenceGroupId: doc.sharedEvidenceGroupId,
-    evidenceLevel: doc.evidenceLevel || "needs_attention",
-    verificationStatus: doc.verificationStatus || "manual",
-    visibility: doc.visibility || "public",
-    projectedEventId: doc.projectedEventId,
-  };
-}
-
-function toCanonicalSupportEntry(doc) {
-  const fileIDs = doc.screenshotFileIds || doc.screenshotFileIDs || [];
-
-  return {
-    id: doc.entryId || doc.id || doc._id,
-    supportThreadId: doc.supportThreadId,
-    caseId: doc.caseId,
-    supporterUserId: doc.supporterUserId || doc.supporterOpenid,
-    supporterNameMasked: doc.supporterNameMasked,
-    amount: Number(doc.amount || 0),
-    currency: doc.currency || "CNY",
-    supportedAt: doc.supportedAt || doc.createdAt || nowIso(),
-    note: doc.note,
-    screenshotItems:
-      doc.screenshotItems ||
-      fileIDs.map((fileID, index) =>
-        toEvidenceItem(fileID, index, `support-screenshot-${index}`),
-      ),
-    screenshotHashes: doc.screenshotHashes || fileIDs,
-    status: doc.status || "pending",
-    unmatchedReason: doc.unmatchedReason,
-    unmatchedNote: doc.unmatchedNote,
-    createdAt: doc.createdAt || nowIso(),
-    updatedAt: doc.updatedAt || doc.createdAt || nowIso(),
-    confirmedAt: doc.confirmedAt,
-    confirmedByUserId: doc.confirmedByUserId || doc.confirmedByOpenid,
-    visibility: doc.visibility || "private",
-    projectedEventId: doc.projectedEventId,
-  };
-}
-
-function recomputeThread(threadId, entries) {
-  const sorted = [...entries].sort((left, right) =>
-    String(left.supportedAt).localeCompare(String(right.supportedAt)),
-  );
-  const latest = sorted[sorted.length - 1];
-  const confirmed = sorted.filter((entry) => entry.status === "confirmed");
-  const pending = sorted.filter((entry) => entry.status === "pending");
-  const unmatched = sorted.filter((entry) => entry.status === "unmatched");
-
-  return {
-    id: threadId,
-    caseId: latest.caseId,
-    supporterUserId: latest.supporterUserId,
-    supporterNameMasked: latest.supporterNameMasked,
-    createdAt: sorted[0]?.createdAt || latest.createdAt,
-    updatedAt: latest.updatedAt,
-    totalConfirmedAmount: confirmed.reduce((sum, entry) => sum + entry.amount, 0),
-    totalPendingAmount: pending.reduce((sum, entry) => sum + entry.amount, 0),
-    totalUnmatchedAmount: unmatched.reduce((sum, entry) => sum + entry.amount, 0),
-    pendingCount: pending.length,
-    unmatchedCount: unmatched.length,
-    latestStatusSummary:
-      latest.status === "confirmed"
-        ? "最近一条已确认"
-        : latest.status === "pending"
-          ? "最近一条待处理"
-          : "最近一条未匹配",
-  };
-}
-
-function recomputeThreads(entries) {
-  const groups = new Map();
-
-  for (const entry of entries) {
-    const group = groups.get(entry.supportThreadId) || [];
-    group.push(entry);
-    groups.set(entry.supportThreadId, group);
-  }
-
-  return [...groups.entries()].map(([threadId, group]) =>
-    recomputeThread(threadId, group),
-  );
-}
-
-function toCanonicalAsset(doc) {
-  const fileID = doc._fileID || getAssetFileID(doc);
-  const url = doc._tempFileURL || doc.watermarkedUrl || doc.originalUrl || doc.thumbnailUrl || fileID;
-
-  return {
-    id: doc.assetId || doc.id || doc._id,
-    kind: doc.kind || "other",
-    originalUrl: url,
-    watermarkedUrl: doc._tempFileURL || doc.watermarkedUrl,
-    thumbnailUrl: doc._tempFileURL || doc.thumbnailUrl || url,
-  };
-}
-
-function getCanonicalAssetUrl(asset) {
-  return asset?.watermarkedUrl || asset?.originalUrl || asset?.thumbnailUrl || "";
-}
-
-function getHeroImageUrlFromBundle(bundle) {
-  if (!bundle) {
-    return "";
-  }
-
-  const assetMap = new Map((bundle.assets || []).map((asset) => [asset.id, asset]));
-  const getAssetUrlById = (assetId) =>
-    assetId ? getCanonicalAssetUrl(assetMap.get(assetId)) : "";
-  const sortedProgressEvents = [...(bundle.events || [])]
-    .filter((event) => event.type === "progress_update" && event.visibility === "public")
-    .sort((left, right) => String(right.occurredAt || "").localeCompare(String(left.occurredAt || "")));
-
-  for (const event of sortedProgressEvents) {
-    const progressAssetUrl = (event.assetIds || [])
-      .map((assetId) => getAssetUrlById(assetId))
-      .find(Boolean);
-
-    if (progressAssetUrl) {
-      return (
-        getAssetUrlById(bundle.case?.coverAssetId) ||
-        getAssetUrlById(bundle.case?.faceIdAssetId) ||
-        progressAssetUrl
-      );
-    }
-  }
-
-  return getAssetUrlById(bundle.case?.coverAssetId) || getAssetUrlById(bundle.case?.faceIdAssetId);
-}
-
-function toCanonicalSharedEvidenceGroup(doc) {
-  return {
-    id: doc.groupId || doc.id || doc._id,
-    caseId: doc.caseId,
-    title: doc.title,
-    items: doc.items || [],
-  };
-}
+const {
+  getMyProfile,
+  getProfileByOpenid,
+  updateMyProfile,
+} = createProfileService({
+  collections: COLLECTIONS,
+  db,
+  getAssetFileID,
+  getOne,
+  getTempFileURLMap,
+  withTempFileURL,
+});
 
 async function composeBundles(caseDocs) {
   const cases = caseDocs.map(toCanonicalCase);
@@ -545,174 +222,6 @@ function formatDateLabel(isoDateTime) {
   const minutes = `${date.getMinutes()}`.padStart(2, "0");
 
   return `${month}-${day} ${hours}:${minutes}`;
-}
-
-function toProfilePayload(profile, avatarAsset, paymentQrAsset) {
-  const avatarUrl =
-    avatarAsset?._tempFileURL ||
-    avatarAsset?.fileID ||
-    avatarAsset?.originalUrl ||
-    profile.avatarUrl ||
-    "";
-  const paymentQrUrl =
-    paymentQrAsset?._tempFileURL ||
-    paymentQrAsset?.fileID ||
-    paymentQrAsset?.originalUrl ||
-    "";
-
-  return {
-    openid: profile.openid || profile._openid || profile.userId || profile._id,
-    displayName: profile.displayName || profile.name || "",
-    avatarUrl,
-    wechatId: profile.wechatId || "",
-    contactNote: profile.contactNote || "",
-    avatarAssetId: profile.avatarAssetId,
-    paymentQrAssetId: profile.paymentQrAssetId,
-    paymentQrUrl,
-    hasContactProfile: hasAnyContactProfileInfo({
-      wechatId: profile.wechatId,
-      paymentQrAssetId: profile.paymentQrAssetId,
-      paymentQrUrl,
-    }),
-  };
-}
-
-function pickStringField(input, key, fallback = "") {
-  if (Object.prototype.hasOwnProperty.call(input || {}, key)) {
-    return String(input?.[key] || "").trim();
-  }
-
-  return String(fallback || "").trim();
-}
-
-async function getProfileByOpenid(openid) {
-  return (
-    (await getOne(COLLECTIONS.profiles, {
-      openid,
-    })) ||
-    (await getOne(COLLECTIONS.profiles, {
-      _id: openid,
-    }))
-  );
-}
-
-async function getMyProfile(openid) {
-  const profile = await getProfileByOpenid(openid);
-
-  if (!profile) {
-    return ok({
-      profile: toProfilePayload({
-        openid,
-        displayName: "",
-        avatarUrl: "",
-        verifiedLevel: "wechat",
-        joinedAt: nowIso(),
-      }),
-    });
-  }
-
-  const avatarAsset = profile.avatarAssetId
-    ? await getOne(COLLECTIONS.assets, {
-        assetId: profile.avatarAssetId,
-      })
-    : undefined;
-  const paymentQrAsset = profile.paymentQrAssetId
-    ? await getOne(COLLECTIONS.assets, {
-        assetId: profile.paymentQrAssetId,
-      })
-    : undefined;
-  const tempFileURLMap = await getTempFileURLMap([
-    getAssetFileID(avatarAsset),
-    getAssetFileID(paymentQrAsset),
-  ]);
-
-  return ok({
-    profile: toProfilePayload(
-      profile,
-      avatarAsset ? withTempFileURL(avatarAsset, tempFileURLMap) : undefined,
-      paymentQrAsset ? withTempFileURL(paymentQrAsset, tempFileURLMap) : undefined,
-    ),
-  });
-}
-
-async function updateMyProfile(openid, input) {
-  const existing = await getProfileByOpenid(openid);
-  const timestamp = nowIso();
-  const displayName = pickStringField(
-    input,
-    "displayName",
-    existing?.displayName || existing?.name,
-  );
-  const avatarUrl = pickStringField(input, "avatarUrl", existing?.avatarUrl);
-  const avatarFileID = String(input?.avatarFileID || "").trim();
-  const wechatId = pickStringField(input, "wechatId", existing?.wechatId);
-  const contactNote = pickStringField(input, "contactNote", existing?.contactNote);
-  const paymentQrFileID = String(input?.paymentQrFileID || "").trim();
-  let avatarAssetId = existing?.avatarAssetId;
-  let paymentQrAssetId = existing?.paymentQrAssetId;
-
-  if (avatarFileID) {
-    if (!isCloudFileID(avatarFileID)) {
-      return fail("INVALID_PROFILE_ASSET_FILE_ID");
-    }
-
-    avatarAssetId = `profile_${sanitizeId(openid)}_avatar`;
-    await db.collection(COLLECTIONS.assets).doc(avatarAssetId).set({
-      data: {
-        assetId: avatarAssetId,
-        fileID: avatarFileID,
-        kind: "avatar",
-        visibility: "public",
-        uploadedByOpenid: openid,
-        createdAt: existing?.createdAt || timestamp,
-        updatedAt: timestamp,
-      },
-    });
-  }
-
-  if (paymentQrFileID) {
-    if (!isCloudFileID(paymentQrFileID)) {
-      return fail("INVALID_PROFILE_ASSET_FILE_ID");
-    }
-
-    paymentQrAssetId = `profile_${sanitizeId(openid)}_payment_qr`;
-    await db.collection(COLLECTIONS.assets).doc(paymentQrAssetId).set({
-      data: {
-        assetId: paymentQrAssetId,
-        fileID: paymentQrFileID,
-        kind: "payment_qr",
-        visibility: "private",
-        uploadedByOpenid: openid,
-        createdAt: existing?.createdAt || timestamp,
-        updatedAt: timestamp,
-      },
-    });
-  }
-
-  const profile = {
-    openid,
-    displayName,
-    name: displayName || existing?.name || "当前用户",
-    avatarUrl,
-    avatarAssetId,
-    verifiedLevel: existing?.verifiedLevel || "wechat",
-    joinedAt: existing?.joinedAt || existing?.createdAt || timestamp,
-    createdAt: existing?.createdAt || timestamp,
-    updatedAt: timestamp,
-    wechatId,
-    contactNote,
-    paymentQrAssetId,
-    stats: existing?.stats || {
-      publishedCaseCount: 0,
-      verifiedReceiptCount: 0,
-    },
-  };
-
-  await db.collection(COLLECTIONS.profiles).doc(openid).set({
-    data: profile,
-  });
-
-  return getMyProfile(openid);
 }
 
 async function getMySupportHistory(openid) {
