@@ -37,6 +37,8 @@
 ### 当前阻塞项
 
 - `写进展更新` / `记账` / `追加预算` 的主态 `caseId` 路径已接 CloudBase 远端写链路；草稿 `draftId` 路径仍保持本地 draft 闭环
+- 正式远端成功读链路已经不再注入本机 `localPresentation` overlay；本地 overlay 只保留给草稿链路或 CloudBase 不可用 / 基础设施失败时的兜底
+- 已发布案例的 `title / cover` 在远端编辑成功后会清理对应 `caseId + draftId` 覆盖；主态 `budget / status / expense` 在远端写成功后也会清理对应 overlay key，避免旧本机结果再次压过远端真值
 - 联系方式完整性已改成“微信号 / 二维码任一即可”，且联系方式半弹层运行时文案已收口到“联系信息 / 查看联系方式 / 登记一笔”；还需要一轮真机回归确认单渠道场景下都顺畅
 - 首页 / 详情 / 记录主页主图已统一 fallback 到“封面 -> face -> 最新公开进展图”，但仍要用真实远端数据再确认一次新建后发布案例的封面回读
 - 新记账已改成强制至少 1 张图片，历史无图记录按纯文本兼容；还需要真机确认图片上传和无图历史卡片展示
@@ -79,7 +81,7 @@
 
 | 页面 | 当前状态 | Figma 节点 | 依赖文档 | 下一步 |
 |---|---|---|---|---|
-| 我的记录 / 工作台 | `设计部分还原` | `1:2` | `figma_progress_map` / `frontend_backend_field_matrix` | 结构、列表与本地展示覆盖已在；`primaryNoticeLabel / lastUpdateAgeHint` 已补 selector VM，继续补 badge 信息密度和细节贴稿 |
+| 我的记录 / 工作台 | `设计部分还原` | `1:2` | `figma_progress_map` / `frontend_backend_field_matrix` | 结构、列表与本地展示覆盖兜底已在；正式远端成功回包不再吃本机 overlay；`primaryNoticeLabel / lastUpdateAgeHint` 已补 selector VM，继续补 badge 信息密度和细节贴稿 |
 | 我的页正式版 | `设计部分还原` | `444:7259` | `figma_progress_map` / `pending_field_contracts` | 已从占位页升级成正式入口页；头像昵称现已改成 `chooseAvatar + nickname + 保存` 的轻编辑链路，支持足迹 / 联系方式设置 / 使用说明入口均已接真实页面 |
 | 我的登记记录 | `页面骨架已在` | `446:7625` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并优先读取 `getMySupportHistory` 远端 VM，按真实 OPENID 聚合 confirmed 登记；继续做视觉精修 |
 | 联系信息设置 | `页面骨架已在` | `446:7828` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getMyProfile / updateMyProfile`；微信二维码会上传为 CloudBase fileID 并落到 `user_profiles.paymentQrAssetId`；新建记录前置校验已改为远端 `hasContactProfile` 优先、本地兜底，且口径为“微信号 / 二维码任一即可” |
@@ -115,10 +117,10 @@
   - 草稿预览页已去掉系统自动注入的默认“状态更新”展示，空草稿不再伪装成用户已经写过一条进展
   - 草稿预览页已支持在标题旁直接修改救助代号，保持和复制案例 ID 同层级的轻量入口
   - 草稿预览页与主态详情页的头卡现在继续共用同一套组件，标题和动物头像都可直接在头卡编辑
-  - 代号 / 动物头像当前已补前端本地持久化，并会在草稿预览、主态详情、工作台和支持登记页间保持一致；主态 `caseId` 的代号 / 头像已接 `updateCaseProfile` 远端写入，本地覆盖层降级为兜底
+  - 代号 / 动物头像当前已补前端本地持久化，并会在草稿预览、主态详情、工作台和支持登记页间保持一致；主态 `caseId` 的代号 / 头像已接 `updateCaseProfile` 远端写入，本地覆盖层降级为兜底，远端成功后会清理对应 `caseId + draftId` 的 title / cover 覆盖
   - 工作台与主态详情当前会优先显示正式远端头像 / 代号；远端不可用时仍可吃建档第一步上传的本地头像，以及状态更新页里最近一次选中的状态文案
   - 工作台、首页、详情和记录主页的状态文案当前都已按 `currentStatus` 枚举收口到状态更新页标签池；历史自由文案不再直接外露
-  - 客态详情页当前也已接入同一层本地展示覆盖，名字、动物头像和状态文案会跟随本地最新编辑结果显示
+  - 客态详情页当前也已接入同一层本地展示覆盖，但仅在本地 fallback 场景下才会继续吃这些值；正式远端成功回包时不再注入本机 `title / heroImageUrl / statusLabel` overlay
   - 主态详情页与草稿预览页已抽出共享 owner-style 组件，统一复用 `动物卡 / 动作卡 / tab / 摘要卡 / 时间线卡`
   - 客态详情 / 主态详情 / 草稿预览 detail tab 已开始统一到共享时间线卡组件，持续以客态卡片为视觉真值收口
   - 新建救助第一页 / 第二步已按 Figma `6:292 / 6:345` 收口新版结构，去掉旧的“相册导入 / 账本预览”偏题块，并贴回新版底部按钮图标与表单层级
@@ -130,15 +132,15 @@
   - 记账页已补 `公共凭证横向滚动查看 + 点击看大图 + 按 caseId / draftId 静默缓存未提交内容，并在再次进入时选择继续上次录入或新的录入`
   - 新记账当前已强制至少上传 1 张图片；历史无图记录保持 text-only 展示，不再补假凭证图或占位图
   - 草稿箱里的 `记一笔支出` 已改为进入新记账页，并支持 `draftId / caseId` 双上下文缓存
-  - 记账页已补前端提交闭环：从主态详情提交后可在主态 detail tab 看到新的支出卡；从草稿箱提交后可在草稿 detail tab 看到新的支出卡
+  - 记账页已补前端提交闭环：从主态详情提交后可在主态 detail tab 看到新的支出卡；从草稿箱提交后可在草稿 detail tab 看到新的支出卡；主态远端写成功后会清理 `case-expense-submissions:{caseId}`
   - 支出卡当前已去掉和记账系统不一致的医院字段，只保留基于项目描述拼接的标题，并限制为最多两行
   - 草稿 detail tab 的支出卡重复问题已修复，当前 `expense` 不再同时从 `draft.timeline` 和 `draft.expenseRecords` 双路渲染
   - 写进展更新页已新建统一入口页面 `src/pages/rescue/progress-update/index.tsx`，主态与草稿箱都走同一路由
-  - 写进展更新页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成状态卡并更新状态标签；草稿箱提交后会在简介页出现当前状态卡片
+  - 写进展更新页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成状态卡并更新状态标签；草稿箱提交后会在简介页出现当前状态卡片；主态远端写成功后会清理 `case-status-submissions:{caseId}`
   - 状态更新页的添加照片模块已对齐到记账页同款交互：左侧固定添加按钮，右侧横向滑动图片列表
   - 个案详情时间线里的支出记录和状态更新已补只读详情页入口，并已接 `getCaseRecordDetail` 正式后端详情 VM；提交后的账目 / 进展不可修改，只能通过新增记录保留轨迹
   - 追加预算页已新建统一入口页面 `src/pages/rescue/budget-update/index.tsx`，主态与草稿箱都走同一路由
-  - 追加预算页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成预算调整卡并更新总预算；草稿箱提交后会更新草稿预算并在 detail tab 生成预算调整卡
+  - 追加预算页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成预算调整卡并更新总预算；草稿箱提交后会更新草稿预算并在 detail tab 生成预算调整卡；主态远端写成功后会清理 `case-budget-adjustments:{caseId}`
   - 个案详情页现在只会在首次进入或子页面真实写入成功后刷新；从记账页无提交返回时不再整页重载
   - 项目内默认多行文本输入当前已统一成覆盖层 placeholder 实现，统一 `14px / 24px / #94A3B8 / 18px inset`，不再依赖系统原生 `Textarea placeholder`
   - 我的页已按 Figma `444:7259` 从占位页升级为正式入口页，当前提供 `chooseAvatar + nickname + 保存头像昵称` 的轻编辑入口
@@ -187,10 +189,10 @@
 | 支持登记写链路 | `已可试跑` | `createSupportEntry` 已完成 CloudBase 远端写入验证，会写入 `support_entries`、私有 `evidence_assets`、`support_threads`，并生成私有 pending support event；真实凭证图上传、限流和重复凭证错误回归已跑通 | 继续补更多真机账号回归 |
 | 核实链路 | `已可试跑` | `reviewSupportEntry` 已完成 `pending -> confirmed / unmatched` 远端状态流转验证；确认后生成公开 support event，未匹配保持私有 rejected event；非 owner review 已验证返回 `FORBIDDEN` | 继续补成功态体验 |
 | owner 权限链路 | `已可试跑` | 已用当前测试账号对他人案例验证 `getOwnerCaseDetail / publishCase / createManualSupportEntry / createProgressUpdate / createExpenseRecord / createBudgetAdjustment / reviewSupportEntry` 均返回 `FORBIDDEN` | 后续换测试账号时需重新绑定 / 重 seed |
-| 内容生产链路（记账 / 更新进展 / 追加预算） | `已可试跑` | 三页主态 `caseId` 路径已接 CloudBase 远端写入；状态图片 / 记账凭证上传回归已跑通；草稿 `draftId` 路径仍走本地 draft；CloudBase 不可用时保留页面层 local overlay 兜底，业务错误不回落；新记账已增加 `EXPENSE_EVIDENCE_REQUIRED` 口径；提交成功提示已统一 | 继续做更多真机回归 |
+| 内容生产链路（记账 / 更新进展 / 追加预算） | `已可试跑` | 三页主态 `caseId` 路径已接 CloudBase 远端写入；状态图片 / 记账凭证上传回归已跑通；草稿 `draftId` 路径仍走本地 draft；CloudBase 不可用时保留页面层 local overlay 兜底，业务错误不回落；新记账已增加 `EXPENSE_EVIDENCE_REQUIRED` 口径；提交成功后会清理对应 `budget / status / expense` overlay key | 继续做更多真机回归 |
 | Profile / 支持足迹链路 | `已可试跑` | `getMyProfile / updateMyProfile / getMySupportHistory` 已接 CloudBase；头像现已走 `avatarAssetId` 资产链，二维码 asset 上传、真实 OPENID 支持足迹聚合、新建救助前置远端校验均已接通 | 继续补更多真机账号回归 |
 | 记录主页链路 | `已可试跑` | `getRescuerHomepage` 已接 CloudBase，可按 `rescuerId` 或 `caseId` 输出记录维护者公开资料和 published 案例列表 | 继续补统计口径精修和更多公开主页视觉细节 |
-| 案例档案编辑链路 | `已可试跑` | `updateCaseProfile` 已接 CloudBase，主态 `caseId` 可远端更新 `animalName / coverFileID`，并写入 `case_cover` asset；本地展示覆盖降级为兜底 | 继续补草稿远端编辑增强 |
+| 案例档案编辑链路 | `已可试跑` | `updateCaseProfile` 已接 CloudBase，主态 `caseId` 可远端更新 `animalName / coverFileID`，并写入 `case_cover` asset；本地展示覆盖降级为兜底，远端成功后会清理 `caseId + draftId` 的 title / cover 覆盖 | 继续补草稿远端编辑增强 |
 | 只读记录详情链路 | `已可试跑` | `getCaseRecordDetail` 已接 CloudBase，可按 `caseId + recordType + recordId` 回读支出 / 进展 / 预算 / 支持详情；支出明细结构化返回，图片最多 9 张，私有记录按 owner 权限控制 | 继续补前端从 storage 兜底逐步过渡到纯远端详情 |
 | Alpha 测试环境 | `已可试跑` | `npm run seed:alpha` 已可上传 `docs/alpha_seed_assets` 图片并调用 `seedMockCases` 播种，且会重置 8 个集合里的非 Alpha Seed 文档；当前开发环境已完成一次播种和 smoke 验证 | 体验版上传前先执行 `npm run preflight:alpha`；数据漂移时改跑 `npm run preflight:alpha:seed`，再按 `docs/alpha_test_plan.md` 的 Round 0-4 执行 |
 
@@ -242,3 +244,7 @@
 
 - **本文件必须永远是最新的**
 - 其他文档做分层补充，不再和本文件竞争“当前状态真相源”
+
+补充：
+
+- `localPresentation` 当前残留职责、已收薄项和后续可删顺序，统一以 [`docs/local_presentation_residual_checklist.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/local_presentation_residual_checklist.md) 为准。

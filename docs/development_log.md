@@ -136,6 +136,14 @@
 - 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 仍为 46 项；`case presentation override cleanup removes case overlays without touching draft overlays` 现在已覆盖 `draftId` 一并清理。
 - 下一步 / 遗留问题：如果后续继续清理 `localPresentation`，优先围绕文档里列出的“case 级 overlay 可删项”推进；`draft` 级展示覆盖现在仍属于必须保留能力。
 
+## 2026-04-20 | 文档同步 | 回写远端真值与 overlay 收薄口径
+
+- 为什么改：代码已经完成三件关键收口，但长期文档里仍有旧口径混在一起：正式远端成功读链路仍被写成会继续吃 overlay、title / cover 成功后只清理 case 级覆盖、P0-B 主态写成功后的 status / expense / budget overlay 清理也没有写回文档。
+- 改了什么：更新 `docs/project_control_center.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`、`docs/cloudbase_backend_setup.md`，补齐“正式远端成功读链不再注入本机 overlay”“已发布案例远端改名 / 换封面成功后清理 `caseId + draftId` 覆盖”“主态远端写成功后清理 `budget / status / expense` overlay key”，并把 `docs/local_presentation_residual_checklist.md` 作为 `localPresentation` 后续收口的唯一清单入口。
+- 影响范围：影响长期上下文恢复、字段契约判断、CloudBase 接入说明和页面行为说明；代码逻辑、产品范围和远端接口未改变。
+- 验证结果：本轮文档同步后，5 份长期真相源文档与当前分支代码实现一致：正式远端成功回包以 CloudBase 为真值，本地 overlay 只保留给草稿或降级兜底，`title / cover / budget / status / expense` 的清理策略均已写明。
+- 下一步 / 遗留问题：后续如果继续删 `localPresentation` 的 case 级兜底读逻辑，除了更新清单文档，也要同步把 `project_control_center / pending_field_contracts / frontend_backend_field_matrix / cloudbase_backend_setup` 里的“降级兜底”范围继续收窄，避免文档再次落后于代码。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
