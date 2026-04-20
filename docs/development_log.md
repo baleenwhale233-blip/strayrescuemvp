@@ -80,6 +80,14 @@
 - 验证结果：新增 `remoteWriteHelpers.test.ts` 先红后绿，覆盖 draft 到远端 payload 映射和手动登记本地 fallback 语义；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 累计到 43 项。
 - 下一步 / 遗留问题：`remoteRepository.ts` 已经基本变成纯 facade，下一步更合适的是收窄 `src/domain/canonical/repository/index.ts` 的 barrel export 面，再逐步把页面从总出口迁到更明确的 public export。
 
+## 2026-04-20 | Repository 重构 | 收窄 canonical repository 总出口
+
+- 为什么改：`src/domain/canonical/repository/index.ts` 之前用多组 `export *` 暴露整个 read/draft/storage/remote 层，页面虽然只用了其中一部分，但内部 helper 也会一起漏出来，后续谁都可以继续从总出口拿内部 API。
+- 改了什么：将 `index.ts` 改成显式 public export 列表，只保留当前页面真实消费的 draft、remote 和 localPresentation API/类型；不再通过 barrel 继续 `export *` 整个 `canonicalReadRepository / draftRepository / draftStorage / remoteRepository`。同时新增 `repositoryIndex.test.ts`，用文件级约束防止总出口回退成 `export *`。
+- 影响范围：仅影响 `src/domain/canonical/repository/index.ts` 的导出面和对应测试；页面 import 路径保持不变，业务逻辑、VM 字段和 CloudBase 行为不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 44 项；新增测试已覆盖 `index.ts` 不再出现 4 个 `export *`，同时仍保留 `loadHomepageCaseCardVMs / updateRemoteMyProfile / getCurrentDraft / saveCaseStatusSubmission` 等页面入口。
+- 下一步 / 遗留问题：下一阶段可以继续把页面逐步从 `repository/index.ts` 迁到更明确的 `remote/readRepository`、`remote/writeRepository` 或 draft/public module，但这已经属于可选整理，不再是当前结构风险阻塞项。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
