@@ -24,6 +24,32 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-21 | 云函数重构 | 抽出 rescueApi bundle query service
+
+- 为什么改：
+  `cloudfunctions/rescueApi/index.js` 在拆完 profile / support / records 后仍保留 `composeBundles / getBundleByCaseId / getCaseDocByCaseId`，读侧组合逻辑继续压在入口文件里，会让后续新增读接口时重新膨胀。
+- 改了什么：
+  新增 `cloudfunctions/rescueApi/src/services/bundles.js`，承接案例文档查询、bundle 组装、profile / asset / event / expense / support / shared evidence 聚合；`index.js` 改为通过 `createBundleService()` 注入 runtime 与 canonical adapter helper，action handler、CloudBase 集合名和回包结构保持不变；新增 `bundles.test.js` 覆盖 `caseId/_id` fallback 与基础 bundle 组装。
+- 影响范围：
+  仅影响 `rescueApi` 云函数读侧内部模块边界；不改 CloudBase action 名、集合 schema、canonical 映射函数、前端 repository 或页面逻辑。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 与 `node --check cloudfunctions/rescueApi/src/services/bundles.js` 通过；`node --test cloudfunctions/rescueApi/src/services/*.test.js` 通过，12 项云函数 service 测试全绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 49 项全绿。
+- 下一步 / 遗留问题：
+  云函数入口已进一步收薄，后续如果继续减法，可评估是否把 `getMySupportHistory / listHomepageCases / getRescuerHomepage / searchCaseByPublicId` 这组读 action 再拆成 read service，但当前不是 Alpha 阻塞。
+
+## 2026-04-21 | 云函数重构 | 拆分 records service 的详情、写入与资产职责
+
+- 为什么改：
+  `cloudfunctions/rescueApi/src/services/records.js` 在主入口瘦身后变成新的次级大文件，同时承载记录详情读取、图片/资产归一、进展写入、支出写入和预算写入，后续新增记录类型会继续堆叠风险。
+- 改了什么：
+  新增 `recordDetails.js` 承接 `getCaseRecordDetail` 与 record payload/image helper；新增 `contentWrites.js` 承接 `createProgressUpdate / createExpenseRecord / createBudgetAdjustment`；新增 `recordAssets.js` 承接 asset doc 创建与 asset map 查询；`records.js` 收成 `createRecordsService` 组合 facade 并保留原 helper re-export。
+- 影响范围：
+  仅影响 `rescueApi` 云函数 records service 内部文件组织；CloudBase action 名、错误码、集合字段、返回 envelope、前端 repository 和页面交互均不变。
+- 验证结果：
+  `node --check` 已覆盖 `records / recordDetails / contentWrites / recordAssets`；`node --test cloudfunctions/rescueApi/src/services/*.test.js` 通过，10 项云函数 service 测试全绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 49 项全绿。
+- 下一步 / 遗留问题：
+  下一轮如果继续拆云函数，优先把 `cloudfunctions/rescueApi/index.js` 中的 `composeBundles / getBundleByCaseId / getCaseDocByCaseId` 抽成 bundle query service，避免读侧组合逻辑继续留在入口文件。
+
 ## 2026-04-20 | 文档 | 新增全局字段契约总表，收口字段生命周期入口
 
 - 为什么改：
