@@ -24,6 +24,19 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-21 | Repository 重构 | 合流 localPresentation resolver 与 core
+
+- 为什么改：
+  `localPresentationCore.ts` 已有纯函数测试覆盖，但 `localPresentationResolver.ts` 仍保留一套独立 overlay 合成实现，导致测试路径和生产路径可能长期漂移。
+- 改了什么：
+  新增 `localPresentationResolverStructure.test.ts`，要求 resolver 委托 `resolveBundlePresentationCore / finalize*PresentationCore / resolvePresentedDraftCore`；`localPresentationResolver.ts` 改为只负责读取 storage / draft 并组装 `LocalPresentationSnapshot`，实际 bundle/timeline/card overlay 合成交给 core。
+- 影响范围：
+  仅影响 canonical repository 内部实现边界；页面 import、public repository API、draft/fallback 语义、正式远端成功读链路的 `applyLocalOverlays:false` 行为均不变。
+- 验证结果：
+  新结构测试先红后绿；`npm run test:domain` 通过，domain tests 50 项全绿；`npm run typecheck` 通过。
+- 下一步 / 遗留问题：
+  `localPresentationCore` 现在是 overlay 合成唯一实现；后续若继续删除 case 级 overlay，应优先删 core 中对应 `budget / status / expense` 合成能力，并同步更新 residual checklist。
+
 ## 2026-04-21 | 云函数重构 | 抽出 rescueApi case write service
 
 - 为什么改：
