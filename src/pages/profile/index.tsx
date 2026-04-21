@@ -2,6 +2,7 @@ import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useRef, useState } from "react";
 import { NavBar } from "../../components/NavBar";
+import { createSubmissionGuard } from "../../utils/submissionGuard";
 import supportHistoryIcon from "../../assets/profile/support-history.svg";
 import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
 import guideBookIcon from "../../assets/profile/guide-book.svg";
@@ -117,6 +118,7 @@ export default function ProfilePage() {
   });
   const [savingProfile, setSavingProfile] = useState(false);
   const menuNavigationLockRef = useRef(false);
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useDidShow(() => {
     const localUser =
@@ -208,7 +210,7 @@ export default function ProfilePage() {
     });
   };
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = async () => submitGuardRef.current.run(async () => {
     const nextNickName = profileUser.nickName.trim();
     const nextAvatarUrl = profileUser.avatarUrl.trim();
 
@@ -222,7 +224,7 @@ export default function ProfilePage() {
 
     try {
       setSavingProfile(true);
-      Taro.showLoading({ title: "保存中" });
+      Taro.showLoading({ title: "保存中", mask: true });
 
       let avatarFileID = "";
 
@@ -285,7 +287,7 @@ export default function ProfilePage() {
     } finally {
       setSavingProfile(false);
     }
-  };
+  });
 
   const handleMenuTap = (key: (typeof MENU_ITEMS)[number]["key"]) => {
     if (menuNavigationLockRef.current) {

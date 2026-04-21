@@ -20,6 +20,7 @@ import {
   type RescueTimelineSharedItem,
 } from "../../../components/RescueTimelineShared";
 import { SupportSheet } from "../../../components/SupportSheet";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import copyWhiteIcon from "../../../assets/rescue-detail/copy-white-12.svg";
 import evidenceCompleteOrangeIcon from "../../../assets/rescue-detail/evidence-complete-orange-14.svg";
 import infoMutedIcon from "../../../assets/rescue-detail/info-muted-13.svg";
@@ -779,6 +780,7 @@ export default function RescueDetailPage() {
   const [ownerDetail, setOwnerDetail] = useState<OwnerDetailVM | undefined>();
   const [supportData, setSupportData] = useState<SupportSheetData | undefined>();
   const guestActionLockRef = useRef(false);
+  const submitGuardRef = useRef(createSubmissionGuard());
   const mode = router.params?.mode === "guest" ? "guest" : "owner";
   const initialOwnerTab = router.params?.tab === "detail" ? "detail" : "overview";
   const caseId = router.params?.id;
@@ -789,7 +791,7 @@ export default function RescueDetailPage() {
     imageUrl: publicDetail?.heroImageUrl || guestHeroCat,
   }));
 
-  const handleRenameTitle = async (value: string) => {
+  const handleRenameTitle = async (value: string) => submitGuardRef.current.run(async () => {
     const nextTitle = value.trim();
     if (!nextTitle) {
       Taro.showToast({
@@ -800,7 +802,7 @@ export default function RescueDetailPage() {
     }
 
     try {
-      Taro.showLoading({ title: "保存中" });
+      Taro.showLoading({ title: "保存中", mask: true });
       const didSyncRemote = await updateRemoteCaseProfileByCaseId(caseId, {
         animalName: nextTitle,
       });
@@ -849,9 +851,9 @@ export default function RescueDetailPage() {
       title: "已更新代号",
       icon: "none",
     });
-  };
+  });
 
-  const handleChangeCover = async () => {
+  const handleChangeCover = async () => submitGuardRef.current.run(async () => {
     try {
       const action = await Taro.showActionSheet({
         itemList: ["拍照", "上传图片"],
@@ -867,7 +869,7 @@ export default function RescueDetailPage() {
       if (!nextPath) {
         return;
       }
-      Taro.showLoading({ title: "上传中" });
+      Taro.showLoading({ title: "上传中", mask: true });
       const uploaded = await uploadCaseAssetImage(caseId || "unknown-case", nextPath, "case-covers");
       const coverFileID =
         uploaded && !uploaded.isLocalFallback ? uploaded.fileID : undefined;
@@ -919,7 +921,7 @@ export default function RescueDetailPage() {
         });
       }
     }
-  };
+  });
 
   const loadDetailPage = () => {
     setDetailStatus("loading");

@@ -2,6 +2,7 @@ import { Image, Input, ScrollView, Text, View } from "@tarojs/components";
 import Taro, { useDidHide, useDidShow, useRouter, useUnload } from "@tarojs/taro";
 import { useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
   addExpenseRecord,
@@ -158,6 +159,7 @@ export default function RescueExpensePage() {
   const qaPreset = getQaPreset(router.params?.qaPreset);
   const cacheKey = getExpenseDraftCacheKey(expenseContextId);
   const hasHandledRestoreRef = useRef(false);
+  const submitGuardRef = useRef(createSubmissionGuard());
   const [publicEvidenceImages, setPublicEvidenceImages] = useState<string[]>([]);
   const [expenseLines, setExpenseLines] = useState<ExpenseLine[]>(() =>
     hydrateExpenseLines(createInitialExpenseLines()),
@@ -311,7 +313,7 @@ export default function RescueExpensePage() {
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     const validLines = expenseLines.filter(
       (line) => line.description.trim() && parseAmount(line.amount) > 0,
     );
@@ -338,7 +340,7 @@ export default function RescueExpensePage() {
     const evidenceItems = buildExpenseEvidenceItems(publicEvidenceImages);
 
     try {
-      Taro.showLoading({ title: "保存中" });
+      Taro.showLoading({ title: "保存中", mask: true });
 
       if (draftId) {
         const matchedDraft = getDraftById(draftId) || getCurrentDraft();
@@ -410,7 +412,7 @@ export default function RescueExpensePage() {
 
       Taro.removeStorageSync(cacheKey);
       Taro.hideLoading();
-      showSuccessFeedback({
+      await showSuccessFeedback({
         title: "支出已记入账本",
       });
     } catch (error) {
@@ -420,7 +422,7 @@ export default function RescueExpensePage() {
         icon: "none",
       });
     }
-  };
+  });
 
   return (
     <View

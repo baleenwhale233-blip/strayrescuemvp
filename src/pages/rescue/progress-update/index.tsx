@@ -1,9 +1,10 @@
 import { Image, ScrollView, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
   clearCaseContentWriteLocalFallback,
@@ -87,6 +88,7 @@ export default function RescueStatusUpdatePage() {
   const [selectedStatus, setSelectedStatus] = useState<CaseCurrentStatus>("medical");
   const [description, setDescription] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     let cancelled = false;
@@ -206,7 +208,7 @@ export default function RescueStatusUpdatePage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     if (!description.trim()) {
       Taro.showToast({
         title: "请填写进展详情",
@@ -219,7 +221,7 @@ export default function RescueStatusUpdatePage() {
     const timestampLabel = formatTimelineTimestamp();
 
     try {
-      Taro.showLoading({ title: "发布中" });
+      Taro.showLoading({ title: "发布中", mask: true });
       const occurredAt = new Date().toISOString();
 
       if (draftId) {
@@ -293,7 +295,7 @@ export default function RescueStatusUpdatePage() {
       }
 
       Taro.hideLoading();
-      showSuccessFeedback({
+      await showSuccessFeedback({
         title: "进展已发布",
       });
     } catch (error) {
@@ -306,7 +308,7 @@ export default function RescueStatusUpdatePage() {
         icon: "none",
       });
     }
-  };
+  });
 
   if (loadStatus !== "ready" || !contextCard) {
     return (

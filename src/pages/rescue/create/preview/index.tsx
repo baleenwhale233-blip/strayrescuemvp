@@ -1,8 +1,9 @@
 import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
+import { createSubmissionGuard } from "../../../../utils/submissionGuard";
 import {
   recordCaseProfileLocalFallback,
 } from "../../../../domain/canonical/repository";
@@ -515,6 +516,7 @@ export default function RescueCreatePreviewPage() {
   const initialTab: PreviewTab =
     router.params?.tab === "overview" ? "overview" : "detail";
   const [activeTab, setActiveTab] = useState<PreviewTab>(initialTab);
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     setActiveTab(initialTab);
@@ -701,36 +703,44 @@ export default function RescueCreatePreviewPage() {
     });
   };
 
-  const handleSaveDraft = async () => {
+  const handleSaveDraft = async () => submitGuardRef.current.run(async () => {
     const saved = persistDraft("draft");
     setDraft(saved);
     try {
+      Taro.showLoading({ title: "保存中", mask: true });
       await saveRemoteDraftCase(saved, "draft");
     } catch {
+      Taro.hideLoading();
       Taro.showToast({
         title: "草稿已本地保存，远端同步失败",
         icon: "none",
       });
       return;
     }
+    Taro.hideLoading();
 
     Taro.showToast({
       title: "草稿已保存",
       icon: "none",
     });
 
-    setTimeout(() => {
-      Taro.switchTab({
-        url: "/pages/rescue/index",
-      });
-    }, 300);
-  };
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        void Taro.switchTab({
+          url: "/pages/rescue/index",
+        });
+        resolve();
+      }, 300);
+    });
+  });
 
-  const handlePublish = async () => {
+  const handlePublish = async () => submitGuardRef.current.run(async () => {
     const saved = persistDraft("published");
     setDraft(saved);
 
     let remoteDraft = saved;
+
+    Taro.showLoading({ title: "发布中", mask: true });
 
     if (
       saved.coverPath &&
@@ -753,6 +763,7 @@ export default function RescueCreatePreviewPage() {
         }
       } catch (error) {
         if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
+          Taro.hideLoading();
           Taro.showToast({
             title: "封面上传失败，请重试",
             icon: "none",
@@ -765,24 +776,29 @@ export default function RescueCreatePreviewPage() {
     try {
       await saveRemoteDraftCase(remoteDraft, "published");
     } catch {
+      Taro.hideLoading();
       Taro.showToast({
         title: "已本地发布，远端同步失败",
         icon: "none",
       });
       return;
     }
+    Taro.hideLoading();
 
     Taro.showToast({
       title: saved.status === "published" ? "记录已发布" : "已更新",
       icon: "none",
     });
 
-    setTimeout(() => {
-      Taro.switchTab({
-        url: "/pages/rescue/index",
-      });
-    }, 300);
-  };
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        void Taro.switchTab({
+          url: "/pages/rescue/index",
+        });
+        resolve();
+      }, 300);
+    });
+  });
 
   const handleSaveTitle = (value: string) => {
     const nextName = value.trim();

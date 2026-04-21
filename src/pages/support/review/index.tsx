@@ -1,7 +1,8 @@
 import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
@@ -73,6 +74,7 @@ export default function SupportReviewPage() {
   const [activeTab, setActiveTab] = useState<ReviewTab>(requestedTab);
   const [manualAmount, setManualAmount] = useState("");
   const [manualSupporter, setManualSupporter] = useState("");
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     setActiveTab(requestedTab);
@@ -103,46 +105,52 @@ export default function SupportReviewPage() {
     return null;
   }
 
-  const handleConfirm = async (entryId: string) => {
+  const handleConfirm = async (entryId: string) => submitGuardRef.current.run(async () => {
     try {
+      Taro.showLoading({ title: "处理中", mask: true });
       await reviewRemoteSupportEntryByCaseId(caseId, {
         entryId,
         status: "confirmed",
       });
-      showSuccessFeedback({
+      Taro.hideLoading();
+      await showSuccessFeedback({
         title: "已处理完成",
         navigateBack: false,
       });
       await reloadDetail();
       setReloadSeed((value) => value + 1);
     } catch {
+      Taro.hideLoading();
       Taro.showToast({ title: "处理失败，请稍后重试", icon: "none" });
     }
-  };
+  });
 
   const handleUnmatched = async (
     entryId: string,
     reason: "duplicate_submission" | "other",
-  ) => {
+  ) => submitGuardRef.current.run(async () => {
     try {
+      Taro.showLoading({ title: "处理中", mask: true });
       await reviewRemoteSupportEntryByCaseId(caseId, {
         entryId,
         status: "unmatched",
         reason,
         note: reason === "duplicate_submission" ? "疑似重复提交" : "暂未匹配",
       });
-      showSuccessFeedback({
+      Taro.hideLoading();
+      await showSuccessFeedback({
         title: "已标记未匹配",
         navigateBack: false,
       });
       await reloadDetail();
       setReloadSeed((value) => value + 1);
     } catch {
+      Taro.hideLoading();
       Taro.showToast({ title: "标记失败，请稍后重试", icon: "none" });
     }
-  };
+  });
 
-  const handleSubmitManual = async () => {
+  const handleSubmitManual = async () => submitGuardRef.current.run(async () => {
     const numericAmount = Number(manualAmount);
 
     if (!numericAmount || Number.isNaN(numericAmount) || numericAmount <= 0) {
@@ -151,7 +159,7 @@ export default function SupportReviewPage() {
     }
 
     try {
-      Taro.showLoading({ title: "提交中" });
+      Taro.showLoading({ title: "提交中", mask: true });
       await createRemoteManualSupportEntryByCaseId(caseId, {
         supporterNameMasked: manualSupporter.trim() || "线下记录",
         amount: numericAmount,
@@ -159,16 +167,16 @@ export default function SupportReviewPage() {
         note: "记录维护者手动登记一笔",
       });
       Taro.hideLoading();
-      showSuccessFeedback({
-        title: "已登记入账",
-      });
       setManualAmount("");
       setManualSupporter("");
+      await showSuccessFeedback({
+        title: "已登记入账",
+      });
     } catch {
       Taro.hideLoading();
       Taro.showToast({ title: "登记失败，请稍后重试", icon: "none" });
     }
-  };
+  });
 
   const pendingEntries = (detail?.supportSummary.threads || []).flatMap((thread) =>
     thread.entries

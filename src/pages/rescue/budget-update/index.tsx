@@ -1,9 +1,10 @@
 import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
   clearCaseContentWriteLocalFallback,
@@ -73,6 +74,7 @@ export default function RescueBudgetUpdatePage() {
   const [draft, setDraft] = useState<RescueCreateDraft | null>(null);
   const [budget, setBudget] = useState("");
   const [reason, setReason] = useState("");
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     let cancelled = false;
@@ -144,7 +146,7 @@ export default function RescueBudgetUpdatePage() {
     return null;
   }, [detail, draft]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     if (!contextCard) {
       return;
     }
@@ -170,7 +172,7 @@ export default function RescueBudgetUpdatePage() {
     const occurredAt = new Date().toISOString();
 
     try {
-      Taro.showLoading({ title: "提交中" });
+      Taro.showLoading({ title: "提交中", mask: true });
 
       if (draftId) {
         const matchedDraft = getDraftById(draftId) || getCurrentDraft();
@@ -234,7 +236,7 @@ export default function RescueBudgetUpdatePage() {
       }
 
       Taro.hideLoading();
-      showSuccessFeedback({
+      await showSuccessFeedback({
         title: "预算已更新",
       });
     } catch {
@@ -244,7 +246,7 @@ export default function RescueBudgetUpdatePage() {
         icon: "none",
       });
     }
-  };
+  });
 
   if (loadStatus !== "ready" || !contextCard) {
     return (

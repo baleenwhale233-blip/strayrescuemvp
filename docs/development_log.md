@@ -1876,3 +1876,16 @@
   `npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 49 项；`repositoryIndex.test` 已覆盖 public barrel 不再暴露 raw overlay API。
 - 下一步 / 遗留问题：
   下一轮如果继续清理，可拆 `localPresentation.ts` 的 storage/resolver/finalizer 职责，或者评估 `records.js` 是否要拆 `recordDetails / contentWrites`。
+
+## 2026-04-21 | 交互防重 | 写入类提交入口统一加防重复提交锁
+
+- 为什么改：
+  Alpha 测试反馈记账后时间线出现 3 条记录，根因高度指向提交按钮可被连续触发，导致同一笔写入并发创建多条记录。
+- 改了什么：
+  新增 `createSubmissionGuard` 并接入记账、进展、预算、登记一笔、处理登记、联系方式、我的页资料、草稿保存 / 发布、详情页代号与头像更新等写入入口；写入 loading 统一加 `mask: true`，成功反馈可被 `await`，锁覆盖到返回页动作触发后。
+- 影响范围：
+  影响前台写入类按钮的重复点击行为，不改远端 API、VM、selector、repository schema 或页面信息架构；新增 guard 单测覆盖并发第二次提交会被跳过。
+- 验证结果：
+  `npm run typecheck`、`npm run test:domain` 通过，domain tests 51 项；`npm run build:weapp` 编译通过，仅保留既有资源体积 / async chunk warning。
+- 下一步 / 遗留问题：
+  后续仍建议给后端写入补幂等 key，前端锁能挡误触，但不能防网络重试或多设备重复提交。

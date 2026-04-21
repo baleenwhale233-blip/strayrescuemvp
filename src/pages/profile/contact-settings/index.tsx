@@ -1,9 +1,10 @@
 import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
 import submitArrowIcon from "../../../assets/rescue-create/step1-next-arrow.svg";
 import {
@@ -24,6 +25,7 @@ export default function ContactSettingsPage() {
   const [qrImagePath, setQrImagePath] = useState("");
   const [note, setNote] = useState("");
   const [remotePaymentQrAssetId, setRemotePaymentQrAssetId] = useState("");
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     let cancelled = false;
@@ -76,7 +78,7 @@ export default function ContactSettingsPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     const nextWechatId = wechatId.trim();
     const hasQrImage = Boolean(qrImagePath.trim());
 
@@ -89,7 +91,7 @@ export default function ContactSettingsPage() {
     }
 
     try {
-      Taro.showLoading({ title: "保存中" });
+      Taro.showLoading({ title: "保存中", mask: true });
       const isExistingRemoteQr = Boolean(
         remotePaymentQrAssetId &&
           (qrImagePath.startsWith("https://") || qrImagePath.startsWith("cloud://")),
@@ -199,17 +201,21 @@ export default function ContactSettingsPage() {
       return;
     }
 
-    setTimeout(() => {
-      if (router.params?.redirect === "create") {
-        Taro.navigateTo({
-          url: "/pages/rescue/create/basic/index?entry=new",
-        });
-        return;
-      }
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        if (router.params?.redirect === "create") {
+          void Taro.navigateTo({
+            url: "/pages/rescue/create/basic/index?entry=new",
+          });
+          resolve();
+          return;
+        }
 
-      Taro.navigateBack();
-    }, 350);
-  };
+        void Taro.navigateBack();
+        resolve();
+      }, 350);
+    });
+  });
 
   return (
     <View

@@ -1,12 +1,13 @@
 import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
 import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
@@ -64,6 +65,7 @@ export default function SupportClaimPage() {
   const [detail, setDetail] = useState<PublicDetailVM | undefined>();
   const [loadStatus, setLoadStatus] = useState<ClaimLoadStatus>("loading");
   const [caseCoverSrc, setCaseCoverSrc] = useState<string>(animalProfileExact);
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     setLoadStatus("loading");
@@ -133,7 +135,7 @@ export default function SupportClaimPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     const numericAmount = Number(amount);
 
     if (!numericAmount || Number.isNaN(numericAmount)) {
@@ -145,7 +147,7 @@ export default function SupportClaimPage() {
     }
 
     try {
-      Taro.showLoading({ title: "提交中" });
+      Taro.showLoading({ title: "提交中", mask: true });
       const uploaded = imagePath
         ? await uploadSupportProofImage(caseId || "unknown-case", imagePath)
         : undefined;
@@ -164,7 +166,7 @@ export default function SupportClaimPage() {
       });
       Taro.hideLoading();
 
-      showSuccessFeedback({
+      await showSuccessFeedback({
         title: "已登记，待处理",
         delay: 900,
       });
@@ -175,7 +177,7 @@ export default function SupportClaimPage() {
         icon: "none",
       });
     }
-  };
+  });
 
   return (
     <View
