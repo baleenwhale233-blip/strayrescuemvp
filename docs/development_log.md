@@ -24,6 +24,19 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-21 | 云函数重构 | 抽出 rescueApi read actions service
+
+- 为什么改：
+  `cloudfunctions/rescueApi/index.js` 在抽出 bundle query service 后仍直接承载首页、记录主页、案例搜索、owner 工作台和支持足迹等读 action，入口文件仍会随只读接口继续膨胀。
+- 改了什么：
+  新增 `cloudfunctions/rescueApi/src/services/readActions.js`，承接 `getMySupportHistory / listHomepageCases / getRescuerHomepage / searchCaseByPublicId / getCaseDetail / getOwnerWorkbench / getOwnerCaseDetail`；`index.js` 改为通过 `createReadActionsService()` 注入 bundle/profile/runtime helper，handler action 名保持不变；新增 `readActions.test.js` 覆盖首页 published 过滤、支持足迹聚合排序、记录主页 caseId 反查和 owner 权限。
+- 影响范围：
+  仅影响 `rescueApi` 云函数只读 action 的内部模块边界；不改 CloudBase action 名、返回 envelope、集合 schema、前端 repository 或页面逻辑。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 与 `node --check cloudfunctions/rescueApi/src/services/readActions.js` 通过；`node --test cloudfunctions/rescueApi/src/services/*.test.js` 通过，16 项云函数 service 测试全绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 49 项全绿。
+- 下一步 / 遗留问题：
+  `index.js` 当前主要剩写侧案例生命周期 glue（`updateCaseProfile / saveDraftCase / publishCase / touchCase / seedMockCases`）和 handler 表；后续若继续减法，可单独拆 case write service，但不建议和产品逻辑改动同轮做。
+
 ## 2026-04-21 | 云函数重构 | 抽出 rescueApi bundle query service
 
 - 为什么改：
