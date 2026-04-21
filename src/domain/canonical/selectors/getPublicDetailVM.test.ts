@@ -17,7 +17,7 @@ test("getPublicDetailVM only counts confirmed support into supportedAmount", () 
   assert.equal(vm.ledger.supportedAmount, 100);
   assert.equal(vm.ledger.pendingSupportAmount, 60);
   assert.equal(vm.ledger.targetAmount, 4200);
-  assert.equal(vm.statusLabel, "医疗救助中");
+  assert.equal(vm.statusLabel, "医疗处理中");
 });
 
 test("getPublicDetailVM prefers case cover for hero image when available", () => {

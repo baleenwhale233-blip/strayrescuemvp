@@ -99,7 +99,7 @@
 - `summary` 当前在页面层被稳定拆成两段：`猫咪情况介绍` + `当前总预算为...`
 - `timeline` 当前已被页面按 `支出记录 / 状态更新 / 预算调整 / 场外收入` 四类结构消费，并在缺项时做前端 mock 回退
 - 客态页已补 `loading / error` 页面态，但仍未新增独立数据字段
-- 客态详情页当前已在页面层叠加展示覆盖：已发布主态的 `title / heroImageUrl` 可由 `updateCaseProfile` 远端正式回写，本地 draft / local overlay 只作为兜底；状态文案仍会叠加本地状态更新记录里的最新状态
+- 客态详情页当前仍可能在本地 fallback 场景叠加展示覆盖：已发布主态的 `title / heroImageUrl` 可由 `updateCaseProfile` 远端正式回写，正式远端成功回包不再吃本机 overlay；本地 draft / local overlay 只作为兜底。状态文案也只在本地 fallback 场景下继续叠加本地状态更新记录里的最新状态
 - 资金区还在消费旧 `verifiedGapAmount` 语义，后续可进一步抽成更白话的 view-model
 - 主按钮当前是“我要支持”
 - 关键图标已优先切到 Figma exact 资产；状态 badge 左侧维持 Figma 节点中的 emoji 表达
@@ -228,7 +228,7 @@
 
 - 页面现在消费 `title / statusLabel / draftId / primaryNoticeLabel`
 - richer 字段都已经有了，但 UI 还没接
-- 当前工作台卡片的 `title / coverImageUrl` 已可来自远端正式 `animalName / coverFileID`；本地 draft / local overlay 只作为兜底，`statusLabel` 仍会叠加本地状态更新记录里的最新状态
+- 当前工作台卡片的 `title / coverImageUrl` 已可来自远端正式 `animalName / coverFileID`；本地 draft / local overlay 只作为兜底，正式远端成功回包不再注入本机 overlay；`statusLabel` 在本地 fallback 场景下仍会叠加本地状态更新记录里的最新状态
 - 当前工作台卡片的 `statusLabel` 还有一层展示约束：只允许显示状态更新页已有的 5 个标签；如果没有命中，则回退成“未更新状态”
 - 草稿箱这轮已改成：**所有 `draft` 卡片统一先进入 `create/preview`**；local draft 优先用 `draftId`，remote draft 允许用 `caseId` fallback
 
@@ -299,7 +299,7 @@
 | 本次合计 | `displayedTotalAmount` | 页面层 derived | 已有 | 由本地明细金额汇总；QA 设计态允许页面层覆盖 |
 | 页面缓存 | `rescue-expense-draft:*` | 本地 storage | 已有 | 仅用于“继续上次录入 / 新的录入” |
 | 主态远端提交 | `createExpenseRecord` | remote repository / CloudBase `rescueApi` | 已可试跑 | 写入 `expense_records` 与公开 `case_events(type=expense)`，并更新 `rescue_cases.updatedAt` |
-| 提交后主态联动 | `case-expense-submissions:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay |
+| 提交后主态联动 | `case-expense-submissions:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay；远端成功后会清理 |
 
 ### 当前注意事项
 
@@ -338,7 +338,7 @@
 
 ### 当前注意事项
 
-- 状态更新页主态 `caseId` 路径已经接真实后端写入；`case-status-submissions:*` 只作为 CloudBase 不可用时的 local overlay 兜底
+- 状态更新页主态 `caseId` 路径已经接真实后端写入；`case-status-submissions:*` 只作为 CloudBase 不可用时的 local overlay 兜底，远端成功后会清理对应 key
 - `draftId` 是页面级上下文，不是 canonical 草稿字段扩张
 - 草稿箱提交后当前直接写入本地 draft 的 `timeline[] / currentStatusLabel`
 - 当前时间线严格按真实事件流渲染，不再固定拼成 `支出 / 状态 / 预算 / 收入` 四张卡
@@ -367,12 +367,26 @@
 | 新预估总金额 | `budget` | 本地页面状态 | 已有 | 必填 |
 | 追加原因 | `reason` | 本地页面状态 | 已有 | 必填 |
 | 当前已支持 | `supportedAmountLabel` | `PublicDetailVM / calculateDraftLedger()` | 已有 | 当前作为页面说明展示 |
-| 提交后主态联动 | `case-budget-adjustments:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay |
+| 提交后主态联动 | `case-budget-adjustments:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay；远端成功后会清理 |
 | 主态远端提交 | `createBudgetAdjustment` | remote repository / CloudBase `rescueApi` | 已可试跑 | 写入公开 `case_events(type=budget_adjustment)`，并更新 `rescue_cases.targetAmount` |
 
 ### 当前注意事项
 
-- 追加预算页主态 `caseId` 路径已经接真实后端写入；`case-budget-adjustments:*` 只作为 CloudBase 不可用时的 local overlay 兜底
+- 追加预算页主态 `caseId` 路径已经接真实后端写入；`case-budget-adjustments:*` 只作为 CloudBase 不可用时的 local overlay 兜底，远端成功后会清理对应 key
+
+---
+
+## 补充：localPresentation 当前口径
+
+- 正式远端成功读链路：不再吃本机 overlay
+- CloudBase 不可用 / 基础设施失败：仍保留 `localPresentation` 兜底
+- 草稿 `draftId` 链路：仍保留 title / cover 等本地展示覆盖
+- 已发布案例远端改名 / 换封面成功：清理 `caseId + draftId` 对应 title / cover 覆盖
+- 主态远端记账 / 写进展 / 追加预算成功：分别清理 `expense / status / budget` overlay key
+
+详细清单见：
+
+- [`docs/local_presentation_residual_checklist.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/local_presentation_residual_checklist.md)
 - `draftId` 是页面级上下文，不是 canonical 草稿字段扩张
 - 草稿箱提交后当前直接写入本地 draft 的 `budget / timeline[]`
 - `reason` 的多行 placeholder 当前已改成统一覆盖层实现；这是前端输入样式口径，不新增后端字段

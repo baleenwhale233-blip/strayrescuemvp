@@ -1,6 +1,6 @@
 # CloudBase 后端接入说明
 
-最后更新：2026-04-18
+最后更新：2026-04-20
 
 ## 当前状态
 
@@ -14,6 +14,7 @@
 - 如果 `src/config/cloudbase.ts` 里没有 `envId`，会自动回落到现有本地 repository
 - 如果云函数未部署或基础设施调用失败，也会回落本地 repository
 - 如果云函数返回业务错误，例如 `FORBIDDEN`、限流、重复截图，则不会回落本地，避免绕过权限
+- 正式远端成功读链路现在不会再叠加本机 `localPresentation` overlay；本机 overlay 只保留给 CloudBase 不可用或基础设施失败时的本地兜底
 - P0-A 支持登记 / 核实链路已在 `cloud1-9gl5sric0e5b386b` 开发环境完成远端写入与状态流转验证
 - P0-B 状态更新 / 记账 / 预算调整的主态 `caseId` 写链路已在开发环境完成远端写入验证
 - 支持凭证、状态图片、记账凭证的真实 CloudBase 上传回归已完成
@@ -108,7 +109,7 @@
 - 将封面图写入 `evidence_assets(kind=case_cover)`
 - 更新 `rescue_cases.updatedAt`
 
-前端主态详情编辑代号 / 动物头像时会优先调用该接口；CloudBase 不可用时保留本地展示覆盖兜底。
+前端主态详情编辑代号 / 动物头像时会优先调用该接口；CloudBase 不可用时保留本地展示覆盖兜底。远端成功后会清理对应 `caseId + draftId` 的本地 `title / cover` 覆盖，避免旧本机值再次压过远端真值。
 
 ### 支持登记 / 核实写链路
 
@@ -165,6 +166,17 @@
 - 更新 `rescue_cases.targetAmount/updatedAt`
 
 三条链路的页面侧规则是：主态 `caseId` 优先写 CloudBase；若 CloudBase 不可用或基础设施失败，保留已有 local overlay 兜底；草稿 `draftId` 仍保持本地 draft 闭环。
+
+补充：
+
+- `createBudgetAdjustment` 远端成功后，页面会清理 `case-budget-adjustments:{caseId}`
+- `createProgressUpdate` 远端成功后，页面会清理 `case-status-submissions:{caseId}`
+- `createExpenseRecord` 远端成功后，页面会清理 `case-expense-submissions:{caseId}`
+
+也就是说：
+
+- 正式远端成功写入后，以 CloudBase 真值为准
+- 本地 overlay 只保留给未同步成功的离线 / 降级场景
 
 ### 只读记录详情
 

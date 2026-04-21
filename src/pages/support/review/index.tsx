@@ -93,7 +93,7 @@ export default function SupportReviewPage() {
     setReloadSeed((value) => value + 1);
     reloadDetail().catch(() => {
       Taro.showToast({
-        title: "待确认支持加载失败",
+        title: "待处理登记加载失败",
         icon: "none",
       });
     });
@@ -110,13 +110,13 @@ export default function SupportReviewPage() {
         status: "confirmed",
       });
       showSuccessFeedback({
-        title: "已确认到账",
+        title: "已处理完成",
         navigateBack: false,
       });
       await reloadDetail();
       setReloadSeed((value) => value + 1);
     } catch {
-      Taro.showToast({ title: "确认失败，请稍后重试", icon: "none" });
+      Taro.showToast({ title: "处理失败，请稍后重试", icon: "none" });
     }
   };
 
@@ -146,27 +146,27 @@ export default function SupportReviewPage() {
     const numericAmount = Number(manualAmount);
 
     if (!numericAmount || Number.isNaN(numericAmount) || numericAmount <= 0) {
-      Taro.showToast({ title: "请填写支持金额", icon: "none" });
+      Taro.showToast({ title: "请填写登记金额", icon: "none" });
       return;
     }
 
     try {
       Taro.showLoading({ title: "提交中" });
       await createRemoteManualSupportEntryByCaseId(caseId, {
-        supporterNameMasked: manualSupporter.trim() || "线下支持",
+        supporterNameMasked: manualSupporter.trim() || "线下记录",
         amount: numericAmount,
         supportedAt: new Date().toISOString(),
-        note: "救助人手动记一笔",
+        note: "记录维护者手动登记一笔",
       });
       Taro.hideLoading();
       showSuccessFeedback({
-        title: "收入已记入账本",
+        title: "已登记入账",
       });
       setManualAmount("");
       setManualSupporter("");
     } catch {
       Taro.hideLoading();
-      Taro.showToast({ title: "提交失败，请稍后重试", icon: "none" });
+      Taro.showToast({ title: "登记失败，请稍后重试", icon: "none" });
     }
   };
 
@@ -189,7 +189,7 @@ export default function SupportReviewPage() {
 
   return (
     <View key={reloadSeed} className="page-shell support-review-page">
-      <NavBar showBack title="记场外收入" />
+      <NavBar showBack title="处理登记" />
 
       <View className="support-review-page__tabs">
         <View
@@ -198,7 +198,7 @@ export default function SupportReviewPage() {
           }`}
           onTap={() => setActiveTab("pending")}
         >
-          <Text>待确认认领</Text>
+          <Text>待处理登记</Text>
           {activeTab === "pending" ? (
             <View className="support-review-page__badge">
               <Text>{pendingBadgeCount}</Text>
@@ -211,7 +211,7 @@ export default function SupportReviewPage() {
           }`}
           onTap={() => setActiveTab("manual")}
         >
-          <Text>手动记一笔</Text>
+          <Text>手动登记</Text>
         </View>
       </View>
 
@@ -230,7 +230,7 @@ export default function SupportReviewPage() {
                   </View>
                 ) : (
                   <View className="support-review-page__proof support-review-page__proof--empty">
-                    <Text className="support-review-page__proof-empty-text">未附截图</Text>
+                    <Text className="support-review-page__proof-empty-text">未附凭证</Text>
                   </View>
                 )}
 
@@ -241,7 +241,7 @@ export default function SupportReviewPage() {
                   </View>
                   <Text className="support-review-page__card-amount">{entry.amountLabel}</Text>
                   <Text className="support-review-page__card-note">
-                    “{entry.note || "待确认支持记录"}”
+                    “{entry.note || "待处理登记记录"}”
                   </Text>
                 </View>
               </View>
@@ -258,13 +258,13 @@ export default function SupportReviewPage() {
                     className="support-review-page__button support-review-page__button--ghost"
                     onTap={() => handleUnmatched(entry.id, "other")}
                   >
-                    <Text>驳回</Text>
+                    <Text>暂未匹配</Text>
                   </View>
                   <View
                     className="support-review-page__button support-review-page__button--primary"
                     onTap={() => handleConfirm(entry.id)}
                   >
-                    <Text>确认到账</Text>
+                    <Text>确认记录</Text>
                   </View>
                 </View>
               </View>
@@ -273,9 +273,9 @@ export default function SupportReviewPage() {
 
           {!displayedPendingEntries.length ? (
             <View className="support-review-page__empty theme-card">
-              <Text className="support-review-page__empty-title">暂时没有待确认认领</Text>
+              <Text className="support-review-page__empty-title">暂时没有待处理登记</Text>
               <Text className="support-review-page__empty-copy">
-                新的支持登记提交后，会先出现在这里等待你确认。
+                新的登记提交后，会先出现在这里等待处理。
               </Text>
             </View>
           ) : null}
@@ -283,7 +283,7 @@ export default function SupportReviewPage() {
       ) : (
         <View className="support-review-page__manual">
           <View className="support-review-page__field">
-            <Text className="support-review-page__label">支持金额</Text>
+            <Text className="support-review-page__label">登记金额</Text>
             <View className="support-review-page__amount-wrap">
               <Text className="support-review-page__currency">¥</Text>
               <Input
@@ -297,10 +297,10 @@ export default function SupportReviewPage() {
           </View>
 
           <View className="support-review-page__field">
-            <Text className="support-review-page__label">支持者称呼</Text>
+            <Text className="support-review-page__label">登记人称呼</Text>
             <Input
               className="support-review-page__input"
-              placeholder="微信ID/昵称等"
+              placeholder="微信 ID / 昵称等"
               value={manualSupporter}
               onInput={(event) => setManualSupporter(event.detail.value)}
             />
@@ -311,7 +311,7 @@ export default function SupportReviewPage() {
               className="support-review-page__submit theme-button-primary"
               onTap={handleSubmitManual}
             >
-              <Text>提交支持</Text>
+              <Text>提交登记</Text>
               <Image
                 className="support-review-page__submit-arrow"
                 mode="aspectFit"

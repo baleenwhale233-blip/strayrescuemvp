@@ -131,7 +131,8 @@
 
 - 客态详情页这轮没有新增后端字段
 - 已完成内容主要是页面结构、卡片组织、运行态和图标资产替换，不涉及 canonical 契约扩张
-- 客态详情页当前也会应用展示覆盖去修正 `title / heroImageUrl / statusLabel`；其中已发布主态的 `title / heroImageUrl` 已可由 `updateCaseProfile` 正式远端回写，本地覆盖层只作为兜底
+- 客态详情页当前也会应用展示覆盖去修正 `title / heroImageUrl / statusLabel`，但仅限本地 fallback 场景；正式远端成功回包不再注入本机 overlay
+- 已发布主态的 `title / heroImageUrl` 已可由 `updateCaseProfile` 正式远端回写；远端成功后会清理对应 `caseId + draftId` 的 title / cover 覆盖，本地覆盖层只剩兜底职责
 - “查看主页”当前已接到救助人主页页面，并由 `rescuer.profileEntryEnabled` 控制入口显隐
 
 详情页现在仍应以“轻支持决策页”为主。
@@ -226,9 +227,9 @@
 
 本轮补充说明：
 
-- 工作台卡片当前已优先使用远端正式 `animalName / coverFileID`；本地展示覆盖仍用于草稿和 CloudBase 不可用时兜底
+- 工作台卡片当前已优先使用远端正式 `animalName / coverFileID`；本地展示覆盖只用于草稿和 CloudBase 不可用时兜底，正式远端成功回包不再注入本机 overlay
 - 工作台卡片的 `statusLabel` 当前还带一层前端展示约束：只允许落到状态更新页的 5 个状态标签；否则统一回退成“未更新状态”
-- 已发布案例跨设备一致的代号 / 头像编辑已接 `updateCaseProfile`；后续如需草稿远端编辑，再补 remote draft 编辑增强
+- 已发布案例跨设备一致的代号 / 头像编辑已接 `updateCaseProfile`；远端成功后会清理对应 `caseId + draftId` 的 title / cover 覆盖。后续如需草稿远端编辑，再补 remote draft 编辑增强
 
 ---
 
@@ -392,7 +393,7 @@
 - `继续上次录入 / 新的录入` 是页面级缓存恢复交互，不是新的数据层契约
 - QA 下的 `qaPreset=design` 只用于验收截图，不属于生产字段
 - 记账页当前提交闭环分两路：`caseId` 优先走 CloudBase `createExpenseRecord`，基础设施不可用时才回落 owner detail 的前端页面层 local overlay；`draftId` 走本地 draft 的 `expenseRecords`
-- 主态详情里“提交后可看到支出卡”在远端成功时来自正式 `expense_records + case_events(type=expense)` 回读，不再依赖 local overlay；local overlay 只作为降级兜底
+- 主态详情里“提交后可看到支出卡”在远端成功时来自正式 `expense_records + case_events(type=expense)` 回读，不再依赖 local overlay；local overlay 只作为降级兜底，且远端成功后会清理 `case-expense-submissions:{caseId}`
 - 支出卡标题当前直接由记账页项目描述拼接生成，不再依赖 `merchantName`
 - 支出记录提交后不可修改；当前详情页提供只读“查看详情”，并已接 `getCaseRecordDetail`
 - `getCaseRecordDetail` 会返回结构化 `expenseItems[]`，不依赖前端从“支付：A + B + C”标题里拆分，也不向详情页输出医院 / 商户字段
@@ -436,7 +437,7 @@
 ### 当前规则说明
 
 - 状态更新页主态 `caseId` 路径已接正式 CloudBase 写入；草稿 `draftId` 路径仍写本地 draft
-- 主态详情里“提交后可看到状态卡并更新状态标签”在远端成功时来自正式 `rescue_cases + case_events(type=progress_update)` 回读；local overlay 只作为降级兜底
+- 主态详情里“提交后可看到状态卡并更新状态标签”在远端成功时来自正式 `rescue_cases + case_events(type=progress_update)` 回读；local overlay 只作为降级兜底，且远端成功后会清理 `case-status-submissions:{caseId}`
 - 草稿箱提交后当前直接写入本地 draft 的 `timeline[] / currentStatusLabel`，不是新的远端字段
 - 状态更新提交后不可修改；当前详情页提供只读“查看更新”，并已接 `getCaseRecordDetail`
 - 进展详情图片最多返回 9 张，后续变化应继续发布新的进展更新
@@ -464,7 +465,20 @@
 ### 当前规则说明
 
 - 追加预算页主态 `caseId` 路径已接正式 CloudBase 写入；草稿 `draftId` 路径仍写本地 draft
-- 主态详情里“提交后可看到预算调整卡并更新总预算”在远端成功时来自正式 `rescue_cases.targetAmount + case_events(type=budget_adjustment)` 回读；local overlay 只作为降级兜底
+- 主态详情里“提交后可看到预算调整卡并更新总预算”在远端成功时来自正式 `rescue_cases.targetAmount + case_events(type=budget_adjustment)` 回读；local overlay 只作为降级兜底，且远端成功后会清理 `case-budget-adjustments:{caseId}`
+
+### localPresentation 残留能力
+
+当前需要记住的事实：
+
+- 正式远端成功读链路已经不再注入本机 overlay
+- `title / cover` 的 case 级与 draft 级覆盖，会在远端编辑成功后一起清理
+- `budget / status / expense` 的 case 级 overlay，会在对应主态远端写成功后清理
+- `draft` 级 title / cover 展示覆盖和 CloudBase 不可用时的主态本地兜底，当前仍是必须保留能力
+
+完整拆分见：
+
+- [`docs/local_presentation_residual_checklist.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/local_presentation_residual_checklist.md)
 - 草稿箱提交后当前直接写入本地 draft 的 `budget / timeline[]`，不是新的远端字段
 - `reason` 输入区当前已统一成覆盖层 placeholder 方案；这只是前端样式与交互统一，不是新的字段或字段格式要求
 

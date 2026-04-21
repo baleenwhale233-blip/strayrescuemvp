@@ -32,35 +32,35 @@ export function buildSupportSheetCopy(input: {
 
   if (hasWechatId && hasPaymentQr) {
     return {
-      contactHint: "复制微信号或保存二维码后，打开微信添加救助人",
-      directHint: "长按图片保存到相册，打开微信扫一扫联系救助人",
-      contactTip: "添加救助人后，可通过微信直接沟通救助细节。",
-      directTip: "支持完成后，请回到页面点击“我已支持”以登记支持记录。",
+      contactHint: "复制微信号或保存二维码后，可在微信里联系记录维护者",
+      directHint: "长按图片保存到相册，打开微信扫一扫查看联系信息",
+      contactTip: "联系上记录维护者后，可继续沟通这条记录的情况。",
+      directTip: "如已完成线下转账或其他方式记录，可回到页面登记一笔。",
     };
   }
 
   if (hasWechatId) {
     return {
-      contactHint: "复制微信号后，打开微信添加救助人",
-      directHint: "当前未提供二维码，请先通过微信联系救助人确认支持方式。",
-      contactTip: "添加救助人后，可通过微信直接沟通救助细节。",
-      directTip: "沟通后若已支持，请回到页面点击“我已支持”登记支持记录。",
+      contactHint: "复制微信号后，可在微信里联系记录维护者",
+      directHint: "当前未提供二维码，可先通过微信联系记录维护者确认方式。",
+      contactTip: "联系上记录维护者后，可继续沟通这条记录的情况。",
+      directTip: "沟通完成后，如已有线下转账或其他记录，可回到页面登记一笔。",
     };
   }
 
   if (hasPaymentQr) {
     return {
-      contactHint: "当前未提供微信号，可先保存二维码后用微信扫一扫联系救助人",
-      directHint: "长按图片保存到相册，打开微信扫一扫联系救助人",
-      contactTip: "若需了解更多细节，可先通过扫码后的会话与救助人联系。",
-      directTip: "支持完成后，请回到页面点击“我已支持”以登记支持记录。",
+      contactHint: "当前未提供微信号，可先保存二维码后用微信扫一扫查看联系信息",
+      directHint: "长按图片保存到相册，打开微信扫一扫查看联系信息",
+      contactTip: "若需了解更多细节，可先扫码联系记录维护者。",
+      directTip: "如已完成线下转账或其他方式记录，可回到页面登记一笔。",
     };
   }
 
   return {
-    contactHint: "当前暂未提供联系方式，请稍后再试",
-    directHint: "当前暂未提供二维码，请先联系救助人",
-    contactTip: "如页面稍后刷新出联系方式，可再回来继续支持。",
-    directTip: "联系上救助人并完成支持后，再回来登记支持记录。",
+    contactHint: "当前暂未提供联系信息，请稍后再试",
+    directHint: "当前暂未提供二维码，可稍后再看",
+    contactTip: "如果页面稍后刷新出联系信息，可再回来查看。",
+    directTip: "完成记录后，可再回来登记一笔。",
   };
 }

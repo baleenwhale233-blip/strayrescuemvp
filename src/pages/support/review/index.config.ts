@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: "核实支持登记",
+  navigationBarTitleText: "处理登记",
 });

@@ -6,8 +6,8 @@ import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
   addExpenseRecord,
   buildExpenseEvidenceItems,
-  saveCaseExpenseSubmission,
-  type LocalExpenseSubmission,
+  clearCaseContentWriteLocalFallback,
+  recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
 import addLineIcon from "../../../assets/rescue-expense/add-line-20.svg";
 import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
@@ -384,16 +384,20 @@ export default function RescueExpensePage() {
         });
 
         if (!didSyncRemote) {
-          const submission: LocalExpenseSubmission = {
-            id: `local-expense-${Date.now()}`,
-            title,
-            amount: total,
-            timestampLabel: formatTimelineTimestamp(new Date(spentAt)),
-            assetUrls: publicEvidenceImages.slice(0, 9),
-            createdAt: spentAt,
-          };
-
-          saveCaseExpenseSubmission(caseId, submission);
+          recordCaseContentWriteLocalFallback({
+            caseId,
+            kind: "expense",
+            submission: {
+              id: `local-expense-${Date.now()}`,
+              title,
+              amount: total,
+              timestampLabel: formatTimelineTimestamp(new Date(spentAt)),
+              assetUrls: publicEvidenceImages.slice(0, 9),
+              createdAt: spentAt,
+            },
+          });
+        } else {
+          clearCaseContentWriteLocalFallback({ caseId, kind: "expense" });
         }
       } else {
         Taro.hideLoading();

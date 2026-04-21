@@ -23,17 +23,17 @@ const PROFILE_USER_KEY = "profile-user:v1";
 const MENU_ITEMS = [
   {
     key: "support-history",
-    label: "我的支持足迹",
+    label: "我的登记记录",
     icon: supportHistoryIcon,
   },
   {
     key: "contact-settings",
-    label: "救助联系方式设置",
+    label: "联系信息设置",
     icon: contactSettingsIcon,
   },
   {
     key: "guide",
-    label: "救助账本使用说明",
+    label: "使用说明",
     icon: guideBookIcon,
   },
 ] as const;
@@ -316,7 +316,7 @@ export default function ProfilePage() {
 
   return (
     <View className="page-shell profile-page">
-      <NavBar title="救猫咪" />
+      <NavBar title="我的" />
 
       <View className="profile-page__body">
         <View className="profile-page__user">

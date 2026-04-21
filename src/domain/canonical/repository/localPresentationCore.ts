@@ -43,12 +43,55 @@ export type LocalPresentationSnapshot = {
   caseId: string;
   draftId?: string;
   draft?: RescueCreateDraft;
+  applyLocalOverlays?: boolean;
   titleOverride?: string;
   coverOverride?: string;
   statusSubmissions?: LocalStatusSubmission[];
   expenseSubmissions?: LocalExpenseSubmission[];
   budgetAdjustments?: LocalBudgetAdjustmentSubmission[];
 };
+
+export type CasePresentationOverrideStore = {
+  byCaseId: Record<string, string>;
+  byDraftId: Record<string, string>;
+  coverByCaseId: Record<string, string>;
+  coverByDraftId: Record<string, string>;
+};
+
+export function clearCasePresentationOverrides(
+  store: CasePresentationOverrideStore & { caseId: string; draftId?: string },
+  options: {
+    clearTitle?: boolean;
+    clearCover?: boolean;
+  },
+): CasePresentationOverrideStore {
+  const next: CasePresentationOverrideStore = {
+    byCaseId: { ...store.byCaseId },
+    byDraftId: { ...store.byDraftId },
+    coverByCaseId: { ...store.coverByCaseId },
+    coverByDraftId: { ...store.coverByDraftId },
+  };
+
+  if (options.clearTitle) {
+    if (store.caseId) {
+      delete next.byCaseId[store.caseId];
+    }
+    if (store.draftId) {
+      delete next.byDraftId[store.draftId];
+    }
+  }
+
+  if (options.clearCover) {
+    if (store.caseId) {
+      delete next.coverByCaseId[store.caseId];
+    }
+    if (store.draftId) {
+      delete next.coverByDraftId[store.draftId];
+    }
+  }
+
+  return next;
+}
 
 function formatCurrency(amount: number) {
   return `¥${amount.toLocaleString("zh-CN", {
@@ -97,6 +140,7 @@ function inferCaseCurrentStatus(label?: string): CaseCurrentStatus | undefined {
       return "draft";
     case "紧急送医":
       return "newly_found";
+    case "医疗处理中":
     case "医疗救助中":
       return "medical";
     case "康复观察":
@@ -120,6 +164,10 @@ function replaceTimelineLabels(
   timeline: PublicDetailVM["timeline"],
   input: LocalPresentationSnapshot,
 ): PublicDetailVM["timeline"] {
+  if (input.applyLocalOverlays === false) {
+    return timeline;
+  }
+
   const statusSubmissions = input.statusSubmissions ?? [];
   const expenseSubmissions = input.expenseSubmissions ?? [];
   const budgetAdjustments = input.budgetAdjustments ?? [];
@@ -173,9 +221,13 @@ function replaceTimelineLabels(
 
 export function resolvePresentedDraftCore(
   draft: RescueCreateDraft | undefined,
-  input: Pick<LocalPresentationSnapshot, "titleOverride" | "coverOverride">,
+  input: Pick<LocalPresentationSnapshot, "applyLocalOverlays" | "titleOverride" | "coverOverride">,
 ) {
   if (!draft) {
+    return draft;
+  }
+
+  if (input.applyLocalOverlays === false) {
     return draft;
   }
 
@@ -200,6 +252,10 @@ export function resolveBundlePresentationCore(
   bundle: CanonicalCaseBundle,
   input: LocalPresentationSnapshot,
 ): CanonicalCaseBundle {
+  if (input.applyLocalOverlays === false) {
+    return bundle;
+  }
+
   const latestStatus = input.statusSubmissions?.[0];
   const expenseSubmissions = input.expenseSubmissions ?? [];
   const budgetAdjustments = input.budgetAdjustments ?? [];
@@ -339,6 +395,10 @@ export function finalizePublicDetailPresentationCore(
     return detail;
   }
 
+  if (input.applyLocalOverlays === false) {
+    return detail;
+  }
+
   const latestStatus = input.statusSubmissions?.[0];
 
   return {
@@ -358,6 +418,10 @@ export function finalizeOwnerDetailPresentationCore(
     return detail;
   }
 
+  if (input.applyLocalOverlays === false) {
+    return detail;
+  }
+
   return {
     ...detail,
     state: detail.statusLabel,
@@ -369,6 +433,10 @@ export function finalizeHomepageCaseCardPresentationCore(
   card: HomepageCaseCardVM,
   input: LocalPresentationSnapshot,
 ): HomepageCaseCardVM {
+  if (input.applyLocalOverlays === false) {
+    return card;
+  }
+
   const latestStatus = input.statusSubmissions?.[0];
 
   if (!latestStatus) {
@@ -386,6 +454,10 @@ export function finalizeWorkbenchCaseCardPresentationCore(
   card: WorkbenchCaseCardVM,
   input: LocalPresentationSnapshot,
 ): WorkbenchCaseCardVM {
+  if (input.applyLocalOverlays === false) {
+    return card;
+  }
+
   const latestStatus = input.statusSubmissions?.[0];
 
   if (!latestStatus) {

@@ -6,8 +6,8 @@ import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWith
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
-  saveCaseBudgetAdjustment,
-  type LocalBudgetAdjustmentSubmission,
+  clearCaseContentWriteLocalFallback,
+  recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
 import submitArrowIcon from "../../../assets/rescue-budget-update/footer-submit-arrow.svg";
 import noteInfoIcon from "../../../assets/rescue-budget-update/notice-icon.svg";
@@ -119,10 +119,10 @@ export default function RescueBudgetUpdatePage() {
   const contextCard = useMemo(() => {
     if (draft) {
       return {
-        title: draft.name || "未命名救助",
-        statusLabel: draft.currentStatusLabel || "医疗救助中",
+        title: draft.name || "未命名档案",
+        statusLabel: draft.currentStatusLabel || "医疗处理中",
         publicCaseId: draft.publicCaseId || "待生成",
-        rescueStartedAtLabel: "救助开始时间: 待补充",
+        rescueStartedAtLabel: "记录开始时间: 待补充",
         coverImage: draft.coverPath || ownerAnimalFallback,
         supportedAmountLabel: formatCurrency(calculateDraftLedger(draft).income),
         previousBudget: draft.budget || 0,
@@ -134,7 +134,7 @@ export default function RescueBudgetUpdatePage() {
         title: detail.title,
         statusLabel: detail.statusLabel,
         publicCaseId: detail.publicCaseId,
-        rescueStartedAtLabel: `救助开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
+        rescueStartedAtLabel: `记录开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
         coverImage: detail.heroImageUrl || ownerAnimalFallback,
         supportedAmountLabel: detail.supportSummary.confirmedSupportAmountLabel,
         previousBudget: detail.ledger.targetAmount,
@@ -209,16 +209,20 @@ export default function RescueBudgetUpdatePage() {
         });
 
         if (!didSyncRemote) {
-          const submission: LocalBudgetAdjustmentSubmission = {
-            id: `local-budget-${Date.now()}`,
-            previousTargetAmount: contextCard.previousBudget,
-            currentTargetAmount: numericBudget,
-            reason: reason.trim(),
-            timestampLabel,
-            createdAt: occurredAt,
-          };
-
-          saveCaseBudgetAdjustment(caseId, submission);
+          recordCaseContentWriteLocalFallback({
+            caseId,
+            kind: "budget",
+            submission: {
+              id: `local-budget-${Date.now()}`,
+              previousTargetAmount: contextCard.previousBudget,
+              currentTargetAmount: numericBudget,
+              reason: reason.trim(),
+              timestampLabel,
+              createdAt: occurredAt,
+            },
+          });
+        } else {
+          clearCaseContentWriteLocalFallback({ caseId, kind: "budget" });
         }
       } else {
         Taro.hideLoading();
@@ -292,7 +296,7 @@ export default function RescueBudgetUpdatePage() {
             />
           </View>
           <Text className="rescue-budget-update-page__hint">
-            当前已支持：{contextCard.supportedAmountLabel}
+            当前已登记：{contextCard.supportedAmountLabel}
           </Text>
         </View>
 
@@ -313,7 +317,7 @@ export default function RescueBudgetUpdatePage() {
         <View className="rescue-budget-update-page__notice">
           <Image className="rescue-budget-update-page__notice-icon" mode="aspectFit" src={noteInfoIcon} />
           <Text className="rescue-budget-update-page__notice-text">
-            预算追加后将自动生成一条项目进展动态，并在动物救助时间轴中公示。
+            预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
           </Text>
         </View>
       </View>

@@ -240,7 +240,7 @@ function migrateSupportEntriesFromTimeline(
         supportThreadId: buildSupportThreadId(caseId, supporterUserId),
         caseId,
         supporterUserId,
-        supporterNameMasked: entry.title || "已登记支持",
+        supporterNameMasked: entry.title || "已登记记录",
         amount: Math.max(entry.amount ?? 0, 0),
         currency: "CNY" as CurrencyCode,
         supportedAt: draft.updatedAt,
@@ -278,10 +278,10 @@ function projectSupportEntryToTimelineEntry(
 ): RescueCreateTimelineEntry {
   const statusLabel =
     entry.status === "confirmed"
-      ? "已确认支持"
+      ? "已确认登记"
       : entry.status === "pending"
-        ? "待处理支持"
-        : "未匹配支持";
+        ? "待处理登记"
+        : "未匹配登记";
 
   return {
     id: `timeline-${entry.id}`,
@@ -438,7 +438,7 @@ export function createInitialDraft(): RescueCreateDraft {
         label: "状态更新",
         title: "已创建基础档案，等待补充第一条进展",
         description:
-          "完成封面、代号和事件简述后，就可以继续设定预算并进入救助页预览。",
+          "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。",
         timestamp: formatTimelineTimestamp(),
       },
     ],
@@ -547,7 +547,7 @@ export function appendEntryToDraft(
   if (entry.tone === "income") {
     return createSupportEntryOnDraft(normalizedDraft, {
       supporterUserId: `manual-supporter:${Date.now()}`,
-      supporterNameMasked: entry.title || "救助人手动补录",
+      supporterNameMasked: entry.title || "记录维护者手动补录",
       amount: entry.amount ?? 0,
       supportedAt: nowIso(),
       note: entry.description,

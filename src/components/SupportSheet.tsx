@@ -31,7 +31,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
   const handlePrimaryAction = async () => {
     if (hasPaymentQr) {
       Taro.showToast({
-        title: "请长按二维码保存并联系救助人",
+        title: "请长按二维码保存，稍后可在微信里联系",
         icon: "none",
       });
       return;
@@ -71,7 +71,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
 
             {hasPaymentQr ? (
               <View className="support-sheet__section">
-                <Text className="support-sheet__section-title">救助人二维码</Text>
+                <Text className="support-sheet__section-title">联系二维码</Text>
 
                 <View className="support-sheet__qr-card">
                   <Image
@@ -85,7 +85,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
               </View>
             ) : (
               <View className="support-sheet__section">
-                <Text className="support-sheet__section-title">救助人二维码</Text>
+                <Text className="support-sheet__section-title">联系二维码</Text>
                 <View className="support-sheet__empty-card">
                   <Text className="support-sheet__empty-text">暂未提供二维码</Text>
                 </View>
@@ -95,7 +95,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
 
             {hasWechatId ? (
               <View className="support-sheet__section">
-                <Text className="support-sheet__section-title">救助人微信号</Text>
+                <Text className="support-sheet__section-title">联系微信号</Text>
 
                 <View className="support-sheet__wechat-card">
                   <Text className="support-sheet__wechat-id">{support.wechatId}</Text>

@@ -24,6 +24,152 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-20 | 文档 | 新增全局字段契约总表，收口字段生命周期入口
+
+- 为什么改：
+  现有 `frontend_backend_field_matrix.md` 更偏“页面吃哪些字段”，`pending_field_contracts.md` 更偏“哪些字段还没定”；但现在要系统核对字段映射，需要一份能从页面输入一路看到草稿、canonical、云端和 VM 的全局对照表。
+- 改了什么：
+  新增 `docs/field_contract_matrix.md`，按“案例 / 建档、救助人资料、支出与进展、支持登记、资产图片”整理字段生命周期总表，并补一节“增删改查入口速查”；同时在 `docs/frontend_backend_field_matrix.md` 顶部增加跳转入口。
+- 影响范围：
+  长期文档入口从“两份页面导向文档”扩成“三份字段文档协同”：页面消费看 `frontend_backend_field_matrix`，待补契约看 `pending_field_contracts`，全局映射和真相源判断看 `field_contract_matrix`；代码逻辑未改。
+- 验证结果：
+  已按当前代码中的 `localDraftPersistence`、`types.ts`、`remoteRepository`、`cloudbaseClient`、`rescueApi` 和主要页面提交链路梳理字段来源，确保新文档能对照到实际文件路径。
+- 下一步 / 遗留问题：
+  下一轮可以按这份总表先从“建档字段”和“支持登记字段”开始逐项核对语义与命名；如果后续字段映射长期以这份文档为准，再考虑把更多页面文档里的重复字段描述继续收口。
+
+## 2026-04-20 | 文档 | 把字段总表改成窄表结构，提升 Markdown 可读性
+
+- 为什么改：
+  第一版 `field_contract_matrix` 直接把页面、草稿、canonical、云端、VM、管理文件都塞进宽表，虽然信息完整，但在 Markdown 渲染里可读性很差，核对时容易横向滚动丢上下文。
+- 改了什么：
+  将 `docs/field_contract_matrix.md` 重排为“窄表 + 补充说明”结构：表格只保留最核心的字段映射，云端字段、VM 字段和管理文件拆到表格下的短列表中，并按案例、资料、时间线、支持、资产分块整理。
+- 影响范围：
+  仅影响字段文档的阅读体验和后续核对效率，不改任何业务逻辑或字段契约本身。
+- 验证结果：
+  已检查新文档在标准 Markdown 语法下只使用常规表格和短列表，不再依赖超宽表格显示；同时保留原有字段语义与管理入口信息。
+- 下一步 / 遗留问题：
+  如果后续某个分块字段继续膨胀，可以再拆成独立小节或对象级子文档，但先保持单文件集中核对入口。
+
+## 2026-04-20 | 云函数重构 | 抽出 rescueApi runtime 与 canonical adapter
+
+- 为什么改：`cloudfunctions/rescueApi/index.js` 已接近 2000 行，运行时 helper、DB 查询、canonical 映射和业务 action 混在一起，继续追加 Alpha 写链会让回归风险变高。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/runtime.js` 和 `src/adapters/canonical.js`，把 envelope、ID/文件校验、查询封装、临时 URL 转换和 `toCanonical* / recomputeThreads / hero fallback` 映射从 `index.js` 抽出；`index.js` 仍保留原 action 表和业务流程。
+- 影响范围：仅影响 `rescueApi` 云函数内部模块边界与新增 characterization tests；不改 CloudBase 集合 schema、action 名、返回 envelope、前端 repository、页面交互或产品逻辑。
+- 验证结果：新增 runtime / adapter Node tests 先红后绿；`node --check cloudfunctions/rescueApi/index.js` 通过；后续继续跑 `npm run typecheck`、`npm run test:domain` 和新增云函数模块测试。
+- 下一步 / 遗留问题：下一轮再按同样方式拆 `profile/support/records` services；拆服务前继续保持 `handlers` action 名和错误码不变。
+
+## 2026-04-20 | 云函数重构 | 拆出 rescueApi profile service
+
+- 为什么改：Batch 1 已把 runtime 和 canonical adapter 抽出，下一块最低风险的服务边界是 `getMyProfile / updateMyProfile / getProfileByOpenid`；它独立于案例写链和登记核实主路径，适合先拆。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/services/profile.js`，把 profile payload、资料读取、头像/二维码 asset 写入和 profile upsert 从 `index.js` 移出；`index.js` 通过 `createProfileService()` 注入 `db / collections / runtime helper`，handler 名保持不变。
+- 影响范围：仅影响 `rescueApi` 内部 profile 模块边界和新增 profile service characterization tests；不改 `user_profiles / evidence_assets` 字段、前端 `getMyProfile / updateMyProfile` 调用、页面文案或产品逻辑。
+- 验证结果：profile service Node tests 先红后绿，覆盖空 profile 默认回包、非法 profile asset 拦截、合法头像 asset 写入与回读；新增云函数模块测试和 `node --check` 均通过。
+- 下一步 / 遗留问题：Batch 2 还剩 support 与 records service 拆分；下一刀建议先拆 support，因为 `createSupportEntry / reviewSupportEntry / createManualSupportEntry` 共享 thread/event 投影逻辑。
+
+## 2026-04-20 | 云函数重构 | 拆出 rescueApi support service
+
+- 为什么改：支持登记、手动登记和核实链路共享 support thread 聚合与 projected support event 投影，继续留在 `index.js` 会让后续 records service 拆分和错误码回归更难控。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/services/support.js`，把 `createSupportEntry / createManualSupportEntry / reviewSupportEntry / updateSupportThread / upsertSupportEvent` 从 `index.js` 移出；`index.js` 只通过 `createSupportService()` 注入 CloudBase 依赖并保留原 handler 名。
+- 影响范围：仅影响 `rescueApi` 内部 support 模块边界和新增 support service characterization tests；不改 `support_entries / support_threads / case_events` 字段、错误码、限流/重复凭证规则、前端 repository 或页面交互。
+- 验证结果：support service Node tests 先红后绿，覆盖 support event 投影、非法本地截图拦截、pending 支持登记写入与私有投影事件；新增云函数模块测试、`node --check`、`typecheck` 和 `test:domain` 均通过。
+- 下一步 / 遗留问题：Batch 2 还剩 records service 拆分，建议下一刀再拆 `getCaseRecordDetail / createProgressUpdate / createExpenseRecord / createBudgetAdjustment`，不要和 remoteRepository 同轮改。
+
+## 2026-04-20 | 云函数重构 | 拆出 rescueApi records service
+
+- 为什么改：只读记录详情和 P0-B 三条内容写链都集中在 `index.js`，且共享图片回读、资产写入、记录详情 payload 与错误码校验；继续留在主文件会阻塞后续 remoteRepository 拆分。
+- 改了什么：新增 `cloudfunctions/rescueApi/src/services/records.js`，把 `getCaseRecordDetail / createProgressUpdate / createExpenseRecord / createBudgetAdjustment` 及记录详情 helper 从 `index.js` 移出；`index.js` 保留 action handler 名，通过 `createRecordsService()` 注入 CloudBase 依赖。
+- 影响范围：仅影响 `rescueApi` 内部 records 模块边界和新增 records characterization tests；不改 `case_events / expense_records / evidence_assets / rescue_cases` 字段、错误码、写入规则、前端 repository 或页面交互。
+- 验证结果：records service Node tests 先红后绿，覆盖记录类型归一、图片去重、支出明细 fallback、非法进展/无图记账拦截、支出写入和 support entry 详情回读；新增云函数模块测试、`node --check`、`typecheck` 和 `test:domain` 均通过。
+- 下一步 / 遗留问题：`rescueApi/index.js` 已从近 2000 行降到约 600 行；下一阶段再拆 `remoteRepository.ts`，不要继续在本轮改前端 facade。
+
+## 2026-04-20 | Repository 重构 | 抽出 remoteRepository fallback 与 read helper
+
+- 为什么改：`src/domain/canonical/repository/remoteRepository.ts` 同时承载 CloudBase fallback 策略和读侧 VM 组装 helper，继续在一个文件里演化会让后续拆 `readRepository / writeRepository` 时很容易混入行为变化。
+- 改了什么：新增 `src/domain/canonical/repository/remote/fallback.ts`，抽出 `getRemoteErrorCode / shouldFallbackToLocal / withRemoteFallback / writeRemoteOrFallback`；新增 `src/domain/canonical/repository/remote/readHelpers.ts`，抽出 `buildRescuerHomepageVMFromBundles / finalizeWorkbenchVM`，`remoteRepository.ts` 改为复用这两个模块但保持现有导出函数名不变。
+- 影响范围：仅影响 canonical remote repository 的内部模块边界与新增 domain tests；不改页面 import、CloudBase action 名、fallback 语义、VM 字段 contract 或页面交互。
+- 验证结果：新增 `remoteFallback.test.ts` 和 `remoteReadHelpers.test.ts` 先红后绿，`npm run typecheck` 与 `npm run test:domain` 现在都通过，其中 domain tests 累计到 40 项，覆盖 domain error 不回落、本地 infra error 回落、rescuer homepage published 过滤和 workbench card finalizer。
+- 下一步 / 遗留问题：下一刀再拆 `remoteRepository` 的读 API 到独立模块，优先处理 `homepage / rescuer homepage / public detail / owner detail / workbench` 这组纯读路径，不和写 API 混拆。
+
+## 2026-04-20 | Repository 重构 | 抽出 remote read facade 与远端类型定义
+
+- 为什么改：`remoteRepository.ts` 在抽完 fallback 和 read helper 后，仍同时堆着一整组 read facade 导出和 write facade 导出，文件职责还不够清楚；继续在同一文件里追加只会拖慢后续收窄 export 面。
+- 改了什么：新增 `src/domain/canonical/repository/remote/readRepository.ts` 承接 `homepage / rescuer homepage / public detail / owner detail / support sheet / workbench / my profile / support history / record detail` 的远端读入口；新增 `src/domain/canonical/repository/remote/types.ts` 收纳 `MyProfileVM / MySupportHistoryVM / RescuerHomepageVM / CaseRecordDetailVM`；`remoteRepository.ts` 现在只保留 write API 和对 read facade 的 re-export。
+- 影响范围：仅影响 canonical remote repository 的内部文件组织和类型落点；页面 import 路径、对外函数名、fallback 语义、VM 字段 contract 和 CloudBase action 名保持不变。
+- 验证结果：`npm run typecheck`、`npm run test:domain` 通过，domain tests 现在累计到 41 项；`remoteReadHelpers.test.ts` 继续覆盖 rescuer homepage published 过滤、workbench finalizer 和 support history 本地汇总 helper。
+- 下一步 / 遗留问题：下一阶段可以继续拆 write facade，或先回头收窄 `src/domain/canonical/repository/index.ts` 的 barrel export 面；两者里更安全的顺序仍是先抽 write facade 再收窄 barrel。
+
+## 2026-04-20 | Repository 重构 | 抽出 remote write facade 与写侧 helper
+
+- 为什么改：`remoteRepository.ts` 继续同时承载写 API 和 facade re-export，且 `toRemoteDraftPayload / manual support fallback` 这类写侧约定容易随着页面需求悄悄漂移，需要单独收口。
+- 改了什么：新增 `src/domain/canonical/repository/remote/writeHelpers.ts`，抽出 `toRemoteDraftPayload` 和本地手动登记 fallback 输入构造；新增 `src/domain/canonical/repository/remote/writeRepository.ts` 承接 `updateRemoteMyProfile / updateRemoteCaseProfileByCaseId / createRemoteSupportEntryByCaseId / reviewRemoteSupportEntryByCaseId / createRemoteManualSupportEntryByCaseId / createRemoteProgressUpdateByCaseId / createRemoteExpenseRecordByCaseId / createRemoteBudgetAdjustmentByCaseId / saveRemoteDraftCase`；`remoteRepository.ts` 现在收成 read/write facade 的统一 re-export 薄壳。
+- 影响范围：仅影响 canonical remote repository 的内部文件组织、写侧 helper 位置和远端输入类型落点；页面 import 路径、对外函数名、fallback 语义、CloudBase action 名和现有页面 contract 不变。
+- 验证结果：新增 `remoteWriteHelpers.test.ts` 先红后绿，覆盖 draft 到远端 payload 映射和手动登记本地 fallback 语义；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 累计到 43 项。
+- 下一步 / 遗留问题：`remoteRepository.ts` 已经基本变成纯 facade，下一步更合适的是收窄 `src/domain/canonical/repository/index.ts` 的 barrel export 面，再逐步把页面从总出口迁到更明确的 public export。
+
+## 2026-04-20 | Repository 重构 | 收窄 canonical repository 总出口
+
+- 为什么改：`src/domain/canonical/repository/index.ts` 之前用多组 `export *` 暴露整个 read/draft/storage/remote 层，页面虽然只用了其中一部分，但内部 helper 也会一起漏出来，后续谁都可以继续从总出口拿内部 API。
+- 改了什么：将 `index.ts` 改成显式 public export 列表，只保留当前页面真实消费的 draft、remote 和 localPresentation API/类型；不再通过 barrel 继续 `export *` 整个 `canonicalReadRepository / draftRepository / draftStorage / remoteRepository`。同时新增 `repositoryIndex.test.ts`，用文件级约束防止总出口回退成 `export *`。
+- 影响范围：仅影响 `src/domain/canonical/repository/index.ts` 的导出面和对应测试；页面 import 路径保持不变，业务逻辑、VM 字段和 CloudBase 行为不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 44 项；新增测试已覆盖 `index.ts` 不再出现 4 个 `export *`，同时仍保留 `loadHomepageCaseCardVMs / updateRemoteMyProfile / getCurrentDraft / saveCaseStatusSubmission` 等页面入口。
+- 下一步 / 遗留问题：下一阶段可以继续把页面逐步从 `repository/index.ts` 迁到更明确的 `remote/readRepository`、`remote/writeRepository` 或 draft/public module，但这已经属于可选整理，不再是当前结构风险阻塞项。
+
+## 2026-04-20 | Repository 重构 | 为正式远端读路径关闭本地 overlay 注入
+
+- 为什么改：本地 `localPresentation` overlay 曾用于 Alpha 阶段的离线 / CloudBase 不可用兜底，但同一套 resolver 也会覆盖正式远端成功回包，导致本机旧 title/cover/status/expense/budget 可能长期压过远端真值。
+- 改了什么：在 `localPresentationCore` 与 `localPresentation` wrapper 增加 `applyLocalOverlays` 策略开关，默认保持旧行为；`remote/readRepository` 的 CloudBase 成功分支改为 `applyLocalOverlays:false`，远端成功回包不再注入本机 overlay，本地 fallback 和 draft 链路仍继续保留 overlay。
+- 影响范围：影响远端成功读取的首页、详情、owner 详情、工作台、联系方式半弹层、案例 ID 搜索和救助人主页的本地 overlay 优先级；不改本地 fallback、不改草稿 draftId 链路、不改 CloudBase action、VM 字段或页面 import。
+- 验证结果：新增 `local presentation can be disabled for formal remote read paths` 测试先红后绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 45 项。
+- 下一步 / 遗留问题：下一步可继续拆掉正式写成功后的历史 overlay 残留策略，例如远端 title/cover/profile 写成功后清理对应本地覆盖；这要按 overlay 类型逐项做，避免误删离线未同步内容。
+
+## 2026-04-20 | Repository 重构 | 远端档案编辑成功后清理本地 title / cover 覆盖
+
+- 为什么改：正式远端读路径已经不再吃本地 overlay，但主态详情页在远端改名或换头像成功后，旧的本地 title/cover override 仍会留在 storage 里，未来一旦进入本地 fallback 仍可能看到过期展示值。
+- 改了什么：在 `localPresentationCore` 增加 `clearCasePresentationOverrides` 纯函数，在 `localPresentation` 暴露 `clearCaseTitleOverride / clearCaseCoverOverride`；主态详情页 `updateRemoteCaseProfileByCaseId` 成功后分别清理 caseId 级 title/cover override，远端失败时仍保留原本 `saveCaseTitleOverride / saveCaseCoverOverride` 本地兜底。
+- 影响范围：只影响主态详情页已发布案例 `caseId` 的 title/cover 本地展示覆盖清理；草稿 `draftId` 覆盖和 CloudBase 不可用 fallback 不变，status/expense/budget overlay 也不在本轮处理。
+- 验证结果：新增 `case presentation override cleanup removes case overlays without touching draft overlays` 测试先红后绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 46 项。
+- 下一步 / 遗留问题：下一步可继续处理远端 P0-B 写成功后的 status/expense/budget overlay 残留，但要逐项确认不会误删离线未同步提交。
+
+## 2026-04-20 | Repository 重构 | 远端预算调整成功后清理本地 budget overlay
+
+- 为什么改：追加预算主态 `caseId` 远端写成功后，本地 `case-budget-adjustments:{caseId}` overlay 仍会留在 storage，未来进入本地 fallback 时可能继续把旧预算覆盖到当前档案。
+- 改了什么：在 `localPresentation` 新增 `clearCaseBudgetAdjustments(caseId)`，直接清理对应 case 的预算 overlay storage key；`rescue/budget-update` 在 `createRemoteBudgetAdjustmentByCaseId` 成功后调用清理，远端失败时继续保留 `saveCaseBudgetAdjustment` 兜底。
+- 影响范围：只影响主态追加预算远端写成功后的本地预算 overlay 清理；草稿 `draftId` 预算更新、本地 fallback、status/expense overlay 均不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseBudgetAdjustments` 仍从 public barrel 暴露给页面使用。
+- 下一步 / 遗留问题：继续处理 `status` 和 `expense` overlay 清理时要更谨慎，因为它们涉及图片、timeline 排序和凭证图回显，建议先做 status 再做 expense。
+
+## 2026-04-20 | Repository 重构 | 远端进展发布成功后清理本地 status overlay
+
+- 为什么改：进展更新主态 `caseId` 远端写成功后，本地 `case-status-submissions:{caseId}` overlay 仍会保留，未来进入本地 fallback 时可能把旧状态文案、时间和图片继续覆盖到详情与工作台。
+- 改了什么：在 `localPresentation` 新增 `clearCaseStatusSubmissions(caseId)`，清理对应 case 的状态 overlay storage key；`rescue/progress-update` 在 `createRemoteProgressUpdateByCaseId` 成功后调用清理，远端失败时仍保留 `saveCaseStatusSubmission` 本地兜底。
+- 影响范围：只影响主态写进展远端成功后的本地状态 overlay 清理；草稿 `draftId` 进展更新、本地 fallback、budget/expense overlay 均不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseStatusSubmissions` 仍从 public barrel 暴露给页面使用。
+- 下一步 / 遗留问题：最后再处理 `expense` overlay 清理，需要重点确认远端凭证上传成功和本地图片 fallback 的分界，避免误删上传失败后的离线回显。
+
+## 2026-04-20 | Repository 重构 | 远端记账成功后清理本地 expense overlay
+
+- 为什么改：记账主态 `caseId` 远端写成功后，本地 `case-expense-submissions:{caseId}` overlay 仍会保留，未来进入本地 fallback 时可能继续把旧支出标题、金额和凭证缩略图压回详情时间线。
+- 改了什么：在 `localPresentation` 新增 `clearCaseExpenseSubmissions(caseId)`，清理对应 case 的支出 overlay storage key；`rescue/expense` 在 `createRemoteExpenseRecordByCaseId` 成功后调用清理，远端失败时继续保留 `saveCaseExpenseSubmission` 本地兜底。
+- 影响范围：只影响主态记账远端写成功后的本地 expense overlay 清理；草稿 `draftId` 记账、本地 fallback、title/cover/status/budget 清理逻辑均不变。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 保持 46 项全绿；`repositoryIndex.test` 同步覆盖 `clearCaseExpenseSubmissions` 仍从 public barrel 暴露给页面使用。
+- 下一步 / 遗留问题：第 4 项这一轮的最小收薄已经完成，后续如果继续收口，可以考虑 profile 远端写成功后的本地 fallback 清理策略，或把 `localPresentation` 的读写 API 再按 overlay 类型拆分。
+
+## 2026-04-20 | Repository 重构 | 修掉 draftId 残留 override 并补 localPresentation 清单
+
+- 为什么改：主态详情页远端改名 / 换封面成功后此前只清理 `caseId` 级覆盖，如果本地仍保留同 case 的 `draftId` 覆盖，读取优先级仍可能让旧草稿值继续压过远端真值；同时 `localPresentation` 经过多轮收口后，需要一份仓库内清单明确哪些能力还必须保留。
+- 改了什么：将 `clearCasePresentationOverrides`、`clearCaseTitleOverride`、`clearCaseCoverOverride` 扩成支持同时清理 `caseId + draftId`，主态详情页远端成功分支传入 `ownerDetail?.draftId` 一并删除；新增 `docs/local_presentation_residual_checklist.md`，把 `draft` 链路必保留、CloudBase 不可用兜底、已收薄项和后续可删项拆开写清楚。
+- 影响范围：影响主态详情页 title/cover 远端成功后的本地覆盖清理，以及后续线程恢复上下文时对 `localPresentation` 剩余职责的判断；产品逻辑、页面结构和 CloudBase 行为未改。
+- 验证结果：`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 仍为 46 项；`case presentation override cleanup removes case overlays without touching draft overlays` 现在已覆盖 `draftId` 一并清理。
+- 下一步 / 遗留问题：如果后续继续清理 `localPresentation`，优先围绕文档里列出的“case 级 overlay 可删项”推进；`draft` 级展示覆盖现在仍属于必须保留能力。
+
+## 2026-04-20 | 文档同步 | 回写远端真值与 overlay 收薄口径
+
+- 为什么改：代码已经完成三件关键收口，但长期文档里仍有旧口径混在一起：正式远端成功读链路仍被写成会继续吃 overlay、title / cover 成功后只清理 case 级覆盖、P0-B 主态写成功后的 status / expense / budget overlay 清理也没有写回文档。
+- 改了什么：更新 `docs/project_control_center.md`、`docs/pending_field_contracts.md`、`docs/frontend_backend_field_matrix.md`、`docs/cloudbase_backend_setup.md`，补齐“正式远端成功读链不再注入本机 overlay”“已发布案例远端改名 / 换封面成功后清理 `caseId + draftId` 覆盖”“主态远端写成功后清理 `budget / status / expense` overlay key”，并把 `docs/local_presentation_residual_checklist.md` 作为 `localPresentation` 后续收口的唯一清单入口。
+- 影响范围：影响长期上下文恢复、字段契约判断、CloudBase 接入说明和页面行为说明；代码逻辑、产品范围和远端接口未改变。
+- 验证结果：本轮文档同步后，5 份长期真相源文档与当前分支代码实现一致：正式远端成功回包以 CloudBase 为真值，本地 overlay 只保留给草稿或降级兜底，`title / cover / budget / status / expense` 的清理策略均已写明。
+- 下一步 / 遗留问题：后续如果继续删 `localPresentation` 的 case 级兜底读逻辑，除了更新清单文档，也要同步把 `project_control_center / pending_field_contracts / frontend_backend_field_matrix / cloudbase_backend_setup` 里的“降级兜底”范围继续收窄，避免文档再次落后于代码。
+
 ## 2026-04-18 | Profile / Alpha QA | 修正头像临时链接缓存并同步 Alpha smoke 案例号
 
 - 为什么改：
@@ -1497,28 +1643,145 @@
 - 下一步 / 遗留问题：
   远端 `getMySupportHistory` / `getRescuerHomepage` 现在已经在 repository 内补本地展示覆盖，但如果后续把 title/cover/status 正式沉到后端字段，还要继续评估是否可以把这层本地 presentation resolver 再收薄一轮。
 
-## 2026-04-20 | 文档 | 新增全局字段契约总表，收口字段生命周期入口
+## 2026-04-19 | 客态详情 | 按 Figma 把底栏动作改成独立按钮并补短导航锁
 
 - 为什么改：
-  现有 `frontend_backend_field_matrix.md` 更偏“页面吃哪些字段”，`pending_field_contracts.md` 更偏“哪些字段还没定”；但现在要系统核对字段映射，需要一份能从页面输入一路看到草稿、canonical、云端和 VM 的全局对照表。
+  客态详情底栏原来把“我已支持”“我要支持”写成点击 `View`，在微信开发者工具的可访问性树里经常被合并成一段文本，电脑操控和辅助技术都不容易稳定识别；同时 Figma 最新节点 `29:785` 已把次按钮宽度收成 `120px`，主按钮改成吃剩余宽度。
 - 改了什么：
-  新增 `docs/field_contract_matrix.md`，按“案例 / 建档、救助人资料、支出与进展、支持登记、资产图片”整理字段生命周期总表，并补一节“增删改查入口速查”；同时在 `docs/frontend_backend_field_matrix.md` 顶部增加跳转入口。
+  将 `src/pages/rescue/detail/index.tsx` 的两个客态动作改成独立 `Button`，并在页面层新增 300ms 的 guest action lock，防止重复点击连续触发 `navigateTo` / 打开半弹层；同步调整 `src/pages/rescue/detail/index.scss`，把分享按钮宽度改成 `48px`，`我已支持` 固定成 `120px`，`我要支持` 改为 `flex: 1`，补上 ghost 按钮描边并清掉 Button 默认 `::after` 描边。
 - 影响范围：
-  长期文档入口从“两份页面导向文档”扩成“三份字段文档协同”：页面消费看 `frontend_backend_field_matrix`，待补契约看 `pending_field_contracts`，全局映射和真相源判断看 `field_contract_matrix`；代码逻辑未改。
+  仅影响客态详情页底栏交互语义、命中区域和视觉尺寸；未改 selector、repository、云函数或产品口径。
 - 验证结果：
-  已按当前代码中的 `localDraftPersistence`、`types.ts`、`remoteRepository`、`cloudbaseClient`、`rescueApi` 和主要页面提交链路梳理字段来源，确保新文档能对照到实际文件路径。
+  重新读取 Figma 节点 `29:785` 与截图确认最新宽度已生效；`npm run typecheck` 通过；微信开发者工具热更新后底栏视觉已对齐到“分享 48 / 我已支持 120 / 我要支持自适应”的新版结构。
 - 下一步 / 遗留问题：
-  下一轮可以按这份总表先从“建档字段”和“支持登记字段”开始逐项核对语义与命名；如果后续字段映射长期以这份文档为准，再考虑把更多页面文档里的重复字段描述继续收口。
+  微信开发者工具的无障碍树仍可能把两个按钮合并成一段文本，这更像 DevTools 预览层的暴露问题；后续若要继续往盲人友好方向推进，可以再补 `aria-label`/可读文案和一次真机读屏验证。
 
-## 2026-04-20 | 文档 | 把字段总表改成窄表结构，提升 Markdown 可读性
+## 2026-04-19 | 客态详情 | 按 Figma 把底栏容器高度抬回 99 的节奏
 
 - 为什么改：
-  第一版 `field_contract_matrix` 直接把页面、草稿、canonical、云端、VM、管理文件都塞进宽表，虽然信息完整，但在 Markdown 渲染里可读性很差，核对时容易横向滚动丢上下文。
+  上一轮把底栏按钮尺寸和语义先对齐后，footer 外层 padding 还沿用了旧值，导致整个底栏看起来偏矮，和 Figma 节点 `29:786` 的高度感不一致。
 - 改了什么：
-  将 `docs/field_contract_matrix.md` 重排为“窄表 + 补充说明”结构：表格只保留最核心的字段映射，云端字段、VM 字段和管理文件拆到表格下的短列表中，并按案例、资料、时间线、支持、资产分块整理。
+  将 `src/pages/rescue/detail/index.scss` 中 `guest-bottom-bar` 的 padding 从 `12px 16px 20px` 调整为 `17px 16px 32px`，对应 Figma footer 的 `pt 17 / pb 32 / px 16`。
 - 影响范围：
-  仅影响字段文档的阅读体验和后续核对效率，不改任何业务逻辑或字段契约本身。
+  仅影响客态详情页底栏容器的整体高度与留白，不改按钮宽度、交互逻辑、数据链或产品口径。
 - 验证结果：
-  已检查新文档在标准 Markdown 语法下只使用常规表格和短列表，不再依赖超宽表格显示；同时保留原有字段语义与管理入口信息。
+  微信开发者工具热更新后复看，底栏已不再贴底发矮，整体高度和 Figma 当前节点更接近；本轮为纯样式修正，未新增类型或数据层风险。
 - 下一步 / 遗留问题：
-  如果后续某个分块字段继续膨胀，可以再拆成独立小节或对象级子文档，但先保持单文件集中核对入口。
+  后续若真机安全区表现与开发者工具仍有偏差，再单独按设备底部 inset 微调，但先以当前 Figma 版式为准。
+
+## 2026-04-19 | 客态详情 | 修正 footer 被误并入通用 flex 规则，并补底部 safe area
+
+- 为什么改：
+  继续复看后发现底栏看起来仍偏矮，不只是 padding 数值问题；`guest-bottom-bar` 之前被错误并入详情页上方几组通用 `display:flex / justify-content` 规则，同时 footer 也没把 iPhone 底部安全区算进去，导致设计稿里的下留白被 home indicator 吃掉一截。
+- 改了什么：
+  从 `src/pages/rescue/detail/index.scss` 的三组通用布局规则里移除 `.guest-bottom-bar`，并在 footer 本体显式声明 `display: block`、`box-sizing: border-box`；同时把底部留白改成 `padding-bottom: calc(32px + env(safe-area-inset-bottom))`，保留 `constant(...)` 兼容写法。
+- 影响范围：
+  仅影响客态详情页底栏容器的版式与 iPhone 底部安全区适配；按钮尺寸、交互逻辑、数据链和文案不变。
+- 验证结果：
+  `npm run typecheck` 通过；微信开发者工具热更新后复看，底栏下沿可见留白明显恢复，整体高度比上一版更接近 Figma 的 footer 节奏。
+- 下一步 / 遗留问题：
+  还需要真机再确认 Android 无 home indicator 设备上不会显得过高；如果 Android 端过松，再补平台条件分支，但先以 iPhone 主场景对齐设计稿。
+
+## 2026-04-19 | 客态详情 | 追到真正运行时：微信开发者工具吃的是 dist，不是 src 幻觉
+
+- 为什么改：
+  继续肉眼看底栏仍偏矮后，直接读小程序运行时样式发现 footer 实际仍是旧值：高度 `88px`、`padding-top 13px`、`padding-bottom 22px`、背景 `rgba(255,255,255,0.96)`；说明问题不只是 SCSS 写法，而是当前预览还在吃旧 `dist`，不能只盯 `src`。
+- 改了什么：
+  增加一次性的运行时检查脚本验证 `.guest-bottom-bar` / `.guest-bottom-bar__inner` / 按钮的真实尺寸；随后重新执行 `npm run build:weapp` 让 `src/pages/rescue/detail/index.scss` 的 footer 新规则重新编进 `dist/pages/rescue/detail/index.wxss`，确认编译产物已包含 `min-height: 99px`、`padding: 17 16 32`、按钮 48 高、宽度 120/自适应和毛玻璃背景。
+- 影响范围：
+  影响客态详情页底栏在微信开发者工具和后续真机包里的真正运行时样式来源判断；不改数据链、交互口径和页面结构，只把“源码已改但未进 dist”的误判链路查清。
+- 验证结果：
+  `npm run build:weapp` 成功；重新查看 `dist/pages/rescue/detail/index.wxss`，底栏已是最新规则；微信开发者工具刷新后终于开始吃到新包，底栏观感明显向 Figma 靠拢。此次构建额外暴露 `postcss-calc` 对 `env()/constant()` 的 warning，但未阻塞产物生成。
+- 下一步 / 遗留问题：
+  如果后续还要继续精抠底栏，优先以 `dist` 和运行时 element inspection 为准，不再只凭 `src` 推断；若要彻底消掉 `env()/constant()` 的编译 warning，下一轮应改成 JS 注入安全区 inset，而不是继续让 `postcss-calc` 硬吃 CSS `calc()`。
+
+## 2026-04-19 | 客态详情 | 把 footer 从 143px 拉回接近 Figma 的 98px
+
+- 为什么改：
+  在去掉重复 safe area 后，运行时 footer 仍有 `109px`，继续读 element inspection 才发现真正多出来的是我加的 `min-height: 99px`；Taro 会把源码 px 再换算成 rpx，导致这条“看上去合理”的硬高度在 iPhone 15 Pro Max 预览里被放大。
+- 改了什么：
+  移除 `src/pages/rescue/detail/index.scss` 里 `guest-bottom-bar` 的 `min-height: 99px`，并把底部 padding 从 `32px` 收到 `25px`，保留现有 52px 按钮行、玻璃背景和独立 Button 语义不变。
+- 影响范围：
+  仅影响客态详情页底栏容器总高度和底部留白；不改按钮宽度、交互逻辑、数据链或 Figma 对齐策略。
+- 验证结果：
+  重新 `npm run build:weapp` 后，用运行时检查脚本再次读取 `.guest-bottom-bar`，当前真实尺寸已变为：总高度 `98px`、`padding-top 18px`、`padding-bottom 27px`、按钮行 `52px`；已经从上一版的 `143px` / `109px` 拉回接近 Figma 的 `99px` 体感。
+- 下一步 / 遗留问题：
+  这页以后再做视觉精修时，优先盯运行时尺寸而不是直接照搬设计稿 px；如果真机上仍比开发者工具更松或更紧，再按真机 runtime 继续微调，而不是重新加固定高。
+
+## 2026-04-19 | 文案合规 | 将前台语义统一收口到“记录 / 明细 / 登记”
+
+- 为什么改：
+  微信审核反馈个人小程序不适合呈现“发起救助 / 参与救助 / 我要支持”这类容易被理解成提供服务或撮合支持的表述；需要把前台语义改成更中性的记录工具口径。
+- 改了什么：
+  将 tab、NavBar、底部按钮、工作台主 CTA、联系方式半弹层、登记处理页、使用说明和建档链路文案统一改成“查档 / 我的记录 / 新建记录 / 查看联系方式 / 登记一笔 / 处理登记 / 记录票据 / 更新进展”；同时把前台可见的资金状态、高频 fallback 文案和相关 IA / 进度总览同步到新口径。
+- 影响范围：
+  影响 `app.config`、发现页、工作台、客态详情、登记页、处理页、Profile 相关页面、建档与进展页，以及 `main_info_arch_v3.2`、页面 IA、`product_development_status.md`；不改 API action、repository 接口名、云函数 schema 和路由结构。
+- 验证结果：
+  已补共享联系方式文案相关测试口径，并计划执行 `npm run typecheck`、`npm run test:domain` 与敏感词 `rg` 复查；预期前台首屏不再出现“我要支持 / 我已支持 / 新建救助档案”等高风险词。
+- 下一步 / 遗留问题：
+  仍需真机复看微信开发者工具中的导航标题、分享文案和静态说明页；当前状态标签中的“医疗处理中”已一并收口，如果审核继续卡“账本”语义，再评估第二轮把“透明账本”进一步收成“记录明细”。
+
+## 2026-04-19 | 文案合规 | 将首页 tab 从“查档”回调为“发现”
+
+- 为什么改：
+  第一轮文案收口里把首页 tab 改成了“查档”，虽然更直白，但实际使用里会显得偏硬；用户确认“发现”也能保留入口感，同时不影响整体记录工具语义。
+- 改了什么：
+  将 `src/app.config.ts` 的首页 tab 文案从“查档”改回“发现”，并同步更新 `docs/home_page_ia.md` 与 `docs/main_info_arch_v3.2.md` 中对应的 tab 命名，避免实现和 IA 再次分叉。
+- 影响范围：
+  仅影响首页 tab 的对外名称和相关 IA 文档，不改页面结构、数据模型、selector、repository 或流程文案。
+- 验证结果：
+  计划重新执行 `npm run build:weapp`，确认 `dist/app.json` 已回写为“发现”，并继续用开发者工具复查底部 tab 显示。
+- 下一步 / 遗留问题：
+  首页页面内部仍保留“案例 ID 查档”这类能力描述；如果后续还要继续弱化“查档”感，可以再评估首页说明文案是否也要从“查档入口”改成“发现入口”。
+
+## 2026-04-19 | 文案合规 | 补齐首页页内导航标题为“发现”
+
+- 为什么改：
+  上一轮只把首页 tab 从“查档”改回了“发现”，但 `src/pages/discover/index.tsx` 里的页内 `NavBar` 仍保留旧词，导致底部 tab 和页面顶部标题不一致。
+- 改了什么：
+  将首页页内导航标题从“查档”改为“发现”，让首页 tab、页内标题和当前 IA 命名保持一致。
+- 影响范围：
+  仅影响首页顶部导航标题和相关运行时显示，不改页面结构、数据模型、selector、repository 或其他页面文案。
+- 验证结果：
+  计划重新执行 `npm run build:weapp`，并复查 `dist/pages/discover/index.js` 中的 `NavBar title` 已更新为“发现”。
+- 下一步 / 遗留问题：
+  如果后续首页对外定位继续从“查档入口”往“发现入口”收口，还可以再顺手调整首页说明文案，但这不影响当前标题一致性。
+
+## 2026-04-20 | 文档同步 | 收口总控中心与产品文档到最新“发现 / 记录 / 登记”口径
+
+- 为什么改：
+  代码里的前台文案已经切到“发现 / 我的记录 / 查看联系方式 / 登记一笔 / 处理登记 / 记录票据 / 更新进展”，但 `project_control_center`、`ui_priority_matrix`、`rescue_ledger_usage_guide`、`profile_page_ia`、`figma_progress_map` 仍混用旧的“待支持 / 救助 / 我要支持 / 我已支持 / 救助联系方式”等词，后续新线程恢复上下文和设计协作容易继续被旧口径带偏。
+- 改了什么：
+  更新 `docs/project_control_center.md` 的阶段目标、页面优先级与页面名称；更新 `docs/ui_priority_matrix.md` 的页面标题、CTA 和目标描述；更新 `docs/rescue_ledger_usage_guide.md` 的使用说明角色与操作文案；更新 `docs/profile_page_ia.md` 的“我的 / 登记记录 / 联系信息 / 使用说明”结构；更新 `docs/figma_progress_map.md` 的页面命名和现状描述，让当前 docs 中最常被读取的产品与开发文档统一到最新前台口径。
+- 影响范围：
+  影响后续上下文恢复、设计协作、Figma 对照和产品判断文档；不改代码、数据模型、VM、selector、repository 或云函数行为。
+- 验证结果：
+  已对照当前实现复查首页、工作台、详情页、登记页、处理页、Profile 入口与建档页的用户可见命名，再同步更新文档；本轮重点文档现在与当前前台文案一致，不再把“发现 / 我的记录 / 登记一笔 / 处理登记”写回旧词。
+- 下一步 / 遗留问题：
+  `docs/` 下仍有一批历史稿、seed 数据说明、旧 IA 备份和过期设计稿在保留旧术语，这些不作为当前真相源；如果后续要继续做彻底清仓，可再单独开一轮“历史文档归档 / 标注过期 / 统一词表”整理。
+
+## 2026-04-20 | Repository 重构 | 删除远端支持足迹成功分支的 overlay 补丁
+
+- 为什么改：
+  `loadMySupportHistory()` 的远端成功分支此前还会对后端 summary 再套一层本机 `title / cover` 展示覆盖，这和“正式远端成功读链路不再注入 overlay”的原则冲突，也让 `remoteReadHelpers` 多保留了一块已经没有生产职责的残留能力。
+- 改了什么：
+  删除 `remoteReadHelpers.applySupportHistoryPresentation`，并将 `remote/readRepository` 的 `loadMySupportHistory()` 远端成功分支改成直接返回后端 summary；本地 fallback 分支仍继续通过 `buildMySupportHistoryFromDetails()` 聚合本地 detail vm；同步把 `docs/local_presentation_residual_checklist.md` 标记为已删除这块残留补丁。
+- 影响范围：
+  只影响支持足迹页在 CloudBase 成功读链路下的 title / cover 真值来源；正式远端成功时以后端 summary 为准，本地 fallback 仍保持原先本地聚合与展示逻辑。
+- 验证结果：
+  `npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 47 项；新增测试已确认 `remoteReadHelpers` 不再导出 overlay-based remote support history patching。
+- 下一步 / 遗留问题：
+  如果继续做“真正删掉”的减法，下一步可以评估 `localPresentation` 的 case 级 title / cover 读取是否还需要保留给本地 fallback；前提是先确认没有页面再依赖这些残留覆盖做离线回显。
+
+## 2026-04-21 | Repository 重构 | 将页面 overlay 操作收进 localFallback facade
+
+- 为什么改：
+  页面层此前直接从 `repository/index.ts` 调用 `saveCase* / clearCase*` overlay API，导致页面知道本地 storage overlay 的生命周期；这会让后续删除 case 级 overlay 时必须逐页追调用点。
+- 改了什么：
+  新增 `localFallbackCore.ts` 和 `localFallback.ts`，提供 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback` 语义化 facade；详情页、草稿预览页、记账页、写进展页和追加预算页改为调用 facade；`repository/index.ts` 不再导出 raw `saveCase* / clearCase*` overlay API 或 `Local*Submission` 类型。
+- 影响范围：
+  影响页面层对本地 overlay 兜底的调用方式；远端成功 / 失败分支语义、draft 链路、CloudBase action 和 VM 字段均不变。
+- 验证结果：
+  `npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 49 项；`repositoryIndex.test` 已覆盖 public barrel 不再暴露 raw overlay API。
+- 下一步 / 遗留问题：
+  下一轮如果继续清理，可拆 `localPresentation.ts` 的 storage/resolver/finalizer 职责，或者评估 `records.js` 是否要拆 `recordDetails / contentWrites`。

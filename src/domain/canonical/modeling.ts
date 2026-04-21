@@ -27,7 +27,7 @@ const RECOMMENDATION_WINDOW_MS = 48 * 60 * 60 * 1000;
 const STANDARD_CASE_STATUS_LABELS = {
   draft: "草稿中",
   newly_found: "紧急送医",
-  medical: "医疗救助中",
+  medical: "医疗处理中",
   recovery: "康复观察",
   rehoming: "寻找领养",
   completed: "已完成",
@@ -526,7 +526,7 @@ export function getFundingStatusSummary(bundle: CanonicalCaseBundle) {
     return "即将筹满";
   }
 
-  return "‼️ 救助人垫付较多";
+  return "‼️ 当前垫付较多";
 }
 
 export function getRecommendationReason(bundle: CanonicalCaseBundle) {

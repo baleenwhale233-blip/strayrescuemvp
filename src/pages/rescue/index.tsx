@@ -17,7 +17,7 @@ import "./index.scss";
 
 const WORKBENCH_STATUS_LABELS = new Set([
   "紧急送医",
-  "医疗救助中",
+  "医疗处理中",
   "康复观察",
   "寻找领养",
   "遗憾离世",
@@ -48,11 +48,11 @@ function getProjectNotice(project: WorkbenchCaseCardVM) {
   }
 
   if (project.pendingSupportEntryCount) {
-    return `${project.pendingSupportEntryCount} 条支持待确认`;
+    return `${project.pendingSupportEntryCount} 条登记待处理`;
   }
 
   if (project.unmatchedSupportEntryCount) {
-    return `${project.unmatchedSupportEntryCount} 条支持待核对`;
+    return `${project.unmatchedSupportEntryCount} 条登记待核对`;
   }
 
   if (
@@ -125,7 +125,7 @@ export default function RescuePage() {
       })
       .catch(() => {
         Taro.showToast({
-          title: "救助列表加载失败",
+          title: "记录列表加载失败",
           icon: "none",
         });
       });
@@ -163,9 +163,9 @@ export default function RescuePage() {
   const handleCreate = async () => {
     if (!(await hasCompleteContactProfile())) {
       Taro.showModal({
-        title: "先填写救助联系方式",
-        content: "发布救助前，需要让支持者知道如何联系您和核对转账。",
-        confirmText: "去填写",
+        title: "先填写联系信息",
+        content: "公开记录前，需要让查看的人知道如何联系您和核对信息。",
+        confirmText: "去完善",
         cancelText: "稍后",
       }).then((result) => {
         if (result.confirm) {
@@ -187,17 +187,17 @@ export default function RescuePage() {
 
   return (
     <View className="page-shell rescue-page">
-      <NavBar title="救猫咪" />
+      <NavBar title="我的记录" />
 
       <View className="theme-button-primary rescue-page__primary-action" onTap={handleCreate}>
         <View className="rescue-page__primary-action-icon">
           <AppIcon name="plusCircle" size={24} variant="inverse" />
         </View>
-        <Text>新建救助档案</Text>
+        <Text>新建记录</Text>
       </View>
 
       <View className="rescue-page__section">
-        <SectionHeader title="救助档案" badge={activeBadge} />
+        <SectionHeader title="我的档案" badge={activeBadge} />
 
         <View className="rescue-page__list">
           {activeCases.length ? (
@@ -209,7 +209,7 @@ export default function RescuePage() {
               />
             ))
           ) : (
-            <Text className="rescue-page__empty">你还没有进行中的救助个案</Text>
+            <Text className="rescue-page__empty">你还没有进行中的记录</Text>
           )}
         </View>
       </View>

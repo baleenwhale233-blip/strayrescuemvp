@@ -57,7 +57,7 @@ export function getOwnerAlerts(bundle: CanonicalCaseBundle): OwnerAlertVM[] {
   if (pendingCount > 0) {
     alerts.push({
       id: "pending-support",
-      label: `${pendingCount} 条支持待确认`,
+      label: `${pendingCount} 条登记待处理`,
       tone: "support",
     });
   }
@@ -65,7 +65,7 @@ export function getOwnerAlerts(bundle: CanonicalCaseBundle): OwnerAlertVM[] {
   if (unmatchedCount > 0) {
     alerts.push({
       id: "unmatched-support",
-      label: `${unmatchedCount} 条支持待核对`,
+      label: `${unmatchedCount} 条登记待核对`,
       tone: "warning",
     });
   }

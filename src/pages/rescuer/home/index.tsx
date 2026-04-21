@@ -34,15 +34,15 @@ export default function RescuerHomePage() {
   if (!vm) {
     return (
       <View className="page-shell rescuer-home-page">
-        <NavBar showBack title="救助人主页" />
-        <Text className="rescuer-home-page__empty">暂未找到救助人信息</Text>
+        <NavBar showBack title="记录主页" />
+        <Text className="rescuer-home-page__empty">暂未找到记录维护者信息</Text>
       </View>
     );
   }
 
   return (
     <View className="page-shell rescuer-home-page">
-      <NavBar showBack title="救助人主页" />
+      <NavBar showBack title="记录主页" />
 
       <View className="rescuer-home-page__profile">
         <Image
@@ -53,7 +53,7 @@ export default function RescuerHomePage() {
         <View className="rescuer-home-page__profile-copy">
           <Text className="rescuer-home-page__name">{vm.rescuer.name}</Text>
           <Text className="rescuer-home-page__meta">
-            已建立 {vm.cards.length || vm.rescuer.stats.publishedCaseCount} 份救助档案 · 上传{" "}
+            已建立 {vm.cards.length || vm.rescuer.stats.publishedCaseCount} 份记录档案 · 上传{" "}
             {vm.rescuer.stats.verifiedReceiptCount} 张真实凭证
           </Text>
         </View>
@@ -69,7 +69,7 @@ export default function RescuerHomePage() {
             />
           ))
         ) : (
-          <Text className="rescuer-home-page__empty">还没有公开救助档案</Text>
+          <Text className="rescuer-home-page__empty">还没有公开记录档案</Text>
         )}
       </View>
     </View>

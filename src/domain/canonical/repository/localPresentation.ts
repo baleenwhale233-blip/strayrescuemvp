@@ -1,6 +1,4 @@
-import {
-  getStructuredExpenseRecords,
-} from "../modeling";
+import { getStructuredExpenseRecords } from "../modeling";
 import type {
   CanonicalAsset,
   CanonicalCaseBundle,
@@ -15,6 +13,7 @@ import type {
 import type { OwnerDetailVM } from "./canonicalReadRepositoryCore";
 import { caseIdToDraftId } from "./localRepositoryCore";
 import { getDraftByCaseId, getDraftById, type RescueCreateDraft } from "./draftRepository";
+import { clearCasePresentationOverrides } from "./localPresentationCore";
 
 const CASE_TITLE_OVERRIDE_KEY = "case-title-overrides:v1";
 const CASE_STATUS_SUBMISSION_KEY = "case-status-submissions";
@@ -60,6 +59,10 @@ type CasePresentationInput = {
   draftId?: string;
   fallback?: string;
   draftValue?: string;
+};
+
+type LocalPresentationOptions = {
+  applyLocalOverlays?: boolean;
 };
 
 type SyncStorageAPI = {
@@ -260,6 +263,7 @@ function inferCaseCurrentStatus(label?: string): CaseCurrentStatus | undefined {
       return "draft";
     case "紧急送医":
       return "newly_found";
+    case "医疗处理中":
     case "医疗救助中":
       return "medical";
     case "康复观察":
@@ -441,6 +445,40 @@ export function saveCaseCoverOverride(input: {
   writeStore(store);
 }
 
+export function clearCaseTitleOverride(caseId?: string, draftId?: string) {
+  if (!caseId && !draftId) {
+    return;
+  }
+
+  const store = readStore();
+  writeStore(
+    clearCasePresentationOverrides({
+      ...store,
+      caseId: caseId || "",
+      draftId,
+    }, {
+      clearTitle: true,
+    }),
+  );
+}
+
+export function clearCaseCoverOverride(caseId?: string, draftId?: string) {
+  if (!caseId && !draftId) {
+    return;
+  }
+
+  const store = readStore();
+  writeStore(
+    clearCasePresentationOverrides({
+      ...store,
+      caseId: caseId || "",
+      draftId,
+    }, {
+      clearCover: true,
+    }),
+  );
+}
+
 export function saveCaseStatusSubmission(
   caseId: string | undefined,
   submission: LocalStatusSubmission,
@@ -452,6 +490,14 @@ export function saveCaseStatusSubmission(
   const key = getStorageKey(CASE_STATUS_SUBMISSION_KEY, caseId);
   const list = readArrayStorage<LocalStatusSubmission>(key);
   getStorage().setStorageSync(key, [submission, ...list]);
+}
+
+export function clearCaseStatusSubmissions(caseId?: string) {
+  if (!caseId) {
+    return;
+  }
+
+  getStorage().removeStorageSync(getStorageKey(CASE_STATUS_SUBMISSION_KEY, caseId));
 }
 
 export function saveCaseExpenseSubmission(
@@ -467,6 +513,14 @@ export function saveCaseExpenseSubmission(
   getStorage().setStorageSync(key, [submission, ...list]);
 }
 
+export function clearCaseExpenseSubmissions(caseId?: string) {
+  if (!caseId) {
+    return;
+  }
+
+  getStorage().removeStorageSync(getStorageKey(CASE_EXPENSE_SUBMISSION_KEY, caseId));
+}
+
 export function saveCaseBudgetAdjustment(
   caseId: string | undefined,
   submission: LocalBudgetAdjustmentSubmission,
@@ -478,6 +532,14 @@ export function saveCaseBudgetAdjustment(
   const key = getStorageKey(CASE_BUDGET_ADJUSTMENT_KEY, caseId);
   const list = readArrayStorage<LocalBudgetAdjustmentSubmission>(key);
   getStorage().setStorageSync(key, [submission, ...list]);
+}
+
+export function clearCaseBudgetAdjustments(caseId?: string) {
+  if (!caseId) {
+    return;
+  }
+
+  getStorage().removeStorageSync(getStorageKey(CASE_BUDGET_ADJUSTMENT_KEY, caseId));
 }
 
 export function resetLocalPresentationStorageForTests(caseId?: string) {
@@ -516,8 +578,13 @@ export function resolvePresentedCover(input: CasePresentationInput) {
 export function resolvePresentedDraft(
   draft: RescueCreateDraft | undefined,
   caseId?: string,
+  options: LocalPresentationOptions = {},
 ): RescueCreateDraft | undefined {
   if (!draft) {
+    return draft;
+  }
+
+  if (options.applyLocalOverlays === false) {
     return draft;
   }
 
@@ -540,7 +607,14 @@ export function resolvePresentedDraft(
   };
 }
 
-export function resolveBundlePresentation(bundle: CanonicalCaseBundle) {
+export function resolveBundlePresentation(
+  bundle: CanonicalCaseBundle,
+  options: LocalPresentationOptions = {},
+) {
+  if (options.applyLocalOverlays === false) {
+    return bundle;
+  }
+
   const caseId = bundle.case.id;
   const draftId = getOverlayDraftId(bundle);
   const savedDraft = getSavedDraftPresentation({ caseId, draftId });
@@ -679,9 +753,13 @@ export function resolveBundlePresentation(bundle: CanonicalCaseBundle) {
 
 export function finalizePublicDetailPresentation(
   detail: PublicDetailVM | undefined,
-  input?: { caseId?: string },
+  input?: { caseId?: string } & LocalPresentationOptions,
 ): PublicDetailVM | undefined {
   if (!detail) {
+    return detail;
+  }
+
+  if (input?.applyLocalOverlays === false) {
     return detail;
   }
 
@@ -698,8 +776,13 @@ export function finalizePublicDetailPresentation(
 
 export function finalizeOwnerDetailPresentation(
   detail: OwnerDetailVM | undefined,
+  options: LocalPresentationOptions = {},
 ): OwnerDetailVM | undefined {
   if (!detail) {
+    return detail;
+  }
+
+  if (options.applyLocalOverlays === false) {
     return detail;
   }
 
@@ -712,8 +795,12 @@ export function finalizeOwnerDetailPresentation(
 
 export function finalizeHomepageCaseCardPresentation(
   card: HomepageCaseCardVM,
-  input: { caseId?: string },
+  input: { caseId?: string } & LocalPresentationOptions,
 ): HomepageCaseCardVM {
+  if (input.applyLocalOverlays === false) {
+    return card;
+  }
+
   const latestStatus = getLatestStatusSubmission(input.caseId || card.caseId);
 
   if (!latestStatus) {
@@ -729,8 +816,12 @@ export function finalizeHomepageCaseCardPresentation(
 
 export function finalizeWorkbenchCaseCardPresentation(
   card: WorkbenchCaseCardVM,
-  input: { caseId?: string },
+  input: { caseId?: string } & LocalPresentationOptions,
 ): WorkbenchCaseCardVM {
+  if (input.applyLocalOverlays === false) {
+    return card;
+  }
+
   const latestStatus = getLatestStatusSubmission(input.caseId || card.caseId);
 
   if (!latestStatus) {

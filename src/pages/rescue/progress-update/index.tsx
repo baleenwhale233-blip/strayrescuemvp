@@ -6,8 +6,8 @@ import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWith
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
-  saveCaseStatusSubmission,
-  type LocalStatusSubmission,
+  clearCaseContentWriteLocalFallback,
+  recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
 import addPhotoIcon from "../../../assets/rescue-update/add-photo-icon.svg";
 import imageSectionIcon from "../../../assets/rescue-update/image-section-icon.svg";
@@ -40,7 +40,7 @@ type UpdateLoadStatus = "loading" | "ready" | "error";
 
 const STATUS_OPTIONS: StatusOption[] = [
   { key: "newly_found", emoji: "🚨", label: "紧急送医" },
-  { key: "medical", emoji: "🏥", label: "医疗救助中" },
+  { key: "medical", emoji: "🏥", label: "医疗处理中" },
   { key: "recovery", emoji: "🏡", label: "康复观察" },
   { key: "rehoming", emoji: "💖", label: "寻找领养" },
   { key: "closed", emoji: "🌈", label: "遗憾离世" },
@@ -57,7 +57,7 @@ function getDefaultStatusKey(label?: string) {
 }
 
 function getStatusLabelByKey(key: CaseCurrentStatus) {
-  return STATUS_OPTIONS.find((option) => option.key === key)?.label || "医疗救助中";
+  return STATUS_OPTIONS.find((option) => option.key === key)?.label || "医疗处理中";
 }
 
 function buildDraftStatusEntry(input: {
@@ -133,10 +133,10 @@ export default function RescueStatusUpdatePage() {
   const contextCard = useMemo(() => {
     if (draft) {
       return {
-        title: draft.name || "未命名救助",
-        statusLabel: draft.currentStatusLabel || "医疗救助中",
+        title: draft.name || "未命名档案",
+        statusLabel: draft.currentStatusLabel || "医疗处理中",
         publicCaseId: draft.publicCaseId || "待生成",
-        rescueStartedAtLabel: "救助开始时间: 待补充",
+        rescueStartedAtLabel: "记录开始时间: 待补充",
         coverImage: draft.coverPath || ownerAnimalFallback,
       };
     }
@@ -146,7 +146,7 @@ export default function RescueStatusUpdatePage() {
         title: detail.title,
         statusLabel: detail.statusLabel,
         publicCaseId: detail.publicCaseId,
-        rescueStartedAtLabel: `救助开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
+        rescueStartedAtLabel: `记录开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
         coverImage: detail.heroImageUrl || ownerAnimalFallback,
       };
     }
@@ -268,16 +268,20 @@ export default function RescueStatusUpdatePage() {
         });
 
         if (!didSyncRemote) {
-          const submission: LocalStatusSubmission = {
-            id: `local-status-${Date.now()}`,
-            statusLabel,
-            description: description.trim(),
-            timestampLabel,
-            assetUrls: imageUrls.slice(0, 9),
-            createdAt: occurredAt,
-          };
-
-          saveCaseStatusSubmission(caseId, submission);
+          recordCaseContentWriteLocalFallback({
+            caseId,
+            kind: "status",
+            submission: {
+              id: `local-status-${Date.now()}`,
+              statusLabel,
+              description: description.trim(),
+              timestampLabel,
+              assetUrls: imageUrls.slice(0, 9),
+              createdAt: occurredAt,
+            },
+          });
+        } else {
+          clearCaseContentWriteLocalFallback({ caseId, kind: "status" });
         }
       } else {
         Taro.hideLoading();
@@ -348,7 +352,7 @@ export default function RescueStatusUpdatePage() {
               mode="aspectFit"
               src={stageIcon}
             />
-            <Text className="rescue-update-page__section-title">救助阶段变更</Text>
+            <Text className="rescue-update-page__section-title">当前阶段</Text>
           </View>
           <View className="rescue-update-page__chip-group">
             {STATUS_OPTIONS.map((option) => (
@@ -372,7 +376,7 @@ export default function RescueStatusUpdatePage() {
             wrapperClassName="rescue-update-page__textarea-wrap"
             textareaClassName="rescue-update-page__textarea"
             placeholderClassName="rescue-update-page__textarea-placeholder"
-            placeholder="请详细描述当前动物救助进展"
+            placeholder="请详细描述这条记录的最新进展"
             cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={800}
             value={description}
@@ -446,7 +450,7 @@ export default function RescueStatusUpdatePage() {
           <Text>取消</Text>
         </View>
         <View className="theme-button-primary rescue-update-page__bottom-submit" onTap={handleSubmit}>
-          <Text>发布进展更新</Text>
+          <Text>发布进展</Text>
           <Image className="rescue-update-page__bottom-submit-icon" mode="aspectFit" src={submitArrowIcon} />
         </View>
       </View>
