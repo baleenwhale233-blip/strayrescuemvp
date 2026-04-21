@@ -1,6 +1,6 @@
 # 项目总控中心
 
-最后更新：2026-04-20
+最后更新：2026-04-21
 
 用途：
 
@@ -38,7 +38,8 @@
 
 - `写进展更新` / `记账` / `追加预算` 的主态 `caseId` 路径已接 CloudBase 远端写链路；草稿 `draftId` 路径仍保持本地 draft 闭环
 - 正式远端成功读链路已经不再注入本机 `localPresentation` overlay；本地 overlay 只保留给草稿链路或 CloudBase 不可用 / 基础设施失败时的兜底
-- 已发布案例的 `title / cover` 在远端编辑成功后会清理对应 `caseId + draftId` 覆盖；主态 `budget / status / expense` 在远端写成功后也会清理对应 overlay key，避免旧本机结果再次压过远端真值
+- 已发布案例的 `title / cover` 在远端编辑成功后会清理对应 `caseId + draftId` 覆盖；主态 `budget / status / expense` 在远端写成功后也会清理对应 overlay key，避免旧本机结果再次压过远端真值；页面层现在只调用 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback`，不再直接操作 raw overlay storage API
+- `localPresentation` 已拆成 storage / resolver / core：storage 负责本地 key 读写，resolver 只组装 `LocalPresentationSnapshot`，overlay 合成唯一实现收口到 `localPresentationCore` 纯函数，避免测试路径和生产路径漂移
 - 联系方式完整性已改成“微信号 / 二维码任一即可”，且联系方式半弹层运行时文案已收口到“联系信息 / 查看联系方式 / 登记一笔”；还需要一轮真机回归确认单渠道场景下都顺畅
 - 首页 / 详情 / 记录主页主图已统一 fallback 到“封面 -> face -> 最新公开进展图”，但仍要用真实远端数据再确认一次新建后发布案例的封面回读
 - 新记账已改成强制至少 1 张图片，历史无图记录按纯文本兼容；还需要真机确认图片上传和无图历史卡片展示
@@ -183,7 +184,7 @@
 | 能力 | 当前状态 | 当前说明 | 下一步 |
 |---|---|---|---|
 | CloudBase 环境 | `已联通开发环境` | `cloud1-9gl5sric0e5b386b` 已接入 | 继续沿用开发环境验证 |
-| 云函数 | `已联通开发环境` | `rescueApi` 已部署 | 继续补写链路验证 |
+| 云函数 | `已联通开发环境` | `rescueApi` 已部署，入口已拆成 runtime / canonical adapter / bundle query / read actions / case writes / profile / support / records / record details / content writes / record assets 等 service 模块；`index.js` 仅保留 wiring、formatter、seed 和 handler 表 | 继续补真机回归；不要在 `index.js` 直接堆新业务 |
 | 数据集合 | `已联通开发环境` | 基础集合已创建，`cloud1` 已补 richer mock 数据，包含 owner / homepage 多案例与 support threads | 后续继续补内容生产页真实写入后的数据 |
 | 首页公开读链路 | `已可试跑` | 首页当前已能读到 `云朵 / 栗子 / 阿黄 / 团团 / 芝麻 / 小满` 等公开案例 | 保持可用，继续做详情读链路检查 |
 | 支持登记写链路 | `已可试跑` | `createSupportEntry` 已完成 CloudBase 远端写入验证，会写入 `support_entries`、私有 `evidence_assets`、`support_threads`，并生成私有 pending support event；真实凭证图上传、限流和重复凭证错误回归已跑通 | 继续补更多真机账号回归 |

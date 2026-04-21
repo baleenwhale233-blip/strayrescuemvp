@@ -133,6 +133,7 @@
 - 已完成内容主要是页面结构、卡片组织、运行态和图标资产替换，不涉及 canonical 契约扩张
 - 客态详情页当前也会应用展示覆盖去修正 `title / heroImageUrl / statusLabel`，但仅限本地 fallback 场景；正式远端成功回包不再注入本机 overlay
 - 已发布主态的 `title / heroImageUrl` 已可由 `updateCaseProfile` 正式远端回写；远端成功后会清理对应 `caseId + draftId` 的 title / cover 覆盖，本地覆盖层只剩兜底职责
+- 页面层不再直接调用 raw `saveCase* / clearCase*` overlay API；正式链路只表达“远端失败兜底”或“远端成功后清理兜底”，对应 repository facade 为 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback`
 - “查看主页”当前已接到救助人主页页面，并由 `rescuer.profileEntryEnabled` 控制入口显隐
 
 详情页现在仍应以“轻支持决策页”为主。
@@ -230,6 +231,7 @@
 - 工作台卡片当前已优先使用远端正式 `animalName / coverFileID`；本地展示覆盖只用于草稿和 CloudBase 不可用时兜底，正式远端成功回包不再注入本机 overlay
 - 工作台卡片的 `statusLabel` 当前还带一层前端展示约束：只允许落到状态更新页的 5 个状态标签；否则统一回退成“未更新状态”
 - 已发布案例跨设备一致的代号 / 头像编辑已接 `updateCaseProfile`；远端成功后会清理对应 `caseId + draftId` 的 title / cover 覆盖。后续如需草稿远端编辑，再补 remote draft 编辑增强
+- `localPresentation` 内部当前已拆成 `localPresentationStorage / localPresentationResolver / localPresentationCore`：storage 管 key，resolver 组 snapshot，core 管唯一 overlay 合成逻辑。后续如果删 case 级 overlay，应删 core 的对应合成能力，并同步更新 `docs/local_presentation_residual_checklist.md`
 
 ---
 

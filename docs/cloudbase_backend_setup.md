@@ -1,6 +1,6 @@
 # CloudBase 后端接入说明
 
-最后更新：2026-04-20
+最后更新：2026-04-21
 
 ## 当前状态
 
@@ -21,6 +21,7 @@
 - 云函数回包会把 CloudBase `cloud://` fileID 转为可展示的临时 HTTPS URL，避免体验版图片无法直接渲染
 - owner-only action 的非 owner `FORBIDDEN` 回归已完成；`INVALID_*`、限流和重复凭证业务错误回归已完成
 - Alpha Seed Pack 已可通过 `npm run seed:alpha` 播种到当前 CloudBase 环境，并在播种时清掉旧 demo / probe / 验收残留文档
+- `rescueApi/index.js` 当前已收薄为 service wiring / formatter / seed / handler 表；业务逻辑已拆入 `runtime`、`adapters/canonical`、`services/bundles`、`services/readActions`、`services/caseWrites`、`services/profile`、`services/support`、`services/records`、`services/recordDetails`、`services/contentWrites`、`services/recordAssets`
 
 ## 你需要在 CloudBase 侧准备
 
@@ -67,6 +68,24 @@
 - `createBudgetAdjustment`
 
 用户身份以云函数内的 OPENID 为准，小程序端不再传 `supporter_current_user` 或 `rescuer_current_user` 作为真实身份。
+
+### 云函数内部结构
+
+`rescueApi` 当前内部约定：
+
+- `src/runtime.js`：envelope、OPENID、ID / fileID 校验、通用查询、临时 URL 转换
+- `src/adapters/canonical.js`：CloudBase 文档到 canonical bundle 的映射与 support thread 聚合
+- `src/services/bundles.js`：`composeBundles / getBundleByCaseId / getCaseDocByCaseId`
+- `src/services/readActions.js`：首页、记录主页、案例搜索、owner 工作台、owner detail、支持足迹等只读 action
+- `src/services/caseWrites.js`：owner bundle 权限校验、`updateCaseProfile / saveDraftCase / publishCase / touchCase`
+- `src/services/profile.js`：`getMyProfile / updateMyProfile / getProfileByOpenid`
+- `src/services/support.js`：支持登记、手动登记、核实与 support event/thread 投影
+- `src/services/records.js`：records facade，组合 `recordDetails / contentWrites / recordAssets`
+- `src/services/recordDetails.js`：`getCaseRecordDetail` 与只读详情 payload / image 归一
+- `src/services/contentWrites.js`：`createProgressUpdate / createExpenseRecord / createBudgetAdjustment`
+- `src/services/recordAssets.js`：内容记录资产创建与 asset map 查询
+
+新增 action 时优先落到对应 service，不要直接把业务逻辑堆回 `index.js`。
 
 ### 用户资料 / 支持足迹
 

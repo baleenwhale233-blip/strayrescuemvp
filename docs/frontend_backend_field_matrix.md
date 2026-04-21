@@ -15,8 +15,8 @@
 
 说明：
 
-- 这里的“后端”在当前阶段主要指 `canonical data layer / repository / selector`
-- 当前项目还没真正接远端服务，所以很多字段实际来自本地 fixture / draft persistence
+- 这里的“后端”在当前阶段同时指 `canonical data layer / repository / selector` 与 CloudBase `rescueApi`
+- 当前正式读写链路已接 CloudBase；本地 fixture / draft persistence / local overlay 只保留为草稿链路或 CloudBase 不可用时的兜底
 
 ---
 
@@ -193,7 +193,7 @@
 
 - 记录详情页是只读页，不提供修改入口
 - 支出记录和状态更新提交后不可编辑，后续变化应通过新增记录体现，避免账目和救助过程对不上
-- 当前通过本地临时 storage 传递记录详情；后续若后端需要直达详情页，可补正式 record id 查询接口
+- 当前主态 / 客态只读记录详情优先通过 `getCaseRecordDetail(caseId + recordType + recordId)` 回读正式远端详情 VM；本地临时 storage 仅作为草稿或降级兜底，不再是正式详情链路的主机制
 
 ---
 
@@ -383,6 +383,8 @@
 - 草稿 `draftId` 链路：仍保留 title / cover 等本地展示覆盖
 - 已发布案例远端改名 / 换封面成功：清理 `caseId + draftId` 对应 title / cover 覆盖
 - 主态远端记账 / 写进展 / 追加预算成功：分别清理 `expense / status / budget` overlay key
+- 页面层不再直接操作 raw `saveCase* / clearCase*` overlay API，而是通过 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback` 表达“远端失败兜底 / 远端成功清理”
+- `localPresentation` 内部职责已拆开：`localPresentationStorage` 管 storage key，`localPresentationResolver` 只读取 storage/draft 并组装 `LocalPresentationSnapshot`，`localPresentationCore` 是 bundle / timeline / card overlay 合成的唯一实现
 
 详细清单见：
 

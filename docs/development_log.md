@@ -24,6 +24,19 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-21 | 文档 | 同步架构重构后的 overlay 与 rescueApi 现状
+
+- 为什么改：
+  当前分支已完成 page-facing overlay API 收口、`localPresentation` storage/resolver/core 拆分、`records.js` 次级大文件拆分，以及 `rescueApi/index.js` 进一步 service 化；长期文档仍有部分旧表述，容易让后续 review 重复提出已解决问题。
+- 改了什么：
+  更新 `project_control_center / pending_field_contracts / frontend_backend_field_matrix / cloudbase_backend_setup`，补齐 raw overlay API 已隐藏在语义化 fallback facade 后、`localPresentationCore` 是唯一 overlay 合成实现、正式记录详情优先走 `getCaseRecordDetail`、以及 `rescueApi` 当前 runtime / adapter / services 模块边界。
+- 影响范围：
+  仅影响项目状态和字段/后端说明文档；不改代码、页面、CloudBase action、字段契约或产品逻辑。
+- 验证结果：
+  已按当前文件结构核对 `repository/index.ts`、`localPresentation*`、`cloudfunctions/rescueApi/index.js` 与 `cloudfunctions/rescueApi/src/services/*`，确保文档描述与最新提交一致。
+- 下一步 / 遗留问题：
+  如果继续删除 case 级 overlay 能力，需要同步更新 `docs/local_presentation_residual_checklist.md`、字段矩阵和 CloudBase 降级说明，避免文档再次保留旧兜底范围。
+
 ## 2026-04-21 | Repository 重构 | 合流 localPresentation resolver 与 core
 
 - 为什么改：
