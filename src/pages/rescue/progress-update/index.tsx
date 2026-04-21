@@ -6,9 +6,8 @@ import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWith
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
-  clearCaseStatusSubmissions,
-  saveCaseStatusSubmission,
-  type LocalStatusSubmission,
+  clearCaseContentWriteLocalFallback,
+  recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
 import addPhotoIcon from "../../../assets/rescue-update/add-photo-icon.svg";
 import imageSectionIcon from "../../../assets/rescue-update/image-section-icon.svg";
@@ -269,18 +268,20 @@ export default function RescueStatusUpdatePage() {
         });
 
         if (!didSyncRemote) {
-          const submission: LocalStatusSubmission = {
-            id: `local-status-${Date.now()}`,
-            statusLabel,
-            description: description.trim(),
-            timestampLabel,
-            assetUrls: imageUrls.slice(0, 9),
-            createdAt: occurredAt,
-          };
-
-          saveCaseStatusSubmission(caseId, submission);
+          recordCaseContentWriteLocalFallback({
+            caseId,
+            kind: "status",
+            submission: {
+              id: `local-status-${Date.now()}`,
+              statusLabel,
+              description: description.trim(),
+              timestampLabel,
+              assetUrls: imageUrls.slice(0, 9),
+              createdAt: occurredAt,
+            },
+          });
         } else {
-          clearCaseStatusSubmissions(caseId);
+          clearCaseContentWriteLocalFallback({ caseId, kind: "status" });
         }
       } else {
         Taro.hideLoading();

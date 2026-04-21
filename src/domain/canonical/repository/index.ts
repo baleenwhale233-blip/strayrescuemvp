@@ -69,20 +69,11 @@ export type {
 
 export {
   buildExpenseEvidenceItems,
-  clearCaseBudgetAdjustments,
-  clearCaseCoverOverride,
-  clearCaseExpenseSubmissions,
-  clearCaseStatusSubmissions,
-  clearCaseTitleOverride,
-  saveCaseBudgetAdjustment,
-  saveCaseCoverOverride,
-  saveCaseExpenseSubmission,
-  saveCaseStatusSubmission,
-  saveCaseTitleOverride,
 } from "./localPresentation";
 
-export type {
-  LocalBudgetAdjustmentSubmission,
-  LocalExpenseSubmission,
-  LocalStatusSubmission,
-} from "./localPresentation";
+export {
+  clearCaseContentWriteLocalFallback,
+  clearCaseProfileLocalFallback,
+  recordCaseContentWriteLocalFallback,
+  recordCaseProfileLocalFallback,
+} from "./localFallback";

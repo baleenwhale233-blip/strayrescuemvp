@@ -6,9 +6,8 @@ import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWith
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
-  clearCaseBudgetAdjustments,
-  saveCaseBudgetAdjustment,
-  type LocalBudgetAdjustmentSubmission,
+  clearCaseContentWriteLocalFallback,
+  recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
 import submitArrowIcon from "../../../assets/rescue-budget-update/footer-submit-arrow.svg";
 import noteInfoIcon from "../../../assets/rescue-budget-update/notice-icon.svg";
@@ -210,18 +209,20 @@ export default function RescueBudgetUpdatePage() {
         });
 
         if (!didSyncRemote) {
-          const submission: LocalBudgetAdjustmentSubmission = {
-            id: `local-budget-${Date.now()}`,
-            previousTargetAmount: contextCard.previousBudget,
-            currentTargetAmount: numericBudget,
-            reason: reason.trim(),
-            timestampLabel,
-            createdAt: occurredAt,
-          };
-
-          saveCaseBudgetAdjustment(caseId, submission);
+          recordCaseContentWriteLocalFallback({
+            caseId,
+            kind: "budget",
+            submission: {
+              id: `local-budget-${Date.now()}`,
+              previousTargetAmount: contextCard.previousBudget,
+              currentTargetAmount: numericBudget,
+              reason: reason.trim(),
+              timestampLabel,
+              createdAt: occurredAt,
+            },
+          });
         } else {
-          clearCaseBudgetAdjustments(caseId);
+          clearCaseContentWriteLocalFallback({ caseId, kind: "budget" });
         }
       } else {
         Taro.hideLoading();

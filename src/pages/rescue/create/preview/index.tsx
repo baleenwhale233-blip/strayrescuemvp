@@ -4,8 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import {
-  saveCaseCoverOverride,
-  saveCaseTitleOverride,
+  recordCaseProfileLocalFallback,
 } from "../../../../domain/canonical/repository";
 import {
   RescueOwnerOverview,
@@ -799,7 +798,7 @@ export default function RescueCreatePreviewPage() {
       ...draft,
       name: nextName,
     });
-    saveCaseTitleOverride({
+    recordCaseProfileLocalFallback({
       title: nextName,
       draftId: draft.id,
       caseId: draftIdToCaseId(draft.id),
@@ -835,7 +834,7 @@ export default function RescueCreatePreviewPage() {
         coverPath: nextPath,
       });
 
-      saveCaseCoverOverride({
+      recordCaseProfileLocalFallback({
         coverPath: nextPath,
         draftId: draft.id,
         caseId: draftIdToCaseId(draft.id),

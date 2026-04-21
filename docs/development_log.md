@@ -1746,3 +1746,16 @@
   `npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 47 项；新增测试已确认 `remoteReadHelpers` 不再导出 overlay-based remote support history patching。
 - 下一步 / 遗留问题：
   如果继续做“真正删掉”的减法，下一步可以评估 `localPresentation` 的 case 级 title / cover 读取是否还需要保留给本地 fallback；前提是先确认没有页面再依赖这些残留覆盖做离线回显。
+
+## 2026-04-21 | Repository 重构 | 将页面 overlay 操作收进 localFallback facade
+
+- 为什么改：
+  页面层此前直接从 `repository/index.ts` 调用 `saveCase* / clearCase*` overlay API，导致页面知道本地 storage overlay 的生命周期；这会让后续删除 case 级 overlay 时必须逐页追调用点。
+- 改了什么：
+  新增 `localFallbackCore.ts` 和 `localFallback.ts`，提供 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback` 语义化 facade；详情页、草稿预览页、记账页、写进展页和追加预算页改为调用 facade；`repository/index.ts` 不再导出 raw `saveCase* / clearCase*` overlay API 或 `Local*Submission` 类型。
+- 影响范围：
+  影响页面层对本地 overlay 兜底的调用方式；远端成功 / 失败分支语义、draft 链路、CloudBase action 和 VM 字段均不变。
+- 验证结果：
+  `npm run typecheck` 与 `npm run test:domain` 通过，domain tests 现在累计到 49 项；`repositoryIndex.test` 已覆盖 public barrel 不再暴露 raw overlay API。
+- 下一步 / 遗留问题：
+  下一轮如果继续清理，可拆 `localPresentation.ts` 的 storage/resolver/finalizer 职责，或者评估 `records.js` 是否要拆 `recordDetails / contentWrites`。

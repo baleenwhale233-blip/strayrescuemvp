@@ -4,10 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
 import { NavBar } from "../../../components/NavBar";
 import {
-  clearCaseCoverOverride,
-  clearCaseTitleOverride,
-  saveCaseCoverOverride,
-  saveCaseTitleOverride,
+  clearCaseProfileLocalFallback,
+  recordCaseProfileLocalFallback,
 } from "../../../domain/canonical/repository";
 import {
   RescueOwnerOverview,
@@ -808,13 +806,17 @@ export default function RescueDetailPage() {
       });
 
       if (!didSyncRemote) {
-        saveCaseTitleOverride({
+        recordCaseProfileLocalFallback({
           title: nextTitle,
           caseId,
           draftId: ownerDetail?.draftId,
         });
       } else {
-        clearCaseTitleOverride(caseId, ownerDetail?.draftId);
+        clearCaseProfileLocalFallback({
+          caseId,
+          draftId: ownerDetail?.draftId,
+          clearTitle: true,
+        });
       }
 
       setOwnerDetail((current) =>
@@ -890,13 +892,17 @@ export default function RescueDetailPage() {
           : current,
       );
       if (!didSyncRemote) {
-        saveCaseCoverOverride({
+        recordCaseProfileLocalFallback({
           coverPath: nextPath,
           caseId,
           draftId: ownerDetail?.draftId,
         });
       } else {
-        clearCaseCoverOverride(caseId, ownerDetail?.draftId);
+        clearCaseProfileLocalFallback({
+          caseId,
+          draftId: ownerDetail?.draftId,
+          clearCover: true,
+        });
       }
       Taro.hideLoading();
 
