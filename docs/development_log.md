@@ -24,6 +24,19 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-04-21 | 云函数重构 | 抽出 rescueApi case write service
+
+- 为什么改：
+  `cloudfunctions/rescueApi/index.js` 在读 action 拆出后仍保留 `getOwnedBundleOrFailure / updateCaseProfile / saveDraftCase / publishCase / touchCase`，入口文件继续承担 case 生命周期写链和 owner 权限 glue。
+- 改了什么：
+  新增 `cloudfunctions/rescueApi/src/services/caseWrites.js`，承接 owner bundle 权限校验、案例资料更新、草稿保存、发布案例和 `touchCase`；`index.js` 改为通过 `createCaseWritesService()` 注入 db/runtime/bundle helper，并继续把 `getOwnedBundleOrFailure / touchCase` 传给 support 与 records service；新增 `caseWrites.test.js` 覆盖权限、profile/cover 更新、非法输入拦截、保存草稿、发布和 touch。
+- 影响范围：
+  仅影响 `rescueApi` 云函数 case write 内部模块边界；不改 CloudBase action 名、集合 schema、错误码、前端 repository 或页面交互。
+- 验证结果：
+  `node --check cloudfunctions/rescueApi/index.js` 与 `node --check cloudfunctions/rescueApi/src/services/caseWrites.js` 通过；`node --test cloudfunctions/rescueApi/src/services/*.test.js` 通过，20 项云函数 service 测试全绿；`npm run typecheck` 与 `npm run test:domain` 通过，domain tests 49 项全绿。
+- 下一步 / 遗留问题：
+  `rescueApi/index.js` 当前主要剩 service wiring、formatter、seed 和 handler 表；后续若继续收口，应先审计是否还有真实收益，避免为拆而拆。
+
 ## 2026-04-21 | 云函数重构 | 抽出 rescueApi read actions service
 
 - 为什么改：
