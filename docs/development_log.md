@@ -50,6 +50,19 @@
 - 下一步 / 遗留问题：
   如果后续某个分块字段继续膨胀，可以再拆成独立小节或对象级子文档，但先保持单文件集中核对入口。
 
+## 2026-04-21 | Repository 重构 | 拆分 localPresentation storage 与 resolver
+
+- 为什么改：
+  `localPresentation.ts` 虽然已经只承担 draft / fallback 语义，但文件内部仍混着 storage key 读写、bundle/timeline resolver 和 finalizer wrapper，后续继续删 case 级 overlay 时边界不够清楚。
+- 改了什么：
+  新增 `localPresentationStorage.ts` 承接 `case-title-overrides / case-status-submissions / case-expense-submissions / case-budget-adjustments` 的 storage 读写；新增 `localPresentationResolver.ts` 承接 `resolvePresented* / resolveBundlePresentation / finalize*Presentation`；`localPresentation.ts` 现在收成薄 wrapper，保留原有 public API 与 `buildExpenseEvidenceItems`。
+- 影响范围：
+  仅影响 canonical repository 内部文件组织；页面 import、public API、draft 链路、CloudBase fallback 语义和 overlay 行为均不变。
+- 验证结果：
+  `npm run typecheck` 与 `npm run test:domain` 通过，domain tests 49 项全绿。
+- 下一步 / 遗留问题：
+  如果继续减法，可以在 `localPresentationResolver.ts` 内按 overlay 类型拆掉 case 级 fallback 逻辑；或者优先拆 `rescueApi/src/services/records.js` 为 record detail 与 content write 两块。
+
 ## 2026-04-20 | 云函数重构 | 抽出 rescueApi runtime 与 canonical adapter
 
 - 为什么改：`cloudfunctions/rescueApi/index.js` 已接近 2000 行，运行时 helper、DB 查询、canonical 映射和业务 action 混在一起，继续追加 Alpha 写链会让回归风险变高。
