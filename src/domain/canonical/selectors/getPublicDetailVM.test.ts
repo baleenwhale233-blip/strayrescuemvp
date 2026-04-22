@@ -17,7 +17,16 @@ test("getPublicDetailVM only counts confirmed support into supportedAmount", () 
   assert.equal(vm.ledger.supportedAmount, 100);
   assert.equal(vm.ledger.pendingSupportAmount, 60);
   assert.equal(vm.ledger.targetAmount, 4200);
-  assert.equal(vm.statusLabel, "医疗救助中");
+  assert.equal(vm.statusLabel, "医疗处理中");
+});
+
+test("getPublicDetailVM prefers case cover for hero image when available", () => {
+  const vm = getPublicDetailVM(bundle);
+
+  assert.equal(
+    vm.heroImageUrl,
+    "https://example.com/assets/case-cover-watermarked.png",
+  );
 });
 
 test("getPublicDetailVM exposes latest public timeline summary", () => {
@@ -32,6 +41,79 @@ test("getPublicDetailVM exposes stable rescue start time", () => {
 
   assert.equal(vm.rescueStartedAt, "2026-03-28T08:30:00Z");
   assert.equal(vm.rescueStartedAtLabel, "03-28 16:30");
+});
+
+test("getPublicDetailVM falls back to the latest public progress photo when cover and face are missing", () => {
+  const vm = getPublicDetailVM({
+    ...bundle,
+    case: {
+      ...bundle.case,
+      coverAssetId: undefined,
+      faceIdAssetId: undefined,
+    },
+    events: [
+      ...bundle.events,
+      {
+        id: "evt_007",
+        caseId: bundle.case.id,
+        type: "progress_update",
+        occurredAt: "2026-03-30T12:30:00Z",
+        statusLabel: "继续治疗",
+        text: "今天精神稳定，继续观察恢复情况",
+        assetIds: ["asset_progress_002"],
+        visibility: "public",
+      },
+    ],
+    assets: [
+      ...bundle.assets,
+      {
+        id: "asset_progress_002",
+        kind: "progress_photo",
+        originalUrl: "https://example.com/assets/progress-002.png",
+        watermarkedUrl: "https://example.com/assets/progress-002-watermarked.png",
+        thumbnailUrl: "https://example.com/assets/progress-002-thumb.png",
+      },
+    ],
+  });
+
+  assert.equal(
+    vm.heroImageUrl,
+    "https://example.com/assets/progress-002-watermarked.png",
+  );
+});
+
+test("getPublicDetailVM falls back to expense record evidence when expense event assetIds are missing", () => {
+  const vm = getPublicDetailVM({
+    ...bundle,
+    events: bundle.events.map((event) =>
+      event.type === "expense"
+        ? {
+            ...event,
+            assetIds: [],
+          }
+        : event,
+    ),
+  });
+
+  const expenseItem = vm.timeline.find((item) => item.type === "expense");
+
+  assert.deepEqual(expenseItem?.assetUrls, [
+    "https://example.com/assets/receipt-001-watermarked.png",
+    "https://example.com/assets/progress-001-watermarked.png",
+  ]);
+});
+
+test("getPublicDetailVM normalizes arbitrary case status labels to the update-page label pool", () => {
+  const vm = getPublicDetailVM({
+    ...bundle,
+    case: {
+      ...bundle.case,
+      currentStatus: "recovery",
+      currentStatusLabel: "恢复待领养",
+    },
+  });
+
+  assert.equal(vm.statusLabel, "康复观察");
 });
 
 test("getDiscoverCardVM derives list-friendly card fields from canonical bundle", () => {

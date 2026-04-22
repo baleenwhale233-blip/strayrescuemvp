@@ -2,14 +2,14 @@ import { Image, Input, ScrollView, Text, View } from "@tarojs/components";
 import Taro, { useDidHide, useDidShow, useRouter, useUnload } from "@tarojs/taro";
 import { useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
+  addExpenseRecord,
   buildExpenseEvidenceItems,
-  markDraftExpenseRefresh,
-  saveCaseExpenseSubmission,
-  type LocalExpenseSubmission,
-} from "../../../data/expenseSubmission";
+  clearCaseContentWriteLocalFallback,
+  recordCaseContentWriteLocalFallback,
+} from "../../../domain/canonical/repository";
 import addLineIcon from "../../../assets/rescue-expense/add-line-20.svg";
 import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
 import lineDeleteIcon from "../../../assets/rescue-expense/line-delete-12.svg";
@@ -19,7 +19,6 @@ import qaReceiptImage from "../../../assets/rescue-expense/qa-receipt.png";
 import submitArrowIcon from "../../../assets/rescue-expense/submit-arrow-16.svg";
 import uploadDeleteIcon from "../../../assets/rescue-expense/upload-delete-24.svg";
 import {
-  addExpenseRecord,
   createRemoteExpenseRecordByCaseId,
   formatTimelineTimestamp,
   getCurrentDraft,
@@ -134,6 +133,24 @@ function hydrateExpenseLines(lines?: ExpenseLine[]) {
   }));
 }
 
+function mapExpenseError(error: unknown) {
+  const code = error instanceof Error ? error.message : "";
+
+  if (code === "EXPENSE_EVIDENCE_REQUIRED") {
+    return "请至少上传 1 张图片";
+  }
+
+  if (code === "INVALID_ASSET_FILE_ID") {
+    return "图片上传结果异常，请重新上传";
+  }
+
+  if (code === "CASE_ASSET_UPLOAD_FAILED") {
+    return "凭证上传失败，请重试";
+  }
+
+  return "记账保存失败";
+}
+
 export default function RescueExpensePage() {
   const router = useRouter();
   const caseId = router.params?.caseId || router.params?.id;
@@ -142,6 +159,7 @@ export default function RescueExpensePage() {
   const qaPreset = getQaPreset(router.params?.qaPreset);
   const cacheKey = getExpenseDraftCacheKey(expenseContextId);
   const hasHandledRestoreRef = useRef(false);
+  const submitGuardRef = useRef(createSubmissionGuard());
   const [publicEvidenceImages, setPublicEvidenceImages] = useState<string[]>([]);
   const [expenseLines, setExpenseLines] = useState<ExpenseLine[]>(() =>
     hydrateExpenseLines(createInitialExpenseLines()),
@@ -295,7 +313,7 @@ export default function RescueExpensePage() {
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     const validLines = expenseLines.filter(
       (line) => line.description.trim() && parseAmount(line.amount) > 0,
     );
@@ -308,13 +326,21 @@ export default function RescueExpensePage() {
       return;
     }
 
+    if (!publicEvidenceImages.length) {
+      Taro.showToast({
+        title: "请至少上传 1 张图片",
+        icon: "none",
+      });
+      return;
+    }
+
     const total = validLines.reduce((sum, line) => sum + parseAmount(line.amount), 0);
     const title = getExpenseSubmissionTitle(validLines);
     const spentAt = new Date().toISOString();
     const evidenceItems = buildExpenseEvidenceItems(publicEvidenceImages);
 
     try {
-      Taro.showLoading({ title: "保存中" });
+      Taro.showLoading({ title: "保存中", mask: true });
 
       if (draftId) {
         const matchedDraft = getDraftById(draftId) || getCurrentDraft();
@@ -338,7 +364,6 @@ export default function RescueExpensePage() {
 
         replaceDraft(nextDraft);
         syncCurrentDraft(nextDraft);
-        markDraftExpenseRefresh(draftId);
       } else if (caseId) {
         const uploadedAssets = await Promise.all(
           publicEvidenceImages.map((imageUrl) =>
@@ -361,19 +386,21 @@ export default function RescueExpensePage() {
         });
 
         if (!didSyncRemote) {
-          const submission: LocalExpenseSubmission = {
-            id: `local-expense-${Date.now()}`,
-            title,
-            amount: total,
-            timestampLabel: formatTimelineTimestamp(new Date(spentAt)),
-            assetUrls: publicEvidenceImages.slice(0, 9),
-            createdAt: spentAt,
-          };
-
-          saveCaseExpenseSubmission(caseId, submission);
+          recordCaseContentWriteLocalFallback({
+            caseId,
+            kind: "expense",
+            submission: {
+              id: `local-expense-${Date.now()}`,
+              title,
+              amount: total,
+              timestampLabel: formatTimelineTimestamp(new Date(spentAt)),
+              assetUrls: publicEvidenceImages.slice(0, 9),
+              createdAt: spentAt,
+            },
+          });
+        } else {
+          clearCaseContentWriteLocalFallback({ caseId, kind: "expense" });
         }
-
-        markCaseDetailRefresh(caseId);
       } else {
         Taro.hideLoading();
         Taro.showToast({
@@ -385,20 +412,17 @@ export default function RescueExpensePage() {
 
       Taro.removeStorageSync(cacheKey);
       Taro.hideLoading();
-      showSuccessFeedback({
+      await showSuccessFeedback({
         title: "支出已记入账本",
       });
     } catch (error) {
       Taro.hideLoading();
       Taro.showToast({
-        title:
-          error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED"
-            ? "凭证上传失败，请重试"
-            : "记账保存失败",
+        title: mapExpenseError(error),
         icon: "none",
       });
     }
-  };
+  });
 
   return (
     <View

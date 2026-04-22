@@ -3,15 +3,17 @@ import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import enterRescueIcon from "../../../../assets/rescue-create/step2-enter-icon.svg";
 import {
   getCurrentDraft,
   updateCurrentDraft,
-} from "../../../../domain/canonical/repository/localRepository";
+} from "../../../../domain/canonical/repository";
 import "./index.scss";
 
 export default function RescueCreateBudgetPage() {
+  const keyboardBottomInset = useKeyboardBottomInset();
   const [coverPath, setCoverPath] = useState("");
   const [name, setName] = useState("");
   const [budget, setBudget] = useState("");
@@ -63,8 +65,11 @@ export default function RescueCreateBudgetPage() {
   };
 
   return (
-    <View className="page-shell rescue-budget-page">
-      <NavBar showBack title="新建救助" onBack={handleBack} />
+    <View
+      className="page-shell rescue-budget-page"
+      style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
+    >
+      <NavBar showBack title="新建记录" onBack={handleBack} />
 
       <View className="rescue-budget-page__steps">
         <View className="rescue-budget-page__step" />
@@ -80,13 +85,13 @@ export default function RescueCreateBudgetPage() {
             src={coverPath || coverFallback}
           />
         </View>
-        <Text className="rescue-budget-page__name">{name || "未命名救助"}</Text>
+        <Text className="rescue-budget-page__name">{name || "未命名档案"}</Text>
       </View>
 
       <View className="rescue-budget-page__card theme-card">
         <Text className="rescue-budget-page__title">设定预估金额</Text>
         <Text className="rescue-budget-page__subtitle">
-          请预估一下救治大概需要多少钱？
+          请预估一下后续记录里大概会涉及多少费用？
         </Text>
 
         <View className="rescue-budget-page__field">
@@ -111,6 +116,7 @@ export default function RescueCreateBudgetPage() {
             textareaClassName="rescue-budget-page__textarea"
             placeholderClassName="rescue-budget-page__textarea-placeholder"
             placeholder="请简要说明这笔预估费用将用于哪些方面？(如：后续3天住院费、特配处方粮、第2次复查化验等)"
+            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={160}
             value={budgetNote}
             onInput={(event) => setBudgetNote(event.detail.value)}
@@ -120,7 +126,7 @@ export default function RescueCreateBudgetPage() {
 
       <View className="rescue-budget-page__footer">
         <View className="theme-button-primary rescue-budget-page__button" onTap={handleNext}>
-          <Text>进入救助页面</Text>
+          <Text>进入记录页</Text>
           <Image
             className="rescue-budget-page__button-icon"
             mode="aspectFit"
@@ -128,7 +134,7 @@ export default function RescueCreateBudgetPage() {
           />
         </View>
         <Text className="rescue-budget-page__footer-hint">
-          稍后您可以在工作台随时调整此预估金额
+          稍后您可以在“我的记录”里随时调整此预估金额
         </Text>
       </View>
     </View>

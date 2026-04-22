@@ -4,17 +4,19 @@ import { useEffect, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
 import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
 import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
 import {
   getCurrentDraft,
   startDraftSession,
   updateCurrentDraft,
-} from "../../../../domain/canonical/repository/localRepository";
+} from "../../../../domain/canonical/repository";
 import "./index.scss";
 
 export default function RescueCreateBasicPage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const [coverPath, setCoverPath] = useState("");
   const [name, setName] = useState("");
   const [summary, setSummary] = useState("");
@@ -112,7 +114,7 @@ export default function RescueCreateBasicPage() {
   const handleNext = () => {
     if (!name.trim()) {
       Taro.showToast({
-        title: "请先填写救助对象代号",
+        title: "请先填写档案代号",
         icon: "none",
       });
       return;
@@ -147,8 +149,11 @@ export default function RescueCreateBasicPage() {
   };
 
   return (
-    <View className="page-shell rescue-create-page">
-      <NavBar showBack title="新建救助" onBack={handleBack} />
+    <View
+      className="page-shell rescue-create-page"
+      style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
+    >
+      <NavBar showBack title="新建记录" onBack={handleBack} />
 
       <View className="rescue-create-page__steps">
         <View className="rescue-create-page__step rescue-create-page__step--active" />
@@ -188,7 +193,7 @@ export default function RescueCreateBasicPage() {
               </View>
 
               <Text className="rescue-create-page__upload-tip">
-                拍摄正脸清晰图作为数字档案卡
+                拍摄正脸清晰图作为档案封面
               </Text>
             </>
           ) : null}
@@ -216,6 +221,7 @@ export default function RescueCreateBasicPage() {
           textareaClassName="rescue-create-page__textarea"
           placeholderClassName="rescue-create-page__textarea-placeholder"
           placeholder="在哪发现的（不用太过具体）？它怎么了？"
+          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
           maxlength={120}
           value={summary}
           onInput={(event) => setSummary(event.detail.value)}
@@ -232,7 +238,7 @@ export default function RescueCreateBasicPage() {
           />
         </View>
         <Text className="rescue-create-page__footer-hint">
-          所有数据将记录在流浪动物透明账本区块链中
+          所有内容都会保存在这条记录里，后续可继续补充明细和进展
         </Text>
       </View>
     </View>

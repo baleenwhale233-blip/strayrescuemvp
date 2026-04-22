@@ -54,6 +54,7 @@ async function seedWithAssets(mp, alphaAssetFileIDs) {
         data: {
           action: "seedMockCases",
           input: {
+            cleanupMode: "reset_alpha_environment",
             ownerProfile: {
               displayName: "Alpha 演示救助人",
               wechatId: "alpha_rescue_test",

@@ -441,6 +441,7 @@ export type SupportEntrySummaryVM = {
   supportedAtLabel: string;
   note?: string;
   hasScreenshot: boolean;
+  screenshotUrls: string[];
   unmatchedReasonLabel?: string;
 };
 

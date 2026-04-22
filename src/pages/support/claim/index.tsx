@@ -1,13 +1,13 @@
-import { Image, Input, Text, Textarea, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
 import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
-import { applyTitleOverrideToPublicDetail } from "../../../data/caseTitleOverride";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
+import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
@@ -24,7 +24,7 @@ function mapSupportError(error: unknown) {
   const code = error instanceof Error ? error.message : "";
 
   if (code === "DUPLICATE_SUPPORT_SCREENSHOT") {
-    return "相同截图不能重复提交";
+    return "相同截图不能重复登记";
   }
 
   if (code === "INVALID_SCREENSHOT_FILE_ID") {
@@ -36,14 +36,14 @@ function mapSupportError(error: unknown) {
   }
 
   if (code === "SUPPORT_ENTRY_RATE_LIMIT_10_MIN") {
-    return "10 分钟内只能提交 1 次";
+    return "10 分钟内只能登记 1 次";
   }
 
   if (code === "SUPPORT_ENTRY_RATE_LIMIT_24_HOUR") {
-    return "24 小时内最多提交 3 次";
+    return "24 小时内最多登记 3 次";
   }
 
-  return "提交失败，请稍后重试";
+  return "登记失败，请稍后重试";
 }
 
 function getSupportClaimCover(detail: PublicDetailVM) {
@@ -56,6 +56,7 @@ function getRescueStartedAtLabel(detail: PublicDetailVM) {
 
 export default function SupportClaimPage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const caseId = router.params?.caseId || router.params?.id;
   const [amount, setAmount] = useState("");
   const [nickname, setNickname] = useState("默认写入微信ID");
@@ -64,17 +65,17 @@ export default function SupportClaimPage() {
   const [detail, setDetail] = useState<PublicDetailVM | undefined>();
   const [loadStatus, setLoadStatus] = useState<ClaimLoadStatus>("loading");
   const [caseCoverSrc, setCaseCoverSrc] = useState<string>(animalProfileExact);
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     setLoadStatus("loading");
     loadPublicDetailVMByCaseId(caseId)
       .then((nextDetail) => {
-        const resolvedDetail = applyTitleOverrideToPublicDetail(nextDetail);
-        setDetail(resolvedDetail);
+        setDetail(nextDetail);
         setCaseCoverSrc(
-          resolvedDetail ? getSupportClaimCover(resolvedDetail) : animalProfileExact,
+          nextDetail ? getSupportClaimCover(nextDetail) : animalProfileExact,
         );
-        setLoadStatus(resolvedDetail ? "ready" : "error");
+        setLoadStatus(nextDetail ? "ready" : "error");
       })
       .catch(() => {
         setLoadStatus("error");
@@ -87,14 +88,17 @@ export default function SupportClaimPage() {
 
   if (loadStatus === "loading") {
     return (
-      <View className="support-claim page-shell">
-        <NavBar showBack title="认领支持" />
+      <View
+        className="support-claim page-shell"
+        style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
+      >
+        <NavBar showBack title="登记一笔" />
         <View className="support-claim__state">
           <View className="support-claim__state-icon">
             <AppIcon name="handCoins" size={24} />
           </View>
-          <Text className="support-claim__state-title">正在加载案例信息</Text>
-          <Text className="support-claim__state-copy">先把案例卡片和登记表单准备好，请稍等片刻。</Text>
+          <Text className="support-claim__state-title">正在加载档案信息</Text>
+          <Text className="support-claim__state-copy">先把档案卡片和登记表单准备好，请稍等片刻。</Text>
         </View>
       </View>
     );
@@ -102,14 +106,17 @@ export default function SupportClaimPage() {
 
   if (loadStatus === "error" || !detail) {
     return (
-      <View className="support-claim page-shell">
-        <NavBar showBack title="认领支持" />
+      <View
+        className="support-claim page-shell"
+        style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
+      >
+        <NavBar showBack title="登记一笔" />
         <View className="support-claim__state">
           <View className="support-claim__state-icon">
             <AppIcon name="fileText" size={24} />
           </View>
-          <Text className="support-claim__state-title">案例信息加载失败</Text>
-          <Text className="support-claim__state-copy">当前没能拿到案例信息，你可以返回上一页后稍后再试。</Text>
+          <Text className="support-claim__state-title">档案信息加载失败</Text>
+          <Text className="support-claim__state-copy">当前没能拿到档案信息，你可以返回上一页后稍后再试。</Text>
         </View>
       </View>
     );
@@ -128,19 +135,19 @@ export default function SupportClaimPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     const numericAmount = Number(amount);
 
     if (!numericAmount || Number.isNaN(numericAmount)) {
-      Taro.showToast({
-        title: "请填写支持金额",
+        Taro.showToast({
+        title: "请填写登记金额",
         icon: "none",
       });
       return;
     }
 
     try {
-      Taro.showLoading({ title: "提交中" });
+      Taro.showLoading({ title: "提交中", mask: true });
       const uploaded = imagePath
         ? await uploadSupportProofImage(caseId || "unknown-case", imagePath)
         : undefined;
@@ -159,9 +166,8 @@ export default function SupportClaimPage() {
       });
       Taro.hideLoading();
 
-      markCaseDetailRefresh(caseId);
-      showSuccessFeedback({
-        title: "已提交，待确认",
+      await showSuccessFeedback({
+        title: "已登记，待处理",
         delay: 900,
       });
     } catch (error) {
@@ -171,11 +177,14 @@ export default function SupportClaimPage() {
         icon: "none",
       });
     }
-  };
+  });
 
   return (
-    <View className="support-claim page-shell">
-      <NavBar showBack title="认领支持" />
+    <View
+      className="support-claim page-shell"
+      style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
+    >
+      <NavBar showBack title="登记一笔" />
 
       <View className="support-claim__case-card theme-card">
         <View className="support-claim__case-avatar-wrap">
@@ -193,13 +202,13 @@ export default function SupportClaimPage() {
           </View>
           <Text className="support-claim__case-meta">ID: {detail.publicCaseId}</Text>
           <Text className="support-claim__case-meta">
-            救助开始时间: {getRescueStartedAtLabel(detail)}
+            记录开始时间: {getRescueStartedAtLabel(detail)}
           </Text>
         </View>
       </View>
 
       <View className="support-claim__field">
-        <Text className="support-claim__label">支持金额</Text>
+        <Text className="support-claim__label">登记金额</Text>
         <View className="support-claim__single-input support-claim__single-input--amount">
           <Text className="support-claim__currency">¥</Text>
           <Input
@@ -222,7 +231,7 @@ export default function SupportClaimPage() {
       </View>
 
       <View className="support-claim__field support-claim__field--upload">
-        <Text className="support-claim__label">转账截图/凭证</Text>
+        <Text className="support-claim__label">相关截图/凭证</Text>
         <View className="support-claim__upload" onTap={handlePickImage}>
           {imagePath ? (
             <Image className="support-claim__upload-image" mode="aspectFill" src={imagePath} />
@@ -238,12 +247,13 @@ export default function SupportClaimPage() {
       </View>
 
       <View className="support-claim__field">
-        <Text className="support-claim__label">爱心留言/备注</Text>
+        <Text className="support-claim__label">备注</Text>
         <TextareaWithOverlayPlaceholder
           wrapperClassName="support-claim__textarea-wrap"
           textareaClassName="support-claim__textarea"
           placeholderClassName="support-claim__textarea-placeholder"
-          placeholder="给毛孩子留句祝福吧，或者备注资金的具体用途"
+          placeholder="可补充留言、用途或对账备注"
+          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
           maxlength={120}
           value={note}
           onInput={(event) => setNote(event.detail.value)}
@@ -252,7 +262,7 @@ export default function SupportClaimPage() {
 
       <View className="support-claim__bottom">
         <View className="theme-button-primary support-claim__submit" onTap={handleSubmit}>
-          <Text>提交支持</Text>
+          <Text>提交登记</Text>
           <Image className="support-claim__submit-arrow" mode="aspectFit" src={submitArrowIcon} />
         </View>
       </View>

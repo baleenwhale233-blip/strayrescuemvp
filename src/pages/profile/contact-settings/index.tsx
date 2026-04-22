@@ -1,8 +1,10 @@
 import { Image, Input, Text, View } from "@tarojs/components";
-import Taro, { useDidShow, useRouter } from "@tarojs/taro";
-import { useState } from "react";
+import Taro, { useRouter } from "@tarojs/taro";
+import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
 import submitArrowIcon from "../../../assets/rescue-create/step1-next-arrow.svg";
 import {
@@ -18,26 +20,32 @@ import "./index.scss";
 
 export default function ContactSettingsPage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const [wechatId, setWechatId] = useState("");
   const [qrImagePath, setQrImagePath] = useState("");
   const [note, setNote] = useState("");
+  const [remotePaymentQrAssetId, setRemotePaymentQrAssetId] = useState("");
+  const submitGuardRef = useRef(createSubmissionGuard());
 
-  useDidShow(() => {
+  useEffect(() => {
+    let cancelled = false;
     const profile = getRescuerContactProfile();
     setWechatId(profile.wechatId);
     setQrImagePath(profile.qrImagePath);
     setNote(profile.note);
+
     loadMyProfile()
       .then((remoteProfile) => {
-        if (!remoteProfile) {
+        if (!remoteProfile || cancelled) {
           return;
         }
 
         const nextProfile = {
           wechatId: remoteProfile.wechatId || profile.wechatId,
           qrImagePath: remoteProfile.paymentQrUrl || profile.qrImagePath,
-          note: remoteProfile.contactNote || profile.note,
+          note: remoteProfile.contactNote ?? profile.note,
         };
+        setRemotePaymentQrAssetId(remoteProfile.paymentQrAssetId || "");
         saveRescuerContactProfile(nextProfile);
         setWechatId(nextProfile.wechatId);
         setQrImagePath(nextProfile.qrImagePath);
@@ -46,7 +54,11 @@ export default function ContactSettingsPage() {
       .catch(() => {
         // Keep local contact settings as fallback.
       });
-  });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handlePickQrImage = async () => {
     try {
@@ -59,59 +71,119 @@ export default function ContactSettingsPage() {
       const nextPath = result.tempFilePaths?.[0];
       if (nextPath) {
         setQrImagePath(nextPath);
+        setRemotePaymentQrAssetId("");
       }
     } catch {
       // ignore cancel
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     const nextWechatId = wechatId.trim();
+    const hasQrImage = Boolean(qrImagePath.trim());
 
-    if (!nextWechatId) {
+    if (!nextWechatId && !hasQrImage) {
       Taro.showToast({
-        title: "请填写微信号",
-        icon: "none",
-      });
-      return;
-    }
-
-    if (!qrImagePath) {
-      Taro.showToast({
-        title: "请上传微信二维码",
+        title: "请填写微信号或上传二维码",
         icon: "none",
       });
       return;
     }
 
     try {
-      Taro.showLoading({ title: "保存中" });
-      const uploaded =
-        qrImagePath && !qrImagePath.startsWith("cloud://")
-          ? await uploadProfileAssetImage(qrImagePath, "payment-qr")
-          : undefined;
-      const nextQrImagePath =
-        uploaded && !uploaded.isLocalFallback ? uploaded.fileID : qrImagePath;
-
-      await updateRemoteMyProfile({
+      Taro.showLoading({ title: "保存中", mask: true });
+      const isExistingRemoteQr = Boolean(
+        remotePaymentQrAssetId &&
+          (qrImagePath.startsWith("https://") || qrImagePath.startsWith("cloud://")),
+      );
+      const baseProfileSaved = await updateRemoteMyProfile({
         wechatId: nextWechatId,
         contactNote: note.trim(),
-        paymentQrFileID:
-          nextQrImagePath.startsWith("cloud://") ? nextQrImagePath : undefined,
       });
 
+      if (!baseProfileSaved) {
+        saveRescuerContactProfile({
+          wechatId: nextWechatId,
+          qrImagePath,
+          note: note.trim(),
+        });
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "只保存在本机，请稍后再试",
+          icon: "none",
+        });
+        return;
+      }
+
+      let nextQrImagePath = qrImagePath;
+
+      if (qrImagePath && !qrImagePath.startsWith("cloud://") && !isExistingRemoteQr) {
+        const uploaded = await uploadProfileAssetImage(qrImagePath, "payment-qr");
+        nextQrImagePath = uploaded && !uploaded.isLocalFallback ? uploaded.fileID : qrImagePath;
+      }
+
+      if (nextQrImagePath.startsWith("cloud://") && !isExistingRemoteQr) {
+        const didSyncQr = await updateRemoteMyProfile({
+          wechatId: nextWechatId,
+          contactNote: note.trim(),
+          paymentQrFileID: nextQrImagePath,
+        });
+
+        if (!didSyncQr) {
+          saveRescuerContactProfile({
+            wechatId: nextWechatId,
+            qrImagePath,
+            note: note.trim(),
+          });
+          Taro.hideLoading();
+          Taro.showToast({
+            title: "联系方式已保存，二维码没传上去",
+            icon: "none",
+          });
+          return;
+        }
+      }
+
+      const confirmedProfile = await loadMyProfile().catch(() => undefined);
+      const nextProfile = {
+        wechatId: confirmedProfile?.wechatId || nextWechatId,
+        qrImagePath: confirmedProfile?.paymentQrUrl || nextQrImagePath,
+        note: confirmedProfile?.contactNote ?? note.trim(),
+      };
+
       saveRescuerContactProfile({
-        wechatId: nextWechatId,
-        qrImagePath: nextQrImagePath,
-        note: note.trim(),
+        wechatId: nextProfile.wechatId,
+        qrImagePath: nextProfile.qrImagePath,
+        note: nextProfile.note,
       });
-      setQrImagePath(nextQrImagePath);
+      setWechatId(nextProfile.wechatId);
+      setQrImagePath(nextProfile.qrImagePath);
+      setNote(nextProfile.note);
+      setRemotePaymentQrAssetId(confirmedProfile?.paymentQrAssetId || "");
       Taro.hideLoading();
+
+      if (!confirmedProfile?.hasContactProfile) {
+        Taro.showToast({
+          title: hasQrImage ? "二维码已保存" : "微信号已保存",
+          icon: "none",
+        });
+        return;
+      }
+
+      Taro.showToast({
+        title: "联系方式已保存",
+        icon: "none",
+      });
     } catch (error) {
       Taro.hideLoading();
       if (error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED") {
+        saveRescuerContactProfile({
+          wechatId: nextWechatId,
+          qrImagePath,
+          note: note.trim(),
+        });
         Taro.showToast({
-          title: "二维码上传失败",
+          title: "联系方式已保存，二维码没传上去",
           icon: "none",
         });
         return;
@@ -122,32 +194,39 @@ export default function ContactSettingsPage() {
         qrImagePath,
         note: note.trim(),
       });
+      Taro.showToast({
+        title: "只保存在本机，请稍后再试",
+        icon: "none",
+      });
+      return;
     }
 
-    Taro.showToast({
-      title: "已保存联系方式",
-      icon: "none",
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        if (router.params?.redirect === "create") {
+          void Taro.navigateTo({
+            url: "/pages/rescue/create/basic/index?entry=new",
+          });
+          resolve();
+          return;
+        }
+
+        void Taro.navigateBack();
+        resolve();
+      }, 350);
     });
-
-    setTimeout(() => {
-      if (router.params?.redirect === "create") {
-        Taro.navigateTo({
-          url: "/pages/rescue/create/basic/index?entry=new",
-        });
-        return;
-      }
-
-      Taro.navigateBack();
-    }, 350);
-  };
+  });
 
   return (
-    <View className="page-shell contact-settings-page">
-      <NavBar showBack title="救助联系方式" />
+    <View
+      className="page-shell contact-settings-page"
+      style={{ paddingBottom: `${128 + keyboardBottomInset}px` }}
+    >
+      <NavBar showBack title="联系信息" />
 
       <View className="contact-settings-page__body">
         <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信号</Text>
+          <Text className="contact-settings-page__label">微信号（二选一即可）</Text>
           <View className="contact-settings-page__input-card">
             <Input
               className="contact-settings-page__input"
@@ -160,7 +239,7 @@ export default function ContactSettingsPage() {
         </View>
 
         <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信二维码</Text>
+          <Text className="contact-settings-page__label">微信二维码（二选一即可）</Text>
           <View className="contact-settings-page__qr-trigger" onTap={handlePickQrImage}>
             {qrImagePath ? (
               <Image
@@ -187,7 +266,8 @@ export default function ContactSettingsPage() {
             wrapperClassName="contact-settings-page__textarea-card"
             textareaClassName="contact-settings-page__textarea"
             placeholderClassName="contact-settings-page__textarea-placeholder"
-            placeholder="如果要联系您有什么特别的注意事项"
+            placeholder="如果需要联系您，有什么要提前说明的"
+            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={120}
             value={note}
             onInput={(event) => setNote(event.detail.value)}
@@ -197,7 +277,7 @@ export default function ContactSettingsPage() {
 
       <View className="contact-settings-page__bottom">
         <View className="theme-button-primary contact-settings-page__submit" onTap={handleSubmit}>
-          <Text>提交</Text>
+          <Text>保存</Text>
           <Image className="contact-settings-page__submit-icon" mode="aspectFit" src={submitArrowIcon} />
         </View>
       </View>

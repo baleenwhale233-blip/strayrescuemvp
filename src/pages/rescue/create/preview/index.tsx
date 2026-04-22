@@ -1,16 +1,12 @@
 import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
-import { consumeDraftBudgetRefresh } from "../../../../data/budgetAdjustmentSubmission";
+import { createSubmissionGuard } from "../../../../utils/submissionGuard";
 import {
-  applyTitleOverrideToDraft,
-  saveCaseCoverOverride,
-  saveCaseTitleOverride,
-} from "../../../../data/caseTitleOverride";
-import { consumeDraftExpenseRefresh } from "../../../../data/expenseSubmission";
-import { consumeDraftStatusRefresh } from "../../../../data/statusUpdateSubmission";
+  recordCaseProfileLocalFallback,
+} from "../../../../domain/canonical/repository";
 import {
   RescueOwnerOverview,
   RescueOwnerQuickActions,
@@ -20,8 +16,6 @@ import {
   type RescueOwnerTimelineItem,
 } from "../../../../components/RescueOwnerShared";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
-import ownerActionBudgetIcon from "../../../../assets/rescue-detail/owner/action-budget.svg";
-import ownerActionChevronIcon from "../../../../assets/rescue-detail/owner/action-chevron.svg";
 import ownerFooterArrowIcon from "../../../../assets/rescue-detail/owner/footer-publish-arrow.svg";
 import ownerAnimalFallback from "../../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
@@ -42,7 +36,8 @@ import {
   type OwnerDetailVM,
   type RescueCreateDraft,
   type RescueCreateEntryTone,
-} from "../../../../domain/canonical/repository/localRepository";
+} from "../../../../domain/canonical/repository";
+import { uploadCaseAssetImage } from "../../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import "./index.scss";
 
@@ -91,7 +86,7 @@ function getDraftPublicCaseId(draft: RescueCreateDraft) {
 }
 
 function getDraftStatusLabel(draft: RescueCreateDraft) {
-  return draft.currentStatusLabel || "医疗救助中";
+  return draft.currentStatusLabel || "医疗处理中";
 }
 
 function matchesDraftRoute(
@@ -192,7 +187,7 @@ function buildPreviewTimelineEntries(draft: RescueCreateDraft): PreviewTimelineE
       id: `support-${entry.id}`,
       tone: "income" as const,
       label: "场外收入",
-      title: `${entry.supporterNameMasked || "爱心人士"} 的支持`,
+      title: `${entry.supporterNameMasked || "登记用户"} 的登记`,
       description: entry.note ? `备注：${entry.note}` : undefined,
       timestamp: formatTimelineTimestamp(new Date(entry.supportedAt)),
       amount: entry.amount,
@@ -209,7 +204,7 @@ function isDraftBootstrapEntry(entry: RescueCreateDraft["timeline"][number]) {
     entry.tone === "status" &&
     entry.title === "已创建基础档案，等待补充第一条进展" &&
     entry.description ===
-      "完成封面、代号和事件简述后，就可以继续设定预算并进入救助页预览。"
+      "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。"
   );
 }
 
@@ -222,7 +217,7 @@ function getPreviewOverviewProps(
 
   return {
     paragraphs: [
-      draft.summary || "等待补充救助情况介绍。",
+      draft.summary || "等待补充这条记录的情况介绍。",
       `当前总预算为${formatCurrency(draft.budget || 0)}。`,
     ],
     expenseLabel: `-${formatCurrency(ledger.expense)}`,
@@ -386,7 +381,7 @@ function ActionSheet({
     },
     income: {
       title: "记录场外收入",
-      titlePlaceholder: "如：爱心人士支持到账",
+      titlePlaceholder: "如：线下登记已到账",
       descriptionPlaceholder: "可补充来源、留言或对账说明",
       amountPlaceholder: "200.00",
       amountLabel: "收入金额",
@@ -521,6 +516,7 @@ export default function RescueCreatePreviewPage() {
   const initialTab: PreviewTab =
     router.params?.tab === "overview" ? "overview" : "detail";
   const [activeTab, setActiveTab] = useState<PreviewTab>(initialTab);
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     setActiveTab(initialTab);
@@ -577,13 +573,12 @@ export default function RescueCreatePreviewPage() {
         return;
       }
 
-      const resolvedDraft = applyTitleOverrideToDraft(nextDraft, routeCaseId);
-      if (!resolvedDraft) {
+      if (!nextDraft) {
         return;
       }
 
-      syncCurrentDraft(resolvedDraft);
-      setDraft(resolvedDraft);
+      syncCurrentDraft(nextDraft);
+      setDraft(nextDraft);
     };
 
     loadDraft().catch(() => {
@@ -600,18 +595,12 @@ export default function RescueCreatePreviewPage() {
 
   useDidShow(() => {
     const routeDraftId = router.params?.id;
-    if (
-      !consumeDraftBudgetRefresh(routeDraftId) &&
-      !consumeDraftExpenseRefresh(routeDraftId) &&
-      !consumeDraftStatusRefresh(routeDraftId)
-    ) {
-      return;
-    }
+    const routeCaseId = router.params?.caseId;
 
-    const refreshedDraft = applyTitleOverrideToDraft(
-      getDraftById(routeDraftId) || getCurrentDraft(),
-      router.params?.caseId,
-    );
+    const refreshedDraft =
+      getDraftById(routeDraftId) ||
+      getDraftByCaseId(routeCaseId) ||
+      getCurrentDraft();
 
     if (refreshedDraft) {
       setDraft(refreshedDraft);
@@ -632,10 +621,6 @@ export default function RescueCreatePreviewPage() {
     expenseAmount: ledger.expense,
     supportAmount: ledger.income,
   });
-
-  const handleActionTap = (action: ActionType) => {
-    setActiveAction(action);
-  };
 
   const handleSaveAction = (values: {
     title: string;
@@ -718,55 +703,102 @@ export default function RescueCreatePreviewPage() {
     });
   };
 
-  const handleSaveDraft = async () => {
+  const handleSaveDraft = async () => submitGuardRef.current.run(async () => {
     const saved = persistDraft("draft");
     setDraft(saved);
     try {
+      Taro.showLoading({ title: "保存中", mask: true });
       await saveRemoteDraftCase(saved, "draft");
     } catch {
+      Taro.hideLoading();
       Taro.showToast({
         title: "草稿已本地保存，远端同步失败",
         icon: "none",
       });
       return;
     }
+    Taro.hideLoading();
 
     Taro.showToast({
       title: "草稿已保存",
       icon: "none",
     });
 
-    setTimeout(() => {
-      Taro.switchTab({
-        url: "/pages/rescue/index",
-      });
-    }, 300);
-  };
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        void Taro.switchTab({
+          url: "/pages/rescue/index",
+        });
+        resolve();
+      }, 300);
+    });
+  });
 
-  const handlePublish = async () => {
+  const handlePublish = async () => submitGuardRef.current.run(async () => {
     const saved = persistDraft("published");
     setDraft(saved);
+
+    let remoteDraft = saved;
+
+    Taro.showLoading({ title: "发布中", mask: true });
+
+    if (
+      saved.coverPath &&
+      !saved.coverPath.startsWith("cloud://") &&
+      !saved.coverPath.startsWith("http://") &&
+      !saved.coverPath.startsWith("https://")
+    ) {
+      try {
+        const uploadedCover = await uploadCaseAssetImage(
+          draftIdToCaseId(saved.id),
+          saved.coverPath,
+          "case-covers",
+        );
+
+        if (!uploadedCover.isLocalFallback) {
+          remoteDraft = {
+            ...saved,
+            coverPath: uploadedCover.fileID,
+          };
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
+          Taro.hideLoading();
+          Taro.showToast({
+            title: "封面上传失败，请重试",
+            icon: "none",
+          });
+          return;
+        }
+      }
+    }
+
     try {
-      await saveRemoteDraftCase(saved, "published");
+      await saveRemoteDraftCase(remoteDraft, "published");
     } catch {
+      Taro.hideLoading();
       Taro.showToast({
         title: "已本地发布，远端同步失败",
         icon: "none",
       });
       return;
     }
+    Taro.hideLoading();
 
     Taro.showToast({
-      title: saved.status === "published" ? "救助已发布" : "已更新",
+      title: saved.status === "published" ? "记录已发布" : "已更新",
       icon: "none",
     });
 
-    setTimeout(() => {
-      Taro.switchTab({
-        url: "/pages/rescue/index",
-      });
-    }, 300);
-  };
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        void Taro.switchTab({
+          url: "/pages/rescue/index",
+        });
+        resolve();
+      }, 300);
+    });
+  });
 
   const handleSaveTitle = (value: string) => {
     const nextName = value.trim();
@@ -782,7 +814,7 @@ export default function RescueCreatePreviewPage() {
       ...draft,
       name: nextName,
     });
-    saveCaseTitleOverride({
+    recordCaseProfileLocalFallback({
       title: nextName,
       draftId: draft.id,
       caseId: draftIdToCaseId(draft.id),
@@ -818,7 +850,7 @@ export default function RescueCreatePreviewPage() {
         coverPath: nextPath,
       });
 
-      saveCaseCoverOverride({
+      recordCaseProfileLocalFallback({
         coverPath: nextPath,
         draftId: draft.id,
         caseId: draftIdToCaseId(draft.id),
@@ -836,7 +868,7 @@ export default function RescueCreatePreviewPage() {
 
   return (
     <View className="page-shell rescue-preview-page">
-      <NavBar showBack title="救助记录管理" />
+      <NavBar showBack title="记录管理" />
 
       <RescueOwnerSummaryCard
         budgetLabel={formatCurrency(budget)}
@@ -853,7 +885,7 @@ export default function RescueCreatePreviewPage() {
         thirdLabel={fundingCompare.thirdLabel}
         thirdMode={fundingCompare.thirdMode}
         thirdValue={fundingCompare.thirdValue}
-        title={draft.name || "未命名救助"}
+        title={draft.name || "未命名档案"}
         onEditCover={handleChangeCover}
         onEditTitle={() => setEditingTitle(true)}
       />
@@ -869,10 +901,14 @@ export default function RescueCreatePreviewPage() {
             url: `/pages/rescue/expense/index?draftId=${draft.id}`,
           })
         }
-        onIncome={() => handleActionTap("income")}
+        onIncome={() =>
+          Taro.navigateTo({
+            url: `/pages/support/review/index?caseId=${draftIdToCaseId(draft.id)}&draftId=${draft.id}&tab=manual`,
+          })
+        }
         onStatus={() =>
           Taro.navigateTo({
-            url: `/pages/rescue/update/index?draftId=${draft.id}`,
+            url: `/pages/rescue/progress-update/index?draftId=${draft.id}`,
           })
         }
       />
@@ -887,7 +923,7 @@ export default function RescueCreatePreviewPage() {
             emptyState={{
               title: "还没有第一条记录",
               description:
-                "可以先记录一笔支出、写进展更新，或者补上一笔场外收入。",
+                "可以先记录一笔支出、更新进展，或者补上一笔场外登记。",
             }}
             items={toPreviewTimelineItems(draft)}
           />
@@ -905,7 +941,7 @@ export default function RescueCreatePreviewPage() {
           className="theme-button-primary rescue-preview__footer-primary"
           onTap={handlePublish}
         >
-          <Text>发布救助</Text>
+          <Text>发布记录</Text>
           <View className="rescue-preview__footer-arrow">
             <Image className="rescue-preview__footer-arrow-icon" mode="aspectFit" src={ownerFooterArrowIcon} />
           </View>

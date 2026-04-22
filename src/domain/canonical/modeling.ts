@@ -22,8 +22,17 @@ import type {
 } from "./types";
 
 const PUBLIC_CASE_PREFIX = "JM";
-const HOMEPAGE_REASON_FALLBACK = "公开后仍需继续补充基础记录";
 const RECOMMENDATION_WINDOW_MS = 48 * 60 * 60 * 1000;
+
+const STANDARD_CASE_STATUS_LABELS = {
+  draft: "草稿中",
+  newly_found: "紧急送医",
+  medical: "医疗处理中",
+  recovery: "康复观察",
+  rehoming: "寻找领养",
+  completed: "已完成",
+  closed: "遗憾离世",
+} as const;
 
 function stableHash(input: string) {
   let hash = 2166136261;
@@ -59,6 +68,17 @@ export function getPublicCaseId(caseRecord: {
   publicCaseId?: string;
 }): CasePublicId {
   return caseRecord.publicCaseId || createCasePublicId(caseRecord.id);
+}
+
+export function getStandardCaseStatusLabel(input: {
+  currentStatus: CanonicalCase["currentStatus"];
+  fallbackLabel?: string;
+}) {
+  return (
+    STANDARD_CASE_STATUS_LABELS[input.currentStatus] ||
+    input.fallbackLabel ||
+    STANDARD_CASE_STATUS_LABELS.medical
+  );
 }
 
 export function normalizePublicCaseIdInput(
@@ -506,7 +526,7 @@ export function getFundingStatusSummary(bundle: CanonicalCaseBundle) {
     return "即将筹满";
   }
 
-  return "‼️ 救助人垫付较多";
+  return "‼️ 当前垫付较多";
 }
 
 export function getRecommendationReason(bundle: CanonicalCaseBundle) {
@@ -620,6 +640,9 @@ export function toSupportThreadSummaryVMs(
         supportedAtLabel: formatDateLabel(entry.supportedAt),
         note: entry.note,
         hasScreenshot: entry.screenshotItems.length > 0,
+        screenshotUrls: entry.screenshotItems
+          .map((item) => item.imageUrl)
+          .filter((value): value is string => Boolean(value)),
         unmatchedReasonLabel: getSupportUnmatchedReasonLabel(
           entry.unmatchedReason,
         ),

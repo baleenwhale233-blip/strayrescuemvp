@@ -4,15 +4,15 @@ import type { HomepageCaseCardVM } from "../domain/canonical/repository";
 import "./DiscoverCaseCard.scss";
 
 function getStatusEmoji(statusLabel: string) {
-  if (statusLabel.includes("紧急送医")) {
+  if (statusLabel.includes("紧急")) {
     return "🚨";
   }
 
-  if (statusLabel.includes("康复观察")) {
+  if (statusLabel.includes("康复") || statusLabel.includes("恢复")) {
     return "🏡";
   }
 
-  if (statusLabel.includes("寻找领养")) {
+  if (statusLabel.includes("领养") || statusLabel.includes("安置")) {
     return "💖";
   }
 
@@ -132,7 +132,7 @@ export function DiscoverCaseCard({
         <View className="discover-card__ledger-meta">
           <View className="discover-card__ledger-meta-item">
             <View className="discover-card__ledger-meta-dot discover-card__ledger-meta-dot--brand" />
-            <Text className="discover-card__ledger-meta-label">已确认支持</Text>
+            <Text className="discover-card__ledger-meta-label">已确认登记</Text>
             <Text className="discover-card__ledger-meta-value">{item.supportedAmountLabel}</Text>
           </View>
           <View className="discover-card__ledger-meta-item discover-card__ledger-meta-item--end">

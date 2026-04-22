@@ -10,11 +10,13 @@
 
 - 如果你要看“还没补完、但应该先定契约的字段”，优先看：
   [`docs/pending_field_contracts.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/pending_field_contracts.md)
+- 如果你要看“同一个产品字段在页面 / 草稿 / canonical / 云端 / VM 各层分别叫什么”，优先看：
+  [`docs/field_contract_matrix.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/field_contract_matrix.md)
 
 说明：
 
-- 这里的“后端”在当前阶段主要指 `canonical data layer / repository / selector`
-- 当前项目还没真正接远端服务，所以很多字段实际来自本地 fixture / draft persistence
+- 这里的“后端”在当前阶段同时指 `canonical data layer / repository / selector` 与 CloudBase `rescueApi`
+- 当前正式读写链路已接 CloudBase；本地 fixture / draft persistence / local overlay 只保留为草稿链路或 CloudBase 不可用时的兜底
 
 ---
 
@@ -89,7 +91,7 @@
 | 时间线 | `timeline` | `PublicDetailVM` | 已有 | 客态/主态共用 |
 | 最新时间线摘要 | `latestTimelineSummary` | `PublicDetailVM` | 已有 | 当前页可选 |
 | 救助人信息 | `rescuer.*` | `PublicDetailVM` | 已有 | 主页入口卡片 |
-| 联系方式弹层 | `SupportSheetData` | `getSupportSheetDataByCaseId()` | 已有 | 当前仍是旧 contact/direct 模式 |
+| 联系方式弹层 | `SupportSheetData` | `getSupportSheetDataByCaseId()` | 已有 | 当前已按“二维码 / 微信号 / 联系救助人”口径收口文案与单渠道展示 |
 
 ### 当前注意事项
 
@@ -97,7 +99,7 @@
 - `summary` 当前在页面层被稳定拆成两段：`猫咪情况介绍` + `当前总预算为...`
 - `timeline` 当前已被页面按 `支出记录 / 状态更新 / 预算调整 / 场外收入` 四类结构消费，并在缺项时做前端 mock 回退
 - 客态页已补 `loading / error` 页面态，但仍未新增独立数据字段
-- 客态详情页当前已在页面层叠加展示覆盖：已发布主态的 `title / heroImageUrl` 可由 `updateCaseProfile` 远端正式回写，本地 draft / local overlay 只作为兜底；状态文案仍会叠加本地状态更新记录里的最新状态
+- 客态详情页当前仍可能在本地 fallback 场景叠加展示覆盖：已发布主态的 `title / heroImageUrl` 可由 `updateCaseProfile` 远端正式回写，正式远端成功回包不再吃本机 overlay；本地 draft / local overlay 只作为兜底。状态文案也只在本地 fallback 场景下继续叠加本地状态更新记录里的最新状态
 - 资金区还在消费旧 `verifiedGapAmount` 语义，后续可进一步抽成更白话的 view-model
 - 主按钮当前是“我要支持”
 - 关键图标已优先切到 Figma exact 资产；状态 badge 左侧维持 Figma 节点中的 emoji 表达
@@ -191,7 +193,7 @@
 
 - 记录详情页是只读页，不提供修改入口
 - 支出记录和状态更新提交后不可编辑，后续变化应通过新增记录体现，避免账目和救助过程对不上
-- 当前通过本地临时 storage 传递记录详情；后续若后端需要直达详情页，可补正式 record id 查询接口
+- 当前主态 / 客态只读记录详情优先通过 `getCaseRecordDetail(caseId + recordType + recordId)` 回读正式远端详情 VM；本地临时 storage 仅作为草稿或降级兜底，不再是正式详情链路的主机制
 
 ---
 
@@ -226,7 +228,7 @@
 
 - 页面现在消费 `title / statusLabel / draftId / primaryNoticeLabel`
 - richer 字段都已经有了，但 UI 还没接
-- 当前工作台卡片的 `title / coverImageUrl` 已可来自远端正式 `animalName / coverFileID`；本地 draft / local overlay 只作为兜底，`statusLabel` 仍会叠加本地状态更新记录里的最新状态
+- 当前工作台卡片的 `title / coverImageUrl` 已可来自远端正式 `animalName / coverFileID`；本地 draft / local overlay 只作为兜底，正式远端成功回包不再注入本机 overlay；`statusLabel` 在本地 fallback 场景下仍会叠加本地状态更新记录里的最新状态
 - 当前工作台卡片的 `statusLabel` 还有一层展示约束：只允许显示状态更新页已有的 5 个标签；如果没有命中，则回退成“未更新状态”
 - 草稿箱这轮已改成：**所有 `draft` 卡片统一先进入 `create/preview`**；local draft 优先用 `draftId`，remote draft 允许用 `caseId` fallback
 
@@ -297,7 +299,7 @@
 | 本次合计 | `displayedTotalAmount` | 页面层 derived | 已有 | 由本地明细金额汇总；QA 设计态允许页面层覆盖 |
 | 页面缓存 | `rescue-expense-draft:*` | 本地 storage | 已有 | 仅用于“继续上次录入 / 新的录入” |
 | 主态远端提交 | `createExpenseRecord` | remote repository / CloudBase `rescueApi` | 已可试跑 | 写入 `expense_records` 与公开 `case_events(type=expense)`，并更新 `rescue_cases.updatedAt` |
-| 提交后主态联动 | `case-expense-submissions:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay |
+| 提交后主态联动 | `case-expense-submissions:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay；远端成功后会清理 |
 
 ### 当前注意事项
 
@@ -311,16 +313,16 @@
 
 ---
 
-## 5.2 写进展更新页（rescue/update）
+## 5.2 写进展更新页（rescue/progress-update）
 
 ### 页面文件
 
-- [`src/pages/rescue/update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/update/index.tsx)
+- [`src/pages/rescue/progress-update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/progress-update/index.tsx)
 
 ### 当前调用入口
 
-- 主态详情快捷动作：`/pages/rescue/detail/index -> /pages/rescue/update/index?caseId=...`
-- 草稿预览快捷动作：`/pages/rescue/create/preview/index -> /pages/rescue/update/index?draftId=...`
+- 主态详情快捷动作：`/pages/rescue/detail/index -> /pages/rescue/progress-update/index?caseId=...`
+- 草稿预览快捷动作：`/pages/rescue/create/preview/index -> /pages/rescue/progress-update/index?draftId=...`
 
 ### 前端字段清单
 
@@ -336,7 +338,7 @@
 
 ### 当前注意事项
 
-- 状态更新页主态 `caseId` 路径已经接真实后端写入；`case-status-submissions:*` 只作为 CloudBase 不可用时的 local overlay 兜底
+- 状态更新页主态 `caseId` 路径已经接真实后端写入；`case-status-submissions:*` 只作为 CloudBase 不可用时的 local overlay 兜底，远端成功后会清理对应 key
 - `draftId` 是页面级上下文，不是 canonical 草稿字段扩张
 - 草稿箱提交后当前直接写入本地 draft 的 `timeline[] / currentStatusLabel`
 - 当前时间线严格按真实事件流渲染，不再固定拼成 `支出 / 状态 / 预算 / 收入` 四张卡
@@ -365,12 +367,28 @@
 | 新预估总金额 | `budget` | 本地页面状态 | 已有 | 必填 |
 | 追加原因 | `reason` | 本地页面状态 | 已有 | 必填 |
 | 当前已支持 | `supportedAmountLabel` | `PublicDetailVM / calculateDraftLedger()` | 已有 | 当前作为页面说明展示 |
-| 提交后主态联动 | `case-budget-adjustments:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay |
+| 提交后主态联动 | `case-budget-adjustments:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay；远端成功后会清理 |
 | 主态远端提交 | `createBudgetAdjustment` | remote repository / CloudBase `rescueApi` | 已可试跑 | 写入公开 `case_events(type=budget_adjustment)`，并更新 `rescue_cases.targetAmount` |
 
 ### 当前注意事项
 
-- 追加预算页主态 `caseId` 路径已经接真实后端写入；`case-budget-adjustments:*` 只作为 CloudBase 不可用时的 local overlay 兜底
+- 追加预算页主态 `caseId` 路径已经接真实后端写入；`case-budget-adjustments:*` 只作为 CloudBase 不可用时的 local overlay 兜底，远端成功后会清理对应 key
+
+---
+
+## 补充：localPresentation 当前口径
+
+- 正式远端成功读链路：不再吃本机 overlay
+- CloudBase 不可用 / 基础设施失败：仍保留 `localPresentation` 兜底
+- 草稿 `draftId` 链路：仍保留 title / cover 等本地展示覆盖
+- 已发布案例远端改名 / 换封面成功：清理 `caseId + draftId` 对应 title / cover 覆盖
+- 主态远端记账 / 写进展 / 追加预算成功：分别清理 `expense / status / budget` overlay key
+- 页面层不再直接操作 raw `saveCase* / clearCase*` overlay API，而是通过 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback` 表达“远端失败兜底 / 远端成功清理”
+- `localPresentation` 内部职责已拆开：`localPresentationStorage` 管 storage key，`localPresentationResolver` 只读取 storage/draft 并组装 `LocalPresentationSnapshot`，`localPresentationCore` 是 bundle / timeline / card overlay 合成的唯一实现
+
+详细清单见：
+
+- [`docs/local_presentation_residual_checklist.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/local_presentation_residual_checklist.md)
 - `draftId` 是页面级上下文，不是 canonical 草稿字段扩张
 - 草稿箱提交后当前直接写入本地 draft 的 `budget / timeline[]`
 - `reason` 的多行 placeholder 当前已改成统一覆盖层实现；这是前端输入样式口径，不新增后端字段
@@ -391,8 +409,9 @@
 
 | 前端用途 | 字段 | 建议来源 | 当前状态 | 备注 |
 |---|---|---|---|---|
-| 用户头像 | `user_profiles.avatarUrl` / `profile-user:v1.avatarUrl` | `getMyProfile()` / 本地兜底 | 远端已接 | 默认显示 Figma 默认头像；点击用户模块后通过微信授权获取并同步远端 |
-| 用户名 | `user_profiles.displayName` / `profile-user:v1.nickName` | `getMyProfile()` / 本地兜底 | 远端已接 | 默认显示“点击登录”；点击用户模块后通过微信授权获取并同步远端 |
+| 用户头像 | `user_profiles.avatarUrl` / `profile-user:v1.avatarUrl` | `getMyProfile()` / 本地兜底 | 远端已接 | 默认显示 Figma 默认头像；当前通过 `chooseAvatar` 选择头像，并经 `avatarAssetId` 资产链同步远端 |
+| 用户头像资产 | `user_profiles.avatarAssetId` | `updateMyProfile()` / CloudBase asset | 远端已接 | 上传头像后写入 `evidence_assets(kind=avatar)`，供公开详情 / 救助人主页回读 |
+| 用户名 | `user_profiles.displayName` / `profile-user:v1.nickName` | `getMyProfile()` / 本地兜底 | 远端已接 | 当前通过 `input type="nickname"` 编辑并同步远端，不再依赖旧的整包资料授权 |
 | 支持足迹入口显隐 | `has_support_history` | 后续 support summary 聚合 | 未做 | 当前入口始终展示，点击进入支持足迹页 |
 | 联系方式设置入口 | 本地路由 | 直接页面路由 | 页面已接 | 当前入口跳转 `/pages/profile/contact-settings/index` |
 | 使用说明入口 | 静态文档页路由 | 本地页面 | 页面已接 | 当前入口跳转 `/pages/profile/guide/index`；用户文案见 `docs/rescue_ledger_usage_guide.md` |
@@ -422,15 +441,15 @@
 
 | 前端用途 | 字段 | 建议来源 | 当前状态 | 备注 |
 |---|---|---|---|---|
-| 微信号 | `user_profiles.wechatId` / `rescuer-contact-profile:v1.wechatId` | `getMyProfile()` / 本地兜底 | 远端已接 | 必填；当前不自动获取微信号，placeholder 为“请填写微信号” |
-| 微信二维码图片 | `user_profiles.paymentQrAssetId` / `paymentQrUrl` | CloudBase asset / 本地兜底 | 远端已接 | 必填；提交时上传为 `cloud://` fileID 并写入 `evidence_assets(kind=payment_qr)` |
+| 微信号 | `user_profiles.wechatId` / `rescuer-contact-profile:v1.wechatId` | `getMyProfile()` / 本地兜底 | 远端已接 | 当前不自动获取微信号，placeholder 为“请填写微信号” |
+| 微信二维码图片 | `user_profiles.paymentQrAssetId` / `paymentQrUrl` | CloudBase asset / 本地兜底 | 远端已接 | 提交时上传为 `cloud://` fileID 并写入 `evidence_assets(kind=payment_qr)` |
 | 备注 | `user_profiles.contactNote` / `rescuer-contact-profile:v1.note` | `getMyProfile()` / 本地兜底 | 远端已接 | 选填 |
 
 当前注意事项：
 
 - 新建救助档案前会优先调用 `loadMyProfile()` 读取远端 `hasContactProfile`，CloudBase 不可用时才调用 `hasCompleteRescuerContactProfile()` 做本地兜底
-- 如果缺微信号或二维码，会先引导到联系方式设置页，保存后再进入建档第一步
-- 当前已接正式后端 profile settings；新建救助前置校验已改为远端 `getMyProfile.hasContactProfile` 优先、本地兜底
+- 如果微信号和二维码都缺，会先引导到联系方式设置页，保存后再进入建档第一步
+- 当前已接正式后端 profile settings；新建救助前置校验已改为远端 `getMyProfile.hasContactProfile` 优先、本地兜底，口径为“微信号 / 二维码任一即可”
 
 ### 6.4 “我已支持”登记页（support/claim）
 

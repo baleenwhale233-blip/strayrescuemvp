@@ -251,6 +251,10 @@
   gap: 8px;
 }
 
+.rescue-timeline__images--expense {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .rescue-timeline__images--single {
   grid-template-columns: 1fr;
 }
@@ -261,6 +265,16 @@
   overflow: hidden;
   background: #f1f5f9;
   border-radius: 8px;
+}
+
+.rescue-timeline__image-wrap--expense {
+  aspect-ratio: 1 / 1;
+  height: auto;
+}
+
+.rescue-timeline__image-wrap--empty {
+  background: transparent;
+  border: 0;
 }
 
 .rescue-timeline__images--single .rescue-timeline__image-wrap {

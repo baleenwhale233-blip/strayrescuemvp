@@ -16,7 +16,9 @@ This MVP function is intentionally a single action-dispatch function so the mini
 ## Profile and support history
 
 - `getMyProfile` and `updateMyProfile` read and write the current user's `user_profiles` document by cloud function OPENID.
+- Rescuer avatars can be uploaded as CloudBase assets and linked through `user_profiles.avatarAssetId`.
 - Profile QR images are stored as CloudBase `cloud://` file IDs in `evidence_assets(kind=payment_qr)` and linked through `user_profiles.paymentQrAssetId`.
+- `hasContactProfile` now means the user has at least one usable contact channel: WeChat ID or payment QR code.
 - `getMySupportHistory` aggregates confirmed support entries for the current OPENID and returns case-level support history items.
 - `getRescuerHomepage` returns public rescuer profile data and published case bundles by `rescuerId` or `caseId`.
 - `updateCaseProfile` updates owner-managed case profile fields such as animal name and cover image file ID.
@@ -33,6 +35,12 @@ This MVP function is intentionally a single action-dispatch function so the mini
 
 If the cloud function is not deployed yet, the mini program falls back to the existing local repository for infrastructure errors.
 
+## Alpha seed reset
+
+- `seedMockCases` supports `cleanupMode=reset_alpha_environment`.
+- In that mode, the function first upserts the Alpha Seed Pack docs, then prunes any non-seed docs from the 8 CloudBase collections used by the mini program.
+- This keeps `npm run seed:alpha` deterministic for homepage, owner workbench, and rescuer homepage smoke checks.
+
 ## Support entry loop
 
 - `createSupportEntry` writes pending support entries, private proof assets, support thread aggregates, and a private pending support event.
@@ -44,6 +52,12 @@ If the cloud function is not deployed yet, the mini program falls back to the ex
 ## Rescue content writes
 
 - `createProgressUpdate` writes public progress events, optional progress photo assets, and updates the case status fields.
-- `createExpenseRecord` writes structured expense records plus projected public expense events.
+- `createExpenseRecord` requires at least one evidence image and writes structured expense records plus projected public expense events.
 - `createBudgetAdjustment` writes public budget adjustment events and updates the case target amount.
 - These owner-only actions use the cloud function OPENID as the authority source.
+
+Public hero images now resolve in this order:
+
+1. case cover
+2. case face image
+3. latest public progress photo

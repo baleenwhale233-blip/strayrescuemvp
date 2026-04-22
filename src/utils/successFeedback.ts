@@ -18,10 +18,13 @@ export function showSuccessFeedback({
   });
 
   if (!navigateBack) {
-    return;
+    return Promise.resolve();
   }
 
-  setTimeout(() => {
-    Taro.navigateBack();
-  }, delay);
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      void Taro.navigateBack();
+      resolve();
+    }, delay);
+  });
 }

@@ -45,7 +45,7 @@ export type RescueOwnerOverviewProps = {
     statusLabel: string;
     timestamp: string;
     text: string;
-    imageUrl: string;
+    imageUrl?: string;
   };
 };
 
@@ -128,7 +128,7 @@ export function RescueOwnerSummaryCard({
           <View className="rescue-owner-card__metric">
             <View className="rescue-owner-card__metric-label">
               <View className="rescue-owner-card__dot rescue-owner-card__dot--support" />
-              <Text>已确认支持</Text>
+              <Text>已确认登记</Text>
             </View>
             <Text>{supportLabel}</Text>
           </View>
@@ -167,7 +167,7 @@ export function RescueOwnerQuickActions({
       <View className="rescue-owner-actions__primary" onTap={onExpense}>
         <View className="rescue-owner-actions__primary-main">
           <Image className="rescue-owner-actions__icon--primary" mode="aspectFit" src={ownerActionExpenseIcon} />
-          <Text className="rescue-owner-actions__primary-label">记一笔支出</Text>
+          <Text className="rescue-owner-actions__primary-label">记录票据</Text>
         </View>
         <Image className="rescue-owner-actions__chevron-primary" mode="aspectFit" src={ownerActionChevronPrimaryIcon} />
       </View>
@@ -175,14 +175,14 @@ export function RescueOwnerQuickActions({
       <View className="rescue-owner-actions__grid">
         <View className="rescue-owner-actions__card theme-card" onTap={onStatus}>
           <Image className="rescue-owner-actions__icon" mode="aspectFit" src={ownerActionUpdateIcon} />
-          <Text className="rescue-owner-actions__card-title">写进展更新</Text>
-          <Text className="rescue-owner-actions__card-subtitle">添加照片及阶段状态</Text>
+          <Text className="rescue-owner-actions__card-title">更新进展</Text>
+          <Text className="rescue-owner-actions__card-subtitle">添加照片和阶段信息</Text>
         </View>
 
         <View className="rescue-owner-actions__card rescue-owner-actions__card--purple theme-card" onTap={onIncome}>
           <Image className="rescue-owner-actions__icon" mode="aspectFit" src={ownerActionIncomeIcon} />
-          <Text className="rescue-owner-actions__card-title">记场外收入</Text>
-          <Text className="rescue-owner-actions__card-subtitle">审核支持者私下转账</Text>
+          <Text className="rescue-owner-actions__card-title">处理登记</Text>
+          <Text className="rescue-owner-actions__card-subtitle">处理线下转账或外部登记</Text>
         </View>
 
         <View className="rescue-owner-actions__wide theme-card" onTap={onBudget}>
@@ -214,7 +214,7 @@ export function RescueOwnerTabs({
         }`}
         onTap={() => onChange("overview")}
       >
-        <Text>救助摘要</Text>
+        <Text>记录摘要</Text>
       </View>
       <View
         className={`rescue-owner-tabs__item ${
@@ -222,7 +222,7 @@ export function RescueOwnerTabs({
         }`}
         onTap={() => onChange("detail")}
       >
-        <Text>救助详情</Text>
+        <Text>记录详情</Text>
       </View>
     </View>
   );
@@ -237,7 +237,7 @@ export function RescueOwnerOverview({
   return (
     <View className="rescue-owner-overview">
       <View className="rescue-owner-overview__about theme-card">
-        <Text className="rescue-owner-overview__title">关于我</Text>
+        <Text className="rescue-owner-overview__title">关于这条记录</Text>
         {paragraphs.map((paragraph) => (
           <Text key={paragraph} className="rescue-owner-overview__paragraph">
             {paragraph}
@@ -272,7 +272,7 @@ export function RescueOwnerOverview({
           <View className="rescue-owner-overview__latest-header">
             <View className="rescue-owner-overview__latest-badges">
               <Text className="rescue-owner-overview__badge rescue-owner-overview__badge--status">
-                最新状态
+                最新进展
               </Text>
               <Text className="rescue-owner-overview__badge rescue-owner-overview__badge--case">
                 {latestStatus.statusLabel}
@@ -281,10 +281,12 @@ export function RescueOwnerOverview({
             <Text className="rescue-owner-overview__time">{latestStatus.timestamp}</Text>
           </View>
           <Text className="rescue-owner-overview__paragraph">{latestStatus.text}</Text>
-          <View className="rescue-owner-overview__latest-image-wrap">
-            <Image className="rescue-owner-overview__latest-image" mode="aspectFill" src={latestStatus.imageUrl} />
-            <Text className="rescue-owner-overview__watermark">透明账本·严禁盗用</Text>
-          </View>
+          {latestStatus.imageUrl ? (
+            <View className="rescue-owner-overview__latest-image-wrap">
+              <Image className="rescue-owner-overview__latest-image" mode="aspectFill" src={latestStatus.imageUrl} />
+              <Text className="rescue-owner-overview__watermark">透明账本·严禁盗用</Text>
+            </View>
+          ) : null}
         </View>
       ) : null}
     </View>

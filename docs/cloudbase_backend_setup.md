@@ -1,6 +1,6 @@
 # CloudBase 后端接入说明
 
-最后更新：2026-04-17
+最后更新：2026-04-21
 
 ## 当前状态
 
@@ -14,11 +14,14 @@
 - 如果 `src/config/cloudbase.ts` 里没有 `envId`，会自动回落到现有本地 repository
 - 如果云函数未部署或基础设施调用失败，也会回落本地 repository
 - 如果云函数返回业务错误，例如 `FORBIDDEN`、限流、重复截图，则不会回落本地，避免绕过权限
+- 正式远端成功读链路现在不会再叠加本机 `localPresentation` overlay；本机 overlay 只保留给 CloudBase 不可用或基础设施失败时的本地兜底
 - P0-A 支持登记 / 核实链路已在 `cloud1-9gl5sric0e5b386b` 开发环境完成远端写入与状态流转验证
 - P0-B 状态更新 / 记账 / 预算调整的主态 `caseId` 写链路已在开发环境完成远端写入验证
 - 支持凭证、状态图片、记账凭证的真实 CloudBase 上传回归已完成
+- 云函数回包会把 CloudBase `cloud://` fileID 转为可展示的临时 HTTPS URL，避免体验版图片无法直接渲染
 - owner-only action 的非 owner `FORBIDDEN` 回归已完成；`INVALID_*`、限流和重复凭证业务错误回归已完成
-- Alpha Seed Pack 已可通过 `npm run seed:alpha` 播种到当前 CloudBase 环境
+- Alpha Seed Pack 已可通过 `npm run seed:alpha` 播种到当前 CloudBase 环境，并在播种时清掉旧 demo / probe / 验收残留文档
+- `rescueApi/index.js` 当前已收薄为 service wiring / formatter / seed / handler 表；业务逻辑已拆入 `runtime`、`adapters/canonical`、`services/bundles`、`services/readActions`、`services/caseWrites`、`services/profile`、`services/support`、`services/records`、`services/recordDetails`、`services/contentWrites`、`services/recordAssets`
 
 ## 你需要在 CloudBase 侧准备
 
@@ -66,15 +69,35 @@
 
 用户身份以云函数内的 OPENID 为准，小程序端不再传 `supporter_current_user` 或 `rescuer_current_user` 作为真实身份。
 
+### 云函数内部结构
+
+`rescueApi` 当前内部约定：
+
+- `src/runtime.js`：envelope、OPENID、ID / fileID 校验、通用查询、临时 URL 转换
+- `src/adapters/canonical.js`：CloudBase 文档到 canonical bundle 的映射与 support thread 聚合
+- `src/services/bundles.js`：`composeBundles / getBundleByCaseId / getCaseDocByCaseId`
+- `src/services/readActions.js`：首页、记录主页、案例搜索、owner 工作台、owner detail、支持足迹等只读 action
+- `src/services/caseWrites.js`：owner bundle 权限校验、`updateCaseProfile / saveDraftCase / publishCase / touchCase`
+- `src/services/profile.js`：`getMyProfile / updateMyProfile / getProfileByOpenid`
+- `src/services/support.js`：支持登记、手动登记、核实与 support event/thread 投影
+- `src/services/records.js`：records facade，组合 `recordDetails / contentWrites / recordAssets`
+- `src/services/recordDetails.js`：`getCaseRecordDetail` 与只读详情 payload / image 归一
+- `src/services/contentWrites.js`：`createProgressUpdate / createExpenseRecord / createBudgetAdjustment`
+- `src/services/recordAssets.js`：内容记录资产创建与 asset map 查询
+
+新增 action 时优先落到对应 service，不要直接把业务逻辑堆回 `index.js`。
+
 ### 用户资料 / 支持足迹
 
 `getMyProfile` / `updateMyProfile` 当前会：
 
 - 使用云函数 OPENID 读写 `user_profiles`
 - 保存 `displayName / avatarUrl / wechatId / contactNote`
+- 用户头像现在支持上传为 CloudBase 资产，并关联到 `user_profiles.avatarAssetId`
 - 微信二维码上传为 `cloud://` fileID 后写入 `evidence_assets(kind=payment_qr)`
 - 将二维码 asset 关联到 `user_profiles.paymentQrAssetId`
-- 输出 `hasContactProfile`
+- 输出 `hasContactProfile`，当前口径为“微信号或二维码任一存在即可”
+- `getMyProfile` 与 `composeBundles` 当前都会优先按 `avatarAssetId / paymentQrAssetId` 精确回读 profile 资产，而不是只按 OPENID 扫描资产列表
 
 `getMySupportHistory` 当前会：
 
@@ -105,7 +128,7 @@
 - 将封面图写入 `evidence_assets(kind=case_cover)`
 - 更新 `rescue_cases.updatedAt`
 
-前端主态详情编辑代号 / 动物头像时会优先调用该接口；CloudBase 不可用时保留本地展示覆盖兜底。
+前端主态详情编辑代号 / 动物头像时会优先调用该接口；CloudBase 不可用时保留本地展示覆盖兜底。远端成功后会清理对应 `caseId + draftId` 的本地 `title / cover` 覆盖，避免旧本机值再次压过远端真值。
 
 ### 支持登记 / 核实写链路
 
@@ -149,6 +172,7 @@
 `createExpenseRecord` 当前会：
 
 - 校验当前 OPENID 是案例救助人
+- 对新写入强制要求至少 1 张凭证图；空 `evidenceFileIds` 会返回 `EXPENSE_EVIDENCE_REQUIRED`
 - 写入 `expense_records`
 - 写入公开 `case_events(type=expense)`
 - 写入凭证图对应的 `evidence_assets`
@@ -161,6 +185,17 @@
 - 更新 `rescue_cases.targetAmount/updatedAt`
 
 三条链路的页面侧规则是：主态 `caseId` 优先写 CloudBase；若 CloudBase 不可用或基础设施失败，保留已有 local overlay 兜底；草稿 `draftId` 仍保持本地 draft 闭环。
+
+补充：
+
+- `createBudgetAdjustment` 远端成功后，页面会清理 `case-budget-adjustments:{caseId}`
+- `createProgressUpdate` 远端成功后，页面会清理 `case-status-submissions:{caseId}`
+- `createExpenseRecord` 远端成功后，页面会清理 `case-expense-submissions:{caseId}`
+
+也就是说：
+
+- 正式远端成功写入后，以 CloudBase 真值为准
+- 本地 overlay 只保留给未同步成功的离线 / 降级场景
 
 ### 只读记录详情
 
@@ -201,6 +236,22 @@ support-proofs/{caseId}/{timestamp}-{random}.jpg
 
 支持凭证默认是私有对账材料，不直接展示在公开详情页。上传失败时前端不会继续把本地临时路径作为远端 `fileID` 提交。
 
+公开展示图、进展图、凭证图和二维码在数据库里仍保存 CloudBase `fileID`；云函数读回时会调用 `getTempFileURL` 转成临时 HTTPS URL 给页面展示，同时在只读详情 VM 中保留原始 `fileID`。
+
+救助人头像现在也支持同样的资产链：
+
+- profile 页选择头像
+- 上传到 `profile-assets/avatar/...`
+- 写入 `evidence_assets(kind=avatar)`
+- 关联到 `user_profiles.avatarAssetId`
+- 详情页 / 救助人主页 / 我的页优先读取头像资产 URL
+
+当前公开主图的 canonical fallback 已统一为：
+
+1. `case_cover`
+2. `face`
+3. 最新一条公开进展里的第一张图片
+
 ## 开发环境种子数据
 
 建议优先使用 Alpha Seed Pack：
@@ -214,9 +265,10 @@ npm run seed:alpha
 - 生成 / 使用 `docs/alpha_seed_assets/*.png`
 - 上传 28 张 Alpha 测试图片到 CloudBase Storage
 - 调用 `rescueApi.seedMockCases`
+- 以 `cleanupMode=reset_alpha_environment` 重置 `user_profiles / rescue_cases / case_events / expense_records / support_entries / support_threads / evidence_assets / shared_evidence_groups`
 - 写入演示救助人、公开案例、草稿案例、支持记录、支出记录、进展记录和 `evidence_assets`
 
-Alpha 图片均为测试素材，凭证和二维码明确标注测试用途，不应作为真实票据或付款二维码使用。
+Alpha 图片均为测试素材，凭证和二维码明确标注测试用途，不应作为真实票据或真实联系二维码使用。
 
 也可以手动把 `docs/cloudbase_seed/` 中的最小开发数据导入开发环境，避免接上 CloudBase 后首页为空。
 

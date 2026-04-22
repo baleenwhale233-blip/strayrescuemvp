@@ -1,0 +1,46 @@
+{
+  "id": "rescue-workbench",
+  "route": "pages/rescue/index",
+  "query": {},
+  "fixture": "owner-workbench",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".rescue-page__section",
+    "timeoutMs": 30000,
+    "stableMs": 1500
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "primary-action",
+      "active-list",
+      "draft-list"
+    ],
+    "segmentSelectors": {
+      "primary-action": ".rescue-page__primary-action",
+      "active-list": ".rescue-page__section",
+      "draft-list": ".rescue-page__section:last-of-type"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "",
+    "figmaNodeId": "",
+    "designImagePath": "",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "Round 0 smoke 重点是进行中案例、草稿箱和新建救助入口是否都能打开。",
+    "Round 2 还会额外关注卡片提醒是否随着 pending / unmatched / homepage eligibility 变化。"
+  ]
+}

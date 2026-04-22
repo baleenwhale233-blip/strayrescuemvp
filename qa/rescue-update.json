@@ -1,0 +1,53 @@
+{
+  "id": "rescue-update",
+  "route": "pages/rescue/progress-update/index",
+  "query": {
+    "caseId": "seed_case_owner_tuantuan_003"
+  },
+  "fixture": "alpha-case-tuantuan",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".rescue-update-page__animal-card",
+    "timeoutMs": 30000,
+    "stableMs": 1500
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "animal-card",
+      "stage",
+      "textarea",
+      "image-card",
+      "bottom-bar"
+    ],
+    "segmentSelectors": {
+      "animal-card": ".rescue-update-page__animal-card",
+      "stage": ".rescue-update-page__section",
+      "textarea": ".rescue-update-page__field",
+      "image-card": ".rescue-update-page__image-card",
+      "bottom-bar": ".rescue-update-page__bottom"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "",
+    "figmaNodeId": "",
+    "designImagePath": "",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "Round 0 smoke 重点是进展页能正常取到案例上下文，并看到阶段、描述、图片和提交区。",
+    "当前固定使用 Alpha seed 的团团案例（JM520103），更贴近 Round 3 的工作台提醒和写进展链路。",
+    "Round 3 会在这个页面补真实上传和发布后的详情同步验证。"
+  ]
+}

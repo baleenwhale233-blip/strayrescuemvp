@@ -14,6 +14,7 @@ import type {
 import {
   buildLedgerSnapshotFromStructured,
   getPublicCaseId,
+  getStandardCaseStatusLabel,
   getStructuredExpenseRecords,
   getStructuredSupportEntries,
   toSupportThreadSummaryVMs,
@@ -60,6 +61,39 @@ function getAssetUrl(assetMap: Map<string, CanonicalAsset>, assetId?: string) {
   return asset.watermarkedUrl || asset.originalUrl || asset.thumbnailUrl;
 }
 
+function getEvidenceItemUrl(
+  item: { assetId?: string; imageUrl?: string },
+  assetMap: Map<string, CanonicalAsset>,
+) {
+  return getAssetUrl(assetMap, item.assetId) || item.imageUrl;
+}
+
+function getLatestPublicProgressPhotoUrl(
+  events: CanonicalEvent[],
+  assetMap: Map<string, CanonicalAsset>,
+) {
+  const progressEvents = [...events]
+    .filter(
+      (
+        event,
+      ): event is Extract<CanonicalEvent, { type: "progress_update" }> =>
+        event.type === "progress_update" && event.visibility === "public",
+    )
+    .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt));
+
+  for (const event of progressEvents) {
+    const assetUrl = event.assetIds
+      .map((assetId) => getAssetUrl(assetMap, assetId))
+      .find((value): value is string => Boolean(value));
+
+    if (assetUrl) {
+      return assetUrl;
+    }
+  }
+
+  return undefined;
+}
+
 function getStatusTone(caseRecord: CanonicalCase): StatusTone {
   if (caseRecord.visibility === "draft" || caseRecord.currentStatus === "draft") {
     return "draft";
@@ -87,7 +121,7 @@ function getResolvedTargetAmount(
   return events
     .filter((event) => event.type === "budget_adjustment")
     .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))
-    .reduce((targetAmount, event) => event.newTargetAmount, caseRecord.targetAmount);
+    .reduce((_targetAmount, event) => event.newTargetAmount, caseRecord.targetAmount);
 }
 
 function isCountableExpenseEvent(
@@ -148,14 +182,19 @@ export function buildLedgerSnapshotFromEvents(
 function eventToTimelineItemVM(
   event: CanonicalEvent,
   assetMap: Map<string, CanonicalAsset>,
+  expenseRecordImageMap: Map<string, string[]>,
 ): PublicTimelineItemVM {
+  const eventAssetUrls = event.assetIds
+    .map((assetId) => getAssetUrl(assetMap, assetId))
+    .filter((value): value is string => Boolean(value));
   const shared = {
     id: event.id,
     type: event.type,
     timestampLabel: formatDateLabel(event.occurredAt),
-    assetUrls: event.assetIds
-      .map((assetId) => getAssetUrl(assetMap, assetId))
-      .filter((value): value is string => Boolean(value)),
+    assetUrls:
+      event.type === "expense" && !eventAssetUrls.length
+        ? expenseRecordImageMap.get(event.id) || []
+        : eventAssetUrls,
   };
 
   switch (event.type) {
@@ -172,11 +211,11 @@ function eventToTimelineItemVM(
     case "support":
       return {
         ...shared,
-        label: "场外支持",
+        label: "场外登记",
         tone: event.verificationStatus === "confirmed" ? "progress" : "draft",
         title: event.supporterNameMasked
-          ? `${event.supporterNameMasked} 的支持`
-          : "新的支持记录",
+          ? `${event.supporterNameMasked} 的登记`
+          : "新的登记记录",
         description: event.message,
         amountLabel: `+ ${formatCurrency(event.amount)}`,
         verificationStatus: event.verificationStatus,
@@ -215,10 +254,39 @@ function eventToTimelineItemVM(
   }
 }
 
-function getPublicTimeline(events: CanonicalEvent[], assetMap: Map<string, CanonicalAsset>) {
-  return sortEventsDesc(events)
+function getExpenseRecordImageMap(
+  bundle: CanonicalCaseBundle,
+  assetMap: Map<string, CanonicalAsset>,
+) {
+  const map = new Map<string, string[]>();
+
+  getStructuredExpenseRecords(bundle).forEach((record) => {
+    if (!record.projectedEventId) {
+      return;
+    }
+
+    const imageUrls = record.evidenceItems
+      .map((item) => getEvidenceItemUrl(item, assetMap))
+      .filter((value): value is string => Boolean(value))
+      .slice(0, 9);
+
+    if (imageUrls.length) {
+      map.set(record.projectedEventId, imageUrls);
+    }
+  });
+
+  return map;
+}
+
+function getPublicTimeline(
+  bundle: CanonicalCaseBundle,
+  assetMap: Map<string, CanonicalAsset>,
+) {
+  const expenseRecordImageMap = getExpenseRecordImageMap(bundle, assetMap);
+
+  return sortEventsDesc(bundle.events)
     .filter((event) => event.visibility === "public")
-    .map((event) => eventToTimelineItemVM(event, assetMap));
+    .map((event) => eventToTimelineItemVM(event, assetMap, expenseRecordImageMap));
 }
 
 function getLatestTimelineSummary(timeline: PublicTimelineItemVM[]) {
@@ -251,10 +319,11 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
     expenseRecords: getStructuredExpenseRecords(bundle),
     supportEntries: getStructuredSupportEntries(bundle),
   });
-  const timeline = getPublicTimeline(bundle.events, assetMap);
+  const timeline = getPublicTimeline(bundle, assetMap);
   const heroImageUrl =
     getAssetUrl(assetMap, bundle.case.coverAssetId) ||
-    getAssetUrl(assetMap, bundle.case.faceIdAssetId);
+    getAssetUrl(assetMap, bundle.case.faceIdAssetId) ||
+    getLatestPublicProgressPhotoUrl(bundle.events, assetMap);
   const supportThreads = toSupportThreadSummaryVMs(bundle);
   const pendingSupportEntryCount = supportThreads.reduce(
     (sum, thread) => sum + thread.pendingCount,
@@ -272,7 +341,10 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
     rescuerId: bundle.rescuer.id,
     title: bundle.case.animalName,
     species: bundle.case.species,
-    statusLabel: bundle.case.currentStatusLabel,
+    statusLabel: getStandardCaseStatusLabel({
+      currentStatus: bundle.case.currentStatus,
+      fallbackLabel: bundle.case.currentStatusLabel,
+    }),
     statusTone: getStatusTone(bundle.case),
     heroImageUrl,
     locationText: bundle.case.foundLocationText,

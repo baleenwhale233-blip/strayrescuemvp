@@ -34,7 +34,7 @@ function getImmutableCopy(kind?: RescueReadonlyRecordDetail["kind"]) {
   }
 
   if (kind === "status") {
-    return "进展更新提交后不可修改。救助过程会按时间留下痕迹，后续变化请继续发布新的更新。";
+    return "进展发布后不可修改。记录过程会按时间留下痕迹，后续变化请继续发布新的更新。";
   }
 
   return "这条记录提交后不可修改，后续变化请新增记录保留完整轨迹。";
@@ -145,7 +145,7 @@ export default function RescueReadonlyRecordDetailPage() {
         <NavBar showBack title="记录详情" />
         <View className="record-detail-page__empty">
           <Text className="record-detail-page__empty-title">暂未找到记录</Text>
-          <Text className="record-detail-page__empty-copy">请返回救助详情后重新打开。</Text>
+          <Text className="record-detail-page__empty-copy">请返回记录明细后重新打开。</Text>
         </View>
       </View>
     );

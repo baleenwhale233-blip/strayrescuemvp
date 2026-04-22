@@ -65,7 +65,7 @@ export default function DiscoverPage() {
 
   return (
     <View className="page-shell discover-page">
-      <NavBar title="救猫咪" />
+      <NavBar title="发现" />
 
       <View className="discover-page__search">
         <View className="discover-page__search-icon" onTap={handleSearch}>
@@ -79,7 +79,7 @@ export default function DiscoverPage() {
           className="discover-page__search-input"
           confirmType="search"
           maxlength={16}
-          placeholder="搜索案例ID，如JM482731..."
+          placeholder="输入案例 ID，如 JM482731"
           value={keyword}
           onConfirm={handleSearch}
           onInput={(event) => setKeyword(event.detail.value)}
@@ -88,7 +88,7 @@ export default function DiscoverPage() {
 
       <View className="discover-page__list">
         {loading ? (
-          <Text className="discover-page__empty">正在加载案例...</Text>
+          <Text className="discover-page__empty">正在加载记录...</Text>
         ) : null}
 
         {cards.map((item) => (

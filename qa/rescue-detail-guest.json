@@ -1,0 +1,49 @@
+{
+  "id": "rescue-detail-guest",
+  "route": "pages/rescue/detail/index",
+  "query": {
+    "id": "seed_case_owner_lizi_001",
+    "mode": "guest"
+  },
+  "fixture": "alpha-case-lizi",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 2
+  },
+  "readySignal": {
+    "type": "selector",
+    "value": ".detail-page--guest .detail-page__body",
+    "timeoutMs": 30000,
+    "stableMs": 1500
+  },
+  "capture": {
+    "mode": "fullPage",
+    "devtools": true,
+    "navigationMode": "relaunch",
+    "fullPage": true,
+    "segments": [
+      "hero",
+      "body",
+      "bottom-bar"
+    ],
+    "segmentSelectors": {
+      "hero": ".detail-page--guest",
+      "body": ".detail-page--guest .detail-page__body",
+      "bottom-bar": ".detail-page__bottom-bar"
+    },
+    "manualFiles": [],
+    "manualDirectory": ""
+  },
+  "design": {
+    "figmaFileKey": "",
+    "figmaNodeId": "",
+    "designImagePath": "",
+    "baselineImagePath": ""
+  },
+  "ignoreRegions": [],
+  "notes": [
+    "Round 0 smoke 重点是客态详情的主图、资金区、时间线和底部操作栏。",
+    "当前固定使用 Alpha seed 的栗子案例（JM520101），后续 Round 1 和 Round 2 的 happy path 也默认从这个页面继续往下走。"
+  ]
+}

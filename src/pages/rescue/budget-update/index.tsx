@@ -1,30 +1,28 @@
-import { Image, Input, Text, Textarea, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
-import { markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
+import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
-  markDraftBudgetRefresh,
-  saveCaseBudgetAdjustment,
-  type LocalBudgetAdjustmentSubmission,
-} from "../../../data/budgetAdjustmentSubmission";
+  clearCaseContentWriteLocalFallback,
+  recordCaseContentWriteLocalFallback,
+} from "../../../domain/canonical/repository";
 import submitArrowIcon from "../../../assets/rescue-budget-update/footer-submit-arrow.svg";
 import noteInfoIcon from "../../../assets/rescue-budget-update/notice-icon.svg";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   calculateDraftLedger,
+  createRemoteBudgetAdjustmentByCaseId,
   getCurrentDraft,
   getDraftById,
+  loadPublicDetailVMByCaseId,
   replaceDraft,
   syncCurrentDraft,
   type RescueCreateDraft,
   type RescueCreateEntryTone,
-} from "../../../domain/canonical/repository/localRepository";
-import {
-  createRemoteBudgetAdjustmentByCaseId,
-  loadPublicDetailVMByCaseId,
 } from "../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
 import "./index.scss";
@@ -68,6 +66,7 @@ function buildDraftBudgetEntry(input: {
 
 export default function RescueBudgetUpdatePage() {
   const router = useRouter();
+  const keyboardBottomInset = useKeyboardBottomInset();
   const caseId = router.params?.caseId || router.params?.id;
   const draftId = router.params?.draftId;
   const [loadStatus, setLoadStatus] = useState<BudgetUpdateLoadStatus>("loading");
@@ -75,6 +74,7 @@ export default function RescueBudgetUpdatePage() {
   const [draft, setDraft] = useState<RescueCreateDraft | null>(null);
   const [budget, setBudget] = useState("");
   const [reason, setReason] = useState("");
+  const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
     let cancelled = false;
@@ -121,10 +121,10 @@ export default function RescueBudgetUpdatePage() {
   const contextCard = useMemo(() => {
     if (draft) {
       return {
-        title: draft.name || "未命名救助",
-        statusLabel: draft.currentStatusLabel || "医疗救助中",
+        title: draft.name || "未命名档案",
+        statusLabel: draft.currentStatusLabel || "医疗处理中",
         publicCaseId: draft.publicCaseId || "待生成",
-        rescueStartedAtLabel: "救助开始时间: 待补充",
+        rescueStartedAtLabel: "记录开始时间: 待补充",
         coverImage: draft.coverPath || ownerAnimalFallback,
         supportedAmountLabel: formatCurrency(calculateDraftLedger(draft).income),
         previousBudget: draft.budget || 0,
@@ -136,7 +136,7 @@ export default function RescueBudgetUpdatePage() {
         title: detail.title,
         statusLabel: detail.statusLabel,
         publicCaseId: detail.publicCaseId,
-        rescueStartedAtLabel: `救助开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
+        rescueStartedAtLabel: `记录开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
         coverImage: detail.heroImageUrl || ownerAnimalFallback,
         supportedAmountLabel: detail.supportSummary.confirmedSupportAmountLabel,
         previousBudget: detail.ledger.targetAmount,
@@ -146,7 +146,7 @@ export default function RescueBudgetUpdatePage() {
     return null;
   }, [detail, draft]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => submitGuardRef.current.run(async () => {
     if (!contextCard) {
       return;
     }
@@ -172,7 +172,7 @@ export default function RescueBudgetUpdatePage() {
     const occurredAt = new Date().toISOString();
 
     try {
-      Taro.showLoading({ title: "提交中" });
+      Taro.showLoading({ title: "提交中", mask: true });
 
       if (draftId) {
         const matchedDraft = getDraftById(draftId) || getCurrentDraft();
@@ -202,7 +202,6 @@ export default function RescueBudgetUpdatePage() {
 
         replaceDraft(nextDraft);
         syncCurrentDraft(nextDraft);
-        markDraftBudgetRefresh(draftId);
       } else if (caseId) {
         const didSyncRemote = await createRemoteBudgetAdjustmentByCaseId(caseId, {
           previousTargetAmount: contextCard.previousBudget,
@@ -212,19 +211,21 @@ export default function RescueBudgetUpdatePage() {
         });
 
         if (!didSyncRemote) {
-          const submission: LocalBudgetAdjustmentSubmission = {
-            id: `local-budget-${Date.now()}`,
-            previousTargetAmount: contextCard.previousBudget,
-            currentTargetAmount: numericBudget,
-            reason: reason.trim(),
-            timestampLabel,
-            createdAt: occurredAt,
-          };
-
-          saveCaseBudgetAdjustment(caseId, submission);
+          recordCaseContentWriteLocalFallback({
+            caseId,
+            kind: "budget",
+            submission: {
+              id: `local-budget-${Date.now()}`,
+              previousTargetAmount: contextCard.previousBudget,
+              currentTargetAmount: numericBudget,
+              reason: reason.trim(),
+              timestampLabel,
+              createdAt: occurredAt,
+            },
+          });
+        } else {
+          clearCaseContentWriteLocalFallback({ caseId, kind: "budget" });
         }
-
-        markCaseDetailRefresh(caseId);
       } else {
         Taro.hideLoading();
         Taro.showToast({
@@ -235,7 +236,7 @@ export default function RescueBudgetUpdatePage() {
       }
 
       Taro.hideLoading();
-      showSuccessFeedback({
+      await showSuccessFeedback({
         title: "预算已更新",
       });
     } catch {
@@ -245,18 +246,24 @@ export default function RescueBudgetUpdatePage() {
         icon: "none",
       });
     }
-  };
+  });
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
-      <View className="page-shell rescue-budget-update-page">
+      <View
+        className="page-shell rescue-budget-update-page"
+        style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
+      >
         <NavBar showBack title="追加预算" />
       </View>
     );
   }
 
   return (
-    <View className="page-shell rescue-budget-update-page">
+    <View
+      className="page-shell rescue-budget-update-page"
+      style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
+    >
       <NavBar showBack title="追加预算" />
 
       <View className="rescue-budget-update-page__body">
@@ -291,7 +298,7 @@ export default function RescueBudgetUpdatePage() {
             />
           </View>
           <Text className="rescue-budget-update-page__hint">
-            当前已支持：{contextCard.supportedAmountLabel}
+            当前已登记：{contextCard.supportedAmountLabel}
           </Text>
         </View>
 
@@ -302,6 +309,7 @@ export default function RescueBudgetUpdatePage() {
             textareaClassName="rescue-budget-update-page__textarea"
             placeholderClassName="rescue-budget-update-page__textarea-placeholder"
             placeholder="请说明为什么要追加预算，如：病情反复需要额手术、住院时间延长等"
+            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={160}
             value={reason}
             onInput={(event) => setReason(event.detail.value)}
@@ -311,7 +319,7 @@ export default function RescueBudgetUpdatePage() {
         <View className="rescue-budget-update-page__notice">
           <Image className="rescue-budget-update-page__notice-icon" mode="aspectFit" src={noteInfoIcon} />
           <Text className="rescue-budget-update-page__notice-text">
-            预算追加后将自动生成一条项目进展动态，并在动物救助时间轴中公示。
+            预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
           </Text>
         </View>
       </View>

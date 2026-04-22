@@ -1,26 +1,12 @@
-import { Button, Image, Input, Text, View } from "@tarojs/components";
+import { Button, Image, Input, PageMeta, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter, useShareAppMessage } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { AppIcon } from "../../../components/AppIcon";
 import { NavBar } from "../../../components/NavBar";
 import {
-  applyTitleOverrideToOwnerDetail,
-  applyTitleOverrideToPublicDetail,
-  saveCaseCoverOverride,
-  saveCaseTitleOverride,
-} from "../../../data/caseTitleOverride";
-import { consumeCaseDetailRefresh, markCaseDetailRefresh } from "../../../data/caseDetailRefresh";
-import {
-  applyCaseBudgetAdjustmentsToOwnerDetail,
-  applyCaseBudgetAdjustmentsToPublicDetail,
-  getCaseBudgetAdjustments,
-} from "../../../data/budgetAdjustmentSubmission";
-import { getCaseExpenseSubmissions, mergeCaseExpenseSubmissionsIntoDetail } from "../../../data/expenseSubmission";
-import {
-  applyCaseStatusSubmissionsToOwnerDetail,
-  getCaseStatusSubmissions,
-  mergeCaseStatusSubmissionsIntoDetail,
-} from "../../../data/statusUpdateSubmission";
+  clearCaseProfileLocalFallback,
+  recordCaseProfileLocalFallback,
+} from "../../../domain/canonical/repository";
 import {
   RescueOwnerOverview,
   RescueOwnerQuickActions,
@@ -34,6 +20,7 @@ import {
   type RescueTimelineSharedItem,
 } from "../../../components/RescueTimelineShared";
 import { SupportSheet } from "../../../components/SupportSheet";
+import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import copyWhiteIcon from "../../../assets/rescue-detail/copy-white-12.svg";
 import evidenceCompleteOrangeIcon from "../../../assets/rescue-detail/evidence-complete-orange-14.svg";
 import infoMutedIcon from "../../../assets/rescue-detail/info-muted-13.svg";
@@ -42,9 +29,6 @@ import summaryExpenseIcon from "../../../assets/rescue-detail/summary-expense-18
 import summaryIncomeIcon from "../../../assets/rescue-detail/summary-income-17.svg";
 import guestHeroCat from "../../../assets/detail/guest-hero-cat.png";
 import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
-import timelineReceipt from "../../../assets/detail/timeline-receipt.png";
-import timelineStatusCat from "../../../assets/detail/timeline-status-cat.png";
-import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   loadOwnerDetailVMByCaseId,
@@ -76,7 +60,7 @@ function getFundingStatusText(detail: PublicDetailVM) {
     return "即将筹满";
   }
 
-  return "‼️ 救助人垫付较多";
+  return "‼️ 当前垫付较多";
 }
 
 function formatSignedAmount(amountLabel: string, sign: "+" | "-") {
@@ -93,7 +77,7 @@ function getSummaryParagraphs(detail: PublicDetailVM) {
     .map((sentence) => sentence.trim())
     .filter(Boolean)
     .filter((sentence) => !sentence.includes("预算"));
-  const introParagraph = introSentences.join("").trim() || "当前救助对象情况介绍待补充。";
+  const introParagraph = introSentences.join("").trim() || "当前这条记录的情况介绍待补充。";
 
   return [introParagraph, `当前总预算为${detail.ledger.targetAmountLabel}。`];
 }
@@ -158,20 +142,12 @@ function getRescuerAvatar(detail: PublicDetailVM) {
 }
 
 function getLatestOverviewImage(detail: PublicDetailVM, item?: PublicTimelineItemVM) {
-  return item?.assetUrls[0] || detail.heroImageUrl || timelineStatusCat;
+  return item?.assetUrls[0] || detail.heroImageUrl;
 }
 
 function getTimelineAssetUrls(item: PublicTimelineItemVM) {
   if (item.assetUrls.length) {
     return item.assetUrls.slice(0, 9);
-  }
-
-  if (item.type === "expense") {
-    return [timelineReceipt, timelineTreatment];
-  }
-
-  if (item.type === "progress_update" || item.type === "case_created") {
-    return [timelineStatusCat];
   }
 
   return [];
@@ -195,10 +171,10 @@ function getFundingCompareMetrics(input: {
 
 function getShareTitle(detail?: PublicDetailVM) {
   if (!detail) {
-    return "救猫咪透明救助档案";
+    return "猫咪透明记录档案";
   }
 
-  return `${detail.title}正在${detail.statusLabel}，看看这份透明救助档案`;
+  return `${detail.title}当前${detail.statusLabel}，看看这份透明记录档案`;
 }
 
 function getSharePath(detail?: PublicDetailVM, caseId?: string) {
@@ -255,61 +231,6 @@ function toOwnerTimelineItems(detail: PublicDetailVM): RescueOwnerTimelineItem[]
       budgetCurrentLabel: budgetAdjustment?.currentAmountLabel,
     };
   });
-}
-
-function TimelineCard({ item }: { item: PublicTimelineItemVM }) {
-  return (
-    <View className="timeline-card">
-      <View className={`timeline-card__dot timeline-card__dot--${item.tone}`} />
-      <View className="timeline-card__content theme-card">
-        <View className="timeline-card__head">
-          <View className={`timeline-card__badge timeline-card__badge--${item.tone}`}>
-            <Text>{item.label}</Text>
-          </View>
-          <Text className="timeline-card__time">{item.timestampLabel}</Text>
-        </View>
-
-        <Text className="timeline-card__title">{item.title}</Text>
-
-        {item.description ? (
-          <Text className="timeline-card__description">{item.description}</Text>
-        ) : null}
-
-        {item.amountLabel ? (
-          <View className="timeline-card__amount-row">
-            <Text
-              className={`timeline-card__amount ${
-                item.type === "support" ? "timeline-card__amount--income" : ""
-              }`}
-            >
-              {item.type === "support" ? "+" : "-"}
-              {item.amountLabel}
-            </Text>
-            {item.type === "expense" ? (
-              <View className="timeline-card__link">
-                <Text>查看详情</Text>
-              </View>
-            ) : null}
-          </View>
-        ) : null}
-
-        {item.assetUrls.length ? (
-          <View
-            className={`timeline-card__images ${
-              item.assetUrls.length === 1 ? "timeline-card__images--single" : ""
-            }`}
-          >
-            {item.assetUrls.slice(0, 9).map((asset) => (
-              <View key={asset} className="timeline-card__image-wrap">
-                <Image className="timeline-card__image" mode="aspectFill" src={asset} />
-                <Text className="timeline-card__watermark">透明账本·严禁盗用</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-      </View>
-    </View>
-  );
 }
 
 function GuestOverview({
@@ -438,7 +359,7 @@ function DetailPageState({
 }) {
   return (
     <View className="detail-state">
-      <NavBar showBack title="救助详情" />
+      <NavBar showBack title="记录明细" />
       <View className="detail-state__content">
         <View className={`detail-state__icon ${loading ? "detail-state__icon--loading" : ""}`}>
           <AppIcon name={loading ? "sparkles" : "fileText"} size={24} />
@@ -515,7 +436,7 @@ function GuestDetail({
 
   return (
     <View className="detail-page detail-page--guest">
-      <NavBar showBack title="救助详情" />
+      <NavBar showBack title="记录明细" />
 
       <View className="guest-hero">
         <Image className="guest-hero__image" mode="aspectFill" src={getHeroImage(detail)} />
@@ -553,7 +474,7 @@ function GuestDetail({
       <View className="detail-page__body">
         <View className="detail-card theme-card">
           <View className="detail-card__head">
-            <Text className="detail-card__title">救助资金状态</Text>
+            <Text className="detail-card__title">记录资金状态</Text>
             <Image className="detail-card__info-icon" mode="aspectFit" src={infoMutedIcon} />
           </View>
 
@@ -571,7 +492,7 @@ function GuestDetail({
           <View className="detail-card__metric">
             <View className="detail-card__metric-label">
               <View className="detail-card__metric-dot detail-card__metric-dot--slate" />
-              <Text>救助人垫付</Text>
+              <Text>当前垫付</Text>
             </View>
             <Text className="detail-card__metric-value">
               {detail.ledger.confirmedExpenseAmountLabel}
@@ -580,7 +501,7 @@ function GuestDetail({
           <View className="detail-card__metric">
             <View className="detail-card__metric-label">
               <View className="detail-card__metric-dot detail-card__metric-dot--brand" />
-              <Text>已确认支持</Text>
+              <Text>已确认登记</Text>
             </View>
             <Text className="detail-card__metric-value detail-card__metric-value--brand">
               {detail.ledger.supportedAmountLabel}
@@ -589,7 +510,7 @@ function GuestDetail({
           <View className="detail-card__metric">
             <View className="detail-card__metric-label">
               <View className="detail-card__metric-dot detail-card__metric-dot--danger" />
-              <Text>救助缺口</Text>
+              <Text>当前差额</Text>
             </View>
             <Text className="detail-card__metric-value detail-card__metric-value--danger">
               {detail.ledger.verifiedGapAmountLabel}
@@ -606,7 +527,7 @@ function GuestDetail({
           <View className="rescuer-card__body">
             <Text className="rescuer-card__name">{detail.rescuer.name}</Text>
             <Text className="rescuer-card__meta">
-              已建立 {detail.rescuer.stats.publishedCaseCount} 份救助档案 ·{" "}
+              已建立 {detail.rescuer.stats.publishedCaseCount} 份记录档案 ·{" "}
               {detail.rescuer.stats.verifiedReceiptCount} 张真实凭证
             </Text>
           </View>
@@ -631,7 +552,7 @@ function GuestDetail({
             }`}
             onTap={() => setActiveTab("overview")}
           >
-            <Text>救助摘要</Text>
+            <Text>记录摘要</Text>
           </View>
           <View
             className={`detail-tabs__item ${
@@ -639,7 +560,7 @@ function GuestDetail({
             }`}
             onTap={() => setActiveTab("detail")}
           >
-            <Text>救助详情</Text>
+            <Text>记录详情</Text>
           </View>
         </View>
 
@@ -659,12 +580,12 @@ function GuestDetail({
             <Image className="guest-bottom-bar__share-icon-image" mode="aspectFit" src={shareMutedIcon} />
             <Text className="guest-bottom-bar__share-text">分享</Text>
           </Button>
-          <View className="guest-bottom-bar__ghost" onTap={onClaim}>
-            <Text>我已支持</Text>
-          </View>
-          <View className="guest-bottom-bar__cta theme-button-primary" onTap={onSupport}>
-            <Text>我要支持</Text>
-          </View>
+          <Button className="guest-bottom-bar__ghost" onTap={onClaim}>
+            <Text>登记一笔</Text>
+          </Button>
+          <Button className="guest-bottom-bar__cta theme-button-primary" onTap={onSupport}>
+            <Text>查看联系方式</Text>
+          </Button>
         </View>
       </View>
     </View>
@@ -729,8 +650,8 @@ function OwnerDetail({
     }
 
     const result = await Taro.showModal({
-      title: "结束救助？",
-      content: "请确认救助已完成、已被领养，或项目确实需要关闭。",
+      title: "结束记录？",
+      content: "请确认这条记录已经完成、已结案，或确实需要关闭。",
       confirmText: "确认结束",
       cancelText: "再等等",
     });
@@ -742,7 +663,7 @@ function OwnerDetail({
     }
 
     Taro.showToast({
-      title: "结束救助链路待接入",
+      title: "结束记录链路待接入",
       icon: "none",
     });
   };
@@ -753,7 +674,7 @@ function OwnerDetail({
 
   return (
     <View className="detail-page detail-page--owner">
-      <NavBar showBack title="救助记录管理" />
+      <NavBar showBack title="记录管理" />
 
       <RescueOwnerSummaryCard
         budgetLabel={ownerDetail.ledger.targetAmountLabel}
@@ -789,7 +710,7 @@ function OwnerDetail({
         onIncome={goToManage}
         onStatus={() =>
           Taro.navigateTo({
-            url: `/pages/rescue/update/index?caseId=${ownerDetail.caseId}`,
+            url: `/pages/rescue/progress-update/index?caseId=${ownerDetail.caseId}`,
           })
         }
       />
@@ -827,12 +748,12 @@ function OwnerDetail({
               className="owner-finish__swipe-text"
               style={{ opacity: Math.max(0.35, 1 - finishDragX / finishThreshold) }}
             >
-              右滑结束救助
+              右滑结束记录
             </Text>
           </View>
         </View>
         <Text className="owner-finish__hint">
-          确认已被领养或救助已完成时，请滑动结束项目
+          确认这条记录已完成或已结案时，请滑动结束项目
         </Text>
       </View>
 
@@ -858,10 +779,11 @@ export default function RescueDetailPage() {
   const [publicDetail, setPublicDetail] = useState<PublicDetailVM | undefined>();
   const [ownerDetail, setOwnerDetail] = useState<OwnerDetailVM | undefined>();
   const [supportData, setSupportData] = useState<SupportSheetData | undefined>();
+  const guestActionLockRef = useRef(false);
+  const submitGuardRef = useRef(createSubmissionGuard());
   const mode = router.params?.mode === "guest" ? "guest" : "owner";
   const initialOwnerTab = router.params?.tab === "detail" ? "detail" : "overview";
   const caseId = router.params?.id;
-  const hasLoadedOnceRef = useRef(false);
 
   useShareAppMessage(() => ({
     title: getShareTitle(publicDetail),
@@ -869,7 +791,7 @@ export default function RescueDetailPage() {
     imageUrl: publicDetail?.heroImageUrl || guestHeroCat,
   }));
 
-  const handleRenameTitle = async (value: string) => {
+  const handleRenameTitle = async (value: string) => submitGuardRef.current.run(async () => {
     const nextTitle = value.trim();
     if (!nextTitle) {
       Taro.showToast({
@@ -880,16 +802,22 @@ export default function RescueDetailPage() {
     }
 
     try {
-      Taro.showLoading({ title: "保存中" });
+      Taro.showLoading({ title: "保存中", mask: true });
       const didSyncRemote = await updateRemoteCaseProfileByCaseId(caseId, {
         animalName: nextTitle,
       });
 
       if (!didSyncRemote) {
-        saveCaseTitleOverride({
+        recordCaseProfileLocalFallback({
           title: nextTitle,
           caseId,
           draftId: ownerDetail?.draftId,
+        });
+      } else {
+        clearCaseProfileLocalFallback({
+          caseId,
+          draftId: ownerDetail?.draftId,
+          clearTitle: true,
         });
       }
 
@@ -909,7 +837,6 @@ export default function RescueDetailPage() {
             }
           : current,
       );
-      markCaseDetailRefresh(caseId);
       Taro.hideLoading();
     } catch {
       Taro.hideLoading();
@@ -924,9 +851,9 @@ export default function RescueDetailPage() {
       title: "已更新代号",
       icon: "none",
     });
-  };
+  });
 
-  const handleChangeCover = async () => {
+  const handleChangeCover = async () => submitGuardRef.current.run(async () => {
     try {
       const action = await Taro.showActionSheet({
         itemList: ["拍照", "上传图片"],
@@ -942,7 +869,7 @@ export default function RescueDetailPage() {
       if (!nextPath) {
         return;
       }
-      Taro.showLoading({ title: "上传中" });
+      Taro.showLoading({ title: "上传中", mask: true });
       const uploaded = await uploadCaseAssetImage(caseId || "unknown-case", nextPath, "case-covers");
       const coverFileID =
         uploaded && !uploaded.isLocalFallback ? uploaded.fileID : undefined;
@@ -967,13 +894,18 @@ export default function RescueDetailPage() {
           : current,
       );
       if (!didSyncRemote) {
-        saveCaseCoverOverride({
+        recordCaseProfileLocalFallback({
           coverPath: nextPath,
           caseId,
           draftId: ownerDetail?.draftId,
         });
+      } else {
+        clearCaseProfileLocalFallback({
+          caseId,
+          draftId: ownerDetail?.draftId,
+          clearCover: true,
+        });
       }
-      markCaseDetailRefresh(caseId);
       Taro.hideLoading();
 
       Taro.showToast({
@@ -989,7 +921,7 @@ export default function RescueDetailPage() {
         });
       }
     }
-  };
+  });
 
   const loadDetailPage = () => {
     setDetailStatus("loading");
@@ -1001,47 +933,10 @@ export default function RescueDetailPage() {
       loadSupportSheetDataByCaseId(caseId),
     ])
       .then(([nextPublicDetail, nextOwnerDetail, nextSupportData]) => {
-        const detailWithExpenseOverlay =
-          mode === "owner" && nextPublicDetail
-            ? mergeCaseExpenseSubmissionsIntoDetail(
-                nextPublicDetail,
-                getCaseExpenseSubmissions(caseId),
-              )
-            : nextPublicDetail;
-        const mergedPublicDetail =
-          mode === "owner" && detailWithExpenseOverlay
-            ? mergeCaseStatusSubmissionsIntoDetail(
-                detailWithExpenseOverlay,
-                getCaseStatusSubmissions(caseId),
-              )
-            : detailWithExpenseOverlay;
-        const budgetAdjustedPublicDetail =
-          mode === "owner" && mergedPublicDetail
-            ? applyCaseBudgetAdjustmentsToPublicDetail(
-                mergedPublicDetail,
-                getCaseBudgetAdjustments(caseId),
-              )
-            : mergedPublicDetail;
-        const mergedOwnerDetail =
-          mode === "owner" && nextOwnerDetail
-            ? applyCaseBudgetAdjustmentsToOwnerDetail(
-                applyCaseStatusSubmissionsToOwnerDetail(
-                  nextOwnerDetail,
-                  getCaseStatusSubmissions(caseId),
-                ),
-                getCaseBudgetAdjustments(caseId),
-              )
-            : nextOwnerDetail;
-
-        setPublicDetail(
-          applyTitleOverrideToPublicDetail(
-            budgetAdjustedPublicDetail,
-            mergedOwnerDetail?.draftId,
-          ),
-        );
-        setOwnerDetail(applyTitleOverrideToOwnerDetail(mergedOwnerDetail));
+        setPublicDetail(nextPublicDetail);
+        setOwnerDetail(nextOwnerDetail);
         setSupportData(nextSupportData);
-        setDetailStatus(budgetAdjustedPublicDetail ? "ready" : "error");
+        setDetailStatus(nextPublicDetail ? "ready" : "error");
       })
       .catch(() => {
         setDetailStatus("error");
@@ -1052,14 +947,21 @@ export default function RescueDetailPage() {
       });
   };
 
-  useDidShow(() => {
-    const shouldRefresh = consumeCaseDetailRefresh(caseId);
-
-    if (hasLoadedOnceRef.current && !shouldRefresh) {
+  const runGuestActionWithLock = (action: () => void | Promise<unknown>) => {
+    if (guestActionLockRef.current) {
       return;
     }
 
-    hasLoadedOnceRef.current = true;
+    guestActionLockRef.current = true;
+
+    void Promise.resolve(action()).finally(() => {
+      setTimeout(() => {
+        guestActionLockRef.current = false;
+      }, 300);
+    });
+  };
+
+  useDidShow(() => {
     loadDetailPage();
   });
 
@@ -1068,7 +970,7 @@ export default function RescueDetailPage() {
       <View key={reloadSeed} className="page-shell detail-page-shell">
         <DetailPageState
           loading
-          title="正在加载救助详情"
+          title="正在加载记录明细"
           description="正在整理头图、资金状态和最新进展，请稍等片刻。"
         />
       </View>
@@ -1079,8 +981,8 @@ export default function RescueDetailPage() {
     return (
       <View key={reloadSeed} className="page-shell detail-page-shell">
         <DetailPageState
-          title="救助详情加载失败"
-          description="当前没能拿到这只猫咪的救助详情，你可以稍后重试一次。"
+          title="记录明细加载失败"
+          description="当前没能拿到这条记录的明细，你可以稍后重试一次。"
           actionText="重新加载"
           onAction={loadDetailPage}
         />
@@ -1090,14 +992,25 @@ export default function RescueDetailPage() {
 
   return (
     <View key={reloadSeed} className="page-shell detail-page-shell">
+      <PageMeta pageStyle={supportOpen ? "overflow: hidden;" : "overflow: visible;"} />
       {mode === "guest" ? (
         <GuestDetail
           detail={publicDetail}
-          onSupport={() => setSupportOpen(true)}
-          onClaim={() =>
-            Taro.navigateTo({
-              url: `/pages/support/claim/index?id=${publicDetail.caseId}`,
+          onSupport={() =>
+            runGuestActionWithLock(() => {
+              if (supportOpen) {
+                return;
+              }
+
+              setSupportOpen(true);
             })
+          }
+          onClaim={() =>
+            runGuestActionWithLock(() =>
+              Taro.navigateTo({
+                url: `/pages/support/claim/index?id=${publicDetail.caseId}`,
+              })
+            )
           }
         />
       ) : ownerDetail ? (

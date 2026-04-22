@@ -331,7 +331,7 @@ export function adaptRescueProjectDetailMockToCanonical(
           amount: detail.ledger.supported,
           currency: "CNY",
           supportedAt: createdAt,
-          note: "阶段性已确认支持汇总",
+          note: "阶段性已确认登记汇总",
           screenshotItems: [],
           screenshotHashes: [],
           status: "confirmed",
@@ -386,7 +386,7 @@ export function adaptLocalDraftToCanonical(
 
   const rescuer: CanonicalRescuer = {
     id: rescuerId,
-    name: draft.rescuerName || "当前救助人",
+    name: draft.rescuerName || "当前记录维护者",
     avatarUrl: draft.rescuerAvatarUrl,
     verifiedLevel: draft.rescuerVerifiedLevel || "wechat",
     joinedAt: draft.rescuerJoinedAt || createdAt,
@@ -435,7 +435,7 @@ export function adaptLocalDraftToCanonical(
     id: caseId,
     publicCaseId: draft.publicCaseId || createCasePublicId(caseId),
     rescuerId,
-    animalName: draft.name || "未命名救助",
+    animalName: draft.name || "未命名档案",
     species: draft.species || "cat",
     coverAssetId: baseAssetId,
     faceIdAssetId: `${caseId}_face`,
@@ -445,7 +445,7 @@ export function adaptLocalDraftToCanonical(
       draft.currentStatus || (draft.status === "published" ? "medical" : "draft"),
     currentStatusLabel:
       draft.currentStatusLabel ||
-      (draft.status === "published" ? "医疗救助中" : "草稿中"),
+      (draft.status === "published" ? "医疗处理中" : "草稿中"),
     targetAmount: draft.budget,
     visibility: draft.status,
     createdAt,
@@ -495,7 +495,7 @@ export function adaptLocalDraftToCanonical(
         amount: entry.amount ?? 0,
         currency: "CNY" as CurrencyCode,
         supportSource: "manual_entry",
-        supporterNameMasked: "待确认支持",
+        supporterNameMasked: "待处理登记",
         message: entry.description,
         verificationStatus: "pending" as VerificationStatus,
         assetIds: [],
