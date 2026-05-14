@@ -495,7 +495,7 @@ export default function RescueExpensePage() {
               src={noteInfoIcon}
             />
             <Text className="rescue-expense-page__note-copy">
-              一组支出共享公共证据。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
+              一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
             </Text>
           </View>
         </View>

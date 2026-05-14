@@ -466,7 +466,7 @@ function GuestDetail({
               mode="aspectFit"
               src={evidenceCompleteOrangeIcon}
             />
-            <Text>证据链完整</Text>
+            <Text>记录和凭证较齐</Text>
           </View>
         </View>
       </View>

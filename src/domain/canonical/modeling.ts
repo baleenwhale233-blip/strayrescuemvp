@@ -498,7 +498,7 @@ export function getHomepageEligibility(bundle: CanonicalCaseBundle): {
   if (!expenseRecords.length || getCaseEvidenceLevel(bundle) === "needs_attention") {
     return {
       status: "missing_evidence",
-      reason: "基础支出证据待补充",
+      reason: "还要补一条支出凭证",
     };
   }
 
@@ -558,7 +558,7 @@ export function getRecommendationReason(bundle: CanonicalCaseBundle) {
   }
 
   if (evidenceLevel === "complete" && ledger.verifiedGapAmount > 0) {
-    return "证据完整，当前仍有缺口";
+    return "记录和凭证较齐，仍有缺口";
   }
 
   return undefined;

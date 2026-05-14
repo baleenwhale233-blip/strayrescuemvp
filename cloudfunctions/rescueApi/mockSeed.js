@@ -193,7 +193,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       animalName: "芝麻",
       species: "cat",
       initialSummary:
-        "黑猫芝麻有口炎和轻度发烧，已经开始吃药，但票据照片只留了模糊转账截屏，证据还不够完整。",
+        "黑猫芝麻有口炎和轻度发烧，已经开始吃药，但票据照片只留了模糊转账截屏，凭证还不够清楚。",
       currentStatus: "medical",
       currentStatusLabel: "医疗救助中",
       targetAmount: 2600,

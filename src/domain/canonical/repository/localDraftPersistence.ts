@@ -178,7 +178,7 @@ function buildDraftHomepageEligibility(
   ) {
     return {
       status: "missing_evidence",
-      reason: "基础支出证据待补充",
+      reason: "还要补一条支出凭证",
     };
   }
 

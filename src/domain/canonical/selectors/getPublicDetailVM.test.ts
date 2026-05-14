@@ -4,6 +4,7 @@ import { sampleCaseBundle } from "../fixtures/sampleCaseBundle";
 import { getDiscoverCardVM } from "./getDiscoverCardVM";
 import { getPublicDetailVM } from "./getPublicDetailVM";
 import { getWorkbenchVM } from "./getWorkbenchVM";
+import { getRecommendationReason } from "../modeling";
 import type {
   CanonicalCaseBundle,
   CanonicalRescuer,
@@ -122,6 +123,27 @@ test("getDiscoverCardVM derives list-friendly card fields from canonical bundle"
   assert.equal(vm.caseId, "case_001");
   assert.equal(vm.amountLabel, "¥100 / ¥4,200");
   assert.equal(vm.latestTimelineSummary, "复查后需要进一步治疗，增加药费预算");
+});
+
+test("getRecommendationReason describes complete evidence in plain record-and-proof language", () => {
+  const vm = getRecommendationReason({
+    ...bundle,
+    expenseRecords: bundle.expenseRecords?.map((record) => ({
+      ...record,
+      amount: 800,
+      spentAt: "2026-03-01T10:10:00Z",
+      evidenceLevel: "complete",
+    })),
+    supportEntries: bundle.supportEntries?.filter((entry) => entry.status === "confirmed"),
+    events: bundle.events.filter((event) => event.type !== "budget_adjustment"),
+    case: {
+      ...bundle.case,
+      targetAmount: 1200,
+      updatedAt: "2026-03-01T10:10:00Z",
+    },
+  });
+
+  assert.equal(vm, "记录和凭证较齐，仍有缺口");
 });
 
 test("getWorkbenchVM groups published and draft cases by visibility", () => {

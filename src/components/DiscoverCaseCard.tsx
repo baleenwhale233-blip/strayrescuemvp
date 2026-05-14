@@ -25,9 +25,9 @@ function getStatusEmoji(statusLabel: string) {
 
 function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }) {
   const labelMap = {
-    complete: "证据链完整",
-    basic: "仅基础证据链",
-    needs_attention: "证据待补充",
+    complete: "记录和凭证较齐",
+    basic: "已有基础凭证",
+    needs_attention: "还要补凭证",
   } as const;
 
   return (

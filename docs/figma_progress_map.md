@@ -52,7 +52,7 @@
 
 | 设计页面 | Figma 节点 | 当前代码落点 | 当前状态 | 完成度 | 主要缺口 |
 |---|---|---|---|---|---|
-| 发现页 | `1:102` | [`src/pages/discover/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/discover/index.tsx) | 部分完成 | 85% - 90% | 搜索、卡片结构、资金区和证据标签已在；剩余主要是视觉精修、边界状态、极端图片比例和文字换行 |
+| 发现页 | `1:102` | [`src/pages/discover/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/discover/index.tsx) | 部分完成 | 85% - 90% | 搜索、卡片结构、资金区和记录凭证标签已在；剩余主要是视觉精修、边界状态、极端图片比例和文字换行 |
 | 我的记录页（主架构） | `1:2` | [`src/pages/rescue/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/index.tsx) | 部分完成 | 77% - 85% | 结构和列表已在；标题、状态、动物头像当前已会优先吃本地展示覆盖，且状态文案已收口为状态更新页那 5 个标签 / 未更新状态；剩余主要是卡片提醒、badge 信息密度和设计细节贴稿 |
 | 我的页（主架构） | `444:7259` | [`src/pages/profile/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/profile/index.tsx) | 部分完成 | 86% - 92% | 已按 Figma 落默认头像、昵称输入、头像选择和三个功能入口；头像昵称现已接 `chooseAvatar + nickname + updateMyProfile`，并通过 `avatarAssetId` 回流到个案详情 / 记录主页；使用说明入口已接静态页面 |
 | 我的支持足迹（主架构） | `446:7625` | [`src/pages/profile/support-history/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/profile/support-history/index.tsx) | 页面骨架已在 | 74% - 82% | 已按 Figma 新建总计支持卡与支持记录列表，并优先读取 `getMySupportHistory` 远端 VM；当前已按真实 OPENID 聚合 confirmed 支持，剩余主要是视觉精修 |

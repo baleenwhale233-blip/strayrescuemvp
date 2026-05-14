@@ -43,7 +43,7 @@
 | 最新情况 | `latestStatusSummary` | `HomepageCaseCardVM` | 已有 | 救助人填写摘要 |
 | 资金状态 | `fundingStatusSummary` | `HomepageCaseCardVM` | 已有 | 系统计算文案 |
 | 推荐理由 | `recommendationReason` | `HomepageCaseCardVM` | 已有 | 4 条规则命中 |
-| 证据等级 | `evidenceLevel` | `HomepageCaseCardVM` | 已有 | `complete / basic / needs_attention` |
+| 记录凭证情况 | `evidenceLevel` | `HomepageCaseCardVM` | 已有 | `complete / basic / needs_attention` |
 | 最近更新时间 | `updatedAtLabel` | `HomepageCaseCardVM` | 已有 | 已格式化 |
 | 首页资格状态 | `homepageEligibilityStatus` | `HomepageCaseCardVM` | 已有 | 当前页暂未直接消费 |
 | 首页资格说明 | `homepageEligibilityReason` | `HomepageCaseCardVM` | 已有 | 当前页暂未直接消费 |
