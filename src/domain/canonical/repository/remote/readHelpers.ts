@@ -1,4 +1,5 @@
 import type {
+  CanonicalAsset,
   CanonicalCaseBundle,
   CanonicalRescuer,
   HomepageCaseCardVM,
@@ -28,6 +29,25 @@ type ReadHelperDeps = {
   formatCurrency?: (amount: number) => string;
   localSupporterId?: string;
 };
+
+function getAssetUrl(asset?: CanonicalAsset) {
+  return asset?.watermarkedUrl || asset?.originalUrl || asset?.thumbnailUrl;
+}
+
+function getRescuerAvatarUrl(
+  rescuer: CanonicalRescuer,
+  bundles: CanonicalCaseBundle[],
+) {
+  if (!rescuer.avatarAssetId) {
+    return rescuer.avatarUrl;
+  }
+
+  const avatarAsset = bundles
+    .flatMap((bundle) => bundle.assets)
+    .find((asset) => asset.id === rescuer.avatarAssetId);
+
+  return getAssetUrl(avatarAsset) || rescuer.avatarUrl;
+}
 
 export function finalizeWorkbenchVM(
   vm: WorkbenchVM | undefined,
@@ -88,7 +108,7 @@ export function buildRescuerHomepageVMFromBundles(
     rescuer: {
       id: rescuer.id,
       name: rescuer.name,
-      avatarUrl: rescuer.avatarUrl,
+      avatarUrl: getRescuerAvatarUrl(rescuer, resolvedBundles),
       stats: rescuer.stats,
     },
     cards: rescuerBundles.map((bundle) =>

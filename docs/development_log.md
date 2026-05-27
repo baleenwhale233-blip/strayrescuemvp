@@ -1873,3 +1873,36 @@
   影响前台展示文案、selector 派生文案、草稿首页资格提示和产品文档口径；不改 `evidenceLevel` 内部字段名、数据模型、接口 schema 或首页准入规则。
 - 下一步 / 遗留问题：
   需要继续在真机里复看发现页和详情页视觉宽度，确认新文案在卡片、Hero badge 和提示位中不挤压。
+
+## 2026-05-27 | 主态详情 | 将结束滑块改为二段确认
+
+- 为什么改：
+  用户反馈自己的记录档案底部默认展示巨大红色结束滑块过重；结束记录是低频强风险动作，不应长期占据最高视觉权重。
+- 改了什么：
+  主态详情底部默认改为小“结束”按钮 + 橙色大“分享档案”按钮；点击“结束”后进入“取消 + 右滑结束记录”确认态，并新增 `ownerFinishBarState` 纯状态模型与测试。
+- 影响范围：
+  影响 `src/pages/rescue/detail/*`、底部主态交互文案和相关 IA / 总控 / 字段说明文档；不改数据模型、selector、repository、分享路径或结束记录后端状态。
+- 下一步 / 遗留问题：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过；正式结束记录后端关闭 action 仍待接入，真机上还需复看底栏高度和分享图标显色。
+
+## 2026-05-27 | 导航 | 给分享直达详情页增加回首页 fallback
+
+- 为什么改：
+  用户从微信分享卡片直接进入记录详情时，页面栈里可能没有上一页，原来的左上角返回只调用 `navigateBack`，会让外部用户没有明确回到发现首页的路由。
+- 改了什么：
+  新增 `navBackFallback` 路由决策 helper；`NavBar` 在有上一页时继续 `navigateBack`，没有上一页时 `switchTab` 到 `/pages/discover/index`；补测试覆盖普通返回和分享冷启动 fallback。
+- 影响范围：
+  影响所有使用默认 `NavBar showBack` 且未传自定义 `onBack` 的页面；已有自定义返回逻辑不变，不改分享路径、数据模型、selector、repository 或页面 VM。
+- 下一步 / 遗留问题：
+  `npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过；仍需真机从微信分享卡片冷启动验证返回按钮是否落到 `发现` tab。
+
+## 2026-05-27 | 记录主页 | 修复救助人头像资产回显
+
+- 为什么改：
+  记录主页顶部头像出现空白圆圈，说明 `getRescuerHomepage` 的展示 VM 没有拿到救助人真实头像；排查发现页面已消费 `rescuer.avatarUrl`，但 VM helper 只透传 profile 里的直链，没像详情页一样解析 `avatarAssetId` 对应 asset。
+- 改了什么：
+  在 `buildRescuerHomepageVMFromBundles` 中优先从 resolved bundle assets 查找 `rescuer.avatarAssetId`，读取 `watermarkedUrl / originalUrl / thumbnailUrl` 后再回退到 `rescuer.avatarUrl`；新增 domain 测试覆盖头像 asset 解析。
+- 影响范围：
+  影响记录主页 `RescuerHomepageVM.rescuer.avatarUrl` 的生成，不改页面结构、CloudBase 回包 schema、selector 或 repository public API；保持无头像时继续走页面 fallback，现有页面兼容。
+- 下一步 / 遗留问题：
+  本轮没有新增 richer mock，只补了更完整的 VM 派生规则；`npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过，真机仍需复看头像临时 URL 是否随 CloudBase 资产正常显示。

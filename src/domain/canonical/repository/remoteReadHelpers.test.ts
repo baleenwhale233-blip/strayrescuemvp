@@ -143,6 +143,79 @@ test("buildRescuerHomepageVMFromBundles keeps only published cases and sorts new
   assert.equal(vm?.profileEntryEnabled, true);
 });
 
+test("buildRescuerHomepageVMFromBundles resolves rescuer avatar assets", () => {
+  const vm = buildRescuerHomepageVMFromBundles(
+    {
+      rescuer: {
+        id: "rescuer_1",
+        name: "阿青",
+        avatarAssetId: "avatar_1",
+        avatarUrl: "",
+        verifiedLevel: "wechat",
+        joinedAt: "2026-04-01T00:00:00.000Z",
+        stats: {
+          publishedCaseCount: 1,
+          verifiedReceiptCount: 3,
+        },
+      },
+      bundles: [
+        makeBundle({
+          rescuer: {
+            id: "rescuer_1",
+            name: "阿青",
+            avatarAssetId: "avatar_1",
+            avatarUrl: "",
+            verifiedLevel: "wechat",
+            joinedAt: "2026-04-01T00:00:00.000Z",
+            stats: {
+              publishedCaseCount: 1,
+              verifiedReceiptCount: 3,
+            },
+          },
+          assets: [
+            {
+              id: "avatar_1",
+              kind: "avatar",
+              originalUrl: "https://temp.example.com/avatar.png",
+            },
+          ],
+        }),
+      ],
+      rescuerId: "rescuer_1",
+    },
+    {
+      resolveBundlesPresentation: (input: CanonicalCaseBundle[]) => input,
+      getHomepageCaseCardVM: (bundle: CanonicalCaseBundle): HomepageCaseCardVM => ({
+        caseId: bundle.case.id,
+        publicCaseId: "JM000001",
+        rescuerId: bundle.rescuer.id,
+        sourceKind: bundle.sourceKind,
+        title: bundle.case.animalName,
+        aboutSummary: bundle.case.initialSummary,
+        statusLabel: bundle.case.currentStatusLabel,
+        statusTone: "active",
+        updatedAtLabel: bundle.case.updatedAt,
+        latestStatusSummary: bundle.case.initialSummary,
+        fundingStatusSummary: "即将筹满",
+        evidenceLevel: "basic",
+        homepageEligibilityStatus: "eligible",
+        homepageEligibilityReason: "已满足首页条件",
+        progressPercent: 0,
+        amountLabel: "¥0 / ¥1000",
+        targetAmountLabel: "¥1000",
+        supportedAmountLabel: "¥0",
+        rescuerAdvanceAmountLabel: "¥0",
+        supportedProgressPercent: 0,
+        rescuerAdvanceProgressPercent: 0,
+      }),
+      finalizeHomepageCaseCardPresentation: (card: HomepageCaseCardVM) => card,
+      finalizeWorkbenchCaseCardPresentation: (card: WorkbenchCaseCardVM) => card,
+    },
+  );
+
+  assert.equal(vm?.rescuer.avatarUrl, "https://temp.example.com/avatar.png");
+});
+
 test("finalizeWorkbenchVM applies presentation finalizer to all card buckets", () => {
   const vm: WorkbenchVM = {
     rescuer: {

@@ -150,7 +150,7 @@
 | 字段 | 所属层 | 文字标注 | 当前状态 | 后续动作 |
 |---|---|---|---|---|
 | `rescuer.name` | canonical / VM | 救助人昵称 | 已有，页面已接 | 后续接真实 user profile |
-| `rescuer.avatarUrl` | canonical / VM | 救助人头像 | 已有，页面已接 | 后续接真实 user profile |
+| `rescuer.avatarUrl` | canonical / VM | 救助人头像 | 已有，页面已接 | 记录主页 VM 会优先按 `avatarAssetId` 从 bundle assets 解析头像 URL，再回退到直接 `avatarUrl` |
 | `rescuer.stats.publishedCaseCount` | canonical / VM | 已建立救助档案数 | 已有，页面已接 | 后续确认统计口径 |
 | `rescuer.stats.verifiedReceiptCount` | canonical / VM | 真实凭证数 | 已有，页面已接 | 后续确认是否含共享凭证 |
 | `rescuerCases[]` | 远端 VM | 该救助人的公开案例卡列表 | 远端已接 | `getRescuerHomepage.bundles` -> `HomepageCaseCardVM[]` |
@@ -199,7 +199,7 @@
 
 - 主态详情页这轮没有新增后端字段
 - 详情页“返回后是否刷新”现在由前端页面级 refresh signal 控制，不是新的 canonical / selector 字段
-- “右滑结束救助”当前只是前端交互和确认保护，确认后仍提示待接入，不会真的修改 case 状态
+- “结束记录”当前只是前端二段确认保护：默认先展示“分享档案”，点击小“结束”后才显示右滑确认；确认后仍提示待接入，不会真的修改 case 状态
 - 支出记录 / 状态更新的只读详情页是前端展示收口；记录不可修改是产品规则，后端后续也应按追加记录而非修改原记录的方式设计
 
 ---

@@ -1,6 +1,7 @@
 import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { AppIcon } from "./AppIcon";
+import { getNavBackAction } from "../utils/navBackFallback";
 
 type NavBarProps = {
   title: string;
@@ -34,13 +35,20 @@ function getNavMetrics() {
 export function NavBar({ title, showBack = false, onBack }: NavBarProps) {
   const metrics = getNavMetrics();
 
-  const handleBack = () => {
+  const handleBack = async () => {
     if (onBack) {
       onBack();
       return;
     }
 
-    Taro.navigateBack();
+    const action = getNavBackAction(Taro.getCurrentPages().length);
+
+    if (action.type === "navigateBack") {
+      await Taro.navigateBack();
+      return;
+    }
+
+    await Taro.switchTab({ url: action.url });
   };
 
   return (

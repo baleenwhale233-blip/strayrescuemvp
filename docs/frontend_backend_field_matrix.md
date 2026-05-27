@@ -148,7 +148,7 @@
 - 主态详情页的核实入口统一使用 `/pages/support/review/index`
 - 主态详情页这轮已改成：**首次进入必加载；从子页面返回只有真实写入成功后才刷新**，不再因为进入记账页后无提交返回而整页重载
 - 客态详情里的“查看主页”当前已接 `/pages/rescuer/home/index?rescuerId=...`，并由 `PublicDetailVM.rescuer.profileEntryEnabled` 控制显隐
-- 主态详情底部“右滑结束救助”当前已有真实拖动和确认交互，但确认后仍未调用后端关闭案例 action
+- 主态详情底部默认优先展示“分享档案”，点击小“结束”后才显示“右滑结束记录”确认态；滑动和二次确认已有，确认后仍未调用后端关闭案例 action
 - 主客态详情的时间线支出记录 / 状态更新已接只读记录详情页，优先用 `getCaseRecordDetail` 回读正式详情 VM，storage 仅作旧兜底；记录提交后不可修改
 
 ## 3.1 救助人主页
@@ -166,7 +166,7 @@
 
 | 前端用途 | 字段 | 来源 | 当前状态 | 备注 |
 |---|---|---|---|---|
-| 救助人信息 | `rescuer.*` | `getRescuerHomepage` | 远端已接 | 当前按 `rescuerId` 或 `caseId` 查询 |
+| 救助人信息 | `rescuer.*` | `getRescuerHomepage` | 远端已接 | 当前按 `rescuerId` 或 `caseId` 查询；头像优先从 `avatarAssetId` 对应 asset URL 解析 |
 | 公开案例列表 | `cards[]` | `getRescuerHomepage.bundles` -> `HomepageCaseCardVM[]` | 远端已接 | 下方卡片复用首页卡片组件 |
 | 案例卡点击 | `caseId` | `HomepageCaseCardVM.caseId` | 页面层已接 | 点击进入客态救助档案 |
 

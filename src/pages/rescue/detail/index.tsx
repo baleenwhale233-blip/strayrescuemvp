@@ -20,6 +20,11 @@ import {
   type RescueTimelineSharedItem,
 } from "../../../components/RescueTimelineShared";
 import { SupportSheet } from "../../../components/SupportSheet";
+import {
+  getOwnerFinishBarViewModel,
+  reduceOwnerFinishBarMode,
+  type OwnerFinishBarMode,
+} from "../../../utils/ownerFinishBarState";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import copyWhiteIcon from "../../../assets/rescue-detail/copy-white-12.svg";
 import evidenceCompleteOrangeIcon from "../../../assets/rescue-detail/evidence-complete-orange-14.svg";
@@ -607,6 +612,7 @@ function OwnerDetail({
 }) {
   const [activeTab, setActiveTab] = useState<GuestTab>(initialTab);
   const [editingTitle, setEditingTitle] = useState(false);
+  const [finishMode, setFinishMode] = useState<OwnerFinishBarMode>("idle");
   const [finishDragX, setFinishDragX] = useState(0);
   const [finishDragging, setFinishDragging] = useState(false);
   const finishStartXRef = useRef(0);
@@ -626,6 +632,16 @@ function OwnerDetail({
   const resetFinishSlider = () => {
     setFinishDragging(false);
     setFinishDragX(0);
+  };
+
+  const handleStartFinish = () => {
+    resetFinishSlider();
+    setFinishMode((mode) => reduceOwnerFinishBarMode(mode, "startFinish"));
+  };
+
+  const handleCancelFinish = () => {
+    resetFinishSlider();
+    setFinishMode((mode) => reduceOwnerFinishBarMode(mode, "cancelFinish"));
   };
 
   const handleFinishTouchStart = (event: any) => {
@@ -657,6 +673,7 @@ function OwnerDetail({
     });
 
     resetFinishSlider();
+    setFinishMode("idle");
 
     if (!result.confirm) {
       return;
@@ -667,6 +684,7 @@ function OwnerDetail({
       icon: "none",
     });
   };
+  const finishBar = getOwnerFinishBarViewModel(finishMode);
   const fundingCompare = getFundingCompareMetrics({
     expenseAmount: ownerDetail.ledger.confirmedExpenseAmount,
     supportAmount: ownerDetail.ledger.supportedAmount,
@@ -727,34 +745,47 @@ function OwnerDetail({
         </View>
       )}
 
-      <View className="owner-finish">
+      <View className={`owner-finish owner-finish--${finishMode}`}>
         <View className="owner-finish__row">
-          <Button className="owner-finish__share" openType="share">
-            <Image className="owner-finish__share-icon" mode="aspectFit" src={shareMutedIcon} />
-            <Text className="owner-finish__share-text">分享</Text>
+          <Button
+            className={`owner-finish__side owner-finish__side--${finishBar.sideAction}`}
+            onTap={
+              finishBar.sideAction === "finish"
+                ? handleStartFinish
+                : handleCancelFinish
+            }
+          >
+            <Text className="owner-finish__side-text">{finishBar.sideLabel}</Text>
           </Button>
-          <View className="owner-finish__swipe">
-            <View
-              className="owner-finish__handle"
-              style={{ transform: `translateX(${finishDragX}px)` }}
-              onTouchStart={handleFinishTouchStart}
-              onTouchMove={handleFinishTouchMove}
-              onTouchEnd={handleFinishTouchEnd}
-              onTouchCancel={resetFinishSlider}
-            >
-              <Text>›</Text>
+          {finishBar.primaryAction === "share" ? (
+            <Button className="owner-finish__primary" openType="share">
+              <Image className="owner-finish__primary-icon" mode="aspectFit" src={shareMutedIcon} />
+              <Text className="owner-finish__primary-text">{finishBar.primaryLabel}</Text>
+            </Button>
+          ) : (
+            <View className="owner-finish__swipe">
+              <View
+                className="owner-finish__handle"
+                style={{ transform: `translateX(${finishDragX}px)` }}
+                onTouchStart={handleFinishTouchStart}
+                onTouchMove={handleFinishTouchMove}
+                onTouchEnd={handleFinishTouchEnd}
+                onTouchCancel={resetFinishSlider}
+              >
+                <Text>›</Text>
+              </View>
+              <Text
+                className="owner-finish__swipe-text"
+                style={{ opacity: Math.max(0.35, 1 - finishDragX / finishThreshold) }}
+              >
+                {finishBar.primaryLabel}
+              </Text>
             </View>
-            <Text
-              className="owner-finish__swipe-text"
-              style={{ opacity: Math.max(0.35, 1 - finishDragX / finishThreshold) }}
-            >
-              右滑结束记录
-            </Text>
-          </View>
+          )}
         </View>
-        <Text className="owner-finish__hint">
-          确认这条记录已完成或已结案时，请滑动结束项目
-        </Text>
+        {finishBar.hint ? (
+          <Text className="owner-finish__hint">{finishBar.hint}</Text>
+        ) : null}
       </View>
 
       {editingTitle ? (
