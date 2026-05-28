@@ -8,7 +8,7 @@ import infoMutedIcon from "../../../../assets/rescue-detail/info-muted-13.svg";
 import shareMutedIcon from "../../../../assets/rescue-detail/share-muted-18.svg";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import { getFundingStatusText, getHeroImage, getRescuerAvatar } from "../detailViewModels";
-import type { GuestTab } from "../types";
+import type { DetailTab } from "../types";
 import { GuestDetailTimeline } from "./GuestDetailTimeline";
 import { GuestOverview } from "./GuestOverview";
 
@@ -21,7 +21,7 @@ export function GuestDetail({
   onSupport: () => void;
   onClaim: () => void;
 }) {
-  const [activeTab, setActiveTab] = useState<GuestTab>("overview");
+  const [activeTab, setActiveTab] = useState<DetailTab>("overview");
 
   return (
     <View className="detail-page detail-page--guest">

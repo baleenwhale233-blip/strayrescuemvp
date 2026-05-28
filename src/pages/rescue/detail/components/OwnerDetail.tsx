@@ -23,7 +23,7 @@ import {
   getOwnerOverviewProps,
   toOwnerTimelineItems,
 } from "../detailViewModels";
-import type { GuestTab } from "../types";
+import type { DetailTab } from "../types";
 import { RenameSheet } from "./RenameSheet";
 
 export function OwnerDetail({
@@ -35,11 +35,11 @@ export function OwnerDetail({
 }: {
   ownerDetail: OwnerDetailVM;
   publicDetail: PublicDetailVM;
-  initialTab: GuestTab;
+  initialTab: DetailTab;
   onRenameTitle: (value: string) => void;
   onChangeCover: () => void;
 }) {
-  const [activeTab, setActiveTab] = useState<GuestTab>(initialTab);
+  const [activeTab, setActiveTab] = useState<DetailTab>(initialTab);
   const [editingTitle, setEditingTitle] = useState(false);
   const [finishMode, setFinishMode] = useState<OwnerFinishBarMode>("idle");
   const [finishDragX, setFinishDragX] = useState(0);

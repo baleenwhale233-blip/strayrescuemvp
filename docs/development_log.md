@@ -1982,3 +1982,16 @@
   拆分过程中每步运行 `npm run format` 与 `npm run typecheck` 通过；收尾 `format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
 - 下一步 / 遗留问题：
   后续若继续收口，可单独评估 hooks 或更细 view model 边界；本轮不做。
+
+## 2026-05-28 | 主态详情 | 收口 detail tab 类型命名
+
+- 为什么改：
+  拆分后 `GuestTab` 实际同时服务 Guest 和 Owner 详情 tab，命名容易误导后续维护者。
+- 改了什么：
+  将 detail 页局部 tab 类型重命名为 `DetailTab`，同步更新 `GuestDetail`、`OwnerDetail` 的 import 和状态类型；上一条日志已记录机械拆分文件列表。
+- 影响范围：
+  仅影响本地类型命名和开发日志；union value 仍为 `"overview" | "detail"`，不改 UI、copy、分享 path、SupportSheet、CloudBase、localPresentation 或 fallback 逻辑。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
+- 下一步 / 遗留问题：
+  不抽 hooks，不新增功能；后续重构另起一轮。
