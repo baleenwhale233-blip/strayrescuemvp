@@ -1969,3 +1969,16 @@
   `npm run format:check`、`npm run lint`、`npm run preflight:alpha` 通过。
 - 下一步 / 遗留问题：
   构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning；后续如要处理应单独开资源治理任务。
+
+## 2026-05-28 | 主态详情 | 机械拆分 rescue detail 巨型页面
+
+- 为什么改：
+  `src/pages/rescue/detail/index.tsx` 同时承载类型、纯函数、Guest/Owner 组件和页面编排，后续维护风险高；本轮只做行为不变的机械拆分。
+- 改了什么：
+  新增 `types.ts`、`detailViewModels.ts`，以及 `components/DetailPageState`、`RenameSheet`、`GuestOverview`、`GuestDetailTimeline`、`GuestDetail`、`OwnerDetail`，将原局部类型、纯函数和组件原样迁出。
+- 影响范围：
+  仅影响 rescue detail 文件组织；不改 UI className、中文 copy、跳转 URL、支持登记、结束记录滑块、SupportSheet、CloudBase 写入或 localPresentation / fallback 逻辑。
+- 验证结果：
+  拆分过程中每步运行 `npm run format` 与 `npm run typecheck` 通过；收尾 `format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
+- 下一步 / 遗留问题：
+  后续若继续收口，可单独评估 hooks 或更细 view model 边界；本轮不做。
