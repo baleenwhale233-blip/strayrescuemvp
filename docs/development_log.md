@@ -2008,3 +2008,16 @@
   每个 hook 后 `npm run typecheck` 均通过；收尾 `format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
 - 下一步 / 遗留问题：
   `index.tsx` 现在主要负责页面编排；后续如继续重构，应先补页面级回归或真机验收，本轮不拆 GuestDetail / OwnerDetail JSX。
+
+## 2026-05-29 | 主态详情 | 拆分 OwnerDetail 主态组件
+
+- 为什么改：
+  `OwnerDetail.tsx` 仍集中承载主态详情全部 JSX，后续维护和继续拆分成本偏高；本轮只做行为不变的机械拆分。
+- 改了什么：
+  新增 `components/owner/` 子目录，拆出 `OwnerHeroSection`、`OwnerActionSection`、`OwnerTabs`、`OwnerOverviewSection`、`OwnerDetailSection`、`OwnerFinishSection`，`OwnerDetail.tsx` 保留状态、跳转、RenameSheet 和结束滑块逻辑。
+- 影响范围：
+  仅影响主态详情组件组织；不改 UI、className、中文 copy、跳转 URL、分享、SupportSheet、CloudBase 写入或 localPresentation / fallback 策略。
+- 验证结果：
+  每拆一个子组件后 `npm run typecheck` 均通过；收尾 `format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
+- 下一步 / 遗留问题：
+  未执行微信开发者工具手动 smoke；构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning。
