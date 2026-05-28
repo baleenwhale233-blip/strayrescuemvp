@@ -1943,3 +1943,16 @@
   现有页面兼容保持不变，未新增 richer VM / richer mock；`npm run format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
 - 下一步 / 遗留问题：
   `preflight:alpha` 在 Codex sandbox 内部构建会复现 Taro/Rust `system-configuration` panic，已在非 sandbox 环境完整通过；构建仍保留既有大图体积和 no async chunks warning。
+
+## 2026-05-28 | 仓库治理 | 修正格式化与 lint 预检真实落库
+
+- 为什么改：
+  上一轮治理后需要重新核对 `package.json` 与 README 是否真实一致，避免文档声称已有 format / lint 但仓库脚本或依赖缺失。
+- 改了什么：
+  确认 `format`、`format:check`、`lint` 与 Prettier / ESLint 依赖已存在；将 `format:check` 和 `lint` 正式接入 `preflight:alpha`，并同步 README 与 `project_control_center` 的 preflight 覆盖范围。
+- 影响范围：
+  仅影响仓库治理脚本和文档入口说明；不改页面 UI、CloudBase 业务逻辑、`rescue/detail/index.tsx` 或产品范围。
+- 验证结果：
+  `npm run format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
+- 下一步 / 遗留问题：
+  构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning；后续如要处理应单独开性能 / 资源治理任务。

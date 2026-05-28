@@ -49,7 +49,7 @@
 - 主态详情底部已改为默认“分享档案”优先、小“结束”进入二段右滑确认；正式结束记录后端关闭 action 仍待接入
 - 分享直达详情页时，默认返回按钮已补无页面栈 fallback 到 `发现` tab；仍需真机从微信分享卡片冷启动验证
 - Alpha Seed Pack 已准备并播种到 `cloud1-9gl5sric0e5b386b`，包含演示记录维护者、公开案例、草稿案例、登记记录和 28 张 Alpha 测试图片；`npm run seed:alpha` 现在会重置旧 demo / probe / 验收残留数据
-- Alpha 人测与 agent 补测流程已收口到 `docs/alpha_test_plan.md` 与 `npm run preflight:alpha`；当前 preflight 覆盖 repo safety、typecheck、domain tests、weapp build 和 smoke manifest route validation；发包前先跑 Round 0，再进入人测
+- Alpha 人测与 agent 补测流程已收口到 `docs/alpha_test_plan.md` 与 `npm run preflight:alpha`；当前 preflight 覆盖 repo safety、format check、lint、typecheck、domain tests、weapp build 和 smoke manifest route validation；发包前先跑 Round 0，再进入人测
 - owner 权限链路已完成非 owner `FORBIDDEN` 回归；换测试账号或重 seed 时需要重新确认 owner 绑定
 
 ---
@@ -211,7 +211,7 @@
 
 - 发包前预检：
   - `npm run preflight:alpha`
-  - 该命令应覆盖 `check:repo-safety`、`typecheck`、`test:domain`、`build:weapp` 和 smoke manifest route validation
+  - 该命令应覆盖 `check:repo-safety`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp` 和 smoke manifest route validation
   - 如数据漂移则执行 `npm run preflight:alpha:seed`
 - 跑 Alpha Round 0-4：
   - 查档、详情判断、登记一笔、处理登记

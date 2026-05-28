@@ -9,6 +9,8 @@ const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const args = new Set(process.argv.slice(2));
 const STEP_TIMEOUT_MS = {
   "check:repo-safety": 120_000,
+  "format:check": 120_000,
+  lint: 120_000,
   typecheck: 120_000,
   "test:domain": 120_000,
   "build:weapp": 180_000,
@@ -109,6 +111,8 @@ console.log(`Validated ${manifest.scenarios.length} smoke scenarios against src/
 
 console.log("\n==> Alpha preflight: running code checks");
 runNpmScript("check:repo-safety");
+runNpmScript("format:check");
+runNpmScript("lint");
 runNpmScript("typecheck");
 runNpmScript("test:domain");
 

@@ -110,6 +110,8 @@ npm run preflight:alpha
 它会覆盖：
 
 - `check:repo-safety`
+- `format:check`
+- `lint`
 - `typecheck`
 - `test:domain`
 - `build:weapp`
