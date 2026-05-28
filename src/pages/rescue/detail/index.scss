@@ -272,7 +272,9 @@
   padding: 21px;
   border-color: rgba(236, 91, 19, 0.1);
   border-radius: 12px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
 .detail-card__head,
@@ -1104,7 +1106,8 @@
 .guest-bottom-bar__cta {
   flex: 1;
   min-width: 0;
-  box-shadow: 0 10px 15px -3px rgba(236, 91, 19, 0.3),
+  box-shadow:
+    0 10px 15px -3px rgba(236, 91, 19, 0.3),
     0 4px 6px -4px rgba(236, 91, 19, 0.3);
 }
 
@@ -1301,7 +1304,8 @@
   justify-content: space-between;
   padding: 20px 16px;
   color: #fff;
-  box-shadow: 0 10px 15px -3px rgba(236, 91, 19, 0.2),
+  box-shadow:
+    0 10px 15px -3px rgba(236, 91, 19, 0.2),
     0 4px 6px -4px rgba(236, 91, 19, 0.2);
 }
 
@@ -1492,7 +1496,8 @@
   gap: 8px;
   color: #fff;
   background: linear-gradient(90deg, #ec5b13 0%, #fb923c 100%);
-  box-shadow: 0 10px 15px -3px rgba(236, 91, 19, 0.2),
+  box-shadow:
+    0 10px 15px -3px rgba(236, 91, 19, 0.2),
     0 4px 6px -4px rgba(236, 91, 19, 0.2);
 }
 

@@ -1,16 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  buildSupportSheetCopy,
-  hasAnyContactProfileInfo,
-} from "../contactProfileSemantics";
+import { buildSupportSheetCopy, hasAnyContactProfileInfo } from "../contactProfileSemantics";
 
 test("contact completeness accepts wechat-only or qr-only profiles", () => {
   assert.equal(hasAnyContactProfileInfo({ wechatId: "rescue_wechat" }), true);
-  assert.equal(
-    hasAnyContactProfileInfo({ paymentQrAssetId: "asset_payment_qr_001" }),
-    true,
-  );
+  assert.equal(hasAnyContactProfileInfo({ paymentQrAssetId: "asset_payment_qr_001" }), true);
   assert.equal(
     hasAnyContactProfileInfo({
       paymentQrUrl: "https://example.com/assets/payment-qr.png",

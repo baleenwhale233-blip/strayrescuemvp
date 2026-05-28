@@ -1,17 +1,9 @@
-const {
-  fail,
-  nowIso: defaultNowIso,
-  ok,
-} = require("../runtime");
+const { fail, nowIso: defaultNowIso, ok } = require("../runtime");
 
 function toRecordImageFromAsset(asset, getAssetFileID) {
   const fileID = asset._fileID || getAssetFileID(asset) || asset.fileID || "";
   const url =
-    asset._tempFileURL ||
-    asset.watermarkedUrl ||
-    asset.thumbnailUrl ||
-    asset.originalUrl ||
-    fileID;
+    asset._tempFileURL || asset.watermarkedUrl || asset.thumbnailUrl || asset.originalUrl || fileID;
   const kindMap = {
     receipt: "receipt",
     support_proof: "payment_screenshot",
@@ -100,12 +92,15 @@ function getExpenseItemsFromRecord(record, amount) {
     return record.expenseItems
       .map((item) => ({
         description: String(item.description || "").trim(),
-        amount: typeof item.amount === "number" ? item.amount : Number(item.amount || 0) || undefined,
+        amount:
+          typeof item.amount === "number" ? item.amount : Number(item.amount || 0) || undefined,
       }))
       .filter((item) => item.description);
   }
 
-  const summary = String(record.summary || record.expenseItemsText || "").replace(/^支付[:：]\s*/, "").trim();
+  const summary = String(record.summary || record.expenseItemsText || "")
+    .replace(/^支付[:：]\s*/, "")
+    .trim();
   return summary
     ? [
         {
@@ -169,8 +164,12 @@ function createRecordDetailsService({
         evidenceItems.map((item) => item.imageUrl || item.fileID),
       );
       const images = [
-        ...evidenceItems.map((item) => getImageFromEvidenceItem(item, assetMap, evidenceTempFileURLMap, getAssetFileID)),
-        ...eventAssetIds.map((assetId) => assetMap.get(assetId)).map((asset) => asset && toRecordImageFromAsset(asset, getAssetFileID)),
+        ...evidenceItems.map((item) =>
+          getImageFromEvidenceItem(item, assetMap, evidenceTempFileURLMap, getAssetFileID),
+        ),
+        ...eventAssetIds
+          .map((assetId) => assetMap.get(assetId))
+          .map((asset) => asset && toRecordImageFromAsset(asset, getAssetFileID)),
       ];
       const amount = Number(expense.amount || 0);
 
@@ -181,7 +180,9 @@ function createRecordDetailsService({
           recordType,
           title: record?.summary || event?.expenseItemsText || "支出记录",
           occurredAt: record?.spentAt || event?.occurredAt || record?.createdAt || nowIso(),
-          occurredAtLabel: formatDateLabel(record?.spentAt || event?.occurredAt || record?.createdAt || nowIso()),
+          occurredAtLabel: formatDateLabel(
+            record?.spentAt || event?.occurredAt || record?.createdAt || nowIso(),
+          ),
           amount,
           amountLabel: `- ${formatCurrencyLabel(amount)}`,
           expenseItems: getExpenseItemsFromRecord(record || event, amount),
@@ -190,7 +191,11 @@ function createRecordDetailsService({
       });
     }
 
-    if (recordType === "progress_update" || recordType === "budget_adjustment" || recordType === "support") {
+    if (
+      recordType === "progress_update" ||
+      recordType === "budget_adjustment" ||
+      recordType === "support"
+    ) {
       const event =
         (await getOne(collections.events, { eventId: recordId, caseId })) ||
         (await getOne(collections.events, { _id: recordId, caseId }));
@@ -218,15 +223,20 @@ function createRecordDetailsService({
           ...(entry.screenshotFileIds || []),
         ]);
         const images = [
-          ...screenshotItems.map((item) => getImageFromEvidenceItem(item, assetMap, screenshotTempFileURLMap, getAssetFileID)),
+          ...screenshotItems.map((item) =>
+            getImageFromEvidenceItem(item, assetMap, screenshotTempFileURLMap, getAssetFileID),
+          ),
           ...(entry.screenshotFileIds || []).map((fileID, index) =>
-            toRecordImageFromAsset({
-              assetId: `${entry.entryId || entry._id}_proof_${index}`,
-              fileID,
-              _fileID: fileID,
-              _tempFileURL: screenshotTempFileURLMap.get(fileID),
-              kind: "support_proof",
-            }, getAssetFileID),
+            toRecordImageFromAsset(
+              {
+                assetId: `${entry.entryId || entry._id}_proof_${index}`,
+                fileID,
+                _fileID: fileID,
+                _tempFileURL: screenshotTempFileURLMap.get(fileID),
+                kind: "support_proof",
+              },
+              getAssetFileID,
+            ),
           ),
         ];
         const amount = Number(entry.amount || 0);
@@ -237,9 +247,7 @@ function createRecordDetailsService({
             id: entry.entryId || entry._id,
             caseId,
             recordType,
-            title: entry.supporterNameMasked
-              ? `${entry.supporterNameMasked} 的支持`
-              : "场外收入",
+            title: entry.supporterNameMasked ? `${entry.supporterNameMasked} 的支持` : "场外收入",
             description: entry.note,
             occurredAt,
             occurredAtLabel: formatDateLabel(occurredAt),
@@ -288,9 +296,7 @@ function createRecordDetailsService({
             id: event.eventId || event._id,
             caseId,
             recordType,
-            title: event.supporterNameMasked
-              ? `${event.supporterNameMasked} 的支持`
-              : "场外收入",
+            title: event.supporterNameMasked ? `${event.supporterNameMasked} 的支持` : "场外收入",
             description: event.message,
             occurredAt,
             occurredAtLabel: formatDateLabel(occurredAt),

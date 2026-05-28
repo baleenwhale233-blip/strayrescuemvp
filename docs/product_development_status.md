@@ -1,12 +1,14 @@
 # 产品开发进度总览
 
+> Archived / Historical: 本文档已归档为历史阶段背景，不再作为当前状态入口。当前真实状态与下一步优先级以 [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md) 为准。
+
 说明：
 
 - 本文档保留为背景总览与历史阶段说明
 - 以后新线程恢复上下文时，优先看：
   [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
 
-最后更新：2026-05-27
+最后更新：2026-05-28
 
 适用对象：
 

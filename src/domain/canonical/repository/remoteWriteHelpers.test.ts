@@ -2,10 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { RescueCreateDraft } from "./draftRepository";
-import {
-  buildLocalManualSupportEntryInput,
-  toRemoteDraftPayload,
-} from "./remote/writeHelpers";
+import { buildLocalManualSupportEntryInput, toRemoteDraftPayload } from "./remote/writeHelpers";
 
 const sampleDraft: RescueCreateDraft = {
   id: "custom-project-001",
@@ -44,24 +41,27 @@ const sampleDraft: RescueCreateDraft = {
 };
 
 test("remote write helpers preserve draft-to-remote payload mapping", () => {
-  assert.deepEqual(toRemoteDraftPayload(sampleDraft, "published", {
-    draftIdToCaseId: () => "case-001",
-  }), {
-    caseId: "case-001",
-    publicCaseId: "JM000001",
-    name: "小橘",
-    animalName: "小橘",
-    summary: "需要继续治疗",
-    initialSummary: "需要继续治疗",
-    species: "cat",
-    currentStatus: "recovery",
-    currentStatusLabel: "康复观察",
-    budget: 1200,
-    targetAmount: 1200,
-    coverFileID: "cloud://env/case-cover.png",
-    foundLocationText: "上海",
-    createdAt: "2026-04-20T00:00:00.000Z",
-  });
+  assert.deepEqual(
+    toRemoteDraftPayload(sampleDraft, "published", {
+      draftIdToCaseId: () => "case-001",
+    }),
+    {
+      caseId: "case-001",
+      publicCaseId: "JM000001",
+      name: "小橘",
+      animalName: "小橘",
+      summary: "需要继续治疗",
+      initialSummary: "需要继续治疗",
+      species: "cat",
+      currentStatus: "recovery",
+      currentStatusLabel: "康复观察",
+      budget: 1200,
+      targetAmount: 1200,
+      coverFileID: "cloud://env/case-cover.png",
+      foundLocationText: "上海",
+      createdAt: "2026-04-20T00:00:00.000Z",
+    },
+  );
 });
 
 test("remote write helpers preserve local manual-entry fallback semantics", () => {

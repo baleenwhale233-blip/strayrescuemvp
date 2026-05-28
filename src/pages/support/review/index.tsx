@@ -64,9 +64,7 @@ export default function SupportReviewPage() {
   const router = useRouter();
   const draftId = router.params?.draftId;
   const caseId =
-    router.params?.id ||
-    router.params?.caseId ||
-    (draftId ? draftIdToCaseId(draftId) : undefined);
+    router.params?.id || router.params?.caseId || (draftId ? draftIdToCaseId(draftId) : undefined);
   const requestedTab = router.params?.tab === "manual" ? "manual" : "pending";
   const [reloadSeed, setReloadSeed] = useState(0);
   const [detail, setDetail] = useState<PublicDetailVM | undefined>();
@@ -83,9 +81,7 @@ export default function SupportReviewPage() {
   const reloadDetail = async () => {
     const [nextDetail, nextDraft] = await Promise.all([
       loadPublicDetailVMByCaseId(caseId).catch(() => undefined),
-      Promise.resolve(
-        draftId ? getDraftById(draftId) || getDraftByCaseId(caseId) : undefined,
-      ),
+      Promise.resolve(draftId ? getDraftById(draftId) || getDraftByCaseId(caseId) : undefined),
     ]);
     setDetail(nextDetail);
     setDraft(nextDraft);
@@ -105,78 +101,78 @@ export default function SupportReviewPage() {
     return null;
   }
 
-  const handleConfirm = async (entryId: string) => submitGuardRef.current.run(async () => {
-    try {
-      Taro.showLoading({ title: "处理中", mask: true });
-      await reviewRemoteSupportEntryByCaseId(caseId, {
-        entryId,
-        status: "confirmed",
-      });
-      Taro.hideLoading();
-      await showSuccessFeedback({
-        title: "已处理完成",
-        navigateBack: false,
-      });
-      await reloadDetail();
-      setReloadSeed((value) => value + 1);
-    } catch {
-      Taro.hideLoading();
-      Taro.showToast({ title: "处理失败，请稍后重试", icon: "none" });
-    }
-  });
+  const handleConfirm = async (entryId: string) =>
+    submitGuardRef.current.run(async () => {
+      try {
+        Taro.showLoading({ title: "处理中", mask: true });
+        await reviewRemoteSupportEntryByCaseId(caseId, {
+          entryId,
+          status: "confirmed",
+        });
+        Taro.hideLoading();
+        await showSuccessFeedback({
+          title: "已处理完成",
+          navigateBack: false,
+        });
+        await reloadDetail();
+        setReloadSeed((value) => value + 1);
+      } catch {
+        Taro.hideLoading();
+        Taro.showToast({ title: "处理失败，请稍后重试", icon: "none" });
+      }
+    });
 
-  const handleUnmatched = async (
-    entryId: string,
-    reason: "duplicate_submission" | "other",
-  ) => submitGuardRef.current.run(async () => {
-    try {
-      Taro.showLoading({ title: "处理中", mask: true });
-      await reviewRemoteSupportEntryByCaseId(caseId, {
-        entryId,
-        status: "unmatched",
-        reason,
-        note: reason === "duplicate_submission" ? "疑似重复提交" : "暂未匹配",
-      });
-      Taro.hideLoading();
-      await showSuccessFeedback({
-        title: "已标记未匹配",
-        navigateBack: false,
-      });
-      await reloadDetail();
-      setReloadSeed((value) => value + 1);
-    } catch {
-      Taro.hideLoading();
-      Taro.showToast({ title: "标记失败，请稍后重试", icon: "none" });
-    }
-  });
+  const handleUnmatched = async (entryId: string, reason: "duplicate_submission" | "other") =>
+    submitGuardRef.current.run(async () => {
+      try {
+        Taro.showLoading({ title: "处理中", mask: true });
+        await reviewRemoteSupportEntryByCaseId(caseId, {
+          entryId,
+          status: "unmatched",
+          reason,
+          note: reason === "duplicate_submission" ? "疑似重复提交" : "暂未匹配",
+        });
+        Taro.hideLoading();
+        await showSuccessFeedback({
+          title: "已标记未匹配",
+          navigateBack: false,
+        });
+        await reloadDetail();
+        setReloadSeed((value) => value + 1);
+      } catch {
+        Taro.hideLoading();
+        Taro.showToast({ title: "标记失败，请稍后重试", icon: "none" });
+      }
+    });
 
-  const handleSubmitManual = async () => submitGuardRef.current.run(async () => {
-    const numericAmount = Number(manualAmount);
+  const handleSubmitManual = async () =>
+    submitGuardRef.current.run(async () => {
+      const numericAmount = Number(manualAmount);
 
-    if (!numericAmount || Number.isNaN(numericAmount) || numericAmount <= 0) {
-      Taro.showToast({ title: "请填写登记金额", icon: "none" });
-      return;
-    }
+      if (!numericAmount || Number.isNaN(numericAmount) || numericAmount <= 0) {
+        Taro.showToast({ title: "请填写登记金额", icon: "none" });
+        return;
+      }
 
-    try {
-      Taro.showLoading({ title: "提交中", mask: true });
-      await createRemoteManualSupportEntryByCaseId(caseId, {
-        supporterNameMasked: manualSupporter.trim() || "线下记录",
-        amount: numericAmount,
-        supportedAt: new Date().toISOString(),
-        note: "记录维护者手动登记一笔",
-      });
-      Taro.hideLoading();
-      setManualAmount("");
-      setManualSupporter("");
-      await showSuccessFeedback({
-        title: "已登记入账",
-      });
-    } catch {
-      Taro.hideLoading();
-      Taro.showToast({ title: "登记失败，请稍后重试", icon: "none" });
-    }
-  });
+      try {
+        Taro.showLoading({ title: "提交中", mask: true });
+        await createRemoteManualSupportEntryByCaseId(caseId, {
+          supporterNameMasked: manualSupporter.trim() || "线下记录",
+          amount: numericAmount,
+          supportedAt: new Date().toISOString(),
+          note: "记录维护者手动登记一笔",
+        });
+        Taro.hideLoading();
+        setManualAmount("");
+        setManualSupporter("");
+        await showSuccessFeedback({
+          title: "已登记入账",
+        });
+      } catch {
+        Taro.hideLoading();
+        Taro.showToast({ title: "登记失败，请稍后重试", icon: "none" });
+      }
+    });
 
   const pendingEntries = (detail?.supportSummary.threads || []).flatMap((thread) =>
     thread.entries
@@ -245,7 +241,9 @@ export default function SupportReviewPage() {
                 <View className="support-review-page__card-copy">
                   <View className="support-review-page__card-head">
                     <Text className="support-review-page__card-name">{entry.supporterName}</Text>
-                    <Text className="support-review-page__card-time">{entry.latestEntryAtLabel}</Text>
+                    <Text className="support-review-page__card-time">
+                      {entry.latestEntryAtLabel}
+                    </Text>
                   </View>
                   <Text className="support-review-page__card-amount">{entry.amountLabel}</Text>
                   <Text className="support-review-page__card-note">

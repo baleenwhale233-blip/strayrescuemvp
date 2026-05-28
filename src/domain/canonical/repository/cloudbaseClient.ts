@@ -159,10 +159,7 @@ export async function uploadCaseAssetImage(
   }
 }
 
-export async function uploadProfileAssetImage(
-  filePath: string,
-  folder: "payment-qr" | "avatar",
-) {
+export async function uploadProfileAssetImage(filePath: string, folder: "payment-qr" | "avatar") {
   if (!initCloudBase()) {
     return {
       fileID: filePath,

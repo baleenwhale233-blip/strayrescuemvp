@@ -1,11 +1,5 @@
 import { Image, Input, ScrollView, Text, View } from "@tarojs/components";
-import Taro, {
-  useDidHide,
-  useDidShow,
-  usePageScroll,
-  useRouter,
-  useUnload,
-} from "@tarojs/taro";
+import Taro, { useDidHide, useDidShow, usePageScroll, useRouter, useUnload } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
@@ -126,9 +120,7 @@ function buildDesignPresetLines() {
 }
 
 function getExpenseSubmissionTitle(lines: ExpenseLine[]) {
-  const parts = lines
-    .map((line) => line.description.trim())
-    .filter(Boolean);
+  const parts = lines.map((line) => line.description.trim()).filter(Boolean);
 
   if (!parts.length) {
     return "支付：支出记录";
@@ -275,7 +267,9 @@ export default function RescueExpensePage() {
       cancelText: "新的录入",
     }).then((result) => {
       if (result.confirm) {
-        setPublicEvidenceImages(Array.isArray(cached.publicEvidenceImages) ? cached.publicEvidenceImages : []);
+        setPublicEvidenceImages(
+          Array.isArray(cached.publicEvidenceImages) ? cached.publicEvidenceImages : [],
+        );
         setExpenseLines(hydrateExpenseLines(cached.expenseLines));
         return;
       }
@@ -377,116 +371,117 @@ export default function RescueExpensePage() {
     });
   };
 
-  const handleSubmit = async () => submitGuardRef.current.run(async () => {
-    const validLines = expenseLines.filter(
-      (line) => line.description.trim() && parseAmount(line.amount) > 0,
-    );
+  const handleSubmit = async () =>
+    submitGuardRef.current.run(async () => {
+      const validLines = expenseLines.filter(
+        (line) => line.description.trim() && parseAmount(line.amount) > 0,
+      );
 
-    if (!validLines.length) {
-      Taro.showToast({
-        title: "请先填写至少一条支出明细",
-        icon: "none",
-      });
-      return;
-    }
-
-    if (!publicEvidenceImages.length) {
-      Taro.showToast({
-        title: "请至少上传 1 张图片",
-        icon: "none",
-      });
-      return;
-    }
-
-    const total = validLines.reduce((sum, line) => sum + parseAmount(line.amount), 0);
-    const title = getExpenseSubmissionTitle(validLines);
-    const spentAt = new Date().toISOString();
-    const evidenceItems = buildExpenseEvidenceItems(publicEvidenceImages);
-
-    try {
-      Taro.showLoading({ title: "保存中", mask: true });
-
-      if (draftId) {
-        const matchedDraft = getDraftById(draftId) || getCurrentDraft();
-        if (!matchedDraft) {
-          Taro.hideLoading();
-          Taro.showToast({
-            title: "草稿上下文丢失",
-            icon: "none",
-          });
-          return;
-        }
-
-        const { draft: nextDraft } = addExpenseRecord(matchedDraft, {
-          amount: total,
-          spentAt,
-          category: "medical",
-          summary: title,
-          evidenceItems,
-          verificationStatus: "manual",
-        });
-
-        replaceDraft(nextDraft);
-        syncCurrentDraft(nextDraft);
-      } else if (caseId) {
-        const uploadedAssets = await Promise.all(
-          publicEvidenceImages.map((imageUrl) =>
-            uploadCaseAssetImage(caseId, imageUrl, "expense-proofs"),
-          ),
-        );
-        const evidenceFileIds = uploadedAssets
-          .filter((asset) => !asset.isLocalFallback)
-          .map((asset) => asset.fileID);
-        const didSyncRemote = await createRemoteExpenseRecordByCaseId(caseId, {
-          amount: total,
-          spentAt,
-          summary: title,
-          category: "medical",
-          evidenceFileIds,
-          expenseItems: validLines.map((line) => ({
-            description: line.description.trim(),
-            amount: parseAmount(line.amount),
-          })),
-        });
-
-        if (!didSyncRemote) {
-          recordCaseContentWriteLocalFallback({
-            caseId,
-            kind: "expense",
-            submission: {
-              id: `local-expense-${Date.now()}`,
-              title,
-              amount: total,
-              timestampLabel: formatTimelineTimestamp(new Date(spentAt)),
-              assetUrls: publicEvidenceImages.slice(0, 9),
-              createdAt: spentAt,
-            },
-          });
-        } else {
-          clearCaseContentWriteLocalFallback({ caseId, kind: "expense" });
-        }
-      } else {
-        Taro.hideLoading();
+      if (!validLines.length) {
         Taro.showToast({
-          title: "当前案例上下文缺失",
+          title: "请先填写至少一条支出明细",
           icon: "none",
         });
         return;
       }
 
-      Taro.removeStorageSync(cacheKey);
-      Taro.hideLoading();
-      await showSuccessFeedback({
-        title: "支出已记入账本",
-      });
-    } catch (error) {
-      Taro.hideLoading();
-      Taro.showToast({
-        title: mapExpenseError(error),
-        icon: "none",
-      });
-    }
-  });
+      if (!publicEvidenceImages.length) {
+        Taro.showToast({
+          title: "请至少上传 1 张图片",
+          icon: "none",
+        });
+        return;
+      }
+
+      const total = validLines.reduce((sum, line) => sum + parseAmount(line.amount), 0);
+      const title = getExpenseSubmissionTitle(validLines);
+      const spentAt = new Date().toISOString();
+      const evidenceItems = buildExpenseEvidenceItems(publicEvidenceImages);
+
+      try {
+        Taro.showLoading({ title: "保存中", mask: true });
+
+        if (draftId) {
+          const matchedDraft = getDraftById(draftId) || getCurrentDraft();
+          if (!matchedDraft) {
+            Taro.hideLoading();
+            Taro.showToast({
+              title: "草稿上下文丢失",
+              icon: "none",
+            });
+            return;
+          }
+
+          const { draft: nextDraft } = addExpenseRecord(matchedDraft, {
+            amount: total,
+            spentAt,
+            category: "medical",
+            summary: title,
+            evidenceItems,
+            verificationStatus: "manual",
+          });
+
+          replaceDraft(nextDraft);
+          syncCurrentDraft(nextDraft);
+        } else if (caseId) {
+          const uploadedAssets = await Promise.all(
+            publicEvidenceImages.map((imageUrl) =>
+              uploadCaseAssetImage(caseId, imageUrl, "expense-proofs"),
+            ),
+          );
+          const evidenceFileIds = uploadedAssets
+            .filter((asset) => !asset.isLocalFallback)
+            .map((asset) => asset.fileID);
+          const didSyncRemote = await createRemoteExpenseRecordByCaseId(caseId, {
+            amount: total,
+            spentAt,
+            summary: title,
+            category: "medical",
+            evidenceFileIds,
+            expenseItems: validLines.map((line) => ({
+              description: line.description.trim(),
+              amount: parseAmount(line.amount),
+            })),
+          });
+
+          if (!didSyncRemote) {
+            recordCaseContentWriteLocalFallback({
+              caseId,
+              kind: "expense",
+              submission: {
+                id: `local-expense-${Date.now()}`,
+                title,
+                amount: total,
+                timestampLabel: formatTimelineTimestamp(new Date(spentAt)),
+                assetUrls: publicEvidenceImages.slice(0, 9),
+                createdAt: spentAt,
+              },
+            });
+          } else {
+            clearCaseContentWriteLocalFallback({ caseId, kind: "expense" });
+          }
+        } else {
+          Taro.hideLoading();
+          Taro.showToast({
+            title: "当前案例上下文缺失",
+            icon: "none",
+          });
+          return;
+        }
+
+        Taro.removeStorageSync(cacheKey);
+        Taro.hideLoading();
+        await showSuccessFeedback({
+          title: "支出已记入账本",
+        });
+      } catch (error) {
+        Taro.hideLoading();
+        Taro.showToast({
+          title: mapExpenseError(error),
+          icon: "none",
+        });
+      }
+    });
 
   return (
     <View
@@ -573,11 +568,7 @@ export default function RescueExpensePage() {
           </View>
 
           <View className="rescue-expense-page__note">
-            <Image
-              className="rescue-expense-page__note-icon"
-              mode="aspectFit"
-              src={noteInfoIcon}
-            />
+            <Image className="rescue-expense-page__note-icon" mode="aspectFit" src={noteInfoIcon} />
             <Text className="rescue-expense-page__note-copy">
               一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
             </Text>
@@ -591,9 +582,7 @@ export default function RescueExpensePage() {
               <Text className="rescue-expense-page__total-label">本次合计支出</Text>
               <View className="rescue-expense-page__total-value-wrap">
                 <Text className="rescue-expense-page__total-currency">¥</Text>
-                <Text className="rescue-expense-page__total-value">
-                  {displayedTotalLabel}
-                </Text>
+                <Text className="rescue-expense-page__total-value">{displayedTotalLabel}</Text>
               </View>
             </View>
           </View>
@@ -645,9 +634,7 @@ export default function RescueExpensePage() {
                     type="digit"
                     placeholder="0.00"
                     value={line.amount}
-                    onInput={(event) =>
-                      handleLineChange(line.id, "amount", event.detail.value)
-                    }
+                    onInput={(event) => handleLineChange(line.id, "amount", event.detail.value)}
                   />
                 </View>
               </View>

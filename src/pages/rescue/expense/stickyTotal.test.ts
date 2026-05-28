@@ -1,9 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  getCompactTotalThreshold,
-  shouldShowCompactTotal,
-} from "./stickyTotal";
+import { getCompactTotalThreshold, shouldShowCompactTotal } from "./stickyTotal";
 
 test("compact total stays hidden before the original total reaches the sticky header", () => {
   const threshold = getCompactTotalThreshold({

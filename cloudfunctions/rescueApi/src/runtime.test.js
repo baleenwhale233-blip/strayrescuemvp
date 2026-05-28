@@ -75,9 +75,7 @@ test("createRuntime preserves collection query and temp file URL behavior", asyn
   assert.deepEqual(await runtime.queryCollection("cases", { caseId: "case_1" }, 3), [
     { id: "doc_1" },
   ]);
-  assert.deepEqual(getCalls, [
-    { name: "cases", where: { caseId: "case_1" }, limit: 3 },
-  ]);
+  assert.deepEqual(getCalls, [{ name: "cases", where: { caseId: "case_1" }, limit: 3 }]);
   assert.deepEqual(await runtime.getOne("cases", { caseId: "case_1" }), {
     id: "doc_1",
   });

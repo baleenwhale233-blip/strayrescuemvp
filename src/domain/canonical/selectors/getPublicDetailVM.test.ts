@@ -5,10 +5,7 @@ import { getDiscoverCardVM } from "./getDiscoverCardVM";
 import { getPublicDetailVM } from "./getPublicDetailVM";
 import { getWorkbenchVM } from "./getWorkbenchVM";
 import { getRecommendationReason } from "../modeling";
-import type {
-  CanonicalCaseBundle,
-  CanonicalRescuer,
-} from "../types";
+import type { CanonicalCaseBundle, CanonicalRescuer } from "../types";
 
 const bundle = sampleCaseBundle as CanonicalCaseBundle;
 
@@ -24,10 +21,7 @@ test("getPublicDetailVM only counts confirmed support into supportedAmount", () 
 test("getPublicDetailVM prefers case cover for hero image when available", () => {
   const vm = getPublicDetailVM(bundle);
 
-  assert.equal(
-    vm.heroImageUrl,
-    "https://example.com/assets/case-cover-watermarked.png",
-  );
+  assert.equal(vm.heroImageUrl, "https://example.com/assets/case-cover-watermarked.png");
 });
 
 test("getPublicDetailVM exposes latest public timeline summary", () => {
@@ -77,10 +71,7 @@ test("getPublicDetailVM falls back to the latest public progress photo when cove
     ],
   });
 
-  assert.equal(
-    vm.heroImageUrl,
-    "https://example.com/assets/progress-002-watermarked.png",
-  );
+  assert.equal(vm.heroImageUrl, "https://example.com/assets/progress-002-watermarked.png");
 });
 
 test("getPublicDetailVM falls back to expense record evidence when expense event assetIds are missing", () => {

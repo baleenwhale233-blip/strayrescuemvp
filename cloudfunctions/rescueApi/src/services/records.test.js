@@ -52,35 +52,43 @@ function createService(overrides = {}) {
     formatCurrencyLabel: (amount) => `¥${Number(amount || 0).toLocaleString("zh-CN")}`,
     formatDateLabel: (iso) => iso,
     getAssetFileID: (doc) => doc?.fileID,
-    getBundleByCaseId: overrides.getBundleByCaseId || (async (caseId) => ({
-      case: {
-        id: caseId,
-        rescuerId: "openid_owner",
-        targetAmount: 1200,
-      },
-    })),
-    getCaseDocByCaseId: overrides.getCaseDocByCaseId || (async (caseId) => ({
-      _id: `${caseId}_doc`,
-    })),
-    getOne: overrides.getOne || (async () => undefined),
-    getOwnedBundleOrFailure: overrides.getOwnedBundleOrFailure || (async (_openid, caseId) => ({
-      bundle: {
+    getBundleByCaseId:
+      overrides.getBundleByCaseId ||
+      (async (caseId) => ({
         case: {
           id: caseId,
           rescuerId: "openid_owner",
           targetAmount: 1200,
         },
-      },
-    })),
+      })),
+    getCaseDocByCaseId:
+      overrides.getCaseDocByCaseId ||
+      (async (caseId) => ({
+        _id: `${caseId}_doc`,
+      })),
+    getOne: overrides.getOne || (async () => undefined),
+    getOwnedBundleOrFailure:
+      overrides.getOwnedBundleOrFailure ||
+      (async (_openid, caseId) => ({
+        bundle: {
+          case: {
+            id: caseId,
+            rescuerId: "openid_owner",
+            targetAmount: 1200,
+          },
+        },
+      })),
     getTempFileURLMap: overrides.getTempFileURLMap || (async () => new Map()),
     hasOnlyCloudFileIDs: (values = []) =>
       Array.isArray(values) && values.every((value) => String(value).startsWith("cloud://")),
     nowIso: overrides.nowIso || (() => "2026-04-20T00:00:00.000Z"),
     queryCollection: overrides.queryCollection || (async () => []),
     refreshBundle: overrides.refreshBundle || (async (caseId) => ({ case: { id: caseId } })),
-    touchCase: overrides.touchCase || (async (caseId, timestamp) => {
-      touched.push({ caseId, timestamp });
-    }),
+    touchCase:
+      overrides.touchCase ||
+      (async (caseId, timestamp) => {
+        touched.push({ caseId, timestamp });
+      }),
     withTempFileURL: (doc) => doc,
   });
 
@@ -90,55 +98,67 @@ function createService(overrides = {}) {
 test("record helpers preserve type normalization, image dedupe, and expense item fallback", () => {
   assert.equal(toRecordType("expense"), "expense");
   assert.equal(toRecordType("bad"), undefined);
-  assert.deepEqual(toRecordDetailPayload({
-    id: "record_1",
-    images: [
-      { fileID: "cloud://a", url: "https://a" },
-      { fileID: "cloud://a", url: "https://a-duplicate" },
-      undefined,
-      { url: "https://b" },
-    ],
-  }), {
-    id: "record_1",
-    immutable: true,
-    images: [
-      { fileID: "cloud://a", url: "https://a" },
-      { url: "https://b" },
-    ],
-  });
-  assert.deepEqual(getExpenseItemsFromRecord({
-    summary: "支付：复查 + 药费",
-  }, 88), [
+  assert.deepEqual(
+    toRecordDetailPayload({
+      id: "record_1",
+      images: [
+        { fileID: "cloud://a", url: "https://a" },
+        { fileID: "cloud://a", url: "https://a-duplicate" },
+        undefined,
+        { url: "https://b" },
+      ],
+    }),
     {
-      description: "复查 + 药费",
-      amount: 88,
+      id: "record_1",
+      immutable: true,
+      images: [{ fileID: "cloud://a", url: "https://a" }, { url: "https://b" }],
     },
-  ]);
+  );
+  assert.deepEqual(
+    getExpenseItemsFromRecord(
+      {
+        summary: "支付：复查 + 药费",
+      },
+      88,
+    ),
+    [
+      {
+        description: "复查 + 药费",
+        amount: 88,
+      },
+    ],
+  );
 });
 
 test("records service rejects invalid progress and expense writes before persistence", async () => {
   const { db, service } = createService();
 
-  assert.deepEqual(await service.createProgressUpdate("openid_owner", {
-    caseId: "case_1",
-    status: "invalid",
-    statusLabel: "乱写状态",
-    text: "更新",
-  }), {
-    ok: false,
-    error: "INVALID_STATUS",
-    message: undefined,
-  });
-  assert.deepEqual(await service.createExpenseRecord("openid_owner", {
-    caseId: "case_1",
-    amount: 88,
-    summary: "复查",
-    evidenceFileIds: [],
-  }), {
-    ok: false,
-    error: "EXPENSE_EVIDENCE_REQUIRED",
-    message: undefined,
-  });
+  assert.deepEqual(
+    await service.createProgressUpdate("openid_owner", {
+      caseId: "case_1",
+      status: "invalid",
+      statusLabel: "乱写状态",
+      text: "更新",
+    }),
+    {
+      ok: false,
+      error: "INVALID_STATUS",
+      message: undefined,
+    },
+  );
+  assert.deepEqual(
+    await service.createExpenseRecord("openid_owner", {
+      caseId: "case_1",
+      amount: 88,
+      summary: "复查",
+      evidenceFileIds: [],
+    }),
+    {
+      ok: false,
+      error: "EXPENSE_EVIDENCE_REQUIRED",
+      message: undefined,
+    },
+  );
   assert.deepEqual(db.writes, []);
 });
 
@@ -155,9 +175,7 @@ test("records service creates expense record, projected event, and touches case"
   });
 
   assert.equal(result.ok, true);
-  assert.deepEqual(touched, [
-    { caseId: "case_1", timestamp: "2026-04-20T00:00:00.000Z" },
-  ]);
+  assert.deepEqual(touched, [{ caseId: "case_1", timestamp: "2026-04-20T00:00:00.000Z" }]);
   assert.ok(db.writes.some((item) => item.name === "evidence_assets" && item.op === "add"));
   assert.ok(db.writes.some((item) => item.name === "expense_records" && item.op === "set"));
   assert.ok(db.writes.some((item) => item.name === "case_events" && item.op === "set"));
@@ -187,39 +205,41 @@ test("records service reads support entry detail when no support event exists", 
       }
       return undefined;
     },
-    getTempFileURLMap: async () =>
-      new Map([["cloud://env/proof.png", "https://temp/proof.png"]]),
+    getTempFileURLMap: async () => new Map([["cloud://env/proof.png", "https://temp/proof.png"]]),
   });
 
-  assert.deepEqual(await service.getCaseRecordDetail("openid_owner", {
-    caseId: "case_1",
-    recordType: "support",
-    recordId: "entry_1",
-  }), {
-    ok: true,
-    data: {
-      record: {
-        id: "entry_1",
-        caseId: "case_1",
-        recordType: "support",
-        title: "张** 的支持",
-        description: "谢谢",
-        occurredAt: "2026-04-20T02:00:00.000Z",
-        occurredAtLabel: "2026-04-20T02:00:00.000Z",
-        amount: 66,
-        amountLabel: "+ ¥66",
-        immutable: true,
-        images: [
-          {
-            assetId: "entry_1_proof_0",
-            fileID: "cloud://env/proof.png",
-            url: "https://temp/proof.png",
-            thumbnailUrl: "cloud://env/proof.png",
-            watermarkedUrl: undefined,
-            kind: "payment_screenshot",
-          },
-        ],
+  assert.deepEqual(
+    await service.getCaseRecordDetail("openid_owner", {
+      caseId: "case_1",
+      recordType: "support",
+      recordId: "entry_1",
+    }),
+    {
+      ok: true,
+      data: {
+        record: {
+          id: "entry_1",
+          caseId: "case_1",
+          recordType: "support",
+          title: "张** 的支持",
+          description: "谢谢",
+          occurredAt: "2026-04-20T02:00:00.000Z",
+          occurredAtLabel: "2026-04-20T02:00:00.000Z",
+          amount: 66,
+          amountLabel: "+ ¥66",
+          immutable: true,
+          images: [
+            {
+              assetId: "entry_1_proof_0",
+              fileID: "cloud://env/proof.png",
+              url: "https://temp/proof.png",
+              thumbnailUrl: "cloud://env/proof.png",
+              watermarkedUrl: undefined,
+              kind: "payment_screenshot",
+            },
+          ],
+        },
       },
     },
-  });
+  );
 });

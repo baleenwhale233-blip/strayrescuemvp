@@ -155,9 +155,7 @@ export function formatTimelineTimestamp(date = new Date()) {
   return `今天 ${hours}:${minutes}`;
 }
 
-function buildDraftHomepageEligibility(
-  draft: RescueCreateDraft,
-): RescueHomepageEligibility {
+function buildDraftHomepageEligibility(draft: RescueCreateDraft): RescueHomepageEligibility {
   if (draft.status !== "published") {
     return {
       status: "public_but_not_eligible",
@@ -297,18 +295,12 @@ function projectSupportEntryToTimelineEntry(
   };
 }
 
-function rebuildCompatibilityTimeline(
-  draft: RescueCreateDraft,
-): RescueCreateTimelineEntry[] {
+function rebuildCompatibilityTimeline(draft: RescueCreateDraft): RescueCreateTimelineEntry[] {
   const preservedEntries = draft.timeline.filter(
     (entry) => entry.tone !== "expense" && entry.tone !== "income",
   );
-  const projectedExpenseEntries = draft.expenseRecords.map(
-    projectExpenseRecordToTimelineEntry,
-  );
-  const projectedSupportEntries = draft.supportEntries.map(
-    projectSupportEntryToTimelineEntry,
-  );
+  const projectedExpenseEntries = draft.expenseRecords.map(projectExpenseRecordToTimelineEntry);
+  const projectedSupportEntries = draft.supportEntries.map(projectSupportEntryToTimelineEntry);
 
   return [...projectedExpenseEntries, ...projectedSupportEntries, ...preservedEntries];
 }
@@ -437,8 +429,7 @@ export function createInitialDraft(): RescueCreateDraft {
         tone: "status",
         label: "状态更新",
         title: "已创建基础档案，等待补充第一条进展",
-        description:
-          "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。",
+        description: "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。",
         timestamp: formatTimelineTimestamp(),
       },
     ],
@@ -470,9 +461,7 @@ export function setCurrentDraftSession(draft: RescueCreateDraft) {
   return setDraftAndRefreshCaches(draft);
 }
 
-export function patchCurrentDraftSession(
-  patch: Partial<RescueCreateDraft>,
-) {
+export function patchCurrentDraftSession(patch: Partial<RescueCreateDraft>) {
   const current = getCurrentDraftSession() ?? startNewDraftSession();
 
   return setCurrentDraftSession({
@@ -526,10 +515,7 @@ export function saveCurrentDraft(status: RescueCreateDraftStatus) {
   return saved;
 }
 
-export function appendEntryToDraft(
-  draft: RescueCreateDraft,
-  entry: RescueCreateTimelineEntry,
-) {
+export function appendEntryToDraft(draft: RescueCreateDraft, entry: RescueCreateTimelineEntry) {
   const normalizedDraft = applyDraftDefaults(draft);
 
   if (entry.tone === "expense") {
@@ -710,10 +696,7 @@ export function markSupportEntryUnmatchedOnDraft(
   });
 }
 
-export function addExpenseRecordToDraft(
-  draft: RescueCreateDraft,
-  input: AddExpenseRecordInput,
-) {
+export function addExpenseRecordToDraft(draft: RescueCreateDraft, input: AddExpenseRecordInput) {
   const normalizedDraft = applyDraftDefaults(draft);
   const evidenceItems = input.evidenceItems ?? [];
   const record: CanonicalExpenseRecord = {
@@ -760,8 +743,7 @@ export function calculateDraftLedger(draft: RescueCreateDraft) {
   const expense = normalizedDraft.expenseRecords
     .filter(
       (record) =>
-        record.verificationStatus === "confirmed" ||
-        record.verificationStatus === "manual",
+        record.verificationStatus === "confirmed" || record.verificationStatus === "manual",
     )
     .reduce((sum, record) => sum + Math.max(record.amount, 0), 0);
   const income = normalizedDraft.supportEntries

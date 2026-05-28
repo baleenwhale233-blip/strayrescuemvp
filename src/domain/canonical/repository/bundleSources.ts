@@ -2,7 +2,10 @@ import {
   adaptLocalDraftToCanonical,
   adaptRescueProjectDetailMockToCanonical,
 } from "../adapters/mockToCanonical";
-import { legacySampleBundle, legacyRescueProjectDetails } from "../fixtures/legacyRescueProjectDetails";
+import {
+  legacySampleBundle,
+  legacyRescueProjectDetails,
+} from "../fixtures/legacyRescueProjectDetails";
 import type { CanonicalCaseBundle } from "../types";
 import { getSavedDrafts } from "./localDraftPersistence";
 
@@ -15,7 +18,5 @@ export function getSeedBundles(): CanonicalCaseBundle[] {
 }
 
 export function getLocalBundles(): CanonicalCaseBundle[] {
-  return getSavedDrafts().map((draft, index) =>
-    adaptLocalDraftToCanonical(draft, index),
-  );
+  return getSavedDrafts().map((draft, index) => adaptLocalDraftToCanonical(draft, index));
 }

@@ -19,10 +19,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "search",
-      "list"
-    ],
+    "segments": ["search", "list"],
     "segmentSelectors": {
       "search": ".discover-page__search",
       "list": ".discover-page__list"

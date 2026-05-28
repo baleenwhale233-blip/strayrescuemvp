@@ -46,10 +46,7 @@ export {
   saveRemoteDraftCase,
 } from "./remoteRepository";
 
-export type {
-  HomepageCaseCardVM,
-  OwnerDetailVM,
-} from "./canonicalReadRepository";
+export type { HomepageCaseCardVM, OwnerDetailVM } from "./canonicalReadRepository";
 
 export type {
   CaseRecordDetailVM,
@@ -67,9 +64,7 @@ export type {
   UpdateMyProfileInput,
 } from "./remoteRepository";
 
-export {
-  buildExpenseEvidenceItems,
-} from "./localPresentation";
+export { buildExpenseEvidenceItems } from "./localPresentation";
 
 export {
   clearCaseContentWriteLocalFallback,

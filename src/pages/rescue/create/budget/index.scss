@@ -54,7 +54,8 @@
   height: 128px;
   border: 4px solid #ffffff;
   border-radius: 999px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
@@ -175,7 +176,8 @@
 .rescue-budget-page__button {
   gap: 8px;
   min-height: 56px;
-  box-shadow: 0 10px 15px -3px rgba(236, 91, 19, 0.2),
+  box-shadow:
+    0 10px 15px -3px rgba(236, 91, 19, 0.2),
     0 4px 6px -4px rgba(236, 91, 19, 0.2);
 }
 

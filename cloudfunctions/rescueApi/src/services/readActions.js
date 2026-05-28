@@ -16,10 +16,14 @@ function createReadActionsService({
   toCanonicalRescuer,
 }) {
   async function getMySupportHistory(openid) {
-    const entries = await queryCollection(collections.supportEntries, {
-      supporterUserId: openid,
-      status: "confirmed",
-    }, 1000);
+    const entries = await queryCollection(
+      collections.supportEntries,
+      {
+        supporterUserId: openid,
+        status: "confirmed",
+      },
+      1000,
+    );
     const caseIds = [...new Set(entries.map((entry) => entry.caseId).filter(Boolean))];
 
     if (!caseIds.length) {
@@ -32,9 +36,13 @@ function createReadActionsService({
       });
     }
 
-    const caseDocs = await queryCollection(collections.cases, {
-      caseId: dbCommand.in(caseIds),
-    }, 1000);
+    const caseDocs = await queryCollection(
+      collections.cases,
+      {
+        caseId: dbCommand.in(caseIds),
+      },
+      1000,
+    );
     const bundles = await composeBundles(caseDocs);
     const caseMap = new Map(bundles.map((bundle) => [bundle.case.id, bundle]));
     const items = caseIds
@@ -42,7 +50,9 @@ function createReadActionsService({
         const caseEntries = entries.filter((entry) => entry.caseId === caseId);
         const amount = caseEntries.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
         const latestSupportedAt = caseEntries
-          .map((entry) => entry.supportedAt || entry.confirmedAt || entry.updatedAt || entry.createdAt)
+          .map(
+            (entry) => entry.supportedAt || entry.confirmedAt || entry.updatedAt || entry.createdAt,
+          )
           .filter(Boolean)
           .sort()
           .pop();
@@ -61,7 +71,9 @@ function createReadActionsService({
         };
       })
       .filter((item) => item.myTotalSupportedAmount > 0)
-      .sort((left, right) => String(right.latestSupportedAt || "").localeCompare(String(left.latestSupportedAt || "")));
+      .sort((left, right) =>
+        String(right.latestSupportedAt || "").localeCompare(String(left.latestSupportedAt || "")),
+      );
     const total = items.reduce((sum, item) => sum + item.myTotalSupportedAmount, 0);
 
     return ok({
@@ -95,14 +107,22 @@ function createReadActionsService({
     }
 
     const [byOpenid, byRescuerId, profile] = await Promise.all([
-      queryCollection(collections.cases, {
-        rescuerOpenid: rescuerId,
-        visibility: "published",
-      }, 1000),
-      queryCollection(collections.cases, {
-        rescuerId,
-        visibility: "published",
-      }, 1000),
+      queryCollection(
+        collections.cases,
+        {
+          rescuerOpenid: rescuerId,
+          visibility: "published",
+        },
+        1000,
+      ),
+      queryCollection(
+        collections.cases,
+        {
+          rescuerId,
+          visibility: "published",
+        },
+        1000,
+      ),
       getProfileByOpenid(rescuerId),
     ]);
     const caseMap = new Map();
@@ -123,7 +143,9 @@ function createReadActionsService({
   }
 
   async function searchCaseByPublicId(input) {
-    const raw = String(input?.publicCaseId || "").trim().toUpperCase();
+    const raw = String(input?.publicCaseId || "")
+      .trim()
+      .toUpperCase();
     const digits = raw.replace(/[^\d]/g, "");
     const publicCaseId = digits ? `JM${digits}` : raw;
     const caseDoc = await getOne(collections.cases, {

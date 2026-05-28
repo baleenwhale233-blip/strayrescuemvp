@@ -8,17 +8,47 @@ const outputDir = join(__dirname, "..", "docs", "alpha_seed_assets");
 
 const animalAssets = [
   ["cover_lizi", "栗子", "injured orange kitten resting in a warm towel", "#f97316", "#fed7aa"],
-  ["cover_ahuang", "阿黄", "gentle yellow stray dog recovering after wound care", "#ca8a04", "#fef3c7"],
+  [
+    "cover_ahuang",
+    "阿黄",
+    "gentle yellow stray dog recovering after wound care",
+    "#ca8a04",
+    "#fef3c7",
+  ],
   ["cover_tuantuan", "团团", "black and white kitten in a cardboard shelter", "#334155", "#e2e8f0"],
   ["cover_zhima", "芝麻", "black cat being observed after medicine", "#111827", "#cbd5e1"],
   ["cover_nuomi", "糯米", "small white dog waiting for first checkup", "#94a3b8", "#f8fafc"],
   ["cover_xiaoman", "小满", "calico cat recovering before adoption", "#ea580c", "#fde68a"],
   ["cover_miwo", "米窝", "silver cat settled in a new home", "#64748b", "#e0f2fe"],
-  ["progress_lizi_1", "栗子进展 1", "kitten eating soft food in a clinic cage", "#fb923c", "#ffedd5"],
-  ["progress_lizi_2", "栗子进展 2", "kitten taking a few steps after treatment", "#f97316", "#fef3c7"],
-  ["progress_ahuang", "阿黄进展", "dog standing carefully after bandage change", "#eab308", "#fef9c3"],
+  [
+    "progress_lizi_1",
+    "栗子进展 1",
+    "kitten eating soft food in a clinic cage",
+    "#fb923c",
+    "#ffedd5",
+  ],
+  [
+    "progress_lizi_2",
+    "栗子进展 2",
+    "kitten taking a few steps after treatment",
+    "#f97316",
+    "#fef3c7",
+  ],
+  [
+    "progress_ahuang",
+    "阿黄进展",
+    "dog standing carefully after bandage change",
+    "#eab308",
+    "#fef9c3",
+  ],
   ["progress_zhima", "芝麻进展", "black cat resting after fever medicine", "#0f172a", "#e2e8f0"],
-  ["progress_xiaoman", "小满进展", "calico cat interacting with a rescuer hand", "#f97316", "#ffedd5"],
+  [
+    "progress_xiaoman",
+    "小满进展",
+    "calico cat interacting with a rescuer hand",
+    "#f97316",
+    "#ffedd5",
+  ],
   ["animal_ahuang", "阿黄现场", "dog scene photo for alpha evidence", "#ca8a04", "#fef3c7"],
   ["animal_tuantuan", "团团现场", "kitten scene photo for alpha evidence", "#475569", "#e2e8f0"],
   ["animal_xiaoman", "小满现场", "calico scene photo for alpha evidence", "#ea580c", "#fef3c7"],
@@ -62,7 +92,7 @@ function render(svg, fileName) {
   writeFileSync(join(outputDir, `${fileName}.png`), png);
 }
 
-function animalSvg([key, name, subtitle, primary, secondary]) {
+function animalSvg([_key, name, subtitle, primary, secondary]) {
   return `
 <svg width="1024" height="768" viewBox="0 0 1024 768" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -137,4 +167,6 @@ for (const asset of proofAssets) {
   render(proofSvg(asset), asset[0]);
 }
 
-console.log(`Generated ${animalAssets.length + proofAssets.length} alpha seed assets in ${outputDir}`);
+console.log(
+  `Generated ${animalAssets.length + proofAssets.length} alpha seed assets in ${outputDir}`,
+);

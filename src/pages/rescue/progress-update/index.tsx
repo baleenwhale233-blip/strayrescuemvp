@@ -208,107 +208,106 @@ export default function RescueStatusUpdatePage() {
     }
   };
 
-  const handleSubmit = async () => submitGuardRef.current.run(async () => {
-    if (!description.trim()) {
-      Taro.showToast({
-        title: "请填写进展详情",
-        icon: "none",
-      });
-      return;
-    }
-
-    const statusLabel = getStatusLabelByKey(selectedStatus);
-    const timestampLabel = formatTimelineTimestamp();
-
-    try {
-      Taro.showLoading({ title: "发布中", mask: true });
-      const occurredAt = new Date().toISOString();
-
-      if (draftId) {
-        const matchedDraft = getDraftById(draftId) || getCurrentDraft();
-        if (!matchedDraft) {
-          Taro.hideLoading();
-          Taro.showToast({
-            title: "草稿上下文丢失",
-            icon: "none",
-          });
-          return;
-        }
-
-        const nextDraft: RescueCreateDraft = {
-          ...matchedDraft,
-          currentStatus: selectedStatus,
-          currentStatusLabel: statusLabel,
-          timeline: [
-            buildDraftStatusEntry({
-              statusKey: selectedStatus,
-              description: description.trim(),
-              imageUrls,
-            }),
-            ...matchedDraft.timeline,
-          ],
-          updatedAt: occurredAt,
-        };
-
-        replaceDraft(nextDraft);
-        syncCurrentDraft(nextDraft);
-      } else if (caseId) {
-        const uploadedAssets = await Promise.all(
-          imageUrls.map((imageUrl) =>
-            uploadCaseAssetImage(caseId, imageUrl, "progress-updates"),
-          ),
-        );
-        const assetFileIds = uploadedAssets
-          .filter((asset) => !asset.isLocalFallback)
-          .map((asset) => asset.fileID);
-        const didSyncRemote = await createRemoteProgressUpdateByCaseId(caseId, {
-          status: selectedStatus,
-          statusLabel,
-          text: description.trim(),
-          occurredAt,
-          assetFileIds,
-        });
-
-        if (!didSyncRemote) {
-          recordCaseContentWriteLocalFallback({
-            caseId,
-            kind: "status",
-            submission: {
-              id: `local-status-${Date.now()}`,
-              statusLabel,
-              description: description.trim(),
-              timestampLabel,
-              assetUrls: imageUrls.slice(0, 9),
-              createdAt: occurredAt,
-            },
-          });
-        } else {
-          clearCaseContentWriteLocalFallback({ caseId, kind: "status" });
-        }
-      } else {
-        Taro.hideLoading();
+  const handleSubmit = async () =>
+    submitGuardRef.current.run(async () => {
+      if (!description.trim()) {
         Taro.showToast({
-          title: "当前案例上下文缺失",
+          title: "请填写进展详情",
           icon: "none",
         });
         return;
       }
 
-      Taro.hideLoading();
-      await showSuccessFeedback({
-        title: "进展已发布",
-      });
-    } catch (error) {
-      Taro.hideLoading();
-      Taro.showToast({
-        title:
-          error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED"
-            ? "图片上传失败，请重试"
-            : "进展发布失败",
-        icon: "none",
-      });
-    }
-  });
+      const statusLabel = getStatusLabelByKey(selectedStatus);
+      const timestampLabel = formatTimelineTimestamp();
+
+      try {
+        Taro.showLoading({ title: "发布中", mask: true });
+        const occurredAt = new Date().toISOString();
+
+        if (draftId) {
+          const matchedDraft = getDraftById(draftId) || getCurrentDraft();
+          if (!matchedDraft) {
+            Taro.hideLoading();
+            Taro.showToast({
+              title: "草稿上下文丢失",
+              icon: "none",
+            });
+            return;
+          }
+
+          const nextDraft: RescueCreateDraft = {
+            ...matchedDraft,
+            currentStatus: selectedStatus,
+            currentStatusLabel: statusLabel,
+            timeline: [
+              buildDraftStatusEntry({
+                statusKey: selectedStatus,
+                description: description.trim(),
+                imageUrls,
+              }),
+              ...matchedDraft.timeline,
+            ],
+            updatedAt: occurredAt,
+          };
+
+          replaceDraft(nextDraft);
+          syncCurrentDraft(nextDraft);
+        } else if (caseId) {
+          const uploadedAssets = await Promise.all(
+            imageUrls.map((imageUrl) => uploadCaseAssetImage(caseId, imageUrl, "progress-updates")),
+          );
+          const assetFileIds = uploadedAssets
+            .filter((asset) => !asset.isLocalFallback)
+            .map((asset) => asset.fileID);
+          const didSyncRemote = await createRemoteProgressUpdateByCaseId(caseId, {
+            status: selectedStatus,
+            statusLabel,
+            text: description.trim(),
+            occurredAt,
+            assetFileIds,
+          });
+
+          if (!didSyncRemote) {
+            recordCaseContentWriteLocalFallback({
+              caseId,
+              kind: "status",
+              submission: {
+                id: `local-status-${Date.now()}`,
+                statusLabel,
+                description: description.trim(),
+                timestampLabel,
+                assetUrls: imageUrls.slice(0, 9),
+                createdAt: occurredAt,
+              },
+            });
+          } else {
+            clearCaseContentWriteLocalFallback({ caseId, kind: "status" });
+          }
+        } else {
+          Taro.hideLoading();
+          Taro.showToast({
+            title: "当前案例上下文缺失",
+            icon: "none",
+          });
+          return;
+        }
+
+        Taro.hideLoading();
+        await showSuccessFeedback({
+          title: "进展已发布",
+        });
+      } catch (error) {
+        Taro.hideLoading();
+        Taro.showToast({
+          title:
+            error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED"
+              ? "图片上传失败，请重试"
+              : "进展发布失败",
+          icon: "none",
+        });
+      }
+    });
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
@@ -401,7 +400,11 @@ export default function RescueStatusUpdatePage() {
 
           <View className="rescue-update-page__image-row">
             <View className="rescue-update-page__image-trigger" onTap={handlePickImage}>
-              <Image className="rescue-update-page__image-trigger-icon" mode="aspectFit" src={addPhotoIcon} />
+              <Image
+                className="rescue-update-page__image-trigger-icon"
+                mode="aspectFit"
+                src={addPhotoIcon}
+              />
               <Text className="rescue-update-page__image-trigger-text">添加照片</Text>
             </View>
 
@@ -439,7 +442,11 @@ export default function RescueStatusUpdatePage() {
           </View>
 
           <View className="rescue-update-page__notice">
-            <Image className="rescue-update-page__notice-icon" mode="aspectFit" src={imageNoticeIcon} />
+            <Image
+              className="rescue-update-page__notice-icon"
+              mode="aspectFit"
+              src={imageNoticeIcon}
+            />
             <Text className="rescue-update-page__notice-text">
               请至少上传一张照片，以确保护助信息真实性
             </Text>
@@ -448,12 +455,22 @@ export default function RescueStatusUpdatePage() {
       </View>
 
       <View className="rescue-update-page__bottom">
-        <View className="theme-button-secondary rescue-update-page__bottom-cancel" onTap={handleCancel}>
+        <View
+          className="theme-button-secondary rescue-update-page__bottom-cancel"
+          onTap={handleCancel}
+        >
           <Text>取消</Text>
         </View>
-        <View className="theme-button-primary rescue-update-page__bottom-submit" onTap={handleSubmit}>
+        <View
+          className="theme-button-primary rescue-update-page__bottom-submit"
+          onTap={handleSubmit}
+        >
           <Text>发布进展</Text>
-          <Image className="rescue-update-page__bottom-submit-icon" mode="aspectFit" src={submitArrowIcon} />
+          <Image
+            className="rescue-update-page__bottom-submit-icon"
+            mode="aspectFit"
+            src={submitArrowIcon}
+          />
         </View>
       </View>
     </View>

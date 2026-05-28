@@ -62,23 +62,26 @@ function createSupportService({
     const entries = entryDocs.map(toCanonicalSupportEntry);
     const thread = recomputeThread(threadId, entries);
 
-    await db.collection(collections.supportThreads).doc(threadId).set({
-      data: {
-        threadId,
-        caseId: thread.caseId,
-        supporterOpenid: thread.supporterUserId,
-        supporterUserId: thread.supporterUserId,
-        supporterNameMasked: thread.supporterNameMasked,
-        createdAt: thread.createdAt,
-        updatedAt: thread.updatedAt,
-        totalConfirmedAmount: thread.totalConfirmedAmount,
-        totalPendingAmount: thread.totalPendingAmount,
-        totalUnmatchedAmount: thread.totalUnmatchedAmount,
-        pendingCount: thread.pendingCount,
-        unmatchedCount: thread.unmatchedCount,
-        latestStatusSummary: thread.latestStatusSummary,
-      },
-    });
+    await db
+      .collection(collections.supportThreads)
+      .doc(threadId)
+      .set({
+        data: {
+          threadId,
+          caseId: thread.caseId,
+          supporterOpenid: thread.supporterUserId,
+          supporterUserId: thread.supporterUserId,
+          supporterNameMasked: thread.supporterNameMasked,
+          createdAt: thread.createdAt,
+          updatedAt: thread.updatedAt,
+          totalConfirmedAmount: thread.totalConfirmedAmount,
+          totalPendingAmount: thread.totalPendingAmount,
+          totalUnmatchedAmount: thread.totalUnmatchedAmount,
+          pendingCount: thread.pendingCount,
+          unmatchedCount: thread.unmatchedCount,
+          latestStatusSummary: thread.latestStatusSummary,
+        },
+      });
   }
 
   async function upsertSupportEvent(entry, status, timestamp) {
@@ -142,13 +145,19 @@ function createSupportService({
       return fail("INVALID_SCREENSHOT_FILE_ID");
     }
 
-    const existingHashes = new Set(existingEntries.flatMap((entry) => entry.screenshotHashes || entry.screenshotFileIds || []));
+    const existingHashes = new Set(
+      existingEntries.flatMap((entry) => entry.screenshotHashes || entry.screenshotFileIds || []),
+    );
 
     if (screenshotFileIds.some((fileID) => existingHashes.has(fileID))) {
       return fail("DUPLICATE_SUPPORT_SCREENSHOT");
     }
 
-    if (recentEntries.some((entry) => Date.parse(entry.createdAt || entry.supportedAt) >= lastTenMinutes)) {
+    if (
+      recentEntries.some(
+        (entry) => Date.parse(entry.createdAt || entry.supportedAt) >= lastTenMinutes,
+      )
+    ) {
       return fail("SUPPORT_ENTRY_RATE_LIMIT_10_MIN");
     }
 
@@ -177,27 +186,30 @@ function createSupportService({
       });
     }
 
-    await db.collection(collections.supportEntries).doc(entryId).set({
-      data: {
-        entryId,
-        supportThreadId: threadId,
-        caseId,
-        supporterOpenid: openid,
-        supporterUserId: openid,
-        supporterNameMasked: input?.supporterNameMasked || "爱心人士",
-        amount,
-        currency: "CNY",
-        supportedAt,
-        note: input?.note,
-        screenshotFileIds,
-        screenshotHashes: screenshotFileIds,
-        status: "pending",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        visibility: "private",
-        projectedEventId,
-      },
-    });
+    await db
+      .collection(collections.supportEntries)
+      .doc(entryId)
+      .set({
+        data: {
+          entryId,
+          supportThreadId: threadId,
+          caseId,
+          supporterOpenid: openid,
+          supporterUserId: openid,
+          supporterNameMasked: input?.supporterNameMasked || "爱心人士",
+          amount,
+          currency: "CNY",
+          supportedAt,
+          note: input?.note,
+          screenshotFileIds,
+          screenshotHashes: screenshotFileIds,
+          status: "pending",
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          visibility: "private",
+          projectedEventId,
+        },
+      });
 
     await upsertSupportEvent(
       {
@@ -245,31 +257,34 @@ function createSupportService({
     const entryId = createId("support_entry_manual");
     const projectedEventId = getSupportEventId(entryId, sanitizeId);
 
-    await db.collection(collections.supportEntries).doc(entryId).set({
-      data: {
-        entryId,
-        supportThreadId: threadId,
-        caseId: bundle.case.id,
-        supporterOpenid: manualSupporterId,
-        supporterUserId: manualSupporterId,
-        supporterNameMasked,
-        amount,
-        currency: "CNY",
-        supportedAt,
-        note,
-        screenshotFileIds: [],
-        screenshotHashes: [],
-        status: "confirmed",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        confirmedAt: timestamp,
-        confirmedByOpenid: openid,
-        confirmedByUserId: openid,
-        visibility: "private",
-        supportSource: "manual_entry",
-        projectedEventId,
-      },
-    });
+    await db
+      .collection(collections.supportEntries)
+      .doc(entryId)
+      .set({
+        data: {
+          entryId,
+          supportThreadId: threadId,
+          caseId: bundle.case.id,
+          supporterOpenid: manualSupporterId,
+          supporterUserId: manualSupporterId,
+          supporterNameMasked,
+          amount,
+          currency: "CNY",
+          supportedAt,
+          note,
+          screenshotFileIds: [],
+          screenshotHashes: [],
+          status: "confirmed",
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          confirmedAt: timestamp,
+          confirmedByOpenid: openid,
+          confirmedByUserId: openid,
+          visibility: "private",
+          supportSource: "manual_entry",
+          projectedEventId,
+        },
+      });
 
     await upsertSupportEvent(
       {

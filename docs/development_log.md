@@ -1930,3 +1930,16 @@
   仅影响长期进度、页面完成度和内测执行文档；不改代码、数据模型、接口、VM、selector、repository 或页面交互。
 - 下一步 / 遗留问题：
   下一步按 `npm run preflight:alpha` 和 Round 0-4 真机流程找 P0 / P1 问题；README 仍建议后续单独统一更新。
+
+## 2026-05-28 | 仓库治理 | Alpha 前入口与格式化预检收口
+
+- 为什么改：
+  Alpha 前需要让 README / AGENTS / 总控中心形成稳定接手入口，并把格式化、lint 和 repo safety 纳入常规预检，避免后续重构继续依赖聊天上下文。
+- 改了什么：
+  README 改为当前入口，AGENTS 将 `project_control_center` 设为第一真相源，`product_development_status` 标记为 archived；新增 Prettier / ESLint 最小配置与 `format`、`format:check`、`lint` 脚本，并将 `preflight:alpha` 接入 `check:repo-safety`。
+- 影响范围：
+  影响文档入口、仓库基础设施、格式化后的 `src / cloudfunctions / scripts / qa / docs` 代码与 JSON 排版；不改产品范围、页面结构、CloudBase 业务逻辑或 localPresentation 职责。
+- 验证结果：
+  现有页面兼容保持不变，未新增 richer VM / richer mock；`npm run format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
+- 下一步 / 遗留问题：
+  `preflight:alpha` 在 Codex sandbox 内部构建会复现 Taro/Rust `system-configuration` panic，已在非 sandbox 环境完整通过；构建仍保留既有大图体积和 no async chunks warning。

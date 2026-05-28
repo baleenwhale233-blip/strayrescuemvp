@@ -6,10 +6,7 @@ import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaW
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import enterRescueIcon from "../../../../assets/rescue-create/step2-enter-icon.svg";
-import {
-  getCurrentDraft,
-  updateCurrentDraft,
-} from "../../../../domain/canonical/repository";
+import { getCurrentDraft, updateCurrentDraft } from "../../../../domain/canonical/repository";
 import "./index.scss";
 
 export default function RescueCreateBudgetPage() {

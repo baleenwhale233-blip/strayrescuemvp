@@ -22,14 +22,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "evidence",
-      "note",
-      "total",
-      "add-line",
-      "line-1",
-      "bottom-bar"
-    ],
+    "segments": ["evidence", "note", "total", "add-line", "line-1", "bottom-bar"],
     "segmentSelectors": {
       "evidence": ".rescue-expense-page__evidence",
       "note": ".rescue-expense-page__note",

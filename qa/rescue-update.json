@@ -21,13 +21,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "animal-card",
-      "stage",
-      "textarea",
-      "image-card",
-      "bottom-bar"
-    ],
+    "segments": ["animal-card", "stage", "textarea", "image-card", "bottom-bar"],
     "segmentSelectors": {
       "animal-card": ".rescue-update-page__animal-card",
       "stage": ".rescue-update-page__section",

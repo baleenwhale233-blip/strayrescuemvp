@@ -63,10 +63,7 @@ export function createCasePublicId(internalCaseId: string): CasePublicId {
   return `${PUBLIC_CASE_PREFIX}${toFixedSixDigits(stableHash(internalCaseId))}`;
 }
 
-export function getPublicCaseId(caseRecord: {
-  id: string;
-  publicCaseId?: string;
-}): CasePublicId {
+export function getPublicCaseId(caseRecord: { id: string; publicCaseId?: string }): CasePublicId {
   return caseRecord.publicCaseId || createCasePublicId(caseRecord.id);
 }
 
@@ -81,9 +78,7 @@ export function getStandardCaseStatusLabel(input: {
   );
 }
 
-export function normalizePublicCaseIdInput(
-  input?: string,
-): CasePublicId | undefined {
+export function normalizePublicCaseIdInput(input?: string): CasePublicId | undefined {
   const trimmed = input?.trim().toUpperCase();
 
   if (!trimmed) {
@@ -111,9 +106,7 @@ function getAssetUrl(asset?: CanonicalAsset) {
   return asset?.watermarkedUrl || asset?.originalUrl || asset?.thumbnailUrl;
 }
 
-function mapAssetKindToEvidenceKind(
-  assetKind: CanonicalAsset["kind"],
-): ExpenseEvidenceKind {
+function mapAssetKindToEvidenceKind(assetKind: CanonicalAsset["kind"]): ExpenseEvidenceKind {
   switch (assetKind) {
     case "receipt":
       return "receipt";
@@ -159,7 +152,7 @@ function getEffectiveEvidenceItems(input: {
   sharedEvidenceGroupMap: Map<string, CanonicalSharedEvidenceGroup>;
 }) {
   const sharedItems = input.sharedEvidenceGroupId
-    ? input.sharedEvidenceGroupMap.get(input.sharedEvidenceGroupId)?.items ?? []
+    ? (input.sharedEvidenceGroupMap.get(input.sharedEvidenceGroupId)?.items ?? [])
     : [];
 
   return [...sharedItems, ...input.evidenceItems];
@@ -173,12 +166,7 @@ function hasTradeProof(items: CanonicalEvidenceItem[]) {
 
 function hasSceneProof(items: CanonicalEvidenceItem[]) {
   return items.some((item) =>
-    [
-      "item_photo",
-      "treatment_photo",
-      "animal_photo",
-      "animal_item_photo",
-    ].includes(item.kind),
+    ["item_photo", "treatment_photo", "animal_photo", "animal_item_photo"].includes(item.kind),
   );
 }
 
@@ -244,9 +232,7 @@ function toLegacySupporterUserId(event: CanonicalSupportEvent) {
   return `supporter:${event.id}`;
 }
 
-export function getStructuredExpenseRecords(
-  bundle: CanonicalCaseBundle,
-): CanonicalExpenseRecord[] {
+export function getStructuredExpenseRecords(bundle: CanonicalCaseBundle): CanonicalExpenseRecord[] {
   if (bundle.expenseRecords?.length) {
     return bundle.expenseRecords;
   }
@@ -277,9 +263,7 @@ export function getStructuredExpenseRecords(
     });
 }
 
-export function getStructuredSupportEntries(
-  bundle: CanonicalCaseBundle,
-): CanonicalSupportEntry[] {
+export function getStructuredSupportEntries(bundle: CanonicalCaseBundle): CanonicalSupportEntry[] {
   if (bundle.supportEntries?.length) {
     return bundle.supportEntries;
   }
@@ -305,12 +289,10 @@ export function getStructuredSupportEntries(
         screenshotItems,
         screenshotHashes: screenshotItems.map((item) => item.hash || item.id),
         status: toSupportEntryStatus(event.verificationStatus),
-        unmatchedReason:
-          event.verificationStatus === "rejected" ? "other" : undefined,
+        unmatchedReason: event.verificationStatus === "rejected" ? "other" : undefined,
         createdAt: event.occurredAt,
         updatedAt: event.occurredAt,
-        confirmedAt:
-          event.verificationStatus === "confirmed" ? event.occurredAt : undefined,
+        confirmedAt: event.verificationStatus === "confirmed" ? event.occurredAt : undefined,
         visibility: event.visibility,
         projectedEventId: event.id,
       };
@@ -344,18 +326,9 @@ export function recomputeSupportThreads(
       supporterNameMasked: latest.supporterNameMasked,
       createdAt: sorted[0]?.createdAt || latest.createdAt,
       updatedAt: latest.updatedAt,
-      totalConfirmedAmount: confirmedEntries.reduce(
-        (sum, entry) => sum + entry.amount,
-        0,
-      ),
-      totalPendingAmount: pendingEntries.reduce(
-        (sum, entry) => sum + entry.amount,
-        0,
-      ),
-      totalUnmatchedAmount: unmatchedEntries.reduce(
-        (sum, entry) => sum + entry.amount,
-        0,
-      ),
+      totalConfirmedAmount: confirmedEntries.reduce((sum, entry) => sum + entry.amount, 0),
+      totalPendingAmount: pendingEntries.reduce((sum, entry) => sum + entry.amount, 0),
+      totalUnmatchedAmount: unmatchedEntries.reduce((sum, entry) => sum + entry.amount, 0),
       pendingCount: pendingEntries.length,
       unmatchedCount: unmatchedEntries.length,
       latestStatusSummary:
@@ -368,9 +341,7 @@ export function recomputeSupportThreads(
   });
 }
 
-export function getStructuredSupportThreads(
-  bundle: CanonicalCaseBundle,
-): CanonicalSupportThread[] {
+export function getStructuredSupportThreads(bundle: CanonicalCaseBundle): CanonicalSupportThread[] {
   if (bundle.supportThreads?.length) {
     return bundle.supportThreads;
   }
@@ -388,8 +359,7 @@ export function buildLedgerSnapshotFromStructured(
   const confirmedExpenseAmount = input.expenseRecords
     .filter(
       (record) =>
-        record.verificationStatus === "confirmed" ||
-        record.verificationStatus === "manual",
+        record.verificationStatus === "confirmed" || record.verificationStatus === "manual",
     )
     .reduce((sum, record) => sum + record.amount, 0);
   const supportedAmount = input.supportEntries
@@ -422,9 +392,7 @@ export function buildLedgerSnapshotFromStructured(
 export function getLatestStatusSummary(bundle: CanonicalCaseBundle) {
   const latestProgress = [...bundle.events]
     .filter(
-      (
-        event,
-      ): event is Extract<CanonicalEvent, { type: "progress_update" }> =>
+      (event): event is Extract<CanonicalEvent, { type: "progress_update" }> =>
         event.type === "progress_update" && event.visibility === "public",
     )
     .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt))[0];
@@ -455,20 +423,16 @@ export function getCaseEvidenceLevel(bundle: CanonicalCaseBundle): EvidenceLevel
     (bundle.sharedEvidenceGroups ?? []).map((group) => [group.id, group]),
   );
 
-  return getStructuredExpenseRecords(bundle).reduce<EvidenceLevel>(
-    (level, record) => {
-      const effectiveItems = getEffectiveEvidenceItems({
-        evidenceItems: record.evidenceItems,
-        sharedEvidenceGroupId: record.sharedEvidenceGroupId,
-        sharedEvidenceGroupMap,
-      });
-      const nextLevel =
-        record.evidenceLevel || computeEvidenceLevelFromEvidenceItems(effectiveItems);
+  return getStructuredExpenseRecords(bundle).reduce<EvidenceLevel>((level, record) => {
+    const effectiveItems = getEffectiveEvidenceItems({
+      evidenceItems: record.evidenceItems,
+      sharedEvidenceGroupId: record.sharedEvidenceGroupId,
+      sharedEvidenceGroupMap,
+    });
+    const nextLevel = record.evidenceLevel || computeEvidenceLevelFromEvidenceItems(effectiveItems);
 
-      return compareEvidenceLevel(nextLevel, level) > 0 ? nextLevel : level;
-    },
-    "needs_attention",
-  );
+    return compareEvidenceLevel(nextLevel, level) > 0 ? nextLevel : level;
+  }, "needs_attention");
 }
 
 export function getHomepageEligibility(bundle: CanonicalCaseBundle): {
@@ -538,10 +502,7 @@ export function getRecommendationReason(bundle: CanonicalCaseBundle) {
   const lastPublicActivityAt = Date.parse(getLastPublicActivityAt(bundle));
   const evidenceLevel = getCaseEvidenceLevel(bundle);
 
-  if (
-    ledger.confirmedExpenseAmount >= 1000 &&
-    ledger.verifiedGapAmount >= 500
-  ) {
+  if (ledger.confirmedExpenseAmount >= 1000 && ledger.verifiedGapAmount >= 500) {
     return `已垫付 ${formatCurrency(ledger.confirmedExpenseAmount)}，仍待补位`;
   }
 
@@ -611,9 +572,7 @@ function getSupportUnmatchedReasonLabel(reason?: SupportUnmatchedReason) {
   }
 }
 
-export function toSupportThreadSummaryVMs(
-  bundle: CanonicalCaseBundle,
-): SupportThreadSummaryVM[] {
+export function toSupportThreadSummaryVMs(bundle: CanonicalCaseBundle): SupportThreadSummaryVM[] {
   const threads = getStructuredSupportThreads(bundle);
   const entries = getStructuredSupportEntries(bundle);
 
@@ -643,18 +602,13 @@ export function toSupportThreadSummaryVMs(
         screenshotUrls: entry.screenshotItems
           .map((item) => item.imageUrl)
           .filter((value): value is string => Boolean(value)),
-        unmatchedReasonLabel: getSupportUnmatchedReasonLabel(
-          entry.unmatchedReason,
-        ),
+        unmatchedReasonLabel: getSupportUnmatchedReasonLabel(entry.unmatchedReason),
       })),
     };
   });
 }
 
-export function getMySupportThreadByCaseId(
-  bundle: CanonicalCaseBundle,
-  supporterUserId: string,
-) {
+export function getMySupportThreadByCaseId(bundle: CanonicalCaseBundle, supporterUserId: string) {
   return getStructuredSupportThreads(bundle).find(
     (thread) => thread.supporterUserId === supporterUserId,
   );

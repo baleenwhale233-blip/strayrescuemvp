@@ -22,11 +22,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "tab-switcher",
-      "manual-form",
-      "bottom-bar"
-    ],
+    "segments": ["tab-switcher", "manual-form", "bottom-bar"],
     "segmentSelectors": {
       "tab-switcher": ".support-review-page__tabs",
       "manual-form": ".support-review-page__manual",

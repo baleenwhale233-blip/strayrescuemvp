@@ -158,10 +158,7 @@ function getTimelineAssetUrls(item: PublicTimelineItemVM) {
   return [];
 }
 
-function getFundingCompareMetrics(input: {
-  expenseAmount: number;
-  supportAmount: number;
-}) {
+function getFundingCompareMetrics(input: { expenseAmount: number; supportAmount: number }) {
   const diff = input.expenseAmount - input.supportAmount;
   const base = Math.max(input.expenseAmount, input.supportAmount, 1);
 
@@ -170,7 +167,7 @@ function getFundingCompareMetrics(input: {
     supportProgressPercent: (input.supportAmount / base) * 100,
     thirdLabel: diff > 0 ? "缺口" : "结余",
     thirdValue: `¥${Math.abs(diff).toLocaleString("zh-CN")}`,
-    thirdMode: diff > 0 ? "gap" as const : "balance" as const,
+    thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),
   };
 }
 
@@ -210,8 +207,7 @@ function getOwnerOverviewProps(detail: PublicDetailVM) {
 function toOwnerTimelineItems(detail: PublicDetailVM): RescueOwnerTimelineItem[] {
   return detail.timeline.map((item) => {
     const rawKind = getTimelineKind(item);
-    const kind: RescueOwnerTimelineItem["kind"] =
-      rawKind === "support" ? "income" : rawKind;
+    const kind: RescueOwnerTimelineItem["kind"] = rawKind === "support" ? "income" : rawKind;
     const budgetAdjustment =
       item.type === "budget_adjustment" ? parseBudgetAdjustment(item) : undefined;
 
@@ -224,12 +220,8 @@ function toOwnerTimelineItems(detail: PublicDetailVM): RescueOwnerTimelineItem[]
       badgeLabel: getTimelinePrimaryLabel(item),
       statusLabel: kind === "status" ? detail.statusLabel : undefined,
       timestamp: item.timestampLabel,
-      title:
-        item.type === "budget_adjustment"
-          ? item.description || item.title
-          : item.title,
-      description:
-        item.type === "budget_adjustment" ? undefined : item.description,
+      title: item.type === "budget_adjustment" ? item.description || item.title : item.title,
+      description: item.type === "budget_adjustment" ? undefined : item.description,
       amountLabel: item.amountLabel,
       images: getTimelineAssetUrls(item),
       budgetPreviousLabel: budgetAdjustment?.previousAmountLabel,
@@ -238,11 +230,7 @@ function toOwnerTimelineItems(detail: PublicDetailVM): RescueOwnerTimelineItem[]
   });
 }
 
-function GuestOverview({
-  detail,
-}: {
-  detail: PublicDetailVM;
-}) {
+function GuestOverview({ detail }: { detail: PublicDetailVM }) {
   const paragraphs = getSummaryParagraphs(detail);
   const latestItem = getLatestOverviewItem(detail);
   const overviewImage = getLatestOverviewImage(detail, latestItem);
@@ -263,7 +251,11 @@ function GuestOverview({
       <View className="guest-overview-metrics">
         <View className="guest-metric-card theme-card">
           <View className="guest-metric-card__icon guest-metric-card__icon--expense">
-            <Image className="guest-metric-card__icon-image" mode="aspectFit" src={summaryExpenseIcon} />
+            <Image
+              className="guest-metric-card__icon-image"
+              mode="aspectFit"
+              src={summaryExpenseIcon}
+            />
           </View>
           <Text className="guest-metric-card__label">总支出</Text>
           <Text className="guest-metric-card__value guest-metric-card__value--expense">
@@ -273,7 +265,11 @@ function GuestOverview({
 
         <View className="guest-metric-card theme-card">
           <View className="guest-metric-card__icon guest-metric-card__icon--income">
-            <Image className="guest-metric-card__icon-image" mode="aspectFit" src={summaryIncomeIcon} />
+            <Image
+              className="guest-metric-card__icon-image"
+              mode="aspectFit"
+              src={summaryIncomeIcon}
+            />
           </View>
           <Text className="guest-metric-card__label">总收入</Text>
           <Text className="guest-metric-card__value guest-metric-card__value--income">
@@ -316,11 +312,7 @@ function GuestOverview({
   );
 }
 
-function GuestDetailTimeline({
-  detail,
-}: {
-  detail: PublicDetailVM;
-}) {
+function GuestDetailTimeline({ detail }: { detail: PublicDetailVM }) {
   const timelineItems: RescueTimelineSharedItem[] = detail.timeline.map((item) => {
     const kind = getTimelineKind(item);
     const budgetAdjustment =
@@ -335,10 +327,8 @@ function GuestDetailTimeline({
       badgeLabel: getTimelinePrimaryLabel(item),
       statusLabel: kind === "status" ? detail.statusLabel : undefined,
       timestamp: item.timestampLabel,
-      title:
-        item.type === "budget_adjustment" ? item.description || item.title : item.title,
-      description:
-        item.type === "budget_adjustment" ? undefined : item.description,
+      title: item.type === "budget_adjustment" ? item.description || item.title : item.title,
+      description: item.type === "budget_adjustment" ? undefined : item.description,
       amountLabel: item.amountLabel,
       images: getTimelineAssetUrls(item),
       budgetPreviousLabel: budgetAdjustment?.previousAmountLabel,
@@ -394,10 +384,7 @@ function RenameSheet({
 
   return (
     <View className="detail-rename-sheet__overlay" onTap={onClose}>
-      <View
-        className="detail-rename-sheet"
-        onTap={(event) => event.stopPropagation()}
-      >
+      <View className="detail-rename-sheet" onTap={(event) => event.stopPropagation()}>
         <View className="detail-rename-sheet__handle">
           <View className="detail-rename-sheet__handle-bar" />
         </View>
@@ -484,7 +471,9 @@ function GuestDetail({
           </View>
 
           <View className="detail-card__budget-row">
-            <Text className="detail-card__budget-text">总预算 {detail.ledger.targetAmountLabel}</Text>
+            <Text className="detail-card__budget-text">
+              总预算 {detail.ledger.targetAmountLabel}
+            </Text>
           </View>
 
           <View className="detail-card__progress">
@@ -528,7 +517,11 @@ function GuestDetail({
         </View>
 
         <View className="rescuer-card theme-card">
-          <Image className="rescuer-card__avatar" mode="aspectFill" src={getRescuerAvatar(detail)} />
+          <Image
+            className="rescuer-card__avatar"
+            mode="aspectFill"
+            src={getRescuerAvatar(detail)}
+          />
           <View className="rescuer-card__body">
             <Text className="rescuer-card__name">{detail.rescuer.name}</Text>
             <Text className="rescuer-card__meta">
@@ -578,11 +571,12 @@ function GuestDetail({
 
       <View className="guest-bottom-bar">
         <View className="guest-bottom-bar__inner">
-          <Button
-            className="guest-bottom-bar__share"
-            openType="share"
-          >
-            <Image className="guest-bottom-bar__share-icon-image" mode="aspectFit" src={shareMutedIcon} />
+          <Button className="guest-bottom-bar__share" openType="share">
+            <Image
+              className="guest-bottom-bar__share-icon-image"
+              mode="aspectFit"
+              src={shareMutedIcon}
+            />
             <Text className="guest-bottom-bar__share-text">分享</Text>
           </Button>
           <Button className="guest-bottom-bar__ghost" onTap={onClaim}>
@@ -749,11 +743,7 @@ function OwnerDetail({
         <View className="owner-finish__row">
           <Button
             className={`owner-finish__side owner-finish__side--${finishBar.sideAction}`}
-            onTap={
-              finishBar.sideAction === "finish"
-                ? handleStartFinish
-                : handleCancelFinish
-            }
+            onTap={finishBar.sideAction === "finish" ? handleStartFinish : handleCancelFinish}
           >
             <Text className="owner-finish__side-text">{finishBar.sideLabel}</Text>
           </Button>
@@ -783,9 +773,7 @@ function OwnerDetail({
             </View>
           )}
         </View>
-        {finishBar.hint ? (
-          <Text className="owner-finish__hint">{finishBar.hint}</Text>
-        ) : null}
+        {finishBar.hint ? <Text className="owner-finish__hint">{finishBar.hint}</Text> : null}
       </View>
 
       {editingTitle ? (
@@ -822,137 +810,142 @@ export default function RescueDetailPage() {
     imageUrl: publicDetail?.heroImageUrl || guestHeroCat,
   }));
 
-  const handleRenameTitle = async (value: string) => submitGuardRef.current.run(async () => {
-    const nextTitle = value.trim();
-    if (!nextTitle) {
-      Taro.showToast({
-        title: "请先填写代号",
-        icon: "none",
-      });
-      return;
-    }
-
-    try {
-      Taro.showLoading({ title: "保存中", mask: true });
-      const didSyncRemote = await updateRemoteCaseProfileByCaseId(caseId, {
-        animalName: nextTitle,
-      });
-
-      if (!didSyncRemote) {
-        recordCaseProfileLocalFallback({
-          title: nextTitle,
-          caseId,
-          draftId: ownerDetail?.draftId,
-        });
-      } else {
-        clearCaseProfileLocalFallback({
-          caseId,
-          draftId: ownerDetail?.draftId,
-          clearTitle: true,
-        });
-      }
-
-      setOwnerDetail((current) =>
-        current
-          ? {
-              ...current,
-              title: nextTitle,
-            }
-          : current,
-      );
-      setPublicDetail((current) =>
-        current
-          ? {
-              ...current,
-              title: nextTitle,
-            }
-          : current,
-      );
-      Taro.hideLoading();
-    } catch {
-      Taro.hideLoading();
-      Taro.showToast({
-        title: "代号更新失败",
-        icon: "none",
-      });
-      return;
-    }
-
-    Taro.showToast({
-      title: "已更新代号",
-      icon: "none",
-    });
-  });
-
-  const handleChangeCover = async () => submitGuardRef.current.run(async () => {
-    try {
-      const action = await Taro.showActionSheet({
-        itemList: ["拍照", "上传图片"],
-      });
-
-      const result = await Taro.chooseImage({
-        count: 1,
-        sizeType: ["compressed"],
-        sourceType: action.tapIndex === 0 ? ["camera"] : ["album"],
-      });
-
-      const nextPath = result.tempFilePaths?.[0];
-      if (!nextPath) {
-        return;
-      }
-      Taro.showLoading({ title: "上传中", mask: true });
-      const uploaded = await uploadCaseAssetImage(caseId || "unknown-case", nextPath, "case-covers");
-      const coverFileID =
-        uploaded && !uploaded.isLocalFallback ? uploaded.fileID : undefined;
-      const didSyncRemote = coverFileID
-        ? await updateRemoteCaseProfileByCaseId(caseId, { coverFileID })
-        : false;
-
-      setOwnerDetail((current) =>
-        current
-          ? {
-              ...current,
-              coverImage: nextPath,
-            }
-          : current,
-      );
-      setPublicDetail((current) =>
-        current
-          ? {
-              ...current,
-              heroImageUrl: nextPath,
-            }
-          : current,
-      );
-      if (!didSyncRemote) {
-        recordCaseProfileLocalFallback({
-          coverPath: nextPath,
-          caseId,
-          draftId: ownerDetail?.draftId,
-        });
-      } else {
-        clearCaseProfileLocalFallback({
-          caseId,
-          draftId: ownerDetail?.draftId,
-          clearCover: true,
-        });
-      }
-      Taro.hideLoading();
-
-      Taro.showToast({
-        title: "已更新头像",
-        icon: "none",
-      });
-    } catch (error) {
-      Taro.hideLoading();
-      if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
+  const handleRenameTitle = async (value: string) =>
+    submitGuardRef.current.run(async () => {
+      const nextTitle = value.trim();
+      if (!nextTitle) {
         Taro.showToast({
-          title: "头像上传失败",
+          title: "请先填写代号",
           icon: "none",
         });
+        return;
       }
-    }
-  });
+
+      try {
+        Taro.showLoading({ title: "保存中", mask: true });
+        const didSyncRemote = await updateRemoteCaseProfileByCaseId(caseId, {
+          animalName: nextTitle,
+        });
+
+        if (!didSyncRemote) {
+          recordCaseProfileLocalFallback({
+            title: nextTitle,
+            caseId,
+            draftId: ownerDetail?.draftId,
+          });
+        } else {
+          clearCaseProfileLocalFallback({
+            caseId,
+            draftId: ownerDetail?.draftId,
+            clearTitle: true,
+          });
+        }
+
+        setOwnerDetail((current) =>
+          current
+            ? {
+                ...current,
+                title: nextTitle,
+              }
+            : current,
+        );
+        setPublicDetail((current) =>
+          current
+            ? {
+                ...current,
+                title: nextTitle,
+              }
+            : current,
+        );
+        Taro.hideLoading();
+      } catch {
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "代号更新失败",
+          icon: "none",
+        });
+        return;
+      }
+
+      Taro.showToast({
+        title: "已更新代号",
+        icon: "none",
+      });
+    });
+
+  const handleChangeCover = async () =>
+    submitGuardRef.current.run(async () => {
+      try {
+        const action = await Taro.showActionSheet({
+          itemList: ["拍照", "上传图片"],
+        });
+
+        const result = await Taro.chooseImage({
+          count: 1,
+          sizeType: ["compressed"],
+          sourceType: action.tapIndex === 0 ? ["camera"] : ["album"],
+        });
+
+        const nextPath = result.tempFilePaths?.[0];
+        if (!nextPath) {
+          return;
+        }
+        Taro.showLoading({ title: "上传中", mask: true });
+        const uploaded = await uploadCaseAssetImage(
+          caseId || "unknown-case",
+          nextPath,
+          "case-covers",
+        );
+        const coverFileID = uploaded && !uploaded.isLocalFallback ? uploaded.fileID : undefined;
+        const didSyncRemote = coverFileID
+          ? await updateRemoteCaseProfileByCaseId(caseId, { coverFileID })
+          : false;
+
+        setOwnerDetail((current) =>
+          current
+            ? {
+                ...current,
+                coverImage: nextPath,
+              }
+            : current,
+        );
+        setPublicDetail((current) =>
+          current
+            ? {
+                ...current,
+                heroImageUrl: nextPath,
+              }
+            : current,
+        );
+        if (!didSyncRemote) {
+          recordCaseProfileLocalFallback({
+            coverPath: nextPath,
+            caseId,
+            draftId: ownerDetail?.draftId,
+          });
+        } else {
+          clearCaseProfileLocalFallback({
+            caseId,
+            draftId: ownerDetail?.draftId,
+            clearCover: true,
+          });
+        }
+        Taro.hideLoading();
+
+        Taro.showToast({
+          title: "已更新头像",
+          icon: "none",
+        });
+      } catch (error) {
+        Taro.hideLoading();
+        if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
+          Taro.showToast({
+            title: "头像上传失败",
+            icon: "none",
+          });
+        }
+      }
+    });
 
   const loadDetailPage = () => {
     setDetailStatus("loading");
@@ -1040,7 +1033,7 @@ export default function RescueDetailPage() {
             runGuestActionWithLock(() =>
               Taro.navigateTo({
                 url: `/pages/support/claim/index?id=${publicDetail.caseId}`,
-              })
+              }),
             )
           }
         />

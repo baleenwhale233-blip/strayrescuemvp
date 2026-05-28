@@ -49,18 +49,21 @@ function createCaseWritesService({
       }
 
       updateData.coverFileID = coverFileID;
-      await db.collection(collections.assets).doc(`${bundle.case.id}_cover`).set({
-        data: {
-          assetId: `${bundle.case.id}_cover`,
-          caseId: bundle.case.id,
-          fileID: coverFileID,
-          kind: "case_cover",
-          visibility: "public",
-          uploadedByOpenid: openid,
-          createdAt: timestamp,
-          updatedAt: timestamp,
-        },
-      });
+      await db
+        .collection(collections.assets)
+        .doc(`${bundle.case.id}_cover`)
+        .set({
+          data: {
+            assetId: `${bundle.case.id}_cover`,
+            caseId: bundle.case.id,
+            fileID: coverFileID,
+            kind: "case_cover",
+            visibility: "public",
+            uploadedByOpenid: openid,
+            createdAt: timestamp,
+            updatedAt: timestamp,
+          },
+        });
     }
 
     const caseDoc = await getCaseDocByCaseId(bundle.case.id);
@@ -76,23 +79,26 @@ function createCaseWritesService({
     const caseId = draft.caseId || createId("case");
     const timestamp = nowIso();
 
-    await db.collection(collections.cases).doc(caseId).set({
-      data: {
-        caseId,
-        publicCaseId: draft.publicCaseId,
-        rescuerOpenid: openid,
-        animalName: draft.animalName || draft.name || "未命名救助",
-        species: draft.species || "cat",
-        coverFileID: draft.coverFileID,
-        initialSummary: draft.initialSummary || draft.summary || "",
-        currentStatus: draft.currentStatus || "draft",
-        currentStatusLabel: draft.currentStatusLabel || "草稿中",
-        targetAmount: Number(draft.targetAmount || draft.budget || 0),
-        visibility: "draft",
-        createdAt: draft.createdAt || timestamp,
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.cases)
+      .doc(caseId)
+      .set({
+        data: {
+          caseId,
+          publicCaseId: draft.publicCaseId,
+          rescuerOpenid: openid,
+          animalName: draft.animalName || draft.name || "未命名救助",
+          species: draft.species || "cat",
+          coverFileID: draft.coverFileID,
+          initialSummary: draft.initialSummary || draft.summary || "",
+          currentStatus: draft.currentStatus || "draft",
+          currentStatusLabel: draft.currentStatusLabel || "草稿中",
+          targetAmount: Number(draft.targetAmount || draft.budget || 0),
+          visibility: "draft",
+          createdAt: draft.createdAt || timestamp,
+          updatedAt: timestamp,
+        },
+      });
 
     return ok({ bundle: await getBundleByCaseId(caseId) });
   }
@@ -109,12 +115,15 @@ function createCaseWritesService({
       return fail("FORBIDDEN", "Only the rescuer can publish this case.");
     }
 
-    await db.collection(collections.cases).doc(caseDoc._id).update({
-      data: {
-        visibility: "published",
-        updatedAt: nowIso(),
-      },
-    });
+    await db
+      .collection(collections.cases)
+      .doc(caseDoc._id)
+      .update({
+        data: {
+          visibility: "published",
+          updatedAt: nowIso(),
+        },
+      });
 
     return ok({ bundle: await getBundleByCaseId(bundle.case.id) });
   }
@@ -126,11 +135,14 @@ function createCaseWritesService({
       return;
     }
 
-    await db.collection(collections.cases).doc(caseDoc._id).update({
-      data: {
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.cases)
+      .doc(caseDoc._id)
+      .update({
+        data: {
+          updatedAt: timestamp,
+        },
+      });
   }
 
   return {

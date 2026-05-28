@@ -57,11 +57,7 @@ const publishedLocalBundle: CanonicalCaseBundle = {
 };
 
 test("published case appears in discover while draft case does not", () => {
-  const cards = getDiscoverCardVMsFromBundles([
-    publishedBundle,
-    draftBundle,
-    publishedLocalBundle,
-  ]);
+  const cards = getDiscoverCardVMsFromBundles([publishedBundle, draftBundle, publishedLocalBundle]);
 
   const caseIds = cards.map((card) => card.caseId);
 

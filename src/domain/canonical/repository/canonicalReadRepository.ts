@@ -80,10 +80,7 @@ export function getSupportThreadsByCaseId(caseId?: string) {
   return getSupportThreadsByCaseIdFromBundles(getResolvedCanonicalBundles(), caseId);
 }
 
-export function getMySupportThreadByCaseId(
-  caseId: string | undefined,
-  supporterUserId: string,
-) {
+export function getMySupportThreadByCaseId(caseId: string | undefined, supporterUserId: string) {
   return getMySupportThreadByCaseIdFromBundles(
     getResolvedCanonicalBundles(),
     caseId,

@@ -76,7 +76,8 @@
   height: 80px;
   background: #ec5b13;
   border-radius: 999px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -4px rgba(0, 0, 0, 0.1);
   z-index: 1;
 }
@@ -108,7 +109,6 @@
   text-align: center;
   z-index: 1;
 }
-
 
 .rescue-create-page__form-group {
   margin-bottom: 24px;
@@ -182,7 +182,8 @@
 .rescue-create-page__primary {
   gap: 8px;
   min-height: 56px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 

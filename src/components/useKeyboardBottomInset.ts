@@ -44,9 +44,7 @@ export function useKeyboardBottomInset() {
 
     const handleKeyboardHeightChange = (event: KeyboardHeightChangeEvent) => {
       const nextHeight =
-        typeof event?.height === "number"
-          ? Math.max(event.height - safeAreaInsetBottom, 0)
-          : 0;
+        typeof event?.height === "number" ? Math.max(event.height - safeAreaInsetBottom, 0) : 0;
 
       setKeyboardBottomInset(nextHeight);
     };

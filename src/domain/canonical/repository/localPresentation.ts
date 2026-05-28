@@ -34,11 +34,7 @@ export type {
   LocalStatusSubmission,
 } from "./localPresentationCore";
 
-export function saveCaseTitleOverride(input: {
-  title: string;
-  caseId?: string;
-  draftId?: string;
-}) {
+export function saveCaseTitleOverride(input: { title: string; caseId?: string; draftId?: string }) {
   const title = input.title.trim();
   if (!title) {
     return;
@@ -87,13 +83,16 @@ export function clearCaseTitleOverride(caseId?: string, draftId?: string) {
 
   const store = readCaseTitleOverrideStore();
   writeCaseTitleOverrideStore(
-    clearCasePresentationOverrides({
-      ...store,
-      caseId: caseId || "",
-      draftId,
-    }, {
-      clearTitle: true,
-    }),
+    clearCasePresentationOverrides(
+      {
+        ...store,
+        caseId: caseId || "",
+        draftId,
+      },
+      {
+        clearTitle: true,
+      },
+    ),
   );
 }
 
@@ -104,13 +103,16 @@ export function clearCaseCoverOverride(caseId?: string, draftId?: string) {
 
   const store = readCaseTitleOverrideStore();
   writeCaseTitleOverrideStore(
-    clearCasePresentationOverrides({
-      ...store,
-      caseId: caseId || "",
-      draftId,
-    }, {
-      clearCover: true,
-    }),
+    clearCasePresentationOverrides(
+      {
+        ...store,
+        caseId: caseId || "",
+        draftId,
+      },
+      {
+        clearCover: true,
+      },
+    ),
   );
 }
 

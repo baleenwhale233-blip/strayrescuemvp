@@ -40,8 +40,8 @@ function hasAnyContactProfileInfo(input = {}) {
 }
 
 function getAssetFileID(doc = {}) {
-  return [doc.fileID, doc.originalUrl, doc.watermarkedUrl, doc.thumbnailUrl].find(
-    (value) => isCloudFileID(value),
+  return [doc.fileID, doc.originalUrl, doc.watermarkedUrl, doc.thumbnailUrl].find((value) =>
+    isCloudFileID(value),
   );
 }
 

@@ -29,9 +29,7 @@ function normalizeSavedDrafts(value: unknown): RescueCreateDraft[] {
     "savedList" in value &&
     Array.isArray((value as { savedList?: unknown[] }).savedList)
   ) {
-    return ((value as { savedList?: unknown[] }).savedList ?? []).filter(
-      isDraftLike,
-    );
+    return ((value as { savedList?: unknown[] }).savedList ?? []).filter(isDraftLike);
   }
 
   return [];
@@ -59,9 +57,6 @@ export const draftStorage = {
     return normalized;
   },
   setSavedList(drafts: RescueCreateDraft[]) {
-    Taro.setStorageSync(
-      SAVED_DRAFTS_KEY,
-      drafts.filter(isDraftLike),
-    );
+    Taro.setStorageSync(SAVED_DRAFTS_KEY, drafts.filter(isDraftLike));
   },
 };

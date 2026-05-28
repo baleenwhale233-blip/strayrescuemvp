@@ -119,14 +119,11 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
           catchMove
           onTap={(event) => event.stopPropagation()}
         >
-          <View className="theme-button-primary support-sheet__save-button" onTap={handlePrimaryAction}>
-            <Text>
-              {hasPaymentQr
-                ? "保存二维码"
-                : hasWechatId
-                  ? "复制微信号"
-                  : "关闭"}
-            </Text>
+          <View
+            className="theme-button-primary support-sheet__save-button"
+            onTap={handlePrimaryAction}
+          >
+            <Text>{hasPaymentQr ? "保存二维码" : hasWechatId ? "复制微信号" : "关闭"}</Text>
           </View>
         </View>
       </View>

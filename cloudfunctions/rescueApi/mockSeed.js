@@ -211,8 +211,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       rescuerOpenid: ownerOpenid,
       animalName: "糯米",
       species: "dog",
-      initialSummary:
-        "准备建档中的小白狗，先记了基础发现信息和预算，等明天做检查后再公开。",
+      initialSummary: "准备建档中的小白狗，先记了基础发现信息和预算，等明天做检查后再公开。",
       currentStatus: "draft",
       currentStatusLabel: "草稿中",
       targetAmount: 1200,
@@ -249,8 +248,7 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       rescuerOpenid: ownerOpenid,
       animalName: "米窝",
       species: "cat",
-      initialSummary:
-        "已完成治疗并找到领养的银渐层串串，档案归档保留，方便回看整段透明记录。",
+      initialSummary: "已完成治疗并找到领养的银渐层串串，档案归档保留，方便回看整段透明记录。",
       currentStatus: "completed",
       currentStatusLabel: "已完成",
       targetAmount: 3100,
@@ -272,7 +270,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-08T14:00:00.000Z",
       text: "已创建栗子的透明档案，补充了首诊情况和基础预算。",
       statusLabel: "建档",
-      assetIds: compactAssetIds(addCaseAsset("cover_lizi", "seed_case_owner_lizi_001", "case_cover")),
+      assetIds: compactAssetIds(
+        addCaseAsset("cover_lizi", "seed_case_owner_lizi_001", "case_cover"),
+      ),
       visibility: "public",
       createdAt: "2026-04-08T14:00:00.000Z",
     },
@@ -302,7 +302,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-09T09:20:00.000Z",
       text: "栗子已经能自己抬头吃流食，医生说先观察骨裂位置，今天重点补液和止痛。",
       statusLabel: "医疗救助中",
-      assetIds: compactAssetIds(addCaseAsset("progress_lizi_1", "seed_case_owner_lizi_001", "progress_photo")),
+      assetIds: compactAssetIds(
+        addCaseAsset("progress_lizi_1", "seed_case_owner_lizi_001", "progress_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-09T09:20:00.000Z",
     },
@@ -362,7 +364,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-15T09:40:00.000Z",
       text: "今天拆掉静脉留置针后状态更稳了，能自己走几步，但还需要继续笼养和按时吃药。",
       statusLabel: "医疗救助中",
-      assetIds: compactAssetIds(addCaseAsset("progress_lizi_2", "seed_case_owner_lizi_001", "progress_photo")),
+      assetIds: compactAssetIds(
+        addCaseAsset("progress_lizi_2", "seed_case_owner_lizi_001", "progress_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-15T09:40:00.000Z",
     },
@@ -374,7 +378,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-01T09:10:00.000Z",
       text: "已为阿黄建档，记录缝合伤口和术后恢复预算。",
       statusLabel: "建档",
-      assetIds: compactAssetIds(addCaseAsset("cover_ahuang", "seed_case_owner_ahuang_002", "case_cover")),
+      assetIds: compactAssetIds(
+        addCaseAsset("cover_ahuang", "seed_case_owner_ahuang_002", "case_cover"),
+      ),
       visibility: "public",
       createdAt: "2026-04-01T09:10:00.000Z",
     },
@@ -421,7 +427,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-14T18:20:00.000Z",
       text: "阿黄已经愿意自己踩地走路，今天换药时没有明显抗拒，后续主要观察伤口收口情况。",
       statusLabel: "恢复中",
-      assetIds: compactAssetIds(addCaseAsset("progress_ahuang", "seed_case_owner_ahuang_002", "progress_photo")),
+      assetIds: compactAssetIds(
+        addCaseAsset("progress_ahuang", "seed_case_owner_ahuang_002", "progress_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-14T18:20:00.000Z",
     },
@@ -433,7 +441,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-10T08:30:00.000Z",
       text: "团团已入笼安置，先补了驱虫和基础体检预算。",
       statusLabel: "建档",
-      assetIds: compactAssetIds(addCaseAsset("cover_tuantuan", "seed_case_owner_tuantuan_003", "case_cover")),
+      assetIds: compactAssetIds(
+        addCaseAsset("cover_tuantuan", "seed_case_owner_tuantuan_003", "case_cover"),
+      ),
       visibility: "public",
       createdAt: "2026-04-10T08:30:00.000Z",
     },
@@ -463,7 +473,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-11T20:00:00.000Z",
       text: "芝麻已开始吃药，先记下门诊检查和近两天观察重点。",
       statusLabel: "建档",
-      assetIds: compactAssetIds(addCaseAsset("cover_zhima", "seed_case_owner_zhima_004", "case_cover")),
+      assetIds: compactAssetIds(
+        addCaseAsset("cover_zhima", "seed_case_owner_zhima_004", "case_cover"),
+      ),
       visibility: "public",
       createdAt: "2026-04-11T20:00:00.000Z",
     },
@@ -490,7 +502,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-14T10:15:00.000Z",
       text: "芝麻体温已经降下来，但嘴里还很疼，今晚会继续观察进食情况，明天决定要不要复诊。",
       statusLabel: "医疗救助中",
-      assetIds: compactAssetIds(addCaseAsset("progress_zhima", "seed_case_owner_zhima_004", "progress_photo")),
+      assetIds: compactAssetIds(
+        addCaseAsset("progress_zhima", "seed_case_owner_zhima_004", "progress_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-14T10:15:00.000Z",
     },
@@ -502,7 +516,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-03-28T12:00:00.000Z",
       text: "为小满建档，记录绝育后感染处理和后续领养安排。",
       statusLabel: "建档",
-      assetIds: compactAssetIds(addCaseAsset("cover_xiaoman", "seed_case_other_xiaoman_006", "case_cover")),
+      assetIds: compactAssetIds(
+        addCaseAsset("cover_xiaoman", "seed_case_other_xiaoman_006", "case_cover"),
+      ),
       visibility: "public",
       createdAt: "2026-03-28T12:00:00.000Z",
     },
@@ -559,7 +575,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-04-15T16:30:00.000Z",
       text: "小满今天拆线顺利，已经开始尝试和人互动，接下来会先观察两天再安排试领养。",
       statusLabel: "恢复待领养",
-      assetIds: compactAssetIds(addCaseAsset("progress_xiaoman", "seed_case_other_xiaoman_006", "progress_photo")),
+      assetIds: compactAssetIds(
+        addCaseAsset("progress_xiaoman", "seed_case_other_xiaoman_006", "progress_photo"),
+      ),
       visibility: "public",
       createdAt: "2026-04-15T16:30:00.000Z",
     },
@@ -571,7 +589,9 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       occurredAt: "2026-03-05T20:20:00.000Z",
       text: "米窝已建档，记录伤口处理和寄养计划。",
       statusLabel: "建档",
-      assetIds: compactAssetIds(addCaseAsset("cover_miwo", "seed_case_owner_miwo_007", "case_cover")),
+      assetIds: compactAssetIds(
+        addCaseAsset("cover_miwo", "seed_case_owner_miwo_007", "case_cover"),
+      ),
       visibility: "public",
       createdAt: "2026-03-05T20:20:00.000Z",
     },
@@ -607,8 +627,20 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
         { description: "首晚住院押金", amount: 880 },
       ],
       evidenceItems: [
-        evidenceItem("seed_expense_lizi_exam_receipt", "receipt_lizi_exam", "seed_case_owner_lizi_001", "receipt"),
-        evidenceItem("seed_expense_lizi_exam_cat", "medical_lizi_exam", "seed_case_owner_lizi_001", "treatment_photo", "public", "medical_record"),
+        evidenceItem(
+          "seed_expense_lizi_exam_receipt",
+          "receipt_lizi_exam",
+          "seed_case_owner_lizi_001",
+          "receipt",
+        ),
+        evidenceItem(
+          "seed_expense_lizi_exam_cat",
+          "medical_lizi_exam",
+          "seed_case_owner_lizi_001",
+          "treatment_photo",
+          "public",
+          "medical_record",
+        ),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -633,8 +665,20 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
         { description: "复查拍片", amount: 180 },
       ],
       evidenceItems: [
-        evidenceItem("seed_expense_lizi_medication_receipt", "receipt_lizi_medication", "seed_case_owner_lizi_001", "receipt"),
-        evidenceItem("seed_expense_lizi_medication_record", "medical_lizi_medication", "seed_case_owner_lizi_001", "treatment_photo", "public", "medical_record"),
+        evidenceItem(
+          "seed_expense_lizi_medication_receipt",
+          "receipt_lizi_medication",
+          "seed_case_owner_lizi_001",
+          "receipt",
+        ),
+        evidenceItem(
+          "seed_expense_lizi_medication_record",
+          "medical_lizi_medication",
+          "seed_case_owner_lizi_001",
+          "treatment_photo",
+          "public",
+          "medical_record",
+        ),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -659,8 +703,18 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
         { description: "三天输液", amount: 300 },
       ],
       evidenceItems: [
-        evidenceItem("seed_expense_ahuang_receipt", "receipt_ahuang", "seed_case_owner_ahuang_002", "receipt"),
-        evidenceItem("seed_expense_ahuang_scene", "animal_ahuang", "seed_case_owner_ahuang_002", "animal_photo"),
+        evidenceItem(
+          "seed_expense_ahuang_receipt",
+          "receipt_ahuang",
+          "seed_case_owner_ahuang_002",
+          "receipt",
+        ),
+        evidenceItem(
+          "seed_expense_ahuang_scene",
+          "animal_ahuang",
+          "seed_case_owner_ahuang_002",
+          "animal_photo",
+        ),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -685,8 +739,18 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
         { description: "基础营养膏", amount: 60 },
       ],
       evidenceItems: [
-        evidenceItem("seed_expense_tuantuan_receipt", "receipt_tuantuan", "seed_case_owner_tuantuan_003", "receipt"),
-        evidenceItem("seed_expense_tuantuan_scene", "animal_tuantuan", "seed_case_owner_tuantuan_003", "animal_photo"),
+        evidenceItem(
+          "seed_expense_tuantuan_receipt",
+          "receipt_tuantuan",
+          "seed_case_owner_tuantuan_003",
+          "receipt",
+        ),
+        evidenceItem(
+          "seed_expense_tuantuan_scene",
+          "animal_tuantuan",
+          "seed_case_owner_tuantuan_003",
+          "animal_photo",
+        ),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -729,8 +793,18 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
         { description: "术后营养包", amount: 240 },
       ],
       evidenceItems: [
-        evidenceItem("seed_expense_xiaoman_receipt", "receipt_xiaoman", "seed_case_other_xiaoman_006", "receipt"),
-        evidenceItem("seed_expense_xiaoman_scene", "animal_xiaoman", "seed_case_other_xiaoman_006", "animal_photo"),
+        evidenceItem(
+          "seed_expense_xiaoman_receipt",
+          "receipt_xiaoman",
+          "seed_case_other_xiaoman_006",
+          "receipt",
+        ),
+        evidenceItem(
+          "seed_expense_xiaoman_scene",
+          "animal_xiaoman",
+          "seed_case_other_xiaoman_006",
+          "animal_photo",
+        ),
       ],
       evidenceLevel: "complete",
       verificationStatus: "confirmed",
@@ -816,8 +890,12 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       currency: "CNY",
       supportedAt: "2026-04-05T20:10:00.000Z",
       note: "之前一直喂阿黄，这次也想一起分担。",
-      screenshotFileIds: fileID("support_ahuang_confirmed") ? [fileID("support_ahuang_confirmed")] : [],
-      screenshotHashes: fileID("support_ahuang_confirmed") ? [fileID("support_ahuang_confirmed")] : [],
+      screenshotFileIds: fileID("support_ahuang_confirmed")
+        ? [fileID("support_ahuang_confirmed")]
+        : [],
+      screenshotHashes: fileID("support_ahuang_confirmed")
+        ? [fileID("support_ahuang_confirmed")]
+        : [],
       status: "confirmed",
       visibility: "private",
       createdAt: "2026-04-05T20:10:00.000Z",
@@ -839,8 +917,12 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
       currency: "CNY",
       supportedAt: "2026-04-05T13:10:00.000Z",
       note: "小满看起来精神多了，给你补一点复查费。",
-      screenshotFileIds: fileID("support_xiaoman_confirmed") ? [fileID("support_xiaoman_confirmed")] : [],
-      screenshotHashes: fileID("support_xiaoman_confirmed") ? [fileID("support_xiaoman_confirmed")] : [],
+      screenshotFileIds: fileID("support_xiaoman_confirmed")
+        ? [fileID("support_xiaoman_confirmed")]
+        : [],
+      screenshotHashes: fileID("support_xiaoman_confirmed")
+        ? [fileID("support_xiaoman_confirmed")]
+        : [],
       status: "confirmed",
       visibility: "private",
       createdAt: "2026-04-05T13:10:00.000Z",
@@ -853,21 +935,11 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
   ];
 
   const supportThreads = [
-    computeSupportThreadDoc("seed_thread_lizi_xiaoyu", [
-      supportEntries[0],
-    ]),
-    computeSupportThreadDoc("seed_thread_lizi_zhouzhou", [
-      supportEntries[1],
-    ]),
-    computeSupportThreadDoc("seed_thread_lizi_mumu", [
-      supportEntries[2],
-    ]),
-    computeSupportThreadDoc("seed_thread_ahuang_master", [
-      supportEntries[3],
-    ]),
-    computeSupportThreadDoc("seed_thread_xiaoman_neighbor", [
-      supportEntries[4],
-    ]),
+    computeSupportThreadDoc("seed_thread_lizi_xiaoyu", [supportEntries[0]]),
+    computeSupportThreadDoc("seed_thread_lizi_zhouzhou", [supportEntries[1]]),
+    computeSupportThreadDoc("seed_thread_lizi_mumu", [supportEntries[2]]),
+    computeSupportThreadDoc("seed_thread_ahuang_master", [supportEntries[3]]),
+    computeSupportThreadDoc("seed_thread_xiaoman_neighbor", [supportEntries[4]]),
   ];
 
   return {
@@ -883,12 +955,14 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
 }
 
 async function upsertDocs(db, collectionName, docs) {
-  await Promise.all(docs.map((doc) => {
-    const { _id, ...data } = doc;
-    return db.collection(collectionName).doc(doc._id).set({
-      data,
-    });
-  }));
+  await Promise.all(
+    docs.map((doc) => {
+      const { _id, ...data } = doc;
+      return db.collection(collectionName).doc(doc._id).set({
+        data,
+      });
+    }),
+  );
 }
 
 async function listAllDocIds(db, collectionName, pageSize = 100) {
@@ -898,9 +972,7 @@ async function listAllDocIds(db, collectionName, pageSize = 100) {
   while (true) {
     const result = await db.collection(collectionName).skip(offset).limit(pageSize).get();
     const docs = result.data || [];
-    ids.push(
-      ...docs.map((doc) => String(doc._id || "")).filter(Boolean),
-    );
+    ids.push(...docs.map((doc) => String(doc._id || "")).filter(Boolean));
 
     if (docs.length < pageSize) {
       break;
@@ -919,19 +991,21 @@ async function removeDocsByIds(db, collectionName, docIds, chunkSize = 20) {
     const chunk = docIds.slice(index, index + chunkSize);
     const results = await Promise.all(
       chunk.map((docId) =>
-        db.collection(collectionName).doc(docId).remove().then(
-          () => ({ ok: true, docId }),
-          (error) => ({ ok: false, docId, error }),
-        ),
+        db
+          .collection(collectionName)
+          .doc(docId)
+          .remove()
+          .then(
+            () => ({ ok: true, docId }),
+            (error) => ({ ok: false, docId, error }),
+          ),
       ),
     );
     const failed = results.filter((result) => !result.ok);
 
     if (failed.length) {
       throw new Error(
-        `Failed to prune ${collectionName}: ${failed
-          .map((result) => result.docId)
-          .join(", ")}`,
+        `Failed to prune ${collectionName}: ${failed.map((result) => result.docId).join(", ")}`,
       );
     }
 
@@ -989,11 +1063,7 @@ async function seedMockData({ db, collections, openid, input = {} }) {
   await upsertDocs(db, collections.supportEntries, seededCollections.supportEntries);
   await upsertDocs(db, collections.supportThreads, seededCollections.supportThreads);
   await upsertDocs(db, collections.assets, seededCollections.assets);
-  await upsertDocs(
-    db,
-    collections.sharedEvidenceGroups,
-    seededCollections.sharedEvidenceGroups,
-  );
+  await upsertDocs(db, collections.sharedEvidenceGroups, seededCollections.sharedEvidenceGroups);
 
   let cleanup = undefined;
   if (resetAlphaEnv) {

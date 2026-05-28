@@ -53,18 +53,14 @@ function toWorkbenchCardVM(
 }
 
 function sortCards(cards: WorkbenchCaseCardVM[]) {
-  return [...cards].sort((left, right) =>
-    right.updatedAtLabel.localeCompare(left.updatedAtLabel),
-  );
+  return [...cards].sort((left, right) => right.updatedAtLabel.localeCompare(left.updatedAtLabel));
 }
 
 export function getWorkbenchVM(input: {
   rescuer: CanonicalRescuer;
   cases: CanonicalCaseBundle[];
   includeAllCases?: boolean;
-  getCaseMeta?: (
-    bundle: CanonicalCaseBundle,
-  ) => { draftId?: string };
+  getCaseMeta?: (bundle: CanonicalCaseBundle) => { draftId?: string };
 }): WorkbenchVM {
   const ownedCases = input.includeAllCases
     ? input.cases

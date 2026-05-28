@@ -1,9 +1,4 @@
-const {
-  createId: defaultCreateId,
-  fail,
-  nowIso: defaultNowIso,
-  ok,
-} = require("../runtime");
+const { createId: defaultCreateId, fail, nowIso: defaultNowIso, ok } = require("../runtime");
 
 const ALLOWED_PROGRESS_STATUSES = new Set([
   "newly_found",
@@ -72,29 +67,35 @@ function createContentWritesService({
       timestamp,
     });
 
-    await db.collection(collections.events).doc(eventId).set({
-      data: {
-        eventId,
-        caseId: bundle.case.id,
-        type: "progress_update",
-        occurredAt,
-        text,
-        statusLabel,
-        assetIds,
-        visibility: "public",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.events)
+      .doc(eventId)
+      .set({
+        data: {
+          eventId,
+          caseId: bundle.case.id,
+          type: "progress_update",
+          occurredAt,
+          text,
+          statusLabel,
+          assetIds,
+          visibility: "public",
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      });
 
     const caseDoc = await getCaseDocByCaseId(bundle.case.id);
-    await db.collection(collections.cases).doc(caseDoc._id).update({
-      data: {
-        currentStatus: status,
-        currentStatusLabel: statusLabel,
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.cases)
+      .doc(caseDoc._id)
+      .update({
+        data: {
+          currentStatus: status,
+          currentStatusLabel: statusLabel,
+          updatedAt: timestamp,
+        },
+      });
 
     return ok({ bundle: await refreshBundle(bundle.case.id) });
   }
@@ -137,45 +138,51 @@ function createContentWritesService({
       timestamp,
     });
 
-    await db.collection(collections.expenses).doc(recordId).set({
-      data: {
-        recordId,
-        caseId: bundle.case.id,
-        amount,
-        currency: "CNY",
-        spentAt,
-        category: input?.category || "medical",
-        summary,
-        note: input?.note,
-        merchantName: input?.merchantName,
-        evidenceItems: toEvidenceItemsFromFileIds(evidenceFileIds, recordId),
-        evidenceLevel: evidenceFileIds.length ? "basic" : "needs_attention",
-        verificationStatus: "manual",
-        visibility: "public",
-        projectedEventId: eventId,
-        expenseItems: Array.isArray(input?.expenseItems) ? input.expenseItems : [],
-        createdAt: timestamp,
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.expenses)
+      .doc(recordId)
+      .set({
+        data: {
+          recordId,
+          caseId: bundle.case.id,
+          amount,
+          currency: "CNY",
+          spentAt,
+          category: input?.category || "medical",
+          summary,
+          note: input?.note,
+          merchantName: input?.merchantName,
+          evidenceItems: toEvidenceItemsFromFileIds(evidenceFileIds, recordId),
+          evidenceLevel: evidenceFileIds.length ? "basic" : "needs_attention",
+          verificationStatus: "manual",
+          visibility: "public",
+          projectedEventId: eventId,
+          expenseItems: Array.isArray(input?.expenseItems) ? input.expenseItems : [],
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      });
 
-    await db.collection(collections.events).doc(eventId).set({
-      data: {
-        eventId,
-        caseId: bundle.case.id,
-        type: "expense",
-        occurredAt: spentAt,
-        amount,
-        currency: "CNY",
-        merchantName: input?.merchantName,
-        expenseItemsText: summary,
-        verificationStatus: "manual",
-        assetIds,
-        visibility: "public",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.events)
+      .doc(eventId)
+      .set({
+        data: {
+          eventId,
+          caseId: bundle.case.id,
+          type: "expense",
+          occurredAt: spentAt,
+          amount,
+          currency: "CNY",
+          merchantName: input?.merchantName,
+          expenseItemsText: summary,
+          verificationStatus: "manual",
+          assetIds,
+          visibility: "public",
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      });
 
     await touchCase(bundle.case.id, timestamp);
 
@@ -201,29 +208,35 @@ function createContentWritesService({
     }
 
     const eventId = createId("budget_event");
-    await db.collection(collections.events).doc(eventId).set({
-      data: {
-        eventId,
-        caseId: bundle.case.id,
-        type: "budget_adjustment",
-        occurredAt,
-        previousTargetAmount,
-        newTargetAmount,
-        reason,
-        assetIds: [],
-        visibility: "public",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.events)
+      .doc(eventId)
+      .set({
+        data: {
+          eventId,
+          caseId: bundle.case.id,
+          type: "budget_adjustment",
+          occurredAt,
+          previousTargetAmount,
+          newTargetAmount,
+          reason,
+          assetIds: [],
+          visibility: "public",
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      });
 
     const caseDoc = await getCaseDocByCaseId(bundle.case.id);
-    await db.collection(collections.cases).doc(caseDoc._id).update({
-      data: {
-        targetAmount: newTargetAmount,
-        updatedAt: timestamp,
-      },
-    });
+    await db
+      .collection(collections.cases)
+      .doc(caseDoc._id)
+      .update({
+        data: {
+          targetAmount: newTargetAmount,
+          updatedAt: timestamp,
+        },
+      });
 
     return ok({ bundle: await refreshBundle(bundle.case.id) });
   }

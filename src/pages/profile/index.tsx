@@ -7,10 +7,7 @@ import supportHistoryIcon from "../../assets/profile/support-history.svg";
 import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
 import guideBookIcon from "../../assets/profile/guide-book.svg";
 import chevronIcon from "../../assets/rescue-detail/owner/action-chevron.svg";
-import {
-  loadMyProfile,
-  updateRemoteMyProfile,
-} from "../../domain/canonical/repository";
+import { loadMyProfile, updateRemoteMyProfile } from "../../domain/canonical/repository";
 import { uploadProfileAssetImage } from "../../domain/canonical/repository/cloudbaseClient";
 import "./index.scss";
 
@@ -47,13 +44,9 @@ function isTemporaryCloudAvatarUrl(avatarUrl: string) {
   try {
     const parsed = new URL(avatarUrl);
     const isCloudAssetHost =
-      parsed.hostname.endsWith("tcb.qcloud.la") ||
-      parsed.hostname.endsWith("tcb.qcloud.com");
+      parsed.hostname.endsWith("tcb.qcloud.la") || parsed.hostname.endsWith("tcb.qcloud.com");
 
-    return (
-      isCloudAssetHost &&
-      (parsed.searchParams.has("sign") || parsed.searchParams.has("t"))
-    );
+    return isCloudAssetHost && (parsed.searchParams.has("sign") || parsed.searchParams.has("t"));
   } catch {
     return avatarUrl.includes("tcb.qcloud") && avatarUrl.includes("sign=");
   }
@@ -93,10 +86,7 @@ function saveProfileUser(user: ProfileUser) {
   });
 }
 
-function mergeProfileUser(
-  base: ProfileUser,
-  incoming?: Partial<ProfileUser>,
-) {
+function mergeProfileUser(base: ProfileUser, incoming?: Partial<ProfileUser>) {
   return {
     avatarUrl: incoming?.avatarUrl || base.avatarUrl || "",
     nickName: incoming?.nickName || base.nickName || "",
@@ -105,9 +95,7 @@ function mergeProfileUser(
 
 function shouldUploadAvatar(avatarUrl: string) {
   return (
-    Boolean(avatarUrl) &&
-    !avatarUrl.startsWith("https://") &&
-    !avatarUrl.startsWith("cloud://")
+    Boolean(avatarUrl) && !avatarUrl.startsWith("https://") && !avatarUrl.startsWith("cloud://")
   );
 }
 
@@ -121,11 +109,10 @@ export default function ProfilePage() {
   const submitGuardRef = useRef(createSubmissionGuard());
 
   useDidShow(() => {
-    const localUser =
-      getStoredProfileUser() || {
-        avatarUrl: "",
-        nickName: "",
-      };
+    const localUser = getStoredProfileUser() || {
+      avatarUrl: "",
+      nickName: "",
+    };
     setProfileUser(localUser);
     loadMyProfile()
       .then((profile) => {
@@ -144,8 +131,7 @@ export default function ProfilePage() {
           Boolean(localUser.avatarUrl) &&
           !profile.avatarUrl &&
           shouldUploadAvatar(localUser.avatarUrl);
-        const shouldBackfillNickName =
-          Boolean(localUser.nickName.trim()) && !profile.displayName;
+        const shouldBackfillNickName = Boolean(localUser.nickName.trim()) && !profile.displayName;
 
         if (!shouldBackfillAvatar && !shouldBackfillNickName) {
           return;
@@ -210,84 +196,85 @@ export default function ProfilePage() {
     });
   };
 
-  const handleSaveProfile = async () => submitGuardRef.current.run(async () => {
-    const nextNickName = profileUser.nickName.trim();
-    const nextAvatarUrl = profileUser.avatarUrl.trim();
+  const handleSaveProfile = async () =>
+    submitGuardRef.current.run(async () => {
+      const nextNickName = profileUser.nickName.trim();
+      const nextAvatarUrl = profileUser.avatarUrl.trim();
 
-    if (!nextNickName && !nextAvatarUrl) {
-      Taro.showToast({
-        title: "请先填写昵称或选择头像",
-        icon: "none",
-      });
-      return;
-    }
-
-    try {
-      setSavingProfile(true);
-      Taro.showLoading({ title: "保存中", mask: true });
-
-      let avatarFileID = "";
-
-      if (shouldUploadAvatar(nextAvatarUrl)) {
-        const uploaded = await uploadProfileAssetImage(nextAvatarUrl, "avatar");
-        avatarFileID = uploaded.isLocalFallback ? "" : uploaded.fileID;
-      }
-
-      const didSyncRemote = await updateRemoteMyProfile({
-        displayName: nextNickName,
-        avatarUrl:
-          !avatarFileID &&
-          (nextAvatarUrl.startsWith("https://") || nextAvatarUrl.startsWith("cloud://"))
-            ? nextAvatarUrl
-            : undefined,
-        avatarFileID,
-      });
-
-      if (!didSyncRemote) {
-        saveProfileUser({
-          avatarUrl: nextAvatarUrl,
-          nickName: nextNickName,
-        });
-        Taro.hideLoading();
+      if (!nextNickName && !nextAvatarUrl) {
         Taro.showToast({
-          title: "已保存在本机，稍后会再同步",
+          title: "请先填写昵称或选择头像",
           icon: "none",
         });
         return;
       }
 
-      const confirmedProfile = await loadMyProfile().catch(() => undefined);
-      const nextUser = mergeProfileUser(
-        {
-          avatarUrl: nextAvatarUrl,
-          nickName: nextNickName,
-        },
-        {
-          avatarUrl: confirmedProfile?.avatarUrl || "",
-          nickName: confirmedProfile?.displayName || "",
-        },
-      );
+      try {
+        setSavingProfile(true);
+        Taro.showLoading({ title: "保存中", mask: true });
 
-      saveProfileUser(nextUser);
-      setProfileUser(nextUser);
-      Taro.hideLoading();
-      Taro.showToast({
-        title: "头像昵称已保存",
-        icon: "none",
-      });
-    } catch (error) {
-      Taro.hideLoading();
-      Taro.showToast({
-        title:
-          error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED"
-            ? "头像上传失败，请重试"
-            : "头像昵称保存失败",
-        icon: "none",
-      });
-    } finally {
-      setSavingProfile(false);
-    }
-  });
+        let avatarFileID = "";
+
+        if (shouldUploadAvatar(nextAvatarUrl)) {
+          const uploaded = await uploadProfileAssetImage(nextAvatarUrl, "avatar");
+          avatarFileID = uploaded.isLocalFallback ? "" : uploaded.fileID;
+        }
+
+        const didSyncRemote = await updateRemoteMyProfile({
+          displayName: nextNickName,
+          avatarUrl:
+            !avatarFileID &&
+            (nextAvatarUrl.startsWith("https://") || nextAvatarUrl.startsWith("cloud://"))
+              ? nextAvatarUrl
+              : undefined,
+          avatarFileID,
+        });
+
+        if (!didSyncRemote) {
+          saveProfileUser({
+            avatarUrl: nextAvatarUrl,
+            nickName: nextNickName,
+          });
+          Taro.hideLoading();
+          Taro.showToast({
+            title: "已保存在本机，稍后会再同步",
+            icon: "none",
+          });
+          return;
+        }
+
+        const confirmedProfile = await loadMyProfile().catch(() => undefined);
+        const nextUser = mergeProfileUser(
+          {
+            avatarUrl: nextAvatarUrl,
+            nickName: nextNickName,
+          },
+          {
+            avatarUrl: confirmedProfile?.avatarUrl || "",
+            nickName: confirmedProfile?.displayName || "",
+          },
+        );
+
+        saveProfileUser(nextUser);
+        setProfileUser(nextUser);
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "头像昵称已保存",
+          icon: "none",
+        });
+      } catch (error) {
+        Taro.hideLoading();
+        Taro.showToast({
+          title:
+            error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED"
+              ? "头像上传失败，请重试"
+              : "头像昵称保存失败",
+          icon: "none",
+        });
+      } finally {
+        setSavingProfile(false);
+      }
+    });
 
   const handleMenuTap = (key: (typeof MENU_ITEMS)[number]["key"]) => {
     if (menuNavigationLockRef.current) {
@@ -378,19 +365,11 @@ export default function ProfilePage() {
             >
               <View className="profile-page__menu-main">
                 <View className="profile-page__menu-icon-wrap">
-                  <Image
-                    className="profile-page__menu-icon"
-                    mode="aspectFit"
-                    src={item.icon}
-                  />
+                  <Image className="profile-page__menu-icon" mode="aspectFit" src={item.icon} />
                 </View>
                 <Text className="profile-page__menu-label">{item.label}</Text>
               </View>
-              <Image
-                className="profile-page__chevron"
-                mode="aspectFit"
-                src={chevronIcon}
-              />
+              <Image className="profile-page__chevron" mode="aspectFit" src={chevronIcon} />
             </View>
           ))}
         </View>

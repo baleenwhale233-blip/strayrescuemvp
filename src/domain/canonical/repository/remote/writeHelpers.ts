@@ -1,7 +1,4 @@
-import type {
-  RescueCreateDraft,
-  RescueCreateDraftStatus,
-} from "../draftRepository";
+import type { RescueCreateDraft, RescueCreateDraftStatus } from "../draftRepository";
 
 export function toRemoteDraftPayload(
   draft: RescueCreateDraft,
@@ -20,8 +17,7 @@ export function toRemoteDraftPayload(
     summary: draft.summary,
     initialSummary: draft.summary,
     species: draft.species,
-    currentStatus:
-      draft.currentStatus || (status === "published" ? "medical" : "draft"),
+    currentStatus: draft.currentStatus || (status === "published" ? "medical" : "draft"),
     currentStatusLabel:
       draft.currentStatusLabel || (status === "published" ? "医疗处理中" : "草稿中"),
     budget: draft.budget,

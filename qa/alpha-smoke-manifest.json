@@ -26,41 +26,25 @@
       "id": "rescue-workbench",
       "label": "救助页",
       "file": "qa/rescue-workbench.json",
-      "checks": [
-        "进行中案例和草稿箱均可加载",
-        "能从卡片进入详情或草稿预览",
-        "新建救助入口可见"
-      ]
+      "checks": ["进行中案例和草稿箱均可加载", "能从卡片进入详情或草稿预览", "新建救助入口可见"]
     },
     {
       "id": "support-claim",
       "label": "支持登记",
       "file": "qa/support-claim.json",
-      "checks": [
-        "案例卡正常显示",
-        "金额、截图、备注输入区可见",
-        "提交链路能进入 happy path"
-      ]
+      "checks": ["案例卡正常显示", "金额、截图、备注输入区可见", "提交链路能进入 happy path"]
     },
     {
       "id": "support-review-pending",
       "label": "核实支持",
       "file": "qa/support-review-pending.json",
-      "checks": [
-        "待确认列表可加载",
-        "确认和未匹配操作入口可见",
-        "处理后可回看结果"
-      ]
+      "checks": ["待确认列表可加载", "确认和未匹配操作入口可见", "处理后可回看结果"]
     },
     {
       "id": "rescue-expense",
       "label": "记账页",
       "file": "qa/rescue-expense.json",
-      "checks": [
-        "公共凭证区和明细区可见",
-        "底部提交按钮固定可见",
-        "提交流程可形成可回看的账目记录"
-      ]
+      "checks": ["公共凭证区和明细区可见", "底部提交按钮固定可见", "提交流程可形成可回看的账目记录"]
     },
     {
       "id": "rescue-update",

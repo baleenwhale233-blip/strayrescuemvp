@@ -45,12 +45,9 @@ test("remote fallback returns fallback value for infrastructure-style errors", a
 
 test("remote write fallback returns false only for fallback-worthy failures", async () => {
   assert.equal(
-    await writeRemoteOrFallback(
-      async () => undefined,
-      {
-        canUseCloudBase: true,
-      },
-    ),
+    await writeRemoteOrFallback(async () => undefined, {
+      canUseCloudBase: true,
+    }),
     true,
   );
   assert.equal(

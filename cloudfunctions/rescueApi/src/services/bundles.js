@@ -80,10 +80,7 @@ function createBundleService({
       const caseAssets = assets
         .filter((doc) => doc.caseId === caseId)
         .map((doc) => toCanonicalAsset(withTempFileURL(doc, tempFileURLMap)));
-      const profileAssetIds = [
-        profile.avatarAssetId,
-        profile.paymentQrAssetId,
-      ].filter(Boolean);
+      const profileAssetIds = [profile.avatarAssetId, profile.paymentQrAssetId].filter(Boolean);
       const profileScopedAssets = profileAssets
         .filter((doc) => profileAssetIds.includes(doc.assetId || doc.id || doc._id))
         .map((doc) => toCanonicalAsset(withTempFileURL(doc, tempFileURLMap)));
@@ -102,9 +99,7 @@ function createBundleService({
         sourceKind: "remote",
         rescuer: toCanonicalRescuer(profile, caseRecord.rescuerId),
         case: caseRecord,
-        events: events
-          .filter((doc) => doc.caseId === caseId)
-          .map(toCanonicalEvent),
+        events: events.filter((doc) => doc.caseId === caseId).map(toCanonicalEvent),
         assets: [...caseAssets, ...profileScopedAssets],
         sharedEvidenceGroups: sharedGroups
           .filter((doc) => doc.caseId === caseId)

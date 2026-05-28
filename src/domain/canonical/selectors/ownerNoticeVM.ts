@@ -1,8 +1,4 @@
-import type {
-  CanonicalCaseBundle,
-  HomepageEligibilityStatus,
-  IsoDateTimeString,
-} from "../types";
+import type { CanonicalCaseBundle, HomepageEligibilityStatus, IsoDateTimeString } from "../types";
 import { getHomepageEligibility, getStructuredSupportEntries } from "../modeling";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -17,8 +13,7 @@ function getLastPublicActivityAt(bundle: CanonicalCaseBundle): IsoDateTimeString
   return (
     [...bundle.events]
       .filter((event) => event.visibility === "public")
-      .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt))[0]
-      ?.occurredAt ||
+      .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt))[0]?.occurredAt ||
     bundle.case.updatedAt ||
     bundle.case.createdAt
   );
@@ -35,10 +30,7 @@ export function getLastUpdateAgeHint(bundle: CanonicalCaseBundle) {
   return `最近 ${elapsedDays} 天未更新`;
 }
 
-function getHomepageNotice(input: {
-  status: HomepageEligibilityStatus;
-  reason: string;
-}) {
+function getHomepageNotice(input: { status: HomepageEligibilityStatus; reason: string }) {
   if (input.status === "eligible") {
     return "已满足首页展示条件";
   }

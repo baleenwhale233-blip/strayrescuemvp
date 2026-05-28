@@ -15,10 +15,7 @@ function toProfilePayload(profile, avatarAsset, paymentQrAsset) {
     profile.avatarUrl ||
     "";
   const paymentQrUrl =
-    paymentQrAsset?._tempFileURL ||
-    paymentQrAsset?.fileID ||
-    paymentQrAsset?.originalUrl ||
-    "";
+    paymentQrAsset?._tempFileURL || paymentQrAsset?.fileID || paymentQrAsset?.originalUrl || "";
 
   return {
     openid: profile.openid || profile._openid || profile.userId || profile._id,
@@ -125,17 +122,20 @@ function createProfileService({
       }
 
       avatarAssetId = `profile_${sanitizeId(openid)}_avatar`;
-      await db.collection(collections.assets).doc(avatarAssetId).set({
-        data: {
-          assetId: avatarAssetId,
-          fileID: avatarFileID,
-          kind: "avatar",
-          visibility: "public",
-          uploadedByOpenid: openid,
-          createdAt: existing?.createdAt || timestamp,
-          updatedAt: timestamp,
-        },
-      });
+      await db
+        .collection(collections.assets)
+        .doc(avatarAssetId)
+        .set({
+          data: {
+            assetId: avatarAssetId,
+            fileID: avatarFileID,
+            kind: "avatar",
+            visibility: "public",
+            uploadedByOpenid: openid,
+            createdAt: existing?.createdAt || timestamp,
+            updatedAt: timestamp,
+          },
+        });
     }
 
     if (paymentQrFileID) {
@@ -144,17 +144,20 @@ function createProfileService({
       }
 
       paymentQrAssetId = `profile_${sanitizeId(openid)}_payment_qr`;
-      await db.collection(collections.assets).doc(paymentQrAssetId).set({
-        data: {
-          assetId: paymentQrAssetId,
-          fileID: paymentQrFileID,
-          kind: "payment_qr",
-          visibility: "private",
-          uploadedByOpenid: openid,
-          createdAt: existing?.createdAt || timestamp,
-          updatedAt: timestamp,
-        },
-      });
+      await db
+        .collection(collections.assets)
+        .doc(paymentQrAssetId)
+        .set({
+          data: {
+            assetId: paymentQrAssetId,
+            fileID: paymentQrFileID,
+            kind: "payment_qr",
+            visibility: "private",
+            uploadedByOpenid: openid,
+            createdAt: existing?.createdAt || timestamp,
+            updatedAt: timestamp,
+          },
+        });
     }
 
     const profile = {

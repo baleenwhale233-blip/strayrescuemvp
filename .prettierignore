@@ -1,0 +1,12 @@
+node_modules/
+cloudfunctions/rescueApi/node_modules/
+dist/
+.tmp/
+.qa-output/
+.swc/
+.DS_Store
+package-lock.json
+cloudfunctions/rescueApi/package-lock.json
+project.private.config.json
+docs/alpha_seed_assets/
+docs/cloudbase_seed/*-import.json

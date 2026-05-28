@@ -146,107 +146,108 @@ export default function RescueBudgetUpdatePage() {
     return null;
   }, [detail, draft]);
 
-  const handleSubmit = async () => submitGuardRef.current.run(async () => {
-    if (!contextCard) {
-      return;
-    }
+  const handleSubmit = async () =>
+    submitGuardRef.current.run(async () => {
+      if (!contextCard) {
+        return;
+      }
 
-    const numericBudget = parseBudgetAmount(budget);
-    if (!numericBudget || numericBudget <= 0) {
-      Taro.showToast({
-        title: "请填写新预估总金额",
-        icon: "none",
-      });
-      return;
-    }
-
-    if (!reason.trim()) {
-      Taro.showToast({
-        title: "请填写追加原因",
-        icon: "none",
-      });
-      return;
-    }
-
-    const timestampLabel = formatTimelineTimestamp();
-    const occurredAt = new Date().toISOString();
-
-    try {
-      Taro.showLoading({ title: "提交中", mask: true });
-
-      if (draftId) {
-        const matchedDraft = getDraftById(draftId) || getCurrentDraft();
-        if (!matchedDraft) {
-          Taro.hideLoading();
-          Taro.showToast({
-            title: "草稿上下文丢失",
-            icon: "none",
-          });
-          return;
-        }
-
-        const nextDraft: RescueCreateDraft = {
-          ...matchedDraft,
-          budget: numericBudget,
-          budgetNote: reason.trim(),
-          timeline: [
-            buildDraftBudgetEntry({
-              previousTargetAmount: matchedDraft.budget || 0,
-              currentTargetAmount: numericBudget,
-              reason: reason.trim(),
-            }),
-            ...matchedDraft.timeline,
-          ],
-          updatedAt: occurredAt,
-        };
-
-        replaceDraft(nextDraft);
-        syncCurrentDraft(nextDraft);
-      } else if (caseId) {
-        const didSyncRemote = await createRemoteBudgetAdjustmentByCaseId(caseId, {
-          previousTargetAmount: contextCard.previousBudget,
-          newTargetAmount: numericBudget,
-          reason: reason.trim(),
-          occurredAt,
-        });
-
-        if (!didSyncRemote) {
-          recordCaseContentWriteLocalFallback({
-            caseId,
-            kind: "budget",
-            submission: {
-              id: `local-budget-${Date.now()}`,
-              previousTargetAmount: contextCard.previousBudget,
-              currentTargetAmount: numericBudget,
-              reason: reason.trim(),
-              timestampLabel,
-              createdAt: occurredAt,
-            },
-          });
-        } else {
-          clearCaseContentWriteLocalFallback({ caseId, kind: "budget" });
-        }
-      } else {
-        Taro.hideLoading();
+      const numericBudget = parseBudgetAmount(budget);
+      if (!numericBudget || numericBudget <= 0) {
         Taro.showToast({
-          title: "当前案例上下文缺失",
+          title: "请填写新预估总金额",
           icon: "none",
         });
         return;
       }
 
-      Taro.hideLoading();
-      await showSuccessFeedback({
-        title: "预算已更新",
-      });
-    } catch {
-      Taro.hideLoading();
-      Taro.showToast({
-        title: "预算追加失败",
-        icon: "none",
-      });
-    }
-  });
+      if (!reason.trim()) {
+        Taro.showToast({
+          title: "请填写追加原因",
+          icon: "none",
+        });
+        return;
+      }
+
+      const timestampLabel = formatTimelineTimestamp();
+      const occurredAt = new Date().toISOString();
+
+      try {
+        Taro.showLoading({ title: "提交中", mask: true });
+
+        if (draftId) {
+          const matchedDraft = getDraftById(draftId) || getCurrentDraft();
+          if (!matchedDraft) {
+            Taro.hideLoading();
+            Taro.showToast({
+              title: "草稿上下文丢失",
+              icon: "none",
+            });
+            return;
+          }
+
+          const nextDraft: RescueCreateDraft = {
+            ...matchedDraft,
+            budget: numericBudget,
+            budgetNote: reason.trim(),
+            timeline: [
+              buildDraftBudgetEntry({
+                previousTargetAmount: matchedDraft.budget || 0,
+                currentTargetAmount: numericBudget,
+                reason: reason.trim(),
+              }),
+              ...matchedDraft.timeline,
+            ],
+            updatedAt: occurredAt,
+          };
+
+          replaceDraft(nextDraft);
+          syncCurrentDraft(nextDraft);
+        } else if (caseId) {
+          const didSyncRemote = await createRemoteBudgetAdjustmentByCaseId(caseId, {
+            previousTargetAmount: contextCard.previousBudget,
+            newTargetAmount: numericBudget,
+            reason: reason.trim(),
+            occurredAt,
+          });
+
+          if (!didSyncRemote) {
+            recordCaseContentWriteLocalFallback({
+              caseId,
+              kind: "budget",
+              submission: {
+                id: `local-budget-${Date.now()}`,
+                previousTargetAmount: contextCard.previousBudget,
+                currentTargetAmount: numericBudget,
+                reason: reason.trim(),
+                timestampLabel,
+                createdAt: occurredAt,
+              },
+            });
+          } else {
+            clearCaseContentWriteLocalFallback({ caseId, kind: "budget" });
+          }
+        } else {
+          Taro.hideLoading();
+          Taro.showToast({
+            title: "当前案例上下文缺失",
+            icon: "none",
+          });
+          return;
+        }
+
+        Taro.hideLoading();
+        await showSuccessFeedback({
+          title: "预算已更新",
+        });
+      } catch {
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "预算追加失败",
+          icon: "none",
+        });
+      }
+    });
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
@@ -276,9 +277,13 @@ export default function RescueBudgetUpdatePage() {
           <View className="rescue-budget-update-page__animal-copy">
             <View className="rescue-budget-update-page__animal-title-row">
               <Text className="rescue-budget-update-page__animal-title">{contextCard.title}</Text>
-              <Text className="rescue-budget-update-page__animal-status">{contextCard.statusLabel}</Text>
+              <Text className="rescue-budget-update-page__animal-status">
+                {contextCard.statusLabel}
+              </Text>
             </View>
-            <Text className="rescue-budget-update-page__animal-meta">ID: {contextCard.publicCaseId}</Text>
+            <Text className="rescue-budget-update-page__animal-meta">
+              ID: {contextCard.publicCaseId}
+            </Text>
             <Text className="rescue-budget-update-page__animal-meta rescue-budget-update-page__animal-meta--muted">
               {contextCard.rescueStartedAtLabel}
             </Text>
@@ -317,7 +322,11 @@ export default function RescueBudgetUpdatePage() {
         </View>
 
         <View className="rescue-budget-update-page__notice">
-          <Image className="rescue-budget-update-page__notice-icon" mode="aspectFit" src={noteInfoIcon} />
+          <Image
+            className="rescue-budget-update-page__notice-icon"
+            mode="aspectFit"
+            src={noteInfoIcon}
+          />
           <Text className="rescue-budget-update-page__notice-text">
             预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
           </Text>
@@ -325,9 +334,16 @@ export default function RescueBudgetUpdatePage() {
       </View>
 
       <View className="rescue-budget-update-page__bottom">
-        <View className="theme-button-primary rescue-budget-update-page__bottom-submit" onTap={handleSubmit}>
+        <View
+          className="theme-button-primary rescue-budget-update-page__bottom-submit"
+          onTap={handleSubmit}
+        >
           <Text>确认追加并更新时间线</Text>
-          <Image className="rescue-budget-update-page__bottom-submit-icon" mode="aspectFit" src={submitArrowIcon} />
+          <Image
+            className="rescue-budget-update-page__bottom-submit-icon"
+            mode="aspectFit"
+            src={submitArrowIcon}
+          />
         </View>
       </View>
     </View>

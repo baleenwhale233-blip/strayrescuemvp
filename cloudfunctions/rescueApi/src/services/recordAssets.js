@@ -8,15 +8,7 @@ function createRecordAssetService({
   withTempFileURL,
 }) {
   async function createAssetDocs(input) {
-    const {
-      caseId,
-      fileIds,
-      idPrefix,
-      kind,
-      visibility,
-      uploadedByOpenid,
-      timestamp,
-    } = input;
+    const { caseId, fileIds, idPrefix, kind, visibility, uploadedByOpenid, timestamp } = input;
     const assetIds = [];
 
     for (const [index, fileID] of fileIds.entries()) {
@@ -44,16 +36,17 @@ function createRecordAssetService({
       return new Map();
     }
 
-    const docs = await queryCollection(collections.assets, {
-      assetId: dbCommand.in(ids),
-    }, 1000);
+    const docs = await queryCollection(
+      collections.assets,
+      {
+        assetId: dbCommand.in(ids),
+      },
+      1000,
+    );
     const tempFileURLMap = await getTempFileURLMap(docs.map(getAssetFileID));
 
     return new Map(
-      docs.map((doc) => [
-        doc.assetId || doc.id || doc._id,
-        withTempFileURL(doc, tempFileURLMap),
-      ]),
+      docs.map((doc) => [doc.assetId || doc.id || doc._id, withTempFileURL(doc, tempFileURLMap)]),
     );
   }
 

@@ -35,10 +35,7 @@ export type {
 export { calculateDraftLedger, formatTimelineTimestamp, draftIdToCaseId, caseIdToDraftId };
 export { toOwnerActionTimelineEntry, type OwnerDetailActionKey } from "./localRepositoryCore";
 
-function resolveAssetUrl(
-  bundle: ReturnType<typeof getSeedBundles>[number],
-  assetId?: string,
-) {
+function resolveAssetUrl(bundle: ReturnType<typeof getSeedBundles>[number], assetId?: string) {
   if (!assetId) {
     return undefined;
   }
@@ -47,9 +44,7 @@ function resolveAssetUrl(
   return asset?.watermarkedUrl || asset?.thumbnailUrl || asset?.originalUrl;
 }
 
-function buildStatusTimelineEntry(
-  bundle: CanonicalCaseBundle,
-): RescueCreateTimelineEntry[] {
+function buildStatusTimelineEntry(bundle: CanonicalCaseBundle): RescueCreateTimelineEntry[] {
   return bundle.events
     .filter(
       (event) =>
@@ -96,9 +91,11 @@ function buildDraftFromBundle(bundle: CanonicalCaseBundle): RescueCreateDraft {
       resolveAssetUrl(bundle, bundle.case.faceIdAssetId) ||
       "",
     budget: bundle.case.targetAmount,
-    budgetNote: bundle.events.find((event) => event.type === "budget_adjustment")?.type === "budget_adjustment"
-      ? bundle.events.find((event) => event.type === "budget_adjustment")?.reason || ""
-      : "",
+    budgetNote:
+      bundle.events.find((event) => event.type === "budget_adjustment")?.type ===
+      "budget_adjustment"
+        ? bundle.events.find((event) => event.type === "budget_adjustment")?.reason || ""
+        : "",
     species: bundle.case.species,
     currentStatus: bundle.case.currentStatus,
     currentStatusLabel: bundle.case.currentStatusLabel,
@@ -189,10 +186,7 @@ export function persistDraft(status: RescueCreateDraftStatus) {
   return saveCurrentDraft(status);
 }
 
-export function appendDraftEntry(
-  draft: RescueCreateDraft,
-  entry: RescueCreateTimelineEntry,
-) {
+export function appendDraftEntry(draft: RescueCreateDraft, entry: RescueCreateTimelineEntry) {
   const nextDraft = {
     ...draft,
     timeline: [entry, ...draft.timeline],

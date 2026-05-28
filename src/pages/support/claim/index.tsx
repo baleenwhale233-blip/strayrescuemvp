@@ -72,9 +72,7 @@ export default function SupportClaimPage() {
     loadPublicDetailVMByCaseId(caseId)
       .then((nextDetail) => {
         setDetail(nextDetail);
-        setCaseCoverSrc(
-          nextDetail ? getSupportClaimCover(nextDetail) : animalProfileExact,
-        );
+        setCaseCoverSrc(nextDetail ? getSupportClaimCover(nextDetail) : animalProfileExact);
         setLoadStatus(nextDetail ? "ready" : "error");
       })
       .catch(() => {
@@ -98,7 +96,9 @@ export default function SupportClaimPage() {
             <AppIcon name="handCoins" size={24} />
           </View>
           <Text className="support-claim__state-title">正在加载档案信息</Text>
-          <Text className="support-claim__state-copy">先把档案卡片和登记表单准备好，请稍等片刻。</Text>
+          <Text className="support-claim__state-copy">
+            先把档案卡片和登记表单准备好，请稍等片刻。
+          </Text>
         </View>
       </View>
     );
@@ -116,7 +116,9 @@ export default function SupportClaimPage() {
             <AppIcon name="fileText" size={24} />
           </View>
           <Text className="support-claim__state-title">档案信息加载失败</Text>
-          <Text className="support-claim__state-copy">当前没能拿到档案信息，你可以返回上一页后稍后再试。</Text>
+          <Text className="support-claim__state-copy">
+            当前没能拿到档案信息，你可以返回上一页后稍后再试。
+          </Text>
         </View>
       </View>
     );
@@ -135,49 +137,49 @@ export default function SupportClaimPage() {
     }
   };
 
-  const handleSubmit = async () => submitGuardRef.current.run(async () => {
-    const numericAmount = Number(amount);
+  const handleSubmit = async () =>
+    submitGuardRef.current.run(async () => {
+      const numericAmount = Number(amount);
 
-    if (!numericAmount || Number.isNaN(numericAmount)) {
+      if (!numericAmount || Number.isNaN(numericAmount)) {
         Taro.showToast({
-        title: "请填写登记金额",
-        icon: "none",
-      });
-      return;
-    }
+          title: "请填写登记金额",
+          icon: "none",
+        });
+        return;
+      }
 
-    try {
-      Taro.showLoading({ title: "提交中", mask: true });
-      const uploaded = imagePath
-        ? await uploadSupportProofImage(caseId || "unknown-case", imagePath)
-        : undefined;
-      const screenshotFileIds =
-        uploaded && !uploaded.isLocalFallback ? [uploaded.fileID] : [];
-      const localScreenshotPaths =
-        imagePath && (!uploaded || uploaded.isLocalFallback) ? [imagePath] : [];
+      try {
+        Taro.showLoading({ title: "提交中", mask: true });
+        const uploaded = imagePath
+          ? await uploadSupportProofImage(caseId || "unknown-case", imagePath)
+          : undefined;
+        const screenshotFileIds = uploaded && !uploaded.isLocalFallback ? [uploaded.fileID] : [];
+        const localScreenshotPaths =
+          imagePath && (!uploaded || uploaded.isLocalFallback) ? [imagePath] : [];
 
-      await createRemoteSupportEntryByCaseId(caseId, {
-        supporterNameMasked: nickname || "默认写入微信ID",
-        amount: numericAmount,
-        supportedAt: new Date().toISOString(),
-        note,
-        screenshotFileIds,
-        localScreenshotPaths,
-      });
-      Taro.hideLoading();
+        await createRemoteSupportEntryByCaseId(caseId, {
+          supporterNameMasked: nickname || "默认写入微信ID",
+          amount: numericAmount,
+          supportedAt: new Date().toISOString(),
+          note,
+          screenshotFileIds,
+          localScreenshotPaths,
+        });
+        Taro.hideLoading();
 
-      await showSuccessFeedback({
-        title: "已登记，待处理",
-        delay: 900,
-      });
-    } catch (error) {
-      Taro.hideLoading();
-      Taro.showToast({
-        title: mapSupportError(error),
-        icon: "none",
-      });
-    }
-  });
+        await showSuccessFeedback({
+          title: "已登记，待处理",
+          delay: 900,
+        });
+      } catch (error) {
+        Taro.hideLoading();
+        Taro.showToast({
+          title: mapSupportError(error),
+          icon: "none",
+        });
+      }
+    });
 
   return (
     <View
@@ -238,7 +240,11 @@ export default function SupportClaimPage() {
           ) : (
             <>
               <View className="support-claim__upload-icon">
-                <Image className="support-claim__upload-icon-image" mode="aspectFit" src={addPhotoIcon} />
+                <Image
+                  className="support-claim__upload-icon-image"
+                  mode="aspectFit"
+                  src={addPhotoIcon}
+                />
               </View>
               <Text className="support-claim__upload-text">添加照片</Text>
             </>

@@ -20,10 +20,7 @@ import type {
   UpdateCaseProfileInput,
   UpdateMyProfileInput,
 } from "./types";
-import {
-  buildLocalManualSupportEntryInput,
-  toRemoteDraftPayload,
-} from "./writeHelpers";
+import { buildLocalManualSupportEntryInput, toRemoteDraftPayload } from "./writeHelpers";
 
 type BundlePayload = {
   bundle?: CanonicalCaseBundle;
@@ -44,27 +41,21 @@ function getRemoteFallbackOptions() {
 }
 
 export async function updateRemoteMyProfile(input: UpdateMyProfileInput) {
-  return writeRemoteOrFallback(
-    async () => {
-      await callRescueApi<ProfilePayload>("updateMyProfile", input);
-    },
-    getRemoteFallbackOptions(),
-  );
+  return writeRemoteOrFallback(async () => {
+    await callRescueApi<ProfilePayload>("updateMyProfile", input);
+  }, getRemoteFallbackOptions());
 }
 
 export async function updateRemoteCaseProfileByCaseId(
   caseId: string | undefined,
   input: UpdateCaseProfileInput,
 ) {
-  return writeRemoteOrFallback(
-    async () => {
-      await callRescueApi<BundlePayload>("updateCaseProfile", {
-        caseId,
-        ...input,
-      });
-    },
-    getRemoteFallbackOptions(),
-  );
+  return writeRemoteOrFallback(async () => {
+    await callRescueApi<BundlePayload>("updateCaseProfile", {
+      caseId,
+      ...input,
+    });
+  }, getRemoteFallbackOptions());
 }
 
 export async function createRemoteSupportEntryByCaseId(
@@ -126,15 +117,12 @@ export async function createRemoteManualSupportEntryByCaseId(
   caseId: string | undefined,
   input: CreateManualSupportEntryInput,
 ) {
-  return writeRemoteOrFallback(
-    async () => {
-      await callRescueApi<BundlePayload>("createManualSupportEntry", {
-        caseId,
-        ...input,
-      });
-    },
-    getRemoteFallbackOptions(),
-  ).then((didSyncRemote) => {
+  return writeRemoteOrFallback(async () => {
+    await callRescueApi<BundlePayload>("createManualSupportEntry", {
+      caseId,
+      ...input,
+    });
+  }, getRemoteFallbackOptions()).then((didSyncRemote) => {
     if (didSyncRemote) {
       return true;
     }
@@ -153,45 +141,36 @@ export async function createRemoteProgressUpdateByCaseId(
   caseId: string | undefined,
   input: CreateProgressUpdateInput,
 ) {
-  return writeRemoteOrFallback(
-    async () => {
-      await callRescueApi<BundlePayload>("createProgressUpdate", {
-        caseId,
-        ...input,
-      });
-    },
-    getRemoteFallbackOptions(),
-  );
+  return writeRemoteOrFallback(async () => {
+    await callRescueApi<BundlePayload>("createProgressUpdate", {
+      caseId,
+      ...input,
+    });
+  }, getRemoteFallbackOptions());
 }
 
 export async function createRemoteExpenseRecordByCaseId(
   caseId: string | undefined,
   input: CreateExpenseRecordInput,
 ) {
-  return writeRemoteOrFallback(
-    async () => {
-      await callRescueApi<BundlePayload>("createExpenseRecord", {
-        caseId,
-        ...input,
-      });
-    },
-    getRemoteFallbackOptions(),
-  );
+  return writeRemoteOrFallback(async () => {
+    await callRescueApi<BundlePayload>("createExpenseRecord", {
+      caseId,
+      ...input,
+    });
+  }, getRemoteFallbackOptions());
 }
 
 export async function createRemoteBudgetAdjustmentByCaseId(
   caseId: string | undefined,
   input: CreateBudgetAdjustmentInput,
 ) {
-  return writeRemoteOrFallback(
-    async () => {
-      await callRescueApi<BundlePayload>("createBudgetAdjustment", {
-        caseId,
-        ...input,
-      });
-    },
-    getRemoteFallbackOptions(),
-  );
+  return writeRemoteOrFallback(async () => {
+    await callRescueApi<BundlePayload>("createBudgetAdjustment", {
+      caseId,
+      ...input,
+    });
+  }, getRemoteFallbackOptions());
 }
 
 export async function saveRemoteDraftCase(

@@ -34,10 +34,7 @@ type LocalPresentationOptions = {
   applyLocalOverlays?: boolean;
 };
 
-function getCaseTitleOverride(input: {
-  caseId?: string;
-  draftId?: string;
-}) {
+function getCaseTitleOverride(input: { caseId?: string; draftId?: string }) {
   const store = readCaseTitleOverrideStore();
 
   return (
@@ -46,10 +43,7 @@ function getCaseTitleOverride(input: {
   );
 }
 
-function getCaseCoverOverride(input: {
-  caseId?: string;
-  draftId?: string;
-}) {
+function getCaseCoverOverride(input: { caseId?: string; draftId?: string }) {
   const store = readCaseTitleOverrideStore();
 
   return (
@@ -65,10 +59,11 @@ function getSavedDraftPresentation(input: { caseId?: string; draftId?: string })
   );
 }
 
-function resolvePresentedValue(input: CasePresentationInput & { readOverride: (input: {
-  caseId?: string;
-  draftId?: string;
-}) => string | undefined }) {
+function resolvePresentedValue(
+  input: CasePresentationInput & {
+    readOverride: (input: { caseId?: string; draftId?: string }) => string | undefined;
+  },
+) {
   return (
     input.readOverride({ caseId: input.caseId, draftId: input.draftId }) ||
     input.draftValue ||

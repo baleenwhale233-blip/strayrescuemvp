@@ -6,8 +6,5 @@
     "noEmit": false,
     "module": "CommonJS"
   },
-  "include": [
-    "src/domain/canonical/**/*.ts",
-    "types/assets.d.ts"
-  ]
+  "include": ["src/domain/canonical/**/*.ts", "types/assets.d.ts"]
 }

@@ -38,13 +38,10 @@ cloud.init({
 
 const db = cloud.database();
 const _ = db.command;
-const {
-  getOpenid,
-  getOne,
-  getTempFileURLMap,
-  queryCollection,
-  withTempFileURL,
-} = createRuntime({ cloud, db });
+const { getOpenid, getOne, getTempFileURLMap, queryCollection, withTempFileURL } = createRuntime({
+  cloud,
+  db,
+});
 
 const COLLECTIONS = {
   profiles: "user_profiles",
@@ -56,11 +53,7 @@ const COLLECTIONS = {
   assets: "evidence_assets",
   sharedEvidenceGroups: "shared_evidence_groups",
 };
-const {
-  getMyProfile,
-  getProfileByOpenid,
-  updateMyProfile,
-} = createProfileService({
+const { getMyProfile, getProfileByOpenid, updateMyProfile } = createProfileService({
   collections: COLLECTIONS,
   db,
   getAssetFileID,
@@ -68,11 +61,7 @@ const {
   getTempFileURLMap,
   withTempFileURL,
 });
-const {
-  composeBundles,
-  getBundleByCaseId,
-  getCaseDocByCaseId,
-} = createBundleService({
+const { composeBundles, getBundleByCaseId, getCaseDocByCaseId } = createBundleService({
   collections: COLLECTIONS,
   dbCommand: _,
   getAssetFileID,
@@ -92,28 +81,19 @@ const {
   toCanonicalSupportEntry,
   withTempFileURL,
 });
-const {
-  getOwnedBundleOrFailure,
-  publishCase,
-  saveDraftCase,
-  touchCase,
-  updateCaseProfile,
-} = createCaseWritesService({
-  collections: COLLECTIONS,
-  createId,
-  db,
-  fail,
-  getBundleByCaseId,
-  getCaseDocByCaseId,
-  isCloudFileID,
-  nowIso,
-  ok,
-});
-const {
-  createManualSupportEntry,
-  createSupportEntry,
-  reviewSupportEntry,
-} = createSupportService({
+const { getOwnedBundleOrFailure, publishCase, saveDraftCase, touchCase, updateCaseProfile } =
+  createCaseWritesService({
+    collections: COLLECTIONS,
+    createId,
+    db,
+    fail,
+    getBundleByCaseId,
+    getCaseDocByCaseId,
+    isCloudFileID,
+    nowIso,
+    ok,
+  });
+const { createManualSupportEntry, createSupportEntry, reviewSupportEntry } = createSupportService({
   collections: COLLECTIONS,
   db,
   dbCommand: _,
@@ -129,31 +109,27 @@ const {
   toCanonicalSupportEntry,
   touchCase,
 });
-const {
-  createBudgetAdjustment,
-  createExpenseRecord,
-  createProgressUpdate,
-  getCaseRecordDetail,
-} = createRecordsService({
-  collections: COLLECTIONS,
-  db,
-  dbCommand: _,
-  createId,
-  formatCurrencyLabel,
-  formatDateLabel,
-  getAssetFileID,
-  getBundleByCaseId,
-  getCaseDocByCaseId,
-  getOne,
-  getOwnedBundleOrFailure,
-  getTempFileURLMap,
-  hasOnlyCloudFileIDs,
-  nowIso,
-  queryCollection,
-  refreshBundle: getBundleByCaseId,
-  touchCase,
-  withTempFileURL,
-});
+const { createBudgetAdjustment, createExpenseRecord, createProgressUpdate, getCaseRecordDetail } =
+  createRecordsService({
+    collections: COLLECTIONS,
+    db,
+    dbCommand: _,
+    createId,
+    formatCurrencyLabel,
+    formatDateLabel,
+    getAssetFileID,
+    getBundleByCaseId,
+    getCaseDocByCaseId,
+    getOne,
+    getOwnedBundleOrFailure,
+    getTempFileURLMap,
+    hasOnlyCloudFileIDs,
+    nowIso,
+    queryCollection,
+    refreshBundle: getBundleByCaseId,
+    touchCase,
+    withTempFileURL,
+  });
 const {
   getCaseDetail,
   getMySupportHistory,

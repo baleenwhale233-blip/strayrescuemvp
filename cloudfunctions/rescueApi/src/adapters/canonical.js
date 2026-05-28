@@ -1,8 +1,4 @@
-const {
-  getAssetFileID,
-  getCaseId,
-  nowIso,
-} = require("../runtime");
+const { getAssetFileID, getCaseId, nowIso } = require("../runtime");
 
 function profileKey(profile) {
   return profile.openid || profile._openid || profile.userId || profile.id || profile._id;
@@ -145,9 +141,7 @@ function toCanonicalSupportEntry(doc) {
     note: doc.note,
     screenshotItems:
       doc.screenshotItems ||
-      fileIDs.map((fileID, index) =>
-        toEvidenceItem(fileID, index, `support-screenshot-${index}`),
-      ),
+      fileIDs.map((fileID, index) => toEvidenceItem(fileID, index, `support-screenshot-${index}`)),
     screenshotHashes: doc.screenshotHashes || fileIDs,
     status: doc.status || "pending",
     unmatchedReason: doc.unmatchedReason,
@@ -200,14 +194,13 @@ function recomputeThreads(entries) {
     groups.set(entry.supportThreadId, group);
   }
 
-  return [...groups.entries()].map(([threadId, group]) =>
-    recomputeThread(threadId, group),
-  );
+  return [...groups.entries()].map(([threadId, group]) => recomputeThread(threadId, group));
 }
 
 function toCanonicalAsset(doc) {
   const fileID = doc._fileID || getAssetFileID(doc);
-  const url = doc._tempFileURL || doc.watermarkedUrl || doc.originalUrl || doc.thumbnailUrl || fileID;
+  const url =
+    doc._tempFileURL || doc.watermarkedUrl || doc.originalUrl || doc.thumbnailUrl || fileID;
 
   return {
     id: doc.assetId || doc.id || doc._id,
@@ -228,11 +221,12 @@ function getHeroImageUrlFromBundle(bundle) {
   }
 
   const assetMap = new Map((bundle.assets || []).map((asset) => [asset.id, asset]));
-  const getAssetUrlById = (assetId) =>
-    assetId ? getCanonicalAssetUrl(assetMap.get(assetId)) : "";
+  const getAssetUrlById = (assetId) => (assetId ? getCanonicalAssetUrl(assetMap.get(assetId)) : "");
   const sortedProgressEvents = [...(bundle.events || [])]
     .filter((event) => event.type === "progress_update" && event.visibility === "public")
-    .sort((left, right) => String(right.occurredAt || "").localeCompare(String(left.occurredAt || "")));
+    .sort((left, right) =>
+      String(right.occurredAt || "").localeCompare(String(left.occurredAt || "")),
+    );
 
   for (const event of sortedProgressEvents) {
     const progressAssetUrl = (event.assetIds || [])

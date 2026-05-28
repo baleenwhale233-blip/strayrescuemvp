@@ -1,10 +1,5 @@
-import {
-  getDiscoverCardVM,
-  getHomepageCaseCardVM,
-} from "../selectors/getDiscoverCardVM";
-import {
-  getPublicDetailVM,
-} from "../selectors/getPublicDetailVM";
+import { getDiscoverCardVM, getHomepageCaseCardVM } from "../selectors/getDiscoverCardVM";
+import { getPublicDetailVM } from "../selectors/getPublicDetailVM";
 import { getWorkbenchVM } from "../selectors/getWorkbenchVM";
 import type {
   CanonicalCaseBundle,
@@ -91,9 +86,7 @@ export function getCanonicalBundleByCaseIdFromBundles(
   return bundles.find((bundle) => bundle.case.id === caseId);
 }
 
-export function getDiscoverCardVMsFromBundles(
-  bundles: CanonicalCaseBundle[],
-): DiscoverCardVM[] {
+export function getDiscoverCardVMsFromBundles(bundles: CanonicalCaseBundle[]): DiscoverCardVM[] {
   return bundles
     .filter((bundle) => bundle.case.visibility === "published")
     .map((bundle) => ({
@@ -102,10 +95,7 @@ export function getDiscoverCardVMsFromBundles(
     }));
 }
 
-export function getCaseByPublicIdExactFromBundles(
-  bundles: CanonicalCaseBundle[],
-  input?: string,
-) {
+export function getCaseByPublicIdExactFromBundles(bundles: CanonicalCaseBundle[], input?: string) {
   const normalized = normalizePublicCaseIdInput(input);
 
   if (!normalized) {
@@ -114,14 +104,11 @@ export function getCaseByPublicIdExactFromBundles(
 
   return bundles.find(
     (bundle) =>
-      bundle.case.visibility === "published" &&
-      getPublicCaseId(bundle.case) === normalized,
+      bundle.case.visibility === "published" && getPublicCaseId(bundle.case) === normalized,
   );
 }
 
-export function getHomepageEligibleCasesFromBundles(
-  bundles: CanonicalCaseBundle[],
-) {
+export function getHomepageEligibleCasesFromBundles(bundles: CanonicalCaseBundle[]) {
   return bundles
     .filter((bundle) => getHomepageEligibility(bundle).status === "eligible")
     .sort((left, right) => right.case.updatedAt.localeCompare(left.case.updatedAt));

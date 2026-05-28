@@ -77,13 +77,9 @@ export function readCaseTitleOverrideStore(): CaseTitleOverrideStore {
 
   return {
     byCaseId:
-      candidate.byCaseId && typeof candidate.byCaseId === "object"
-        ? candidate.byCaseId
-        : {},
+      candidate.byCaseId && typeof candidate.byCaseId === "object" ? candidate.byCaseId : {},
     byDraftId:
-      candidate.byDraftId && typeof candidate.byDraftId === "object"
-        ? candidate.byDraftId
-        : {},
+      candidate.byDraftId && typeof candidate.byDraftId === "object" ? candidate.byDraftId : {},
     coverByCaseId:
       candidate.coverByCaseId && typeof candidate.coverByCaseId === "object"
         ? candidate.coverByCaseId
@@ -104,9 +100,7 @@ export function getCaseStatusSubmissions(caseId?: string) {
     return [];
   }
 
-  return readArrayStorage<LocalStatusSubmission>(
-    getStorageKey(CASE_STATUS_SUBMISSION_KEY, caseId),
-  );
+  return readArrayStorage<LocalStatusSubmission>(getStorageKey(CASE_STATUS_SUBMISSION_KEY, caseId));
 }
 
 export function getCaseExpenseSubmissions(caseId?: string) {
@@ -129,19 +123,13 @@ export function getCaseBudgetAdjustments(caseId?: string) {
   );
 }
 
-export function prependCaseStatusSubmission(
-  caseId: string,
-  submission: LocalStatusSubmission,
-) {
+export function prependCaseStatusSubmission(caseId: string, submission: LocalStatusSubmission) {
   const key = getStorageKey(CASE_STATUS_SUBMISSION_KEY, caseId);
   const list = readArrayStorage<LocalStatusSubmission>(key);
   getStorage().setStorageSync(key, [submission, ...list]);
 }
 
-export function prependCaseExpenseSubmission(
-  caseId: string,
-  submission: LocalExpenseSubmission,
-) {
+export function prependCaseExpenseSubmission(caseId: string, submission: LocalExpenseSubmission) {
   const key = getStorageKey(CASE_EXPENSE_SUBMISSION_KEY, caseId);
   const list = readArrayStorage<LocalExpenseSubmission>(key);
   getStorage().setStorageSync(key, [submission, ...list]);

@@ -1,8 +1,4 @@
-import type {
-  CanonicalCaseBundle,
-  DiscoverCardVM,
-  HomepageCaseCardVM,
-} from "../types";
+import type { CanonicalCaseBundle, DiscoverCardVM, HomepageCaseCardVM } from "../types";
 import {
   getCaseEvidenceLevel,
   getFundingStatusSummary,
@@ -28,9 +24,7 @@ function formatDateLabel(isoDateTime: string) {
   return `${month}-${day} ${hours}:${minutes}`;
 }
 
-export function getHomepageCaseCardVM(
-  bundle: CanonicalCaseBundle,
-): HomepageCaseCardVM {
+export function getHomepageCaseCardVM(bundle: CanonicalCaseBundle): HomepageCaseCardVM {
   const publicDetail = getPublicDetailVM(bundle);
   const homepageEligibility = getHomepageEligibility(bundle);
   const latestStatusSummary = getLatestStatusSummary(bundle);

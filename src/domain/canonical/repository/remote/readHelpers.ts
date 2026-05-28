@@ -34,10 +34,7 @@ function getAssetUrl(asset?: CanonicalAsset) {
   return asset?.watermarkedUrl || asset?.originalUrl || asset?.thumbnailUrl;
 }
 
-function getRescuerAvatarUrl(
-  rescuer: CanonicalRescuer,
-  bundles: CanonicalCaseBundle[],
-) {
+function getRescuerAvatarUrl(rescuer: CanonicalRescuer, bundles: CanonicalCaseBundle[]) {
   if (!rescuer.avatarAssetId) {
     return rescuer.avatarUrl;
   }
@@ -49,10 +46,7 @@ function getRescuerAvatarUrl(
   return getAssetUrl(avatarAsset) || rescuer.avatarUrl;
 }
 
-export function finalizeWorkbenchVM(
-  vm: WorkbenchVM | undefined,
-  deps: ReadHelperDeps,
-) {
+export function finalizeWorkbenchVM(vm: WorkbenchVM | undefined, deps: ReadHelperDeps) {
   if (!vm) {
     return undefined;
   }
@@ -90,9 +84,7 @@ export function buildRescuerHomepageVMFromBundles(
 
   const rescuerBundles = resolvedBundles
     .filter(
-      (bundle) =>
-        bundle.rescuer.id === targetRescuerId &&
-        bundle.case.visibility === "published",
+      (bundle) => bundle.rescuer.id === targetRescuerId && bundle.case.visibility === "published",
     )
     .sort((left, right) => right.case.updatedAt.localeCompare(left.case.updatedAt));
   const rescuer =
@@ -112,12 +104,9 @@ export function buildRescuerHomepageVMFromBundles(
       stats: rescuer.stats,
     },
     cards: rescuerBundles.map((bundle) =>
-      deps.finalizeHomepageCaseCardPresentation(
-        deps.getHomepageCaseCardVM(bundle),
-        {
-          caseId: bundle.case.id,
-        },
-      ),
+      deps.finalizeHomepageCaseCardPresentation(deps.getHomepageCaseCardVM(bundle), {
+        caseId: bundle.case.id,
+      }),
     ),
     profileEntryEnabled: true,
   };
@@ -146,15 +135,11 @@ export function buildMySupportHistoryFromDetails(
         animalCoverImageUrl: detail.heroImageUrl || "",
         myTotalSupportedAmount: amount,
         myTotalSupportedAmountLabel: formatCurrency(amount),
-        latestSupportedAtLabel:
-          thread?.latestEntryAtLabel || detail.updatedAtLabel,
+        latestSupportedAtLabel: thread?.latestEntryAtLabel || detail.updatedAtLabel,
       };
     })
     .filter((item) => item.myTotalSupportedAmount > 0)
-    .sort(
-      (left, right) =>
-        right.myTotalSupportedAmount - left.myTotalSupportedAmount,
-    );
+    .sort((left, right) => right.myTotalSupportedAmount - left.myTotalSupportedAmount);
   const totalSupportedAmount = supportCases.reduce(
     (sum, item) => sum + item.myTotalSupportedAmount,
     0,

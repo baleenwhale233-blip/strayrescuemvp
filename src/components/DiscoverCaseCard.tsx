@@ -80,9 +80,7 @@ export function DiscoverCaseCard({
           />
         ) : null}
         <View className="discover-card__status">
-          <Text className="discover-card__status-emoji">
-            {getStatusEmoji(item.statusLabel)}
-          </Text>
+          <Text className="discover-card__status-emoji">{getStatusEmoji(item.statusLabel)}</Text>
           <Text className="discover-card__status-text">{item.statusLabel}</Text>
         </View>
       </View>
@@ -138,7 +136,9 @@ export function DiscoverCaseCard({
           <View className="discover-card__ledger-meta-item discover-card__ledger-meta-item--end">
             <View className="discover-card__ledger-meta-dot discover-card__ledger-meta-dot--slate" />
             <Text className="discover-card__ledger-meta-label">已确认垫付</Text>
-            <Text className="discover-card__ledger-meta-value">{item.rescuerAdvanceAmountLabel}</Text>
+            <Text className="discover-card__ledger-meta-value">
+              {item.rescuerAdvanceAmountLabel}
+            </Text>
           </View>
         </View>
 

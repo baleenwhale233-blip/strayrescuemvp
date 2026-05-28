@@ -81,7 +81,9 @@
   border-color: #e2e8f0;
   border-radius: 12px;
   box-shadow: none;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .project-list-item--with-notice {

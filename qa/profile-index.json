@@ -19,11 +19,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "user",
-      "menu",
-      "footer"
-    ],
+    "segments": ["user", "menu", "footer"],
     "segmentSelectors": {
       "user": ".profile-page__user",
       "menu": ".profile-page__menu",

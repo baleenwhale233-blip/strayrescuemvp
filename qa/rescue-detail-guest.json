@@ -22,11 +22,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "hero",
-      "body",
-      "bottom-bar"
-    ],
+    "segments": ["hero", "body", "bottom-bar"],
     "segmentSelectors": {
       "hero": ".detail-page--guest",
       "body": ".detail-page--guest .detail-page__body",

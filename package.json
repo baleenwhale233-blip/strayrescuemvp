@@ -6,6 +6,9 @@
   "scripts": {
     "dev:weapp": "taro build --type weapp --watch",
     "build:weapp": "taro build --type weapp",
+    "format": "prettier --write \"src/**/*.{ts,tsx,scss,css,json}\" \"cloudfunctions/rescueApi/**/*.{js,json}\" \"scripts/**/*.mjs\" \"docs/**/*.json\" \"qa/**/*.json\" \"config/**/*.ts\" \"types/**/*.ts\" \"*.{js,json}\" README.md AGENTS.md",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,scss,css,json}\" \"cloudfunctions/rescueApi/**/*.{js,json}\" \"scripts/**/*.mjs\" \"docs/**/*.json\" \"qa/**/*.json\" \"config/**/*.ts\" \"types/**/*.ts\" \"*.{js,json}\" README.md AGENTS.md",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"config/**/*.ts\" \"types/**/*.ts\" \"scripts/**/*.mjs\" \"cloudfunctions/rescueApi/{index,mockSeed}.js\" \"cloudfunctions/rescueApi/src/**/*.js\" \"*.config.js\" --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test:ui": "rm -rf .tmp/ui-tests && tsc -p tsconfig.ui-tests.json && node --experimental-specifier-resolution=node --test .tmp/ui-tests/src/pages/rescue/expense/*.test.js",
     "test:domain": "rm -rf .tmp/domain-tests && tsc -p tsconfig.domain-tests.json && node --experimental-specifier-resolution=node --test .tmp/domain-tests/src/domain/canonical/selectors/*.test.js .tmp/domain-tests/src/domain/canonical/repository/*.test.js",
@@ -29,13 +32,18 @@
   },
   "devDependencies": {
     "@babel/preset-react": "7.26.3",
+    "@eslint/js": "^8.57.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tarojs/cli": "4.1.11",
     "@tarojs/webpack5-runner": "4.1.11",
     "@types/node": "22.13.10",
     "@types/react": "18.3.18",
     "babel-preset-taro": "4.1.11",
+    "eslint": "^8.57.1",
+    "globals": "^16.5.0",
+    "prettier": "^3.6.2",
     "sass": "1.85.1",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "typescript-eslint": "^8.48.0"
   }
 }

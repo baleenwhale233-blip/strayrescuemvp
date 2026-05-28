@@ -4,9 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import { createSubmissionGuard } from "../../../../utils/submissionGuard";
-import {
-  recordCaseProfileLocalFallback,
-} from "../../../../domain/canonical/repository";
+import { recordCaseProfileLocalFallback } from "../../../../domain/canonical/repository";
 import {
   RescueOwnerOverview,
   RescueOwnerQuickActions,
@@ -61,10 +59,7 @@ function formatCurrency(value: number) {
   return `¥${value.toLocaleString("zh-CN")}`;
 }
 
-function getFundingCompareMetrics(input: {
-  expenseAmount: number;
-  supportAmount: number;
-}) {
+function getFundingCompareMetrics(input: { expenseAmount: number; supportAmount: number }) {
   const diff = input.expenseAmount - input.supportAmount;
   const base = Math.max(input.expenseAmount, input.supportAmount, 1);
 
@@ -73,7 +68,7 @@ function getFundingCompareMetrics(input: {
     supportProgressPercent: (input.supportAmount / base) * 100,
     thirdLabel: diff > 0 ? "缺口" : "结余",
     thirdValue: formatCurrency(Math.abs(diff)),
-    thirdMode: diff > 0 ? "gap" as const : "balance" as const,
+    thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),
   };
 }
 
@@ -203,8 +198,7 @@ function isDraftBootstrapEntry(entry: RescueCreateDraft["timeline"][number]) {
   return (
     entry.tone === "status" &&
     entry.title === "已创建基础档案，等待补充第一条进展" &&
-    entry.description ===
-      "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。"
+    entry.description === "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。"
   );
 }
 
@@ -272,13 +266,9 @@ function toPreviewTimelineItems(draft: RescueCreateDraft): RescueOwnerTimelineIt
         : undefined,
     images: entry.images,
     budgetPreviousLabel:
-      typeof entry.budgetPrevious === "number"
-        ? formatCurrency(entry.budgetPrevious)
-        : undefined,
+      typeof entry.budgetPrevious === "number" ? formatCurrency(entry.budgetPrevious) : undefined,
     budgetCurrentLabel:
-      typeof entry.budgetCurrent === "number"
-        ? formatCurrency(entry.budgetCurrent)
-        : undefined,
+      typeof entry.budgetCurrent === "number" ? formatCurrency(entry.budgetCurrent) : undefined,
   }));
 }
 
@@ -304,9 +294,7 @@ function buildDraftFromOwnerAndPublicDetail(
       title: entry.title,
       description: entry.description,
       timestamp: entry.timestampLabel,
-      amount: entry.amountLabel
-        ? Number(entry.amountLabel.replace(/[^\d.-]/g, ""))
-        : undefined,
+      amount: entry.amountLabel ? Number(entry.amountLabel.replace(/[^\d.-]/g, "")) : undefined,
       images: entry.assetUrls,
       budgetPrevious:
         entry.type === "budget_adjustment" ? publicDetail.ledger.targetAmount : undefined,
@@ -354,11 +342,7 @@ function ActionSheet({
 }: {
   action: Exclude<ActionType, null>;
   onClose: () => void;
-  onSave: (values: {
-    title: string;
-    description: string;
-    amount: string;
-  }) => void;
+  onSave: (values: { title: string; description: string; amount: string }) => void;
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -397,10 +381,7 @@ function ActionSheet({
 
   return (
     <View className="rescue-preview__sheet-overlay" onTap={onClose}>
-      <View
-        className="rescue-preview__sheet"
-        onTap={(event) => event.stopPropagation()}
-      >
+      <View className="rescue-preview__sheet" onTap={(event) => event.stopPropagation()}>
         <View className="rescue-preview__sheet-handle">
           <View className="rescue-preview__sheet-handle-bar" />
         </View>
@@ -422,9 +403,7 @@ function ActionSheet({
 
         {copy.amountLabel ? (
           <View className="rescue-preview__sheet-field">
-            <Text className="rescue-preview__sheet-label">
-              {copy.amountLabel}
-            </Text>
+            <Text className="rescue-preview__sheet-label">{copy.amountLabel}</Text>
             <View className="rescue-preview__sheet-input-card">
               <Input
                 className="rescue-preview__sheet-input"
@@ -474,10 +453,7 @@ function RenameSheet({
 
   return (
     <View className="rescue-preview__sheet-overlay" onTap={onClose}>
-      <View
-        className="rescue-preview__sheet"
-        onTap={(event) => event.stopPropagation()}
-      >
+      <View className="rescue-preview__sheet" onTap={(event) => event.stopPropagation()}>
         <View className="rescue-preview__sheet-handle">
           <View className="rescue-preview__sheet-handle-bar" />
         </View>
@@ -513,8 +489,7 @@ export default function RescueCreatePreviewPage() {
   const [draft, setDraft] = useState<RescueCreateDraft | null>(null);
   const [activeAction, setActiveAction] = useState<ActionType>(null);
   const [editingTitle, setEditingTitle] = useState(false);
-  const initialTab: PreviewTab =
-    router.params?.tab === "overview" ? "overview" : "detail";
+  const initialTab: PreviewTab = router.params?.tab === "overview" ? "overview" : "detail";
   const [activeTab, setActiveTab] = useState<PreviewTab>(initialTab);
   const submitGuardRef = useRef(createSubmissionGuard());
 
@@ -547,11 +522,7 @@ export default function RescueCreatePreviewPage() {
         ]);
 
         if (ownerDetail && publicDetail) {
-          nextDraft = buildDraftFromOwnerAndPublicDetail(
-            routeCaseId,
-            ownerDetail,
-            publicDetail,
-          );
+          nextDraft = buildDraftFromOwnerAndPublicDetail(routeCaseId, ownerDetail, publicDetail);
         }
       }
 
@@ -598,19 +569,14 @@ export default function RescueCreatePreviewPage() {
     const routeCaseId = router.params?.caseId;
 
     const refreshedDraft =
-      getDraftById(routeDraftId) ||
-      getDraftByCaseId(routeCaseId) ||
-      getCurrentDraft();
+      getDraftById(routeDraftId) || getDraftByCaseId(routeCaseId) || getCurrentDraft();
 
     if (refreshedDraft) {
       setDraft(refreshedDraft);
     }
   });
 
-  const ledger = useMemo(
-    () => (draft ? calculateDraftLedger(draft) : null),
-    [draft],
-  );
+  const ledger = useMemo(() => (draft ? calculateDraftLedger(draft) : null), [draft]);
 
   if (!draft || !ledger) {
     return null;
@@ -622,11 +588,7 @@ export default function RescueCreatePreviewPage() {
     supportAmount: ledger.income,
   });
 
-  const handleSaveAction = (values: {
-    title: string;
-    description: string;
-    amount: string;
-  }) => {
+  const handleSaveAction = (values: { title: string; description: string; amount: string }) => {
     if (!activeAction) {
       return;
     }
@@ -641,9 +603,7 @@ export default function RescueCreatePreviewPage() {
 
     const numericAmount = Number(values.amount || 0);
     if (
-      (activeAction === "expense" ||
-        activeAction === "income" ||
-        activeAction === "budget") &&
+      (activeAction === "expense" || activeAction === "income" || activeAction === "budget") &&
       (!numericAmount || Number.isNaN(numericAmount))
     ) {
       Taro.showToast({
@@ -674,18 +634,11 @@ export default function RescueCreatePreviewPage() {
     } else {
       const entry = toOwnerActionTimelineEntry({
         action:
-          activeAction === "expense"
-            ? "receipt"
-            : activeAction === "income"
-              ? "income"
-              : "update",
+          activeAction === "expense" ? "receipt" : activeAction === "income" ? "income" : "update",
         title: values.title.trim(),
         description: values.description.trim(),
         timestampLabel: formatTimelineTimestamp(),
-        amount:
-          activeAction === "expense" || activeAction === "income"
-            ? numericAmount
-            : undefined,
+        amount: activeAction === "expense" || activeAction === "income" ? numericAmount : undefined,
         imageUrls:
           activeAction === "status" || activeAction === "expense"
             ? [draft.coverPath || coverFallback]
@@ -703,102 +656,104 @@ export default function RescueCreatePreviewPage() {
     });
   };
 
-  const handleSaveDraft = async () => submitGuardRef.current.run(async () => {
-    const saved = persistDraft("draft");
-    setDraft(saved);
-    try {
-      Taro.showLoading({ title: "保存中", mask: true });
-      await saveRemoteDraftCase(saved, "draft");
-    } catch {
+  const handleSaveDraft = async () =>
+    submitGuardRef.current.run(async () => {
+      const saved = persistDraft("draft");
+      setDraft(saved);
+      try {
+        Taro.showLoading({ title: "保存中", mask: true });
+        await saveRemoteDraftCase(saved, "draft");
+      } catch {
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "草稿已本地保存，远端同步失败",
+          icon: "none",
+        });
+        return;
+      }
       Taro.hideLoading();
+
       Taro.showToast({
-        title: "草稿已本地保存，远端同步失败",
+        title: "草稿已保存",
         icon: "none",
       });
-      return;
-    }
-    Taro.hideLoading();
 
-    Taro.showToast({
-      title: "草稿已保存",
-      icon: "none",
-    });
-
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        void Taro.switchTab({
-          url: "/pages/rescue/index",
-        });
-        resolve();
-      }, 300);
-    });
-  });
-
-  const handlePublish = async () => submitGuardRef.current.run(async () => {
-    const saved = persistDraft("published");
-    setDraft(saved);
-
-    let remoteDraft = saved;
-
-    Taro.showLoading({ title: "发布中", mask: true });
-
-    if (
-      saved.coverPath &&
-      !saved.coverPath.startsWith("cloud://") &&
-      !saved.coverPath.startsWith("http://") &&
-      !saved.coverPath.startsWith("https://")
-    ) {
-      try {
-        const uploadedCover = await uploadCaseAssetImage(
-          draftIdToCaseId(saved.id),
-          saved.coverPath,
-          "case-covers",
-        );
-
-        if (!uploadedCover.isLocalFallback) {
-          remoteDraft = {
-            ...saved,
-            coverPath: uploadedCover.fileID,
-          };
-        }
-      } catch (error) {
-        if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
-          Taro.hideLoading();
-          Taro.showToast({
-            title: "封面上传失败，请重试",
-            icon: "none",
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          void Taro.switchTab({
+            url: "/pages/rescue/index",
           });
-          return;
+          resolve();
+        }, 300);
+      });
+    });
+
+  const handlePublish = async () =>
+    submitGuardRef.current.run(async () => {
+      const saved = persistDraft("published");
+      setDraft(saved);
+
+      let remoteDraft = saved;
+
+      Taro.showLoading({ title: "发布中", mask: true });
+
+      if (
+        saved.coverPath &&
+        !saved.coverPath.startsWith("cloud://") &&
+        !saved.coverPath.startsWith("http://") &&
+        !saved.coverPath.startsWith("https://")
+      ) {
+        try {
+          const uploadedCover = await uploadCaseAssetImage(
+            draftIdToCaseId(saved.id),
+            saved.coverPath,
+            "case-covers",
+          );
+
+          if (!uploadedCover.isLocalFallback) {
+            remoteDraft = {
+              ...saved,
+              coverPath: uploadedCover.fileID,
+            };
+          }
+        } catch (error) {
+          if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
+            Taro.hideLoading();
+            Taro.showToast({
+              title: "封面上传失败，请重试",
+              icon: "none",
+            });
+            return;
+          }
         }
       }
-    }
 
-    try {
-      await saveRemoteDraftCase(remoteDraft, "published");
-    } catch {
+      try {
+        await saveRemoteDraftCase(remoteDraft, "published");
+      } catch {
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "已本地发布，远端同步失败",
+          icon: "none",
+        });
+        return;
+      }
       Taro.hideLoading();
+
       Taro.showToast({
-        title: "已本地发布，远端同步失败",
+        title: saved.status === "published" ? "记录已发布" : "已更新",
         icon: "none",
       });
-      return;
-    }
-    Taro.hideLoading();
 
-    Taro.showToast({
-      title: saved.status === "published" ? "记录已发布" : "已更新",
-      icon: "none",
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          void Taro.switchTab({
+            url: "/pages/rescue/index",
+          });
+          resolve();
+        }, 300);
+      });
     });
-
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        void Taro.switchTab({
-          url: "/pages/rescue/index",
-        });
-        resolve();
-      }, 300);
-    });
-  });
 
   const handleSaveTitle = (value: string) => {
     const nextName = value.trim();
@@ -922,8 +877,7 @@ export default function RescueCreatePreviewPage() {
           <RescueOwnerTimeline
             emptyState={{
               title: "还没有第一条记录",
-              description:
-                "可以先记录一笔支出、更新进展，或者补上一笔场外登记。",
+              description: "可以先记录一笔支出、更新进展，或者补上一笔场外登记。",
             }}
             items={toPreviewTimelineItems(draft)}
           />
@@ -943,7 +897,11 @@ export default function RescueCreatePreviewPage() {
         >
           <Text>发布记录</Text>
           <View className="rescue-preview__footer-arrow">
-            <Image className="rescue-preview__footer-arrow-icon" mode="aspectFit" src={ownerFooterArrowIcon} />
+            <Image
+              className="rescue-preview__footer-arrow-icon"
+              mode="aspectFit"
+              src={ownerFooterArrowIcon}
+            />
           </View>
         </Button>
       </View>

@@ -17,41 +17,35 @@ import {
 const CASE_ID = "case_001";
 
 test("resolved read APIs surface title/cover/status overlays consistently", () => {
-  const resolvedBundle = resolveBundlePresentationCore(
-    sampleCaseBundle as CanonicalCaseBundle,
-    {
-      caseId: CASE_ID,
-      titleOverride: "本地改名小橘",
-      coverOverride: "https://local.test/cover-orange.png",
-      statusSubmissions: [
-        {
-          id: "status-local-1",
-          statusLabel: "康复观察",
-          description: "今天开始自己吃饭了",
-          timestampLabel: "今天 09:30",
-          assetUrls: ["https://local.test/progress-orange.png"],
-          createdAt: "2026-04-19T01:30:00Z",
-        },
-      ],
-    },
-  );
+  const resolvedBundle = resolveBundlePresentationCore(sampleCaseBundle as CanonicalCaseBundle, {
+    caseId: CASE_ID,
+    titleOverride: "本地改名小橘",
+    coverOverride: "https://local.test/cover-orange.png",
+    statusSubmissions: [
+      {
+        id: "status-local-1",
+        statusLabel: "康复观察",
+        description: "今天开始自己吃饭了",
+        timestampLabel: "今天 09:30",
+        assetUrls: ["https://local.test/progress-orange.png"],
+        createdAt: "2026-04-19T01:30:00Z",
+      },
+    ],
+  });
 
-  const detail = finalizePublicDetailPresentationCore(
-    getPublicDetailVM(resolvedBundle),
-    {
-      caseId: CASE_ID,
-      statusSubmissions: [
-        {
-          id: "status-local-1",
-          statusLabel: "康复观察",
-          description: "今天开始自己吃饭了",
-          timestampLabel: "今天 09:30",
-          assetUrls: ["https://local.test/progress-orange.png"],
-          createdAt: "2026-04-19T01:30:00Z",
-        },
-      ],
-    },
-  );
+  const detail = finalizePublicDetailPresentationCore(getPublicDetailVM(resolvedBundle), {
+    caseId: CASE_ID,
+    statusSubmissions: [
+      {
+        id: "status-local-1",
+        statusLabel: "康复观察",
+        description: "今天开始自己吃饭了",
+        timestampLabel: "今天 09:30",
+        assetUrls: ["https://local.test/progress-orange.png"],
+        createdAt: "2026-04-19T01:30:00Z",
+      },
+    ],
+  });
   const workbench = getWorkbenchVMFromBundles([resolvedBundle]);
   const homepageCard = finalizeHomepageCaseCardPresentationCore(
     getHomepageCaseCardVM(resolvedBundle),
@@ -113,59 +107,53 @@ test("resolved read APIs surface title/cover/status overlays consistently", () =
 });
 
 test("resolved read APIs fold budget and expense overlays into ledger and homepage cards", () => {
-  const resolvedBundle = resolveBundlePresentationCore(
-    sampleCaseBundle as CanonicalCaseBundle,
-    {
-      caseId: CASE_ID,
-      budgetAdjustments: [
-        {
-          id: "budget-local-1",
-          previousTargetAmount: 4200,
-          currentTargetAmount: 5300,
-          reason: "加上复查和后续药费",
-          timestampLabel: "今天 10:00",
-          createdAt: "2026-04-19T02:00:00Z",
-        },
-      ],
-      expenseSubmissions: [
-        {
-          id: "expense-local-1",
-          title: "支付：复查 + 药费",
-          amount: 2600,
-          timestampLabel: "今天 11:00",
-          assetUrls: ["https://local.test/receipt-orange.png"],
-          createdAt: "2026-04-19T03:00:00Z",
-        },
-      ],
-    },
-  );
+  const resolvedBundle = resolveBundlePresentationCore(sampleCaseBundle as CanonicalCaseBundle, {
+    caseId: CASE_ID,
+    budgetAdjustments: [
+      {
+        id: "budget-local-1",
+        previousTargetAmount: 4200,
+        currentTargetAmount: 5300,
+        reason: "加上复查和后续药费",
+        timestampLabel: "今天 10:00",
+        createdAt: "2026-04-19T02:00:00Z",
+      },
+    ],
+    expenseSubmissions: [
+      {
+        id: "expense-local-1",
+        title: "支付：复查 + 药费",
+        amount: 2600,
+        timestampLabel: "今天 11:00",
+        assetUrls: ["https://local.test/receipt-orange.png"],
+        createdAt: "2026-04-19T03:00:00Z",
+      },
+    ],
+  });
 
-  const detail = finalizePublicDetailPresentationCore(
-    getPublicDetailVM(resolvedBundle),
-    {
-      caseId: CASE_ID,
-      budgetAdjustments: [
-        {
-          id: "budget-local-1",
-          previousTargetAmount: 4200,
-          currentTargetAmount: 5300,
-          reason: "加上复查和后续药费",
-          timestampLabel: "今天 10:00",
-          createdAt: "2026-04-19T02:00:00Z",
-        },
-      ],
-      expenseSubmissions: [
-        {
-          id: "expense-local-1",
-          title: "支付：复查 + 药费",
-          amount: 2600,
-          timestampLabel: "今天 11:00",
-          assetUrls: ["https://local.test/receipt-orange.png"],
-          createdAt: "2026-04-19T03:00:00Z",
-        },
-      ],
-    },
-  );
+  const detail = finalizePublicDetailPresentationCore(getPublicDetailVM(resolvedBundle), {
+    caseId: CASE_ID,
+    budgetAdjustments: [
+      {
+        id: "budget-local-1",
+        previousTargetAmount: 4200,
+        currentTargetAmount: 5300,
+        reason: "加上复查和后续药费",
+        timestampLabel: "今天 10:00",
+        createdAt: "2026-04-19T02:00:00Z",
+      },
+    ],
+    expenseSubmissions: [
+      {
+        id: "expense-local-1",
+        title: "支付：复查 + 药费",
+        amount: 2600,
+        timestampLabel: "今天 11:00",
+        assetUrls: ["https://local.test/receipt-orange.png"],
+        createdAt: "2026-04-19T03:00:00Z",
+      },
+    ],
+  });
   const homepageCard = getHomepageCaseCardVM(resolvedBundle);
 
   assert.ok(detail);
@@ -186,62 +174,56 @@ test("resolved read APIs fold budget and expense overlays into ledger and homepa
 });
 
 test("local presentation can be disabled for formal remote read paths", () => {
-  const resolvedBundle = resolveBundlePresentationCore(
-    sampleCaseBundle as CanonicalCaseBundle,
-    {
-      caseId: CASE_ID,
-      applyLocalOverlays: false,
-      titleOverride: "本地改名小橘",
-      coverOverride: "https://local.test/cover-orange.png",
-      statusSubmissions: [
-        {
-          id: "status-local-1",
-          statusLabel: "康复观察",
-          description: "今天开始自己吃饭了",
-          timestampLabel: "今天 09:30",
-          assetUrls: ["https://local.test/progress-orange.png"],
-          createdAt: "2026-04-19T01:30:00Z",
-        },
-      ],
-      budgetAdjustments: [
-        {
-          id: "budget-local-1",
-          previousTargetAmount: 4200,
-          currentTargetAmount: 5300,
-          reason: "加上复查和后续药费",
-          timestampLabel: "今天 10:00",
-          createdAt: "2026-04-19T02:00:00Z",
-        },
-      ],
-      expenseSubmissions: [
-        {
-          id: "expense-local-1",
-          title: "支付：复查 + 药费",
-          amount: 2600,
-          timestampLabel: "今天 11:00",
-          assetUrls: ["https://local.test/receipt-orange.png"],
-          createdAt: "2026-04-19T03:00:00Z",
-        },
-      ],
-    },
-  );
-  const detail = finalizePublicDetailPresentationCore(
-    getPublicDetailVM(resolvedBundle),
-    {
-      caseId: CASE_ID,
-      applyLocalOverlays: false,
-      statusSubmissions: [
-        {
-          id: "status-local-1",
-          statusLabel: "康复观察",
-          description: "今天开始自己吃饭了",
-          timestampLabel: "今天 09:30",
-          assetUrls: ["https://local.test/progress-orange.png"],
-          createdAt: "2026-04-19T01:30:00Z",
-        },
-      ],
-    },
-  );
+  const resolvedBundle = resolveBundlePresentationCore(sampleCaseBundle as CanonicalCaseBundle, {
+    caseId: CASE_ID,
+    applyLocalOverlays: false,
+    titleOverride: "本地改名小橘",
+    coverOverride: "https://local.test/cover-orange.png",
+    statusSubmissions: [
+      {
+        id: "status-local-1",
+        statusLabel: "康复观察",
+        description: "今天开始自己吃饭了",
+        timestampLabel: "今天 09:30",
+        assetUrls: ["https://local.test/progress-orange.png"],
+        createdAt: "2026-04-19T01:30:00Z",
+      },
+    ],
+    budgetAdjustments: [
+      {
+        id: "budget-local-1",
+        previousTargetAmount: 4200,
+        currentTargetAmount: 5300,
+        reason: "加上复查和后续药费",
+        timestampLabel: "今天 10:00",
+        createdAt: "2026-04-19T02:00:00Z",
+      },
+    ],
+    expenseSubmissions: [
+      {
+        id: "expense-local-1",
+        title: "支付：复查 + 药费",
+        amount: 2600,
+        timestampLabel: "今天 11:00",
+        assetUrls: ["https://local.test/receipt-orange.png"],
+        createdAt: "2026-04-19T03:00:00Z",
+      },
+    ],
+  });
+  const detail = finalizePublicDetailPresentationCore(getPublicDetailVM(resolvedBundle), {
+    caseId: CASE_ID,
+    applyLocalOverlays: false,
+    statusSubmissions: [
+      {
+        id: "status-local-1",
+        statusLabel: "康复观察",
+        description: "今天开始自己吃饭了",
+        timestampLabel: "今天 09:30",
+        assetUrls: ["https://local.test/progress-orange.png"],
+        createdAt: "2026-04-19T01:30:00Z",
+      },
+    ],
+  });
 
   assert.ok(detail);
   assert.equal(resolvedBundle.case.animalName, sampleCaseBundle.case.animalName);
@@ -255,8 +237,14 @@ test("local presentation can be disabled for formal remote read paths", () => {
     resolvedBundle.expenseRecords?.some((record) => record.id.startsWith("overlay-")),
     false,
   );
-  assert.equal(detail.updatedAtLabel, getPublicDetailVM(sampleCaseBundle as CanonicalCaseBundle).updatedAtLabel);
-  assert.equal(detail.latestTimelineSummary, getPublicDetailVM(sampleCaseBundle as CanonicalCaseBundle).latestTimelineSummary);
+  assert.equal(
+    detail.updatedAtLabel,
+    getPublicDetailVM(sampleCaseBundle as CanonicalCaseBundle).updatedAtLabel,
+  );
+  assert.equal(
+    detail.latestTimelineSummary,
+    getPublicDetailVM(sampleCaseBundle as CanonicalCaseBundle).latestTimelineSummary,
+  );
   assert.equal(
     detail.timeline.some((item) => item.id.startsWith("overlay:")),
     false,

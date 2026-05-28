@@ -136,10 +136,10 @@ test("buildRescuerHomepageVMFromBundles keeps only published cases and sorts new
   );
 
   assert.ok(vm);
-  assert.deepEqual(vm?.cards.map((card: HomepageCaseCardVM) => card.caseId), [
-    "case_new",
-    "case_old",
-  ]);
+  assert.deepEqual(
+    vm?.cards.map((card: HomepageCaseCardVM) => card.caseId),
+    ["case_new", "case_old"],
+  );
   assert.equal(vm?.profileEntryEnabled, true);
 });
 

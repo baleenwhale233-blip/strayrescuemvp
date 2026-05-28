@@ -104,8 +104,7 @@ test("profile service writes avatar and profile data for valid cloud file IDs", 
       }
       return undefined;
     },
-    getTempFileURLMap: async () =>
-      new Map([["cloud://env/avatar.png", "https://temp/avatar.png"]]),
+    getTempFileURLMap: async () => new Map([["cloud://env/avatar.png", "https://temp/avatar.png"]]),
     withTempFileURL: (doc, map) => ({
       ...doc,
       _fileID: doc.fileID,
@@ -123,10 +122,13 @@ test("profile service writes avatar and profile data for valid cloud file IDs", 
   assert.equal(result.data.profile.displayName, "阿青");
   assert.equal(result.data.profile.avatarUrl, "https://temp/avatar.png");
   assert.equal(result.data.profile.hasContactProfile, true);
-  assert.deepEqual(db.writes.map((item) => [item.name, item.id]), [
-    ["evidence_assets", "profile_openid_1_avatar"],
-    ["user_profiles", "openid_1"],
-  ]);
+  assert.deepEqual(
+    db.writes.map((item) => [item.name, item.id]),
+    [
+      ["evidence_assets", "profile_openid_1_avatar"],
+      ["user_profiles", "openid_1"],
+    ],
+  );
   assert.deepEqual(getOneCalls.slice(-1), [
     {
       name: "evidence_assets",

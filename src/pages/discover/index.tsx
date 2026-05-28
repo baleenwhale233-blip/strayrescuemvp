@@ -69,11 +69,7 @@ export default function DiscoverPage() {
 
       <View className="discover-page__search">
         <View className="discover-page__search-icon" onTap={handleSearch}>
-          <Image
-            className="discover-page__search-icon-image"
-            mode="aspectFit"
-            src={searchIcon}
-          />
+          <Image className="discover-page__search-icon-image" mode="aspectFit" src={searchIcon} />
         </View>
         <Input
           className="discover-page__search-input"
@@ -87,9 +83,7 @@ export default function DiscoverPage() {
       </View>
 
       <View className="discover-page__list">
-        {loading ? (
-          <Text className="discover-page__empty">正在加载记录...</Text>
-        ) : null}
+        {loading ? <Text className="discover-page__empty">正在加载记录...</Text> : null}
 
         {cards.map((item) => (
           <DiscoverCaseCard

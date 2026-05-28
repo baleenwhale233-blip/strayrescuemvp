@@ -23,10 +23,7 @@ export function hasAnyContactProfileInfo(input?: ContactProfileLike) {
 export function buildSupportSheetCopy(input: {
   wechatId?: string;
   paymentQrUrl?: string;
-}): Pick<
-  SupportSheetData,
-  "contactHint" | "directHint" | "contactTip" | "directTip"
-> {
+}): Pick<SupportSheetData, "contactHint" | "directHint" | "contactTip" | "directTip"> {
   const hasWechatId = hasText(input.wechatId);
   const hasPaymentQr = hasText(input.paymentQrUrl);
 

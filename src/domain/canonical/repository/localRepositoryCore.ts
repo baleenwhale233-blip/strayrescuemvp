@@ -1,23 +1,13 @@
-import type {
-  RescueCreateEntryTone,
-  RescueCreateTimelineEntry,
-} from "./localDraftPersistence";
+import type { RescueCreateEntryTone, RescueCreateTimelineEntry } from "./localDraftPersistence";
 
-export type OwnerDetailActionKey =
-  | "receipt"
-  | "update"
-  | "income"
-  | "budget"
-  | "copy";
+export type OwnerDetailActionKey = "receipt" | "update" | "income" | "budget" | "copy";
 
 export function draftIdToCaseId(draftId: string) {
   return draftId.replace("custom-project", "case");
 }
 
 export function caseIdToDraftId(caseId: string) {
-  return caseId.startsWith("case-")
-    ? caseId.replace("case-", "custom-project-")
-    : caseId;
+  return caseId.startsWith("case-") ? caseId.replace("case-", "custom-project-") : caseId;
 }
 
 export function toOwnerActionTimelineEntry(input: {
@@ -37,10 +27,7 @@ export function toOwnerActionTimelineEntry(input: {
     budget: "预算调整",
   };
 
-  const toneMap: Record<
-    Exclude<OwnerDetailActionKey, "copy">,
-    RescueCreateEntryTone
-  > = {
+  const toneMap: Record<Exclude<OwnerDetailActionKey, "copy">, RescueCreateEntryTone> = {
     receipt: "expense",
     update: "status",
     income: "income",

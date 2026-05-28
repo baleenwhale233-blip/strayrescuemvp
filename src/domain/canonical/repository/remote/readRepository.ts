@@ -33,9 +33,7 @@ import type {
   WorkbenchVM,
 } from "../../types";
 import type { OwnerDetailVM } from "../canonicalReadRepositoryCore";
-import {
-  withRemoteFallback,
-} from "./fallback";
+import { withRemoteFallback } from "./fallback";
 import {
   buildMySupportHistoryFromDetails,
   buildRescuerHomepageVMFromBundles,
@@ -91,9 +89,7 @@ function resolveBundlesPresentation(bundles: CanonicalCaseBundle[]) {
 }
 
 function resolveRemoteBundlesCanonical(bundles: CanonicalCaseBundle[]) {
-  return bundles.map((bundle) =>
-    resolveBundlePresentation(bundle, { applyLocalOverlays: false }),
-  );
+  return bundles.map((bundle) => resolveBundlePresentation(bundle, { applyLocalOverlays: false }));
 }
 
 function finalizeRemoteHomepageCaseCardPresentation(card: HomepageCaseCardVM) {
@@ -130,8 +126,8 @@ export async function loadHomepageCaseCardVMs(): Promise<HomepageCaseCardVM[]> {
   return withRemoteFallback(
     async () => {
       const { bundles } = await callRescueApi<BundlesPayload>("listHomepageCases");
-      return getHomepageCaseCardVMsFromBundles(resolveRemoteBundlesCanonical(bundles)).map(
-        (card) => finalizeRemoteHomepageCaseCardPresentation(card),
+      return getHomepageCaseCardVMsFromBundles(resolveRemoteBundlesCanonical(bundles)).map((card) =>
+        finalizeRemoteHomepageCaseCardPresentation(card),
       );
     },
     () => getHomepageCaseCardVMs(),
@@ -145,10 +141,7 @@ export async function loadRescuerHomepageVM(input: {
 }): Promise<RescuerHomepageVM | undefined> {
   return withRemoteFallback(
     async () => {
-      const payload = await callRescueApi<RescuerHomepagePayload>(
-        "getRescuerHomepage",
-        input,
-      );
+      const payload = await callRescueApi<RescuerHomepagePayload>("getRescuerHomepage", input);
       return buildRescuerHomepageVMFromBundles(
         {
           ...payload,
@@ -186,10 +179,9 @@ export async function loadRescuerHomepageVM(input: {
 export async function searchCaseByPublicIdExact(input?: string) {
   return withRemoteFallback(
     async () => {
-      const { bundle } = await callRescueApi<BundlePayload>(
-        "searchCaseByPublicId",
-        { publicCaseId: input },
-      );
+      const { bundle } = await callRescueApi<BundlePayload>("searchCaseByPublicId", {
+        publicCaseId: input,
+      });
       return bundle ? resolveRemoteBundlesCanonical([bundle])[0] : undefined;
     },
     () => getCaseByPublicIdExact(input),
@@ -207,10 +199,7 @@ export async function loadPublicDetailVMByCaseId(
       });
       return finalizeRemotePublicDetailPresentation(
         bundle
-          ? getPublicDetailVMByCaseIdFromBundles(
-              resolveRemoteBundlesCanonical([bundle]),
-              caseId,
-            )
+          ? getPublicDetailVMByCaseIdFromBundles(resolveRemoteBundlesCanonical([bundle]), caseId)
           : undefined,
         { caseId },
       );
@@ -227,10 +216,7 @@ export async function loadCaseRecordDetail(input: {
 }): Promise<CaseRecordDetailVM | undefined> {
   return withRemoteFallback(
     async () => {
-      const { record } = await callRescueApi<CaseRecordDetailPayload>(
-        "getCaseRecordDetail",
-        input,
-      );
+      const { record } = await callRescueApi<CaseRecordDetailPayload>("getCaseRecordDetail", input);
       return record;
     },
     () => undefined,
@@ -247,10 +233,7 @@ export async function loadSupportSheetDataByCaseId(
         caseId,
       });
       return bundle
-        ? getSupportSheetDataByCaseIdFromBundles(
-            resolveRemoteBundlesCanonical([bundle]),
-            caseId,
-          )
+        ? getSupportSheetDataByCaseIdFromBundles(resolveRemoteBundlesCanonical([bundle]), caseId)
         : undefined;
     },
     () => getSupportSheetDataByCaseId(caseId),
@@ -268,10 +251,7 @@ export async function loadOwnerDetailVMByCaseId(
       });
       return finalizeRemoteOwnerDetailPresentation(
         bundle
-          ? getOwnerDetailVMByCaseIdFromBundles(
-              resolveRemoteBundlesCanonical([bundle]),
-              caseId,
-            )
+          ? getOwnerDetailVMByCaseIdFromBundles(resolveRemoteBundlesCanonical([bundle]), caseId)
           : undefined,
       );
     },
@@ -280,9 +260,7 @@ export async function loadOwnerDetailVMByCaseId(
   );
 }
 
-export async function loadWorkbenchVMForCurrentUser(): Promise<
-  WorkbenchVM | undefined
-> {
+export async function loadWorkbenchVMForCurrentUser(): Promise<WorkbenchVM | undefined> {
   return withRemoteFallback(
     async () => {
       const { bundles } = await callRescueApi<BundlesPayload>("getOwnerWorkbench");
@@ -316,14 +294,10 @@ export async function loadMyProfile(): Promise<MyProfileVM | undefined> {
   );
 }
 
-export async function loadMySupportHistory(): Promise<
-  MySupportHistoryVM | undefined
-> {
+export async function loadMySupportHistory(): Promise<MySupportHistoryVM | undefined> {
   return withRemoteFallback(
     async () => {
-      const { summary } = await callRescueApi<SupportHistoryPayload>(
-        "getMySupportHistory",
-      );
+      const { summary } = await callRescueApi<SupportHistoryPayload>("getMySupportHistory");
       return summary;
     },
     () => {

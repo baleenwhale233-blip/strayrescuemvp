@@ -50,9 +50,7 @@ function openReadonlyRecordDetail(item: RescueTimelineSharedItem) {
 
 export function getStoredReadonlyRecordDetail() {
   const stored = Taro.getStorageSync(RECORD_DETAIL_STORAGE_KEY);
-  return stored && typeof stored === "object"
-    ? (stored as RescueReadonlyRecordDetail)
-    : undefined;
+  return stored && typeof stored === "object" ? (stored as RescueReadonlyRecordDetail) : undefined;
 }
 
 function getBadgeClass(kind: RescueTimelineSharedKind) {
@@ -65,8 +63,7 @@ function getDotClass(kind: RescueTimelineSharedKind) {
 
 function canOpenReadonlyDetail(item: RescueTimelineSharedItem) {
   return (
-    item.kind === "expense" ||
-    (item.kind === "status" && item.recordType === "progress_update")
+    item.kind === "expense" || (item.kind === "status" && item.recordType === "progress_update")
   );
 }
 

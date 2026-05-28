@@ -21,10 +21,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "tab-switcher",
-      "pending-list"
-    ],
+    "segments": ["tab-switcher", "pending-list"],
     "segmentSelectors": {
       "tab-switcher": ".support-review-page__tabs",
       "pending-list": ".support-review-page__list"

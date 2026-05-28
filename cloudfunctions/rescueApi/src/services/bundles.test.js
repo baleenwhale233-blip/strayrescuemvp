@@ -21,12 +21,14 @@ function createService(overrides = {}) {
     },
     getAssetFileID: (doc) => doc?.fileID,
     getCaseId: (doc) => doc?.caseId || doc?._id,
-    getOne: overrides.getOne || (async (name, where) => {
-      const docs = docsByCollection[name] || [];
-      return docs.find((doc) =>
-        Object.entries(where).every(([key, value]) => doc[key] === value),
-      );
-    }),
+    getOne:
+      overrides.getOne ||
+      (async (name, where) => {
+        const docs = docsByCollection[name] || [];
+        return docs.find((doc) =>
+          Object.entries(where).every(([key, value]) => doc[key] === value),
+        );
+      }),
     getTempFileURLMap: async (fileIDs = []) =>
       new Map(fileIDs.filter(Boolean).map((fileID) => [fileID, `https://temp/${fileID}`])),
     nowIso: () => "2026-04-21T00:00:00.000Z",
@@ -35,9 +37,7 @@ function createService(overrides = {}) {
       const docs = docsByCollection[name] || [];
       const [[key, value]] = Object.entries(where);
       const allowed = value?.$in;
-      return Array.isArray(allowed)
-        ? docs.filter((doc) => allowed.includes(doc[key]))
-        : docs;
+      return Array.isArray(allowed) ? docs.filter((doc) => allowed.includes(doc[key])) : docs;
     },
     recomputeThreads: (entries) =>
       entries.map((entry) => ({

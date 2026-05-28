@@ -15,8 +15,7 @@ function getNavMetrics() {
 
   try {
     const menuButton = Taro.getMenuButtonBoundingClientRect();
-    const navHeight =
-      (menuButton.top - fallbackStatusBarHeight) * 2 + menuButton.height;
+    const navHeight = (menuButton.top - fallbackStatusBarHeight) * 2 + menuButton.height;
 
     return {
       statusBarHeight: fallbackStatusBarHeight,
@@ -56,10 +55,7 @@ export function NavBar({ title, showBack = false, onBack }: NavBarProps) {
       className="page-nav page-nav--system"
       style={{ paddingTop: `${metrics.statusBarHeight}px` }}
     >
-      <View
-        className="page-nav__bar"
-        style={{ height: `${metrics.navHeight}px` }}
-      >
+      <View className="page-nav__bar" style={{ height: `${metrics.navHeight}px` }}>
         <View className="page-nav__side" style={{ width: `${metrics.sideWidth}px` }}>
           {showBack ? (
             <View className="page-nav__back" onTap={handleBack}>

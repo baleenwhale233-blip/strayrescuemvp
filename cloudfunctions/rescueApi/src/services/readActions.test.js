@@ -12,60 +12,72 @@ function createService(overrides = {}) {
       cases: "rescue_cases",
       supportEntries: "support_entries",
     },
-    composeBundles: overrides.composeBundles || (async (caseDocs) => {
-      composedInputs.push(caseDocs);
-      return caseDocs.map((doc) => ({
-        case: {
-          id: doc.caseId,
-          publicCaseId: doc.publicCaseId,
-          animalName: doc.animalName,
-          rescuerId: doc.rescuerOpenid || doc.rescuerId,
-        },
-        heroImageUrl: doc.heroImageUrl,
-      }));
-    }),
+    composeBundles:
+      overrides.composeBundles ||
+      (async (caseDocs) => {
+        composedInputs.push(caseDocs);
+        return caseDocs.map((doc) => ({
+          case: {
+            id: doc.caseId,
+            publicCaseId: doc.publicCaseId,
+            animalName: doc.animalName,
+            rescuerId: doc.rescuerOpenid || doc.rescuerId,
+          },
+          heroImageUrl: doc.heroImageUrl,
+        }));
+      }),
     dbCommand: {
       in: (values) => ({ $in: values }),
     },
     fail,
     formatCurrencyLabel: (amount) => `¥${Number(amount || 0).toLocaleString("zh-CN")}`,
     formatDateLabel: (iso) => iso,
-    getBundleByCaseId: overrides.getBundleByCaseId || (async (caseId) => ({
-      case: {
-        id: caseId,
-        rescuerId: "owner_1",
-      },
-    })),
-    getCaseDocByCaseId: overrides.getCaseDocByCaseId || (async (caseId) => ({
-      caseId,
-      rescuerOpenid: "owner_1",
-    })),
+    getBundleByCaseId:
+      overrides.getBundleByCaseId ||
+      (async (caseId) => ({
+        case: {
+          id: caseId,
+          rescuerId: "owner_1",
+        },
+      })),
+    getCaseDocByCaseId:
+      overrides.getCaseDocByCaseId ||
+      (async (caseId) => ({
+        caseId,
+        rescuerOpenid: "owner_1",
+      })),
     getCaseId: (doc) => doc.caseId || doc._id,
     getHeroImageUrlFromBundle: (bundle) => bundle?.heroImageUrl,
-    getOne: overrides.getOne || (async (name, where) => {
-      const docs = docsByCollection[name] || [];
-      return docs.find((doc) =>
-        Object.entries(where).every(([key, value]) => doc[key] === value),
-      );
-    }),
-    getProfileByOpenid: overrides.getProfileByOpenid || (async (openid) => ({
-      openid,
-      displayName: "记录维护者",
-    })),
+    getOne:
+      overrides.getOne ||
+      (async (name, where) => {
+        const docs = docsByCollection[name] || [];
+        return docs.find((doc) =>
+          Object.entries(where).every(([key, value]) => doc[key] === value),
+        );
+      }),
+    getProfileByOpenid:
+      overrides.getProfileByOpenid ||
+      (async (openid) => ({
+        openid,
+        displayName: "记录维护者",
+      })),
     ok,
-    queryCollection: overrides.queryCollection || (async (name, where = {}) => {
-      const docs = docsByCollection[name] || [];
-      const entries = Object.entries(where);
+    queryCollection:
+      overrides.queryCollection ||
+      (async (name, where = {}) => {
+        const docs = docsByCollection[name] || [];
+        const entries = Object.entries(where);
 
-      return docs.filter((doc) =>
-        entries.every(([key, value]) => {
-          if (Array.isArray(value?.$in)) {
-            return value.$in.includes(doc[key]);
-          }
-          return doc[key] === value;
-        }),
-      );
-    }),
+        return docs.filter((doc) =>
+          entries.every(([key, value]) => {
+            if (Array.isArray(value?.$in)) {
+              return value.$in.includes(doc[key]);
+            }
+            return doc[key] === value;
+          }),
+        );
+      }),
     toCanonicalRescuer: (profile, fallbackOpenid) => ({
       id: fallbackOpenid,
       displayName: profile.displayName,
@@ -101,7 +113,10 @@ test("read actions list homepage cases through published bundle composition", as
   const result = await service.listHomepageCases();
 
   assert.equal(result.ok, true);
-  assert.deepEqual(composedInputs[0].map((doc) => doc.caseId), ["case_1"]);
+  assert.deepEqual(
+    composedInputs[0].map((doc) => doc.caseId),
+    ["case_1"],
+  );
   assert.equal(result.data.bundles[0].case.animalName, "小橘");
 });
 
@@ -154,10 +169,10 @@ test("read actions keep my support history totals and latest support sorting", a
   assert.equal(result.ok, true);
   assert.equal(result.data.summary.totalSupportedAmount, 60);
   assert.equal(result.data.summary.totalSupportedAmountLabel, "¥60");
-  assert.deepEqual(result.data.summary.supportCases.map((item) => item.caseId), [
-    "case_1",
-    "case_2",
-  ]);
+  assert.deepEqual(
+    result.data.summary.supportCases.map((item) => item.caseId),
+    ["case_1", "case_2"],
+  );
   assert.equal(result.data.summary.supportCases[0].myTotalSupportedAmount, 50);
   assert.equal(result.data.summary.supportCases[0].animalCoverImageUrl, "https://img/case_1.png");
 });
@@ -194,7 +209,10 @@ test("read actions resolve rescuer homepage from case id and de-duplicate cases"
 
   assert.equal(result.ok, true);
   assert.equal(result.data.rescuer.id, "owner_1");
-  assert.deepEqual(composedInputs[0].map((doc) => doc.caseId), ["case_1"]);
+  assert.deepEqual(
+    composedInputs[0].map((doc) => doc.caseId),
+    ["case_1"],
+  );
 });
 
 test("read actions enforce owner-only case detail access", async () => {
@@ -207,11 +225,14 @@ test("read actions enforce owner-only case detail access", async () => {
     }),
   });
 
-  assert.deepEqual(await service.getOwnerCaseDetail("viewer_1", {
-    caseId: "case_1",
-  }), {
-    ok: false,
-    error: "FORBIDDEN",
-    message: "Only the rescuer can manage this case.",
-  });
+  assert.deepEqual(
+    await service.getOwnerCaseDetail("viewer_1", {
+      caseId: "case_1",
+    }),
+    {
+      ok: false,
+      error: "FORBIDDEN",
+      message: "Only the rescuer can manage this case.",
+    },
+  );
 });

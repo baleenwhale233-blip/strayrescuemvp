@@ -211,12 +211,7 @@ function replaceTimelineLabels(
     assetUrls: [],
   }));
 
-  return [
-    ...localBudgetItems,
-    ...localStatusItems,
-    ...localExpenseItems,
-    ...rewrittenBaseTimeline,
-  ];
+  return [...localBudgetItems, ...localStatusItems, ...localExpenseItems, ...rewrittenBaseTimeline];
 }
 
 export function resolvePresentedDraftCore(
@@ -292,25 +287,22 @@ export function resolveBundlePresentationCore(
 
   if (input.draft?.currentStatus && !latestStatus) {
     caseRecord.currentStatus = input.draft.currentStatus;
-    caseRecord.currentStatusLabel =
-      input.draft.currentStatusLabel || caseRecord.currentStatusLabel;
+    caseRecord.currentStatusLabel = input.draft.currentStatusLabel || caseRecord.currentStatusLabel;
   }
 
   if (latestStatus) {
     const overlayVisibility = getOverlayVisibility(bundle);
-    const assetIds = latestStatus.assetUrls
-      .slice(0, 9)
-      .map((url, index) => {
-        const asset = cloneOverlayAsset({
-          caseId: input.caseId,
-          itemId: latestStatus.id,
-          kind: "progress_photo",
-          url,
-          index,
-        });
-        assets.unshift(asset);
-        return asset.id;
+    const assetIds = latestStatus.assetUrls.slice(0, 9).map((url, index) => {
+      const asset = cloneOverlayAsset({
+        caseId: input.caseId,
+        itemId: latestStatus.id,
+        kind: "progress_photo",
+        url,
+        index,
       });
+      assets.unshift(asset);
+      return asset.id;
+    });
 
     events.unshift({
       id: createOverlayEventId(input.caseId, "status", latestStatus.id),
@@ -339,25 +331,23 @@ export function resolveBundlePresentationCore(
     const baseExpenseRecords = getStructuredExpenseRecords(bundle);
     const overlayVisibility = getOverlayVisibility(bundle);
     const localRecords = expenseSubmissions.map((submission) => {
-      const evidenceItems = submission.assetUrls
-        .slice(0, 9)
-        .map((url, index) => {
-          const asset = cloneOverlayAsset({
-            caseId: input.caseId,
-            itemId: submission.id,
-            kind: index === 0 ? "receipt" : "progress_photo",
-            url,
-            index,
-          });
-          assets.unshift(asset);
-          return {
-            id: createOverlayAssetId(input.caseId, "expense-evidence", submission.id, index),
-            kind: index === 0 ? ("receipt" as const) : ("animal_photo" as const),
-            assetId: asset.id,
-            imageUrl: url,
-            hash: url,
-          };
+      const evidenceItems = submission.assetUrls.slice(0, 9).map((url, index) => {
+        const asset = cloneOverlayAsset({
+          caseId: input.caseId,
+          itemId: submission.id,
+          kind: index === 0 ? "receipt" : "progress_photo",
+          url,
+          index,
         });
+        assets.unshift(asset);
+        return {
+          id: createOverlayAssetId(input.caseId, "expense-evidence", submission.id, index),
+          kind: index === 0 ? ("receipt" as const) : ("animal_photo" as const),
+          assetId: asset.id,
+          imageUrl: url,
+          hash: url,
+        };
+      });
 
       return {
         id: `overlay-expense-record:${input.caseId}:${submission.id}`,
@@ -368,7 +358,7 @@ export function resolveBundlePresentationCore(
         category: "medical" as const,
         summary: submission.title,
         evidenceItems,
-        evidenceLevel: evidenceItems.length ? "basic" as const : "needs_attention" as const,
+        evidenceLevel: evidenceItems.length ? ("basic" as const) : ("needs_attention" as const),
         verificationStatus: "manual" as const,
         visibility: overlayVisibility,
         projectedEventId: createOverlayEventId(input.caseId, "expense", submission.id),
@@ -404,8 +394,7 @@ export function finalizePublicDetailPresentationCore(
   return {
     ...detail,
     updatedAtLabel: latestStatus?.timestampLabel || detail.updatedAtLabel,
-    latestTimelineSummary:
-      latestStatus?.description || detail.latestTimelineSummary,
+    latestTimelineSummary: latestStatus?.description || detail.latestTimelineSummary,
     timeline: replaceTimelineLabels(detail.timeline, input),
   };
 }

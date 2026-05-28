@@ -28,17 +28,19 @@ function createFakeDb() {
 
 function createService(overrides = {}) {
   const db = overrides.db || createFakeDb();
-  const bundles = overrides.bundles || new Map([
-    [
-      "case_1",
-      {
-        case: {
-          id: "case_1",
-          rescuerId: "owner_1",
+  const bundles =
+    overrides.bundles ||
+    new Map([
+      [
+        "case_1",
+        {
+          case: {
+            id: "case_1",
+            rescuerId: "owner_1",
+          },
         },
-      },
-    ],
-  ]);
+      ],
+    ]);
   const service = createCaseWritesService({
     collections: {
       assets: "evidence_assets",
@@ -48,10 +50,12 @@ function createService(overrides = {}) {
     db,
     fail,
     getBundleByCaseId: overrides.getBundleByCaseId || (async (caseId) => bundles.get(caseId)),
-    getCaseDocByCaseId: overrides.getCaseDocByCaseId || (async (caseId) => ({
-      _id: `${caseId}_doc`,
-      caseId,
-    })),
+    getCaseDocByCaseId:
+      overrides.getCaseDocByCaseId ||
+      (async (caseId) => ({
+        _id: `${caseId}_doc`,
+        caseId,
+      })),
     isCloudFileID: overrides.isCloudFileID || ((value) => String(value).startsWith("cloud://")),
     nowIso: overrides.nowIso || (() => "2026-04-21T00:00:00.000Z"),
     ok,
@@ -140,22 +144,28 @@ test("case writes updates profile and cover asset for valid owner input", async 
 test("case writes rejects invalid case profile before persistence", async () => {
   const { db, service } = createService();
 
-  assert.deepEqual(await service.updateCaseProfile("owner_1", {
-    caseId: "case_1",
-    animalName: "",
-  }), {
-    ok: false,
-    error: "INVALID_CASE_PROFILE",
-    message: undefined,
-  });
-  assert.deepEqual(await service.updateCaseProfile("owner_1", {
-    caseId: "case_1",
-    coverFileID: "/tmp/local.png",
-  }), {
-    ok: false,
-    error: "INVALID_ASSET_FILE_ID",
-    message: undefined,
-  });
+  assert.deepEqual(
+    await service.updateCaseProfile("owner_1", {
+      caseId: "case_1",
+      animalName: "",
+    }),
+    {
+      ok: false,
+      error: "INVALID_CASE_PROFILE",
+      message: undefined,
+    },
+  );
+  assert.deepEqual(
+    await service.updateCaseProfile("owner_1", {
+      caseId: "case_1",
+      coverFileID: "/tmp/local.png",
+    }),
+    {
+      ok: false,
+      error: "INVALID_ASSET_FILE_ID",
+      message: undefined,
+    },
+  );
   assert.deepEqual(db.writes, []);
 });
 

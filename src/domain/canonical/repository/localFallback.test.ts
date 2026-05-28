@@ -46,7 +46,10 @@ test("local fallback facade exposes semantic profile fallback operations", () =>
 
   assert.deepEqual(calls, [
     ["saveTitle", { title: "小橘", caseId: "case_1", draftId: "draft_1" }],
-    ["saveCover", { coverPath: "https://example.com/cover.png", caseId: "case_1", draftId: "draft_1" }],
+    [
+      "saveCover",
+      { coverPath: "https://example.com/cover.png", caseId: "case_1", draftId: "draft_1" },
+    ],
     ["clearTitle", "case_1", "draft_1"],
     ["clearCover", "case_1", "draft_1"],
   ]);
@@ -116,12 +119,8 @@ test("local fallback facade exposes semantic content-write fallback operations",
   clearCaseContentWriteLocalFallback({ caseId: "case_1", kind: "status" }, deps);
   clearCaseContentWriteLocalFallback({ caseId: "case_1", kind: "expense" }, deps);
 
-  assert.deepEqual(calls.map((call) => (call as unknown[])[0]), [
-    "saveBudget",
-    "saveStatus",
-    "saveExpense",
-    "clearBudget",
-    "clearStatus",
-    "clearExpense",
-  ]);
+  assert.deepEqual(
+    calls.map((call) => (call as unknown[])[0]),
+    ["saveBudget", "saveStatus", "saveExpense", "clearBudget", "clearStatus", "clearExpense"],
+  );
 });

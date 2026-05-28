@@ -19,11 +19,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "primary-action",
-      "active-list",
-      "draft-list"
-    ],
+    "segments": ["primary-action", "active-list", "draft-list"],
     "segmentSelectors": {
       "primary-action": ".rescue-page__primary-action",
       "active-list": ".rescue-page__section",

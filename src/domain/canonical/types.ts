@@ -2,20 +2,12 @@ export type Id = string;
 export type IsoDateTimeString = string;
 export type CasePublicId = string;
 
-export type VerificationStatus =
-  | "pending"
-  | "confirmed"
-  | "rejected"
-  | "manual";
+export type VerificationStatus = "pending" | "confirmed" | "rejected" | "manual";
 
 export type Visibility = "draft" | "private" | "public" | "archived";
 
 export type CurrencyCode = "CNY";
-export type ExpenseCategory =
-  | "medical"
-  | "medication"
-  | "food_supply"
-  | "transport_other";
+export type ExpenseCategory = "medical" | "medication" | "food_supply" | "transport_other";
 export type ExpenseEvidenceKind =
   | "receipt"
   | "order_screenshot"
@@ -61,11 +53,7 @@ export type EventType =
   | "support"
   | "budget_adjustment";
 
-export type SupportSource =
-  | "donor_claim"
-  | "manual_entry"
-  | "batch_import"
-  | "platform_form";
+export type SupportSource = "donor_claim" | "manual_entry" | "batch_import" | "platform_form";
 
 export type AssetKind =
   | "animal_face"

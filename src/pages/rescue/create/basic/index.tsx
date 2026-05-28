@@ -192,9 +192,7 @@ export default function RescueCreateBasicPage() {
                 <AppIcon name="camera" size={24} variant="default" />
               </View>
 
-              <Text className="rescue-create-page__upload-tip">
-                拍摄正脸清晰图作为档案封面
-              </Text>
+              <Text className="rescue-create-page__upload-tip">拍摄正脸清晰图作为档案封面</Text>
             </>
           ) : null}
         </View>

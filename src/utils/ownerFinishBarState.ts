@@ -25,9 +25,7 @@ export function reduceOwnerFinishBarMode(
   return mode;
 }
 
-export function getOwnerFinishBarViewModel(
-  mode: OwnerFinishBarMode,
-): OwnerFinishBarViewModel {
+export function getOwnerFinishBarViewModel(mode: OwnerFinishBarMode): OwnerFinishBarViewModel {
   if (mode === "confirming") {
     return {
       sideAction: "cancel",

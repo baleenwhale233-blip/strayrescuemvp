@@ -29,9 +29,7 @@ function getWorkbenchStatusLabel(label?: string) {
 
 function getProjectSubtitle(project: WorkbenchCaseCardVM) {
   if (project.visibility === "draft") {
-    return project.updatedAtLabel
-      ? `草稿待完善 · ${project.updatedAtLabel} 更新`
-      : "草稿待完善";
+    return project.updatedAtLabel ? `草稿待完善 · ${project.updatedAtLabel} 更新` : "草稿待完善";
   }
 
   return `${getWorkbenchStatusLabel(
@@ -55,10 +53,7 @@ function getProjectNotice(project: WorkbenchCaseCardVM) {
     return `${project.unmatchedSupportEntryCount} 条登记待核对`;
   }
 
-  if (
-    project.homepageEligibilityStatus &&
-    project.homepageEligibilityStatus !== "eligible"
-  ) {
+  if (project.homepageEligibilityStatus && project.homepageEligibilityStatus !== "eligible") {
     return project.homepageEligibilityReason;
   }
 
@@ -93,9 +88,7 @@ function ProjectListItem({
         <View className="project-list-item__content">
           <Text className="project-list-item__name">{project.title}</Text>
           {!compact ? (
-            <Text className="project-list-item__state">
-              {getProjectSubtitle(project)}
-            </Text>
+            <Text className="project-list-item__state">{getProjectSubtitle(project)}</Text>
           ) : null}
         </View>
 
@@ -131,9 +124,7 @@ export default function RescuePage() {
       });
   });
 
-  const handleNavigateToDetail = (
-    card: WorkbenchCaseCardVM,
-  ) => {
+  const handleNavigateToDetail = (card: WorkbenchCaseCardVM) => {
     if (card.visibility === "draft") {
       const draftId = card.draftId || caseIdToDraftId(card.caseId);
       Taro.navigateTo({

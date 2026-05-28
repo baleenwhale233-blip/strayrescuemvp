@@ -74,7 +74,10 @@ function mapRemoteRecordToReadonly(record: CaseRecordDetailVM): RescueReadonlyRe
       description: item.description,
       amountLabel: formatItemAmount(item.amount),
     })),
-    images: record.images.map((image) => image.url).filter(Boolean).slice(0, 9),
+    images: record.images
+      .map((image) => image.url)
+      .filter(Boolean)
+      .slice(0, 9),
     budgetPreviousLabel: record.budgetPreviousLabel,
     budgetCurrentLabel: record.budgetCurrentLabel,
   };
@@ -157,9 +160,7 @@ export default function RescueReadonlyRecordDetailPage() {
 
       <View className="record-detail-page__notice">
         <Text className="record-detail-page__notice-title">透明账本记录</Text>
-        <Text className="record-detail-page__notice-copy">
-          {getImmutableCopy(record.kind)}
-        </Text>
+        <Text className="record-detail-page__notice-copy">{getImmutableCopy(record.kind)}</Text>
       </View>
 
       <View className="record-detail-page__card">
@@ -213,15 +214,11 @@ export default function RescueReadonlyRecordDetailPage() {
           <View className="record-detail-page__budget">
             <View className="record-detail-page__budget-column">
               <Text className="record-detail-page__label">原预算总计</Text>
-              <Text className="record-detail-page__budget-old">
-                {record.budgetPreviousLabel}
-              </Text>
+              <Text className="record-detail-page__budget-old">{record.budgetPreviousLabel}</Text>
             </View>
             <View className="record-detail-page__budget-column">
               <Text className="record-detail-page__label">现预算总计</Text>
-              <Text className="record-detail-page__budget-new">
-                {record.budgetCurrentLabel}
-              </Text>
+              <Text className="record-detail-page__budget-new">{record.budgetCurrentLabel}</Text>
             </View>
           </View>
         ) : null}

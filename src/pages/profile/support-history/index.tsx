@@ -54,14 +54,10 @@ export default function SupportHistoryPage() {
 
       <View className="support-history-page__summary">
         <Text className="support-history-page__summary-label">总计登记</Text>
-        <Text className="support-history-page__summary-value">
-          {formatCurrency(totalAmount)}
-        </Text>
+        <Text className="support-history-page__summary-value">{formatCurrency(totalAmount)}</Text>
       </View>
 
-      <Text className="support-history-page__section-title">
-        登记记录（{items.length}）
-      </Text>
+      <Text className="support-history-page__section-title">登记记录（{items.length}）</Text>
 
       <View className="support-history-page__list">
         {items.length ? (
@@ -78,15 +74,9 @@ export default function SupportHistoryPage() {
               />
               <View className="support-history-page__item-copy">
                 <Text className="support-history-page__item-title">{item.title}</Text>
-                <Text className="support-history-page__item-meta">
-                  登记 {item.amountLabel}
-                </Text>
+                <Text className="support-history-page__item-meta">登记 {item.amountLabel}</Text>
               </View>
-              <Image
-                className="support-history-page__chevron"
-                mode="aspectFit"
-                src={chevronIcon}
-              />
+              <Image className="support-history-page__chevron" mode="aspectFit" src={chevronIcon} />
             </View>
           ))
         ) : (

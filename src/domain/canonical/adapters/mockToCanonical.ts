@@ -4,10 +4,7 @@ import timelineReceipt from "../../../assets/detail/timeline-receipt.png";
 import timelineStatus from "../../../assets/detail/timeline-status-cat.png";
 import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import { createCasePublicId } from "../modeling";
-import {
-  getSavedDrafts,
-  type RescueCreateDraft,
-} from "../repository/localDraftPersistence";
+import { getSavedDrafts, type RescueCreateDraft } from "../repository/localDraftPersistence";
 import type {
   CanonicalAsset,
   CanonicalCase,
@@ -58,10 +55,7 @@ function toVerificationStatus(tone: string): VerificationStatus {
   return "manual";
 }
 
-function mapStatusToCurrentStatus(
-  tone: StatusTone,
-  label: string,
-): CaseCurrentStatus {
+function mapStatusToCurrentStatus(tone: StatusTone, label: string): CaseCurrentStatus {
   if (tone === "draft") {
     return "draft";
   }
@@ -84,10 +78,7 @@ function mapStatusToCurrentStatus(
   return "medical";
 }
 
-function createDefaultRescuer(
-  detail: RescueProjectDetail,
-  index: number,
-): CanonicalRescuer {
+function createDefaultRescuer(detail: RescueProjectDetail, index: number): CanonicalRescuer {
   const rescuerId = `rescuer_${formatIndex(index)}`;
 
   return {
@@ -107,10 +98,7 @@ function createDefaultRescuer(
   };
 }
 
-function createBaseAssets(
-  caseId: string,
-  rescuer: CanonicalRescuer,
-): CanonicalAsset[] {
+function createBaseAssets(caseId: string, rescuer: CanonicalRescuer): CanonicalAsset[] {
   return [
     {
       id: rescuer.avatarAssetId!,
@@ -161,15 +149,9 @@ export function adaptRescueProjectDetailMockToCanonical(
     foundAt: createdAt,
     foundLocationText: detail.location,
     initialSummary: detail.summary,
-    currentStatus: mapStatusToCurrentStatus(
-      detail.statusTone,
-      detail.statusLabel,
-    ),
+    currentStatus: mapStatusToCurrentStatus(detail.statusTone, detail.statusLabel),
     currentStatusLabel: detail.statusLabel,
-    targetAmount:
-      detail.ledger.supported +
-      detail.ledger.verifiedGap +
-      detail.ledger.pending,
+    targetAmount: detail.ledger.supported + detail.ledger.verifiedGap + detail.ledger.pending,
     visibility: detail.statusTone === "draft" ? "draft" : "published",
     createdAt,
     updatedAt: createdAt,
@@ -189,8 +171,7 @@ export function adaptRescueProjectDetailMockToCanonical(
   const timelineEvents: CanonicalEvent[] = detail.timeline.map((entry, entryIndex) => {
     const eventId = `${caseId}_evt_${formatIndex(entryIndex)}`;
     const occurredAt = createdAt;
-    const visibility: Visibility =
-      canonicalCase.visibility === "draft" ? "draft" : "public";
+    const visibility: Visibility = canonicalCase.visibility === "draft" ? "draft" : "public";
 
     if (entry.tone === "expense") {
       const receiptAssetId = `${eventId}_receipt`;
@@ -256,12 +237,9 @@ export function adaptRescueProjectDetailMockToCanonical(
         caseId,
         type: "budget_adjustment",
         occurredAt,
-        previousTargetAmount:
-          detail.ledger.supported + detail.ledger.verifiedGap,
+        previousTargetAmount: detail.ledger.supported + detail.ledger.verifiedGap,
         newTargetAmount:
-          detail.ledger.supported +
-          detail.ledger.verifiedGap +
-          detail.ledger.pending,
+          detail.ledger.supported + detail.ledger.verifiedGap + detail.ledger.pending,
         reason: entry.description || entry.title,
         assetIds: [],
         visibility,
@@ -291,10 +269,7 @@ export function adaptRescueProjectDetailMockToCanonical(
     return event;
   });
 
-  const confirmedExpenseAmount = Math.max(
-    detail.ledger.supported + detail.ledger.verifiedGap,
-    0,
-  );
+  const confirmedExpenseAmount = Math.max(detail.ledger.supported + detail.ledger.verifiedGap, 0);
   const expenseRecordId = `${caseId}_expense_record_001`;
   const supportThreadId = `${caseId}_support_thread_001`;
   const supportEntryId = `${caseId}_support_entry_001`;
@@ -441,11 +416,9 @@ export function adaptLocalDraftToCanonical(
     faceIdAssetId: `${caseId}_face`,
     foundLocationText: draft.foundLocationText,
     initialSummary: draft.summary || "待补充事件说明",
-    currentStatus:
-      draft.currentStatus || (draft.status === "published" ? "medical" : "draft"),
+    currentStatus: draft.currentStatus || (draft.status === "published" ? "medical" : "draft"),
     currentStatusLabel:
-      draft.currentStatusLabel ||
-      (draft.status === "published" ? "医疗处理中" : "草稿中"),
+      draft.currentStatusLabel || (draft.status === "published" ? "医疗处理中" : "草稿中"),
     targetAmount: draft.budget,
     visibility: draft.status,
     createdAt,
@@ -454,8 +427,7 @@ export function adaptLocalDraftToCanonical(
 
   const events: CanonicalEvent[] = draft.timeline.map((entry, entryIndex) => {
     const eventId = `${caseId}_evt_${formatIndex(entryIndex)}`;
-    const visibility: Visibility =
-      draft.status === "published" ? "public" : "draft";
+    const visibility: Visibility = draft.status === "published" ? "public" : "draft";
 
     if (entry.tone === "expense") {
       const entryImages = entry.images ?? [];
@@ -557,9 +529,7 @@ export function adaptLocalDraftToCanonical(
   };
 }
 
-export function mergeCanonicalBundles(
-  bundles: CanonicalCaseBundle[],
-): CanonicalDataset {
+export function mergeCanonicalBundles(bundles: CanonicalCaseBundle[]): CanonicalDataset {
   return bundles.reduce<CanonicalDataset>(
     (dataset, bundle) => {
       dataset.rescuers.push(bundle.rescuer);

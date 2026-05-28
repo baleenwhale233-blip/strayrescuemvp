@@ -21,9 +21,7 @@ import {
 } from "../modeling";
 
 function sortEventsDesc(events: CanonicalEvent[]) {
-  return [...events].sort((left, right) =>
-    right.occurredAt.localeCompare(left.occurredAt),
-  );
+  return [...events].sort((left, right) => right.occurredAt.localeCompare(left.occurredAt));
 }
 
 function formatCurrency(amount: number) {
@@ -74,9 +72,7 @@ function getLatestPublicProgressPhotoUrl(
 ) {
   const progressEvents = [...events]
     .filter(
-      (
-        event,
-      ): event is Extract<CanonicalEvent, { type: "progress_update" }> =>
+      (event): event is Extract<CanonicalEvent, { type: "progress_update" }> =>
         event.type === "progress_update" && event.visibility === "public",
     )
     .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt));
@@ -114,35 +110,25 @@ function getStatusTone(caseRecord: CanonicalCase): StatusTone {
   return "active";
 }
 
-function getResolvedTargetAmount(
-  caseRecord: CanonicalCase,
-  events: CanonicalEvent[],
-) {
+function getResolvedTargetAmount(caseRecord: CanonicalCase, events: CanonicalEvent[]) {
   return events
     .filter((event) => event.type === "budget_adjustment")
     .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))
     .reduce((_targetAmount, event) => event.newTargetAmount, caseRecord.targetAmount);
 }
 
-function isCountableExpenseEvent(
-  event: CanonicalEvent,
-): event is CanonicalExpenseEvent {
+function isCountableExpenseEvent(event: CanonicalEvent): event is CanonicalExpenseEvent {
   return (
     event.type === "expense" &&
-    (event.verificationStatus === "confirmed" ||
-      event.verificationStatus === "manual")
+    (event.verificationStatus === "confirmed" || event.verificationStatus === "manual")
   );
 }
 
-function isConfirmedSupportEvent(
-  event: CanonicalEvent,
-): event is CanonicalSupportEvent {
+function isConfirmedSupportEvent(event: CanonicalEvent): event is CanonicalSupportEvent {
   return event.type === "support" && event.verificationStatus === "confirmed";
 }
 
-function isPendingSupportEvent(
-  event: CanonicalEvent,
-): event is CanonicalSupportEvent {
+function isPendingSupportEvent(event: CanonicalEvent): event is CanonicalSupportEvent {
   return event.type === "support" && event.verificationStatus === "pending";
 }
 
@@ -213,9 +199,7 @@ function eventToTimelineItemVM(
         ...shared,
         label: "场外登记",
         tone: event.verificationStatus === "confirmed" ? "progress" : "draft",
-        title: event.supporterNameMasked
-          ? `${event.supporterNameMasked} 的登记`
-          : "新的登记记录",
+        title: event.supporterNameMasked ? `${event.supporterNameMasked} 的登记` : "新的登记记录",
         description: event.message,
         amountLabel: `+ ${formatCurrency(event.amount)}`,
         verificationStatus: event.verificationStatus,
@@ -278,10 +262,7 @@ function getExpenseRecordImageMap(
   return map;
 }
 
-function getPublicTimeline(
-  bundle: CanonicalCaseBundle,
-  assetMap: Map<string, CanonicalAsset>,
-) {
+function getPublicTimeline(bundle: CanonicalCaseBundle, assetMap: Map<string, CanonicalAsset>) {
   const expenseRecordImageMap = getExpenseRecordImageMap(bundle, assetMap);
 
   return sortEventsDesc(bundle.events)
@@ -364,9 +345,7 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
     rescuer: {
       id: bundle.rescuer.id,
       name: bundle.rescuer.name,
-      avatarUrl:
-        getAssetUrl(assetMap, bundle.rescuer.avatarAssetId) ||
-        bundle.rescuer.avatarUrl,
+      avatarUrl: getAssetUrl(assetMap, bundle.rescuer.avatarAssetId) || bundle.rescuer.avatarUrl,
       verifiedLevel: bundle.rescuer.verifiedLevel,
       verifiedLabel: getVerifiedLevelLabel(bundle.rescuer),
       joinedAtLabel: formatDateLabel(bundle.rescuer.joinedAt),

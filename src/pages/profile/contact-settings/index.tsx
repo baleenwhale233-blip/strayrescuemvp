@@ -11,10 +11,7 @@ import {
   getRescuerContactProfile,
   saveRescuerContactProfile,
 } from "../../../data/rescuerContactProfile";
-import {
-  loadMyProfile,
-  updateRemoteMyProfile,
-} from "../../../domain/canonical/repository";
+import { loadMyProfile, updateRemoteMyProfile } from "../../../domain/canonical/repository";
 import { uploadProfileAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import "./index.scss";
 
@@ -78,58 +75,31 @@ export default function ContactSettingsPage() {
     }
   };
 
-  const handleSubmit = async () => submitGuardRef.current.run(async () => {
-    const nextWechatId = wechatId.trim();
-    const hasQrImage = Boolean(qrImagePath.trim());
+  const handleSubmit = async () =>
+    submitGuardRef.current.run(async () => {
+      const nextWechatId = wechatId.trim();
+      const hasQrImage = Boolean(qrImagePath.trim());
 
-    if (!nextWechatId && !hasQrImage) {
-      Taro.showToast({
-        title: "请填写微信号或上传二维码",
-        icon: "none",
-      });
-      return;
-    }
-
-    try {
-      Taro.showLoading({ title: "保存中", mask: true });
-      const isExistingRemoteQr = Boolean(
-        remotePaymentQrAssetId &&
-          (qrImagePath.startsWith("https://") || qrImagePath.startsWith("cloud://")),
-      );
-      const baseProfileSaved = await updateRemoteMyProfile({
-        wechatId: nextWechatId,
-        contactNote: note.trim(),
-      });
-
-      if (!baseProfileSaved) {
-        saveRescuerContactProfile({
-          wechatId: nextWechatId,
-          qrImagePath,
-          note: note.trim(),
-        });
-        Taro.hideLoading();
+      if (!nextWechatId && !hasQrImage) {
         Taro.showToast({
-          title: "只保存在本机，请稍后再试",
+          title: "请填写微信号或上传二维码",
           icon: "none",
         });
         return;
       }
 
-      let nextQrImagePath = qrImagePath;
-
-      if (qrImagePath && !qrImagePath.startsWith("cloud://") && !isExistingRemoteQr) {
-        const uploaded = await uploadProfileAssetImage(qrImagePath, "payment-qr");
-        nextQrImagePath = uploaded && !uploaded.isLocalFallback ? uploaded.fileID : qrImagePath;
-      }
-
-      if (nextQrImagePath.startsWith("cloud://") && !isExistingRemoteQr) {
-        const didSyncQr = await updateRemoteMyProfile({
+      try {
+        Taro.showLoading({ title: "保存中", mask: true });
+        const isExistingRemoteQr = Boolean(
+          remotePaymentQrAssetId &&
+            (qrImagePath.startsWith("https://") || qrImagePath.startsWith("cloud://")),
+        );
+        const baseProfileSaved = await updateRemoteMyProfile({
           wechatId: nextWechatId,
           contactNote: note.trim(),
-          paymentQrFileID: nextQrImagePath,
         });
 
-        if (!didSyncQr) {
+        if (!baseProfileSaved) {
           saveRescuerContactProfile({
             wechatId: nextWechatId,
             qrImagePath,
@@ -137,85 +107,113 @@ export default function ContactSettingsPage() {
           });
           Taro.hideLoading();
           Taro.showToast({
+            title: "只保存在本机，请稍后再试",
+            icon: "none",
+          });
+          return;
+        }
+
+        let nextQrImagePath = qrImagePath;
+
+        if (qrImagePath && !qrImagePath.startsWith("cloud://") && !isExistingRemoteQr) {
+          const uploaded = await uploadProfileAssetImage(qrImagePath, "payment-qr");
+          nextQrImagePath = uploaded && !uploaded.isLocalFallback ? uploaded.fileID : qrImagePath;
+        }
+
+        if (nextQrImagePath.startsWith("cloud://") && !isExistingRemoteQr) {
+          const didSyncQr = await updateRemoteMyProfile({
+            wechatId: nextWechatId,
+            contactNote: note.trim(),
+            paymentQrFileID: nextQrImagePath,
+          });
+
+          if (!didSyncQr) {
+            saveRescuerContactProfile({
+              wechatId: nextWechatId,
+              qrImagePath,
+              note: note.trim(),
+            });
+            Taro.hideLoading();
+            Taro.showToast({
+              title: "联系方式已保存，二维码没传上去",
+              icon: "none",
+            });
+            return;
+          }
+        }
+
+        const confirmedProfile = await loadMyProfile().catch(() => undefined);
+        const nextProfile = {
+          wechatId: confirmedProfile?.wechatId || nextWechatId,
+          qrImagePath: confirmedProfile?.paymentQrUrl || nextQrImagePath,
+          note: confirmedProfile?.contactNote ?? note.trim(),
+        };
+
+        saveRescuerContactProfile({
+          wechatId: nextProfile.wechatId,
+          qrImagePath: nextProfile.qrImagePath,
+          note: nextProfile.note,
+        });
+        setWechatId(nextProfile.wechatId);
+        setQrImagePath(nextProfile.qrImagePath);
+        setNote(nextProfile.note);
+        setRemotePaymentQrAssetId(confirmedProfile?.paymentQrAssetId || "");
+        Taro.hideLoading();
+
+        if (!confirmedProfile?.hasContactProfile) {
+          Taro.showToast({
+            title: hasQrImage ? "二维码已保存" : "微信号已保存",
+            icon: "none",
+          });
+          return;
+        }
+
+        Taro.showToast({
+          title: "联系方式已保存",
+          icon: "none",
+        });
+      } catch (error) {
+        Taro.hideLoading();
+        if (error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED") {
+          saveRescuerContactProfile({
+            wechatId: nextWechatId,
+            qrImagePath,
+            note: note.trim(),
+          });
+          Taro.showToast({
             title: "联系方式已保存，二维码没传上去",
             icon: "none",
           });
           return;
         }
-      }
 
-      const confirmedProfile = await loadMyProfile().catch(() => undefined);
-      const nextProfile = {
-        wechatId: confirmedProfile?.wechatId || nextWechatId,
-        qrImagePath: confirmedProfile?.paymentQrUrl || nextQrImagePath,
-        note: confirmedProfile?.contactNote ?? note.trim(),
-      };
-
-      saveRescuerContactProfile({
-        wechatId: nextProfile.wechatId,
-        qrImagePath: nextProfile.qrImagePath,
-        note: nextProfile.note,
-      });
-      setWechatId(nextProfile.wechatId);
-      setQrImagePath(nextProfile.qrImagePath);
-      setNote(nextProfile.note);
-      setRemotePaymentQrAssetId(confirmedProfile?.paymentQrAssetId || "");
-      Taro.hideLoading();
-
-      if (!confirmedProfile?.hasContactProfile) {
-        Taro.showToast({
-          title: hasQrImage ? "二维码已保存" : "微信号已保存",
-          icon: "none",
-        });
-        return;
-      }
-
-      Taro.showToast({
-        title: "联系方式已保存",
-        icon: "none",
-      });
-    } catch (error) {
-      Taro.hideLoading();
-      if (error instanceof Error && error.message === "PROFILE_ASSET_UPLOAD_FAILED") {
         saveRescuerContactProfile({
           wechatId: nextWechatId,
           qrImagePath,
           note: note.trim(),
         });
         Taro.showToast({
-          title: "联系方式已保存，二维码没传上去",
+          title: "只保存在本机，请稍后再试",
           icon: "none",
         });
         return;
       }
 
-      saveRescuerContactProfile({
-        wechatId: nextWechatId,
-        qrImagePath,
-        note: note.trim(),
-      });
-      Taro.showToast({
-        title: "只保存在本机，请稍后再试",
-        icon: "none",
-      });
-      return;
-    }
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          if (router.params?.redirect === "create") {
+            void Taro.navigateTo({
+              url: "/pages/rescue/create/basic/index?entry=new",
+            });
+            resolve();
+            return;
+          }
 
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        if (router.params?.redirect === "create") {
-          void Taro.navigateTo({
-            url: "/pages/rescue/create/basic/index?entry=new",
-          });
+          void Taro.navigateBack();
           resolve();
-          return;
-        }
-
-        void Taro.navigateBack();
-        resolve();
-      }, 350);
+        }, 350);
+      });
     });
-  });
 
   return (
     <View
@@ -278,7 +276,11 @@ export default function ContactSettingsPage() {
       <View className="contact-settings-page__bottom">
         <View className="theme-button-primary contact-settings-page__submit" onTap={handleSubmit}>
           <Text>保存</Text>
-          <Image className="contact-settings-page__submit-icon" mode="aspectFit" src={submitArrowIcon} />
+          <Image
+            className="contact-settings-page__submit-icon"
+            mode="aspectFit"
+            src={submitArrowIcon}
+          />
         </View>
       </View>
     </View>

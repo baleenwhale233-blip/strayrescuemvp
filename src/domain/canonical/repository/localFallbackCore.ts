@@ -5,22 +5,17 @@ import type {
 } from "./localPresentationCore";
 
 export type ProfileFallbackDeps = {
-  saveCaseTitleOverride(input: {
-    title: string;
-    caseId?: string;
-    draftId?: string;
-  }): void;
-  saveCaseCoverOverride(input: {
-    coverPath: string;
-    caseId?: string;
-    draftId?: string;
-  }): void;
+  saveCaseTitleOverride(input: { title: string; caseId?: string; draftId?: string }): void;
+  saveCaseCoverOverride(input: { coverPath: string; caseId?: string; draftId?: string }): void;
   clearCaseTitleOverride(caseId?: string, draftId?: string): void;
   clearCaseCoverOverride(caseId?: string, draftId?: string): void;
 };
 
 export type ContentFallbackDeps = {
-  saveCaseBudgetAdjustment(caseId: string | undefined, submission: LocalBudgetAdjustmentSubmission): void;
+  saveCaseBudgetAdjustment(
+    caseId: string | undefined,
+    submission: LocalBudgetAdjustmentSubmission,
+  ): void;
   saveCaseExpenseSubmission(caseId: string | undefined, submission: LocalExpenseSubmission): void;
   saveCaseStatusSubmission(caseId: string | undefined, submission: LocalStatusSubmission): void;
   clearCaseBudgetAdjustments(caseId?: string): void;

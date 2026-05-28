@@ -34,10 +34,16 @@
 
 开始任何产品或代码改动前，优先读取：
 
-1. [`docs/product_development_status.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/product_development_status.md)
+1. [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
 2. [`docs/main_info_arch_v3.2.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/main_info_arch_v3.2.md)
 3. [`docs/ui_priority_matrix.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/ui_priority_matrix.md)
-4. [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)
+4. [`docs/local_presentation_residual_checklist.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/local_presentation_residual_checklist.md)
+5. [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)
+
+补充：
+
+- `docs/project_control_center.md` 是当前状态第一真相源。
+- `docs/product_development_status.md` 已归档为历史背景，只在需要追溯旧阶段时读取，不再作为当前状态入口。
 
 如果改动只涉及单页，再补读对应页面 IA：
 
@@ -90,7 +96,7 @@
 
 如果本次改动属于下面任何一种，除了写开发日志外，还要同步更新：
 
-- [`docs/product_development_status.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/product_development_status.md)
+- [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
 
 触发条件：
 
@@ -181,9 +187,10 @@
 
 默认依赖顺序应该是：
 
-1. `product_development_status.md`
+1. `project_control_center.md`
 2. `development_log.md`
 3. 对应 IA 文档
 4. 代码
+5. `product_development_status.md` 历史归档
 
 聊天记录只作为补充，不作为唯一上下文来源。

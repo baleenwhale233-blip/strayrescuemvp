@@ -21,13 +21,7 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": [
-      "case-card",
-      "amount-input",
-      "upload",
-      "textarea",
-      "bottom-bar"
-    ],
+    "segments": ["case-card", "amount-input", "upload", "textarea", "bottom-bar"],
     "segmentSelectors": {
       "case-card": ".support-claim__case-card",
       "amount-input": ".support-claim__single-input--amount",
