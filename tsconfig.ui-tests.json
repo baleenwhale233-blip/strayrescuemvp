@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": ".tmp/ui-tests",
+    "rootDir": ".",
+    "noEmit": false,
+    "module": "CommonJS"
+  },
+  "include": [
+    "src/pages/rescue/expense/stickyTotal.ts",
+    "src/pages/rescue/expense/stickyTotal.test.ts"
+  ]
+}

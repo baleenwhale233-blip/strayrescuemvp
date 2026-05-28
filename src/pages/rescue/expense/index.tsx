@@ -1,6 +1,12 @@
 import { Image, Input, ScrollView, Text, View } from "@tarojs/components";
-import Taro, { useDidHide, useDidShow, useRouter, useUnload } from "@tarojs/taro";
-import { useMemo, useRef, useState } from "react";
+import Taro, {
+  useDidHide,
+  useDidShow,
+  usePageScroll,
+  useRouter,
+  useUnload,
+} from "@tarojs/taro";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -27,6 +33,7 @@ import {
   syncCurrentDraft,
 } from "../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
+import { getCompactTotalThreshold, shouldShowCompactTotal } from "./stickyTotal";
 import "./index.scss";
 
 type ExpenseLine = {
@@ -43,6 +50,11 @@ type ExpenseDraftCache = {
 };
 
 type ExpenseQaPreset = "design" | "";
+
+type NativeRect = {
+  top?: number;
+  height?: number;
+};
 
 function hasValidExpenseLineOrder(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
@@ -89,6 +101,11 @@ function hasDraftContent(cache: Pick<ExpenseDraftCache, "publicEvidenceImages" |
 
 function getQaPreset(value?: string): ExpenseQaPreset {
   return value === "design" ? "design" : "";
+}
+
+function getRectNumber(rect: NativeRect | null | undefined, key: keyof NativeRect) {
+  const value = rect?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
 function buildDesignPresetLines() {
@@ -160,16 +177,63 @@ export default function RescueExpensePage() {
   const cacheKey = getExpenseDraftCacheKey(expenseContextId);
   const hasHandledRestoreRef = useRef(false);
   const submitGuardRef = useRef(createSubmissionGuard());
+  const latestScrollTopRef = useRef(0);
+  const compactTotalThresholdRef = useRef(Number.POSITIVE_INFINITY);
   const [publicEvidenceImages, setPublicEvidenceImages] = useState<string[]>([]);
   const [expenseLines, setExpenseLines] = useState<ExpenseLine[]>(() =>
     hydrateExpenseLines(createInitialExpenseLines()),
   );
+  const [showCompactTotal, setShowCompactTotal] = useState(false);
 
   const totalAmount = useMemo(
     () => expenseLines.reduce((sum, line) => sum + parseAmount(line.amount), 0),
     [expenseLines],
   );
   const displayedTotalAmount = qaPreset === "design" ? 342.5 : totalAmount;
+  const displayedTotalLabel = formatCurrency(displayedTotalAmount);
+
+  const measureCompactTotalThreshold = () => {
+    const query = Taro.createSelectorQuery();
+
+    query.select(".rescue-expense-page__sticky-nav").boundingClientRect();
+    query.select(".rescue-expense-page__details-head").boundingClientRect();
+    query.exec((rects) => {
+      const [stickyNavRect, detailsHeadRect] = rects as Array<NativeRect | null | undefined>;
+
+      if (!stickyNavRect || !detailsHeadRect) {
+        return;
+      }
+
+      const threshold = getCompactTotalThreshold({
+        detailsHeadTop: getRectNumber(detailsHeadRect, "top"),
+        scrollTop: latestScrollTopRef.current,
+        stickyHeaderHeight: getRectNumber(stickyNavRect, "height"),
+        revealOffset: 8,
+      });
+      const shouldShow = shouldShowCompactTotal({
+        scrollTop: latestScrollTopRef.current,
+        threshold,
+      });
+
+      compactTotalThresholdRef.current = threshold;
+      setShowCompactTotal((current) => (current === shouldShow ? current : shouldShow));
+    });
+  };
+
+  useEffect(() => {
+    Taro.nextTick(measureCompactTotalThreshold);
+  }, [publicEvidenceImages.length, expenseLines.length, qaPreset]);
+
+  usePageScroll((event) => {
+    latestScrollTopRef.current = event.scrollTop;
+
+    const shouldShow = shouldShowCompactTotal({
+      scrollTop: event.scrollTop,
+      threshold: compactTotalThresholdRef.current,
+    });
+
+    setShowCompactTotal((current) => (current === shouldShow ? current : shouldShow));
+  });
 
   const persistDraftSilently = () => {
     const nextCache: ExpenseDraftCache = {
@@ -430,7 +494,27 @@ export default function RescueExpensePage() {
         qaPreset === "design" ? " rescue-expense-page--qa-design" : ""
       }`}
     >
-      <NavBar showBack title="记录支出" />
+      <View className="rescue-expense-page__sticky-head">
+        <View className="rescue-expense-page__sticky-nav">
+          <NavBar showBack title="记录支出" />
+        </View>
+
+        <View
+          className={`rescue-expense-page__compact-total${
+            showCompactTotal ? " rescue-expense-page__compact-total--visible" : ""
+          }`}
+        >
+          <View className="rescue-expense-page__compact-total-inner">
+            <Text className="rescue-expense-page__compact-total-label">本次合计支出</Text>
+            <View className="rescue-expense-page__compact-total-value-wrap">
+              <Text className="rescue-expense-page__compact-total-currency">¥</Text>
+              <Text className="rescue-expense-page__compact-total-value">
+                {displayedTotalLabel}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
 
       <View className="rescue-expense-page__body">
         <View className="rescue-expense-page__evidence theme-card">
@@ -508,7 +592,7 @@ export default function RescueExpensePage() {
               <View className="rescue-expense-page__total-value-wrap">
                 <Text className="rescue-expense-page__total-currency">¥</Text>
                 <Text className="rescue-expense-page__total-value">
-                  {formatCurrency(displayedTotalAmount)}
+                  {displayedTotalLabel}
                 </Text>
               </View>
             </View>

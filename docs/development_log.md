@@ -1906,3 +1906,27 @@
   影响记录主页 `RescuerHomepageVM.rescuer.avatarUrl` 的生成，不改页面结构、CloudBase 回包 schema、selector 或 repository public API；保持无头像时继续走页面 fallback，现有页面兼容。
 - 下一步 / 遗留问题：
   本轮没有新增 richer mock，只补了更完整的 VM 派生规则；`npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过，真机仍需复看头像临时 URL 是否随 CloudBase 资产正常显示。
+
+## 2026-05-27 | 记账页 | 本次合计支出增加顶部吸顶反馈
+
+- 为什么改：
+  录入多条支出时，救助人向下填写明细后容易丢失本次合计金额；底部已有固定提交按钮，不适合再叠加合计信息。
+- 改了什么：
+  记账页保留“支出明细”下方的大合计区，并在原合计区滚出顶部可读区域后，于导航下方显示轻量吸顶汇总条；新增 `stickyTotal` helper 与 UI 测试，IA 同步记录合计吸顶规则。
+- 影响范围：
+  影响 `src/pages/rescue/expense/*`、`package.json`、`tsconfig.ui-tests.json` 与 `docs/expense_record_ia.md`；不改支出提交、凭证上传、repository、selector、数据模型或 CloudBase action。
+- 验证结果：
+  `npm run test:ui`、`npm run typecheck`、`npm run test:domain`、`npm run build:weapp` 均通过；已用 `miniprogram-design-qa` 复验 `rescue-expense` 原生场景，确认滚动后顶部迷你合计条出现且底部 CTA 不被合计信息占用。
+- 下一步 / 遗留问题：
+  复验仍沿用旧 Figma 图做像素对比，因此保留整体视觉 mismatch 与若干历史分段差异；本轮新增吸顶逻辑未改提交链路，后续可单独更新设计基线或继续做视觉精修。
+
+## 2026-05-27 | 文档同步 | 更新当前进度到 Alpha 可试跑口径
+
+- 为什么改：
+  总控中心、产品进度、Figma 完成度和 Alpha 测试计划仍混有 4 月状态与旧按钮文案，容易误导后续线程继续把已接通页面当成未开始。
+- 改了什么：
+  更新 `project_control_center`、`product_development_status`、`figma_progress_map` 和 `alpha_test_plan`，把当前阶段改为 Alpha 可试跑 / 回归，补记结束记录后端待接、分享冷启动返回、记账吸顶合计和多账号真机回归优先级。
+- 影响范围：
+  仅影响长期进度、页面完成度和内测执行文档；不改代码、数据模型、接口、VM、selector、repository 或页面交互。
+- 下一步 / 遗留问题：
+  下一步按 `npm run preflight:alpha` 和 Round 0-4 真机流程找 P0 / P1 问题；README 仍建议后续单独统一更新。
