@@ -1995,3 +1995,16 @@
   `npm run format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
 - 下一步 / 遗留问题：
   不抽 hooks，不新增功能；后续重构另起一轮。
+
+## 2026-05-28 | 主态详情 | 抽取 rescue detail page-level hooks
+
+- 为什么改：
+  第一轮机械拆分后 `index.tsx` 仍保留页面状态、加载、分享、提交锁和资料编辑逻辑，继续收口为页面编排层。
+- 改了什么：
+  新增 `hooks/useGuestActionLock.ts`、`useRescueDetailShare.ts`、`useRescueDetailData.ts`、`useCaseProfileActions.ts`，迁出 guest 点击锁、分享、详情加载和主态资料编辑逻辑。
+- 影响范围：
+  仅影响 rescue detail 文件组织；不改 UI、className、中文 copy、跳转 URL、分享 path、SupportSheet、CloudBase 写入或 localPresentation / fallback 策略。
+- 验证结果：
+  每个 hook 后 `npm run typecheck` 均通过；收尾 `format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
+- 下一步 / 遗留问题：
+  `index.tsx` 现在主要负责页面编排；后续如继续重构，应先补页面级回归或真机验收，本轮不拆 GuestDetail / OwnerDetail JSX。

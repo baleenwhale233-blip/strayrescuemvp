@@ -1,224 +1,47 @@
 import { PageMeta, View } from "@tarojs/components";
-import Taro, { useDidShow, useRouter, useShareAppMessage } from "@tarojs/taro";
-import { useRef, useState } from "react";
-import {
-  clearCaseProfileLocalFallback,
-  loadOwnerDetailVMByCaseId,
-  loadPublicDetailVMByCaseId,
-  loadSupportSheetDataByCaseId,
-  recordCaseProfileLocalFallback,
-  updateRemoteCaseProfileByCaseId,
-  type OwnerDetailVM,
-} from "../../../domain/canonical/repository";
+import Taro, { useRouter } from "@tarojs/taro";
+import { useState } from "react";
 import { SupportSheet } from "../../../components/SupportSheet";
-import { createSubmissionGuard } from "../../../utils/submissionGuard";
-import guestHeroCat from "../../../assets/detail/guest-hero-cat.png";
-import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
-import type { PublicDetailVM, SupportSheetData } from "../../../domain/canonical/types";
-import { getSharePath, getShareTitle } from "./detailViewModels";
 import { DetailPageState } from "./components/DetailPageState";
 import { GuestDetail } from "./components/GuestDetail";
 import { OwnerDetail } from "./components/OwnerDetail";
-import type { DetailLoadStatus } from "./types";
+import { useCaseProfileActions } from "./hooks/useCaseProfileActions";
+import { useGuestActionLock } from "./hooks/useGuestActionLock";
+import { useRescueDetailData } from "./hooks/useRescueDetailData";
+import { useRescueDetailShare } from "./hooks/useRescueDetailShare";
 import "./index.scss";
 
 export default function RescueDetailPage() {
   const router = useRouter();
   const [supportOpen, setSupportOpen] = useState(false);
-  const [reloadSeed, setReloadSeed] = useState(0);
-  const [detailStatus, setDetailStatus] = useState<DetailLoadStatus>("loading");
-  const [publicDetail, setPublicDetail] = useState<PublicDetailVM | undefined>();
-  const [ownerDetail, setOwnerDetail] = useState<OwnerDetailVM | undefined>();
-  const [supportData, setSupportData] = useState<SupportSheetData | undefined>();
-  const guestActionLockRef = useRef(false);
-  const submitGuardRef = useRef(createSubmissionGuard());
   const mode = router.params?.mode === "guest" ? "guest" : "owner";
   const initialOwnerTab = router.params?.tab === "detail" ? "detail" : "overview";
   const caseId = router.params?.id;
+  const { runGuestActionWithLock } = useGuestActionLock();
+  const {
+    detailStatus,
+    publicDetail,
+    ownerDetail,
+    supportData,
+    reloadSeed,
+    setPublicDetail,
+    setOwnerDetail,
+    loadDetailPage,
+  } = useRescueDetailData({
+    caseId,
+    mode,
+  });
 
-  useShareAppMessage(() => ({
-    title: getShareTitle(publicDetail),
-    path: getSharePath(publicDetail, caseId),
-    imageUrl: publicDetail?.heroImageUrl || guestHeroCat,
-  }));
+  useRescueDetailShare({
+    publicDetail,
+    caseId,
+  });
 
-  const handleRenameTitle = async (value: string) =>
-    submitGuardRef.current.run(async () => {
-      const nextTitle = value.trim();
-      if (!nextTitle) {
-        Taro.showToast({
-          title: "请先填写代号",
-          icon: "none",
-        });
-        return;
-      }
-
-      try {
-        Taro.showLoading({ title: "保存中", mask: true });
-        const didSyncRemote = await updateRemoteCaseProfileByCaseId(caseId, {
-          animalName: nextTitle,
-        });
-
-        if (!didSyncRemote) {
-          recordCaseProfileLocalFallback({
-            title: nextTitle,
-            caseId,
-            draftId: ownerDetail?.draftId,
-          });
-        } else {
-          clearCaseProfileLocalFallback({
-            caseId,
-            draftId: ownerDetail?.draftId,
-            clearTitle: true,
-          });
-        }
-
-        setOwnerDetail((current) =>
-          current
-            ? {
-                ...current,
-                title: nextTitle,
-              }
-            : current,
-        );
-        setPublicDetail((current) =>
-          current
-            ? {
-                ...current,
-                title: nextTitle,
-              }
-            : current,
-        );
-        Taro.hideLoading();
-      } catch {
-        Taro.hideLoading();
-        Taro.showToast({
-          title: "代号更新失败",
-          icon: "none",
-        });
-        return;
-      }
-
-      Taro.showToast({
-        title: "已更新代号",
-        icon: "none",
-      });
-    });
-
-  const handleChangeCover = async () =>
-    submitGuardRef.current.run(async () => {
-      try {
-        const action = await Taro.showActionSheet({
-          itemList: ["拍照", "上传图片"],
-        });
-
-        const result = await Taro.chooseImage({
-          count: 1,
-          sizeType: ["compressed"],
-          sourceType: action.tapIndex === 0 ? ["camera"] : ["album"],
-        });
-
-        const nextPath = result.tempFilePaths?.[0];
-        if (!nextPath) {
-          return;
-        }
-        Taro.showLoading({ title: "上传中", mask: true });
-        const uploaded = await uploadCaseAssetImage(
-          caseId || "unknown-case",
-          nextPath,
-          "case-covers",
-        );
-        const coverFileID = uploaded && !uploaded.isLocalFallback ? uploaded.fileID : undefined;
-        const didSyncRemote = coverFileID
-          ? await updateRemoteCaseProfileByCaseId(caseId, { coverFileID })
-          : false;
-
-        setOwnerDetail((current) =>
-          current
-            ? {
-                ...current,
-                coverImage: nextPath,
-              }
-            : current,
-        );
-        setPublicDetail((current) =>
-          current
-            ? {
-                ...current,
-                heroImageUrl: nextPath,
-              }
-            : current,
-        );
-        if (!didSyncRemote) {
-          recordCaseProfileLocalFallback({
-            coverPath: nextPath,
-            caseId,
-            draftId: ownerDetail?.draftId,
-          });
-        } else {
-          clearCaseProfileLocalFallback({
-            caseId,
-            draftId: ownerDetail?.draftId,
-            clearCover: true,
-          });
-        }
-        Taro.hideLoading();
-
-        Taro.showToast({
-          title: "已更新头像",
-          icon: "none",
-        });
-      } catch (error) {
-        Taro.hideLoading();
-        if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
-          Taro.showToast({
-            title: "头像上传失败",
-            icon: "none",
-          });
-        }
-      }
-    });
-
-  const loadDetailPage = () => {
-    setDetailStatus("loading");
-    setReloadSeed((value) => value + 1);
-
-    return Promise.all([
-      loadPublicDetailVMByCaseId(caseId),
-      mode === "owner" ? loadOwnerDetailVMByCaseId(caseId) : Promise.resolve(undefined),
-      loadSupportSheetDataByCaseId(caseId),
-    ])
-      .then(([nextPublicDetail, nextOwnerDetail, nextSupportData]) => {
-        setPublicDetail(nextPublicDetail);
-        setOwnerDetail(nextOwnerDetail);
-        setSupportData(nextSupportData);
-        setDetailStatus(nextPublicDetail ? "ready" : "error");
-      })
-      .catch(() => {
-        setDetailStatus("error");
-        Taro.showToast({
-          title: "详情加载失败",
-          icon: "none",
-        });
-      });
-  };
-
-  const runGuestActionWithLock = (action: () => void | Promise<unknown>) => {
-    if (guestActionLockRef.current) {
-      return;
-    }
-
-    guestActionLockRef.current = true;
-
-    void Promise.resolve(action()).finally(() => {
-      setTimeout(() => {
-        guestActionLockRef.current = false;
-      }, 300);
-    });
-  };
-
-  useDidShow(() => {
-    loadDetailPage();
+  const { handleRenameTitle, handleChangeCover } = useCaseProfileActions({
+    caseId,
+    ownerDetail,
+    setOwnerDetail,
+    setPublicDetail,
   });
 
   if (detailStatus === "loading") {
