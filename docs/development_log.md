@@ -2021,3 +2021,16 @@
   每拆一个子组件后 `npm run typecheck` 均通过；收尾 `format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
 - 下一步 / 遗留问题：
   未执行微信开发者工具手动 smoke；构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning。
+
+## 2026-05-29 | 客态详情 | 拆分 GuestDetail 客态组件
+
+- 为什么改：
+  `GuestDetail.tsx` 仍集中承载客态详情顶部、资金卡、维护者卡、tab 内容和底部操作栏 JSX，继续降低后续维护成本。
+- 改了什么：
+  新增 `components/guest/` 子目录，拆出 `GuestHeroSection`、`GuestFundingCard`、`GuestRescuerCard`、`GuestTabs`、`GuestOverviewSection`、`GuestDetailSection`、`GuestActionBar`；`GuestDetail.tsx` 保留 active tab、复制公开编号、查看主页和 onSupport / onClaim 组合逻辑。
+- 影响范围：
+  仅影响客态详情组件组织；不改 UI、className、中文 copy、按钮文案、跳转 URL、分享、SupportSheet、page-level hooks 或 detailViewModels 映射逻辑。
+- 验证结果：
+  每拆一个子组件后 `npm run typecheck` 均通过；收尾 `format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
+- 下一步 / 遗留问题：
+  未执行微信开发者工具手动 smoke；构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning。
