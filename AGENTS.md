@@ -34,11 +34,11 @@
 
 开始任何产品或代码改动前，优先读取：
 
-1. [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
-2. [`docs/main_info_arch_v3.2.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/main_info_arch_v3.2.md)
-3. [`docs/ui_priority_matrix.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/ui_priority_matrix.md)
-4. [`docs/local_presentation_residual_checklist.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/local_presentation_residual_checklist.md)
-5. [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)
+1. [`docs/project_control_center.md`](docs/project_control_center.md)
+2. [`docs/main_info_arch_v3.2.md`](docs/main_info_arch_v3.2.md)
+3. [`docs/ui_priority_matrix.md`](docs/ui_priority_matrix.md)
+4. [`docs/local_presentation_residual_checklist.md`](docs/local_presentation_residual_checklist.md)
+5. [`docs/development_log.md`](docs/development_log.md)
 
 补充：
 
@@ -47,11 +47,11 @@
 
 如果改动只涉及单页，再补读对应页面 IA：
 
-- [`docs/home_page_ia.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/home_page_ia.md)
-- [`docs/workbench_page_ia.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/workbench_page_ia.md)
-- [`docs/case_detail_page_ia.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/case_detail_page_ia.md)
-- [`docs/expense_record_ia.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/expense_record_ia.md)
-- [`docs/sub_pages_ia.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/sub_pages_ia.md)
+- [`docs/home_page_ia.md`](docs/home_page_ia.md)
+- [`docs/workbench_page_ia.md`](docs/workbench_page_ia.md)
+- [`docs/case_detail_page_ia.md`](docs/case_detail_page_ia.md)
+- [`docs/expense_record_ia.md`](docs/expense_record_ia.md)
+- [`docs/sub_pages_ia.md`](docs/sub_pages_ia.md)
 
 ---
 
@@ -68,7 +68,7 @@
 
 统一追加到：
 
-- [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)
+- [`docs/development_log.md`](docs/development_log.md)
 
 ### 写法要求
 
@@ -96,7 +96,7 @@
 
 如果本次改动属于下面任何一种，除了写开发日志外，还要同步更新：
 
-- [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
+- [`docs/project_control_center.md`](docs/project_control_center.md)
 
 触发条件：
 

@@ -1956,3 +1956,16 @@
   `npm run format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
 - 下一步 / 遗留问题：
   构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning；后续如要处理应单独开性能 / 资源治理任务。
+
+## 2026-05-28 | 仓库治理 | 补齐 preflight 与相对路径入口链接
+
+- 为什么改：
+  当前接手入口仍残留本机绝对路径，且需要再次确认 `preflight:alpha` 会真实执行 format / lint。
+- 改了什么：
+  将 README / AGENTS 中的本机路径链接改成 repo 相对路径，并确认 `preflight:alpha` 顺序包含 `check:repo-safety -> format:check -> lint -> typecheck -> test:domain -> build:weapp`。
+- 影响范围：
+  仅影响仓库治理脚本确认、文档入口链接和接手日志；不改业务代码、UI、CloudBase 逻辑或页面拆分。
+- 验证结果：
+  `npm run format:check`、`npm run lint`、`npm run preflight:alpha` 通过。
+- 下一步 / 遗留问题：
+  构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning；后续如要处理应单独开资源治理任务。

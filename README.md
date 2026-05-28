@@ -41,15 +41,15 @@
 - 键盘避让和页面视觉精修
 - 正式结束记录后端 action
 
-`localPresentation` 仍保留给草稿链路和 CloudBase 基础设施不可用时的本地兜底，不要在治理轮直接删除。残留职责见 [`docs/local_presentation_residual_checklist.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/local_presentation_residual_checklist.md)。
+`localPresentation` 仍保留给草稿链路和 CloudBase 基础设施不可用时的本地兜底，不要在治理轮直接删除。残留职责见 [`docs/local_presentation_residual_checklist.md`](docs/local_presentation_residual_checklist.md)。
 
 ## 下一步先读
 
 新线程或新工程师接手时，请先读：
 
-1. [`docs/project_control_center.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/project_control_center.md)
-2. [`AGENTS.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/AGENTS.md)
-3. [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)
+1. [`docs/project_control_center.md`](docs/project_control_center.md)
+2. [`AGENTS.md`](AGENTS.md)
+3. [`docs/development_log.md`](docs/development_log.md)
 
 其中 `project_control_center.md` 是当前状态的第一真相源。`docs/product_development_status.md` 已归档为历史背景，不再作为当前状态入口。
 
@@ -130,7 +130,7 @@ npm run preflight:alpha:seed
 3. 项目目录选择：
 
 ```text
-/Users/yang/Documents/New project/stray-rescue-mvp
+当前仓库根目录（stray-rescue-mvp）
 ```
 
 4. 本地调试可先使用 `touristappid`
@@ -205,8 +205,8 @@ cloud1-9gl5sric0e5b386b
 cloudfunctions/rescueApi
 ```
 
-接入与集合说明见 [`docs/cloudbase_backend_setup.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/cloudbase_backend_setup.md)。
+接入与集合说明见 [`docs/cloudbase_backend_setup.md`](docs/cloudbase_backend_setup.md)。
 
 ## 协作规则
 
-任何代码、文档、IA、状态规则、VM、selector、repository 或云函数改动后，都必须按 [`AGENTS.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/AGENTS.md) 追加 [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)。
+任何代码、文档、IA、状态规则、VM、selector、repository 或云函数改动后，都必须按 [`AGENTS.md`](AGENTS.md) 追加 [`docs/development_log.md`](docs/development_log.md)。
