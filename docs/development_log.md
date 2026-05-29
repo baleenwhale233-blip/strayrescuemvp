@@ -2034,3 +2034,16 @@
   每拆一个子组件后 `npm run typecheck` 均通过；收尾 `format`、`format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过。
 - 下一步 / 遗留问题：
   未执行微信开发者工具手动 smoke；构建仍保留既有 `timeline-status-cat.png` 体积 warning 和 no async chunks warning。
+
+## 2026-05-29 | 详情重构 | rescue detail 机械拆分阶段收口
+
+- 为什么改：
+  当前分支已完成 rescue detail 的三刀机械拆分，需要在继续其他任务前留下可交接的阶段状态和验证证据。
+- 改了什么：
+  确认 `index.tsx` 已接 page-level hooks，`OwnerDetail.tsx` 已接 owner 子组件，`GuestDetail.tsx` 已接 guest 子组件；本条仅做收口记录，不改业务逻辑。
+- 影响范围：
+  覆盖 rescue detail 页面编排层、page-level hooks、owner 子组件、guest 子组件；不改 UI、CloudBase、repository、local fallback 或 `detailViewModels.ts`。
+- 验证结果：
+  `format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过；dead-code 接线检查未发现容器残留旧大块 JSX 或未使用新增 hooks / 子组件。
+- 下一步 / 遗留问题：
+  仍未执行微信开发者工具手动 smoke；构建 warning 仍为既有 `timeline-status-cat.png` 体积 warning、no async chunks warning 和 Node `punycode` deprecation warning。
