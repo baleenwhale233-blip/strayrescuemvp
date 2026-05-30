@@ -14,7 +14,7 @@
 }
 
 .profile-guide-page .page-nav__title {
-  color: #000000;
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-regular);
 }
 
@@ -24,25 +24,25 @@
   gap: 10px;
   margin: 0 16px;
   padding: 28px 0 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .profile-guide-page__eyebrow {
-  color: #ec5b13;
+  color: var(--color-brand-primary);
   font-size: 13px;
   font-weight: var(--font-weight-semibold);
   line-height: 20px;
 }
 
 .profile-guide-page__title {
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 22px;
   font-weight: var(--font-weight-bold);
   line-height: 30px;
 }
 
 .profile-guide-page__lead {
-  color: #475569;
+  color: var(--color-text-secondary);
   font-size: 15px;
   line-height: 25px;
 }
@@ -55,7 +55,7 @@
 
 .profile-guide-page__section {
   padding: 22px 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .profile-guide-page__section:last-child {
@@ -64,7 +64,7 @@
 
 .profile-guide-page__section-title {
   display: block;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 17px;
   font-weight: var(--font-weight-semibold);
   line-height: 26px;
@@ -73,7 +73,7 @@
 .profile-guide-page__paragraph {
   display: block;
   margin-top: 10px;
-  color: #475569;
+  color: var(--color-text-secondary);
   font-size: 14px;
   line-height: 24px;
 }
@@ -98,9 +98,9 @@
   width: 22px;
   height: 22px;
   flex-shrink: 0;
-  color: #ec5b13;
+  color: var(--color-brand-primary);
   background: transparent;
-  border: 1px solid #fed7aa;
+  border: 1px solid var(--color-brand-primary-border);
   border-radius: 999px;
   font-size: 12px;
   font-weight: var(--font-weight-semibold);
@@ -110,7 +110,7 @@
 .profile-guide-page__list-text {
   flex: 1;
   min-width: 0;
-  color: #475569;
+  color: var(--color-text-secondary);
   font-size: 14px;
   line-height: 24px;
 }

@@ -235,7 +235,7 @@ export default function ContactSettingsPage() {
             <Input
               className="contact-settings-page__input"
               placeholder="请填写微信号"
-              placeholderStyle="color:#94A3B8;"
+              placeholderStyle="color:var(--color-text-tertiary);"
               value={wechatId}
               onInput={(event) => setWechatId(event.detail.value)}
             />

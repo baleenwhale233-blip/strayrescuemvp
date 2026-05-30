@@ -336,7 +336,7 @@ export default function ProfilePage() {
               type="nickname"
               maxlength={24}
               placeholder="填写你的昵称"
-              placeholderStyle="color:#98A2B3;"
+              placeholderStyle="color:var(--color-text-tertiary);"
               value={profileUser.nickName}
               onInput={(event) =>
                 setProfileUser((current) => {

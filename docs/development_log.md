@@ -2385,3 +2385,46 @@
   `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 显示裸色值降到 `154`、尺寸降到 `1376`，上述四个页面对应 SCSS 裸色值为 `0`。
 - 下一步 / 遗留问题：
   继续治理 `rescue/detail/index.scss`、支持闭环页和建档页裸色热点；本轮未改业务逻辑，预计不需要跑 `test:domain`。
+
+## 2026-05-30 | 支持闭环 | 登记与处理页组件 API 收口
+
+- 为什么改：
+  支持登记和处理登记已经是 P0 闭环页，但凭证上传、状态标签、待处理操作按钮和表单样式仍有页面级裸色与手写组件结构。
+- 改了什么：
+  登记一笔页状态标签迁到 `StatusBadge`、凭证上传迁到单图 `UploadStrip`；处理登记页待处理操作按钮迁到 `AppButton`，两页剩余颜色替换为现有 CSS variables。
+- 影响范围：
+  仅影响支持登记 / 处理登记页面展示组件和样式 token；不改登记提交、凭证上传后端、确认 / 未匹配处理、手动登记、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 显示裸色值降到 `113`、尺寸降到 `1371`，两页 SCSS 裸色值为 `0`。
+- 下一步 / 遗留问题：
+  下一批继续治理 `rescue/detail/index.scss` 和建档页裸色热点，并继续观察 `UploadStrip` 单图场景是否需要抽更稳定的删除图标。
+
+## 2026-05-30 | 建档页 | 基础信息与预算页颜色 token 化
+
+- 日期：2026-05-30
+- 改动主题：建档基础信息 / 预算页首轮颜色 token 化。
+- 为什么改：支持闭环页收口后，建档链路仍是页面级裸色热点，影响后续按组件搭页。
+- 改了什么：将页面背景、导航、步骤条、上传、表单、卡片、金额输入和底栏颜色替换为现有 CSS variables，并同步组件系统文档基线。
+- 影响范围：仅影响 `rescue/create/basic` 与 `rescue/create/budget` 样式和治理文档；不改草稿保存、图片选择、预算校验、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 为裸色 `66`、尺寸 `1345`，两页 SCSS 裸色值为 `0`。
+- 下一步 / 遗留问题：下一批优先治理 `rescue/detail/index.scss` 的 45 个裸色热点；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-30 | 详情页 | 页面级颜色 token 清零
+
+- 日期：2026-05-30
+- 改动主题：详情页 `index.scss` 首轮颜色 token 化。
+- 为什么改：详情页仍是全 repo 最大颜色热点，继续保留裸色会妨碍后续 owner / guest 结构晋升到业务组件。
+- 改了什么：将 rename sheet、客态 hero、资金卡、救助人卡、概览指标、底部操作栏和主态结束栏的颜色 / 遮罩 / 阴影替换为现有 CSS variables，并同步组件系统文档基线。
+- 影响范围：仅影响详情页样式和治理文档；不改客态 / 主态组件结构、分享、登记支持、联系方式、结束记录状态机、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 为裸色 `21`、尺寸 `1323`，详情页 SCSS 裸色值为 `0`。
+- 下一步 / 遗留问题：剩余颜色主要在发现页搜索样式、身份 guide 页、少量微信 `placeholderStyle` 和透明上传底；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-30 | 颜色治理 | 页面与组件裸色值清零
+
+- 日期：2026-05-30
+- 改动主题：`src/components` 与 `src/pages` 首轮裸色值清零。
+- 为什么改：详情页清零后只剩零散搜索框、guide 页、底栏透明底和微信 `placeholderStyle`，适合一次性收尾，避免颜色治理留尾巴。
+- 改了什么：将发现页搜索、我的 guide 页、头像描边、联系方式底栏、草稿预览底栏和页面内 placeholder 内联色统一替换为现有 CSS variables，并同步组件系统文档基线。
+- 影响范围：仅影响样式 token 与 placeholder 颜色表达；不改发现搜索、联系方式保存、草稿预览发布、建档表单、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 为裸色 `0`、尺寸 `1323`。
+- 下一步 / 遗留问题：下一轮从重复尺寸和组件晋升入手，优先看 `rescue/detail/index.scss`、`RescueOwnerShared.scss` 和生产页表单尺寸；本轮未改数据层，未跑 `test:domain`。

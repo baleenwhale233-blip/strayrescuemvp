@@ -206,7 +206,7 @@ export default function RescueCreateBasicPage() {
             className="rescue-create-page__input"
             maxlength={24}
             placeholder="如：车祸三花 / 纸箱里的橘猫"
-            placeholderStyle="color:#94A3B8;"
+            placeholderStyle="color:var(--color-text-tertiary);"
             value={name}
             onInput={(event) => setName(event.detail.value)}
           />

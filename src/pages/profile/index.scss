@@ -53,7 +53,7 @@
   padding: 1.33px;
   background: var(--color-bg-card);
   border-radius: var(--radius-circle);
-  box-shadow: 0 0 0 1.33px rgba(160, 60, 0, 0.1);
+  box-shadow: 0 0 0 1.33px var(--color-brand-primary-border);
 }
 
 .profile-page__avatar {

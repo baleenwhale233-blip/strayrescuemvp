@@ -10,8 +10,8 @@
   min-height: 44px;
   margin-bottom: 16px;
   padding: 0 16px 0 48px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-light);
   border-radius: 24px;
 }
 
@@ -30,7 +30,7 @@
 
 .discover-page__search-input {
   width: 100%;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 14px;
   line-height: 20px;
 }

@@ -100,7 +100,7 @@ export default function RescueCreateBudgetPage() {
               className="rescue-budget-page__money-control"
               type="digit"
               placeholder="0.00"
-              placeholderStyle="color:#CBD5E1;"
+              placeholderStyle="color:var(--color-text-tertiary);"
               value={budget}
               onInput={(event) => setBudget(event.detail.value)}
             />

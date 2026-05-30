@@ -10,7 +10,9 @@ import {
   BottomActionBar,
   EmptyState,
   FormField,
+  StatusBadge,
   SurfaceCard,
+  UploadStrip,
 } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
@@ -137,6 +139,13 @@ export default function SupportClaimPage() {
     }
   };
 
+  const handlePreviewImage = (src: string) => {
+    Taro.previewImage({
+      current: src,
+      urls: [src],
+    });
+  };
+
   const handleSubmit = async () =>
     submitGuardRef.current.run(async () => {
       const numericAmount = Number(amount);
@@ -200,7 +209,9 @@ export default function SupportClaimPage() {
         <View className="support-claim__case-copy">
           <View className="support-claim__case-head">
             <Text className="support-claim__case-title">{detail.title}</Text>
-            <Text className="support-claim__case-status">{detail.statusLabel}</Text>
+            <StatusBadge className="support-claim__case-status" tone="brand">
+              {detail.statusLabel}
+            </StatusBadge>
           </View>
           <Text className="support-claim__case-meta">ID: {detail.publicCaseId}</Text>
           <Text className="support-claim__case-meta">
@@ -234,22 +245,16 @@ export default function SupportClaimPage() {
         className="support-claim__field support-claim__field--upload"
         label="相关截图/凭证"
       >
-        <View className="support-claim__upload" onTap={handlePickImage}>
-          {imagePath ? (
-            <Image className="support-claim__upload-image" mode="aspectFill" src={imagePath} />
-          ) : (
-            <>
-              <View className="support-claim__upload-icon">
-                <Image
-                  className="support-claim__upload-icon-image"
-                  mode="aspectFit"
-                  src={addPhotoIcon}
-                />
-              </View>
-              <Text className="support-claim__upload-text">添加照片</Text>
-            </>
-          )}
-        </View>
+        <UploadStrip
+          className="support-claim__upload-strip"
+          addIconSrc={addPhotoIcon}
+          addLabel="添加照片"
+          images={imagePath ? [imagePath] : []}
+          maxImages={1}
+          onAdd={handlePickImage}
+          onPreview={(src) => handlePreviewImage(src)}
+          onRemove={() => setImagePath("")}
+        />
       </FormField>
 
       <FormField className="support-claim__field" label="备注">

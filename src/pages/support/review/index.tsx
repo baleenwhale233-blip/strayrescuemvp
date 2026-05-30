@@ -251,25 +251,31 @@ export default function SupportReviewPage() {
               </View>
 
               <View className="support-review-page__actions">
-                <View
-                  className="support-review-page__button support-review-page__button--ghost"
+                <AppButton
+                  className="support-review-page__button"
+                  size="md"
+                  variant="secondary"
                   onTap={() => handleUnmatched(entry.id, "duplicate_submission")}
                 >
-                  <Text>标记重复</Text>
-                </View>
+                  标记重复
+                </AppButton>
                 <View className="support-review-page__actions-right">
-                  <View
-                    className="support-review-page__button support-review-page__button--ghost"
+                  <AppButton
+                    className="support-review-page__button"
+                    size="md"
+                    variant="secondary"
                     onTap={() => handleUnmatched(entry.id, "other")}
                   >
-                    <Text>暂未匹配</Text>
-                  </View>
-                  <View
-                    className="support-review-page__button support-review-page__button--primary"
+                    暂未匹配
+                  </AppButton>
+                  <AppButton
+                    className="support-review-page__button"
+                    size="md"
+                    variant="primary"
                     onTap={() => handleConfirm(entry.id)}
                   >
-                    <Text>确认记录</Text>
-                  </View>
+                    确认记录
+                  </AppButton>
                 </View>
               </View>
             </SurfaceCard>
