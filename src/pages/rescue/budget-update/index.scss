@@ -77,7 +77,7 @@
 }
 
 .rescue-budget-update-page__field .ui-form-field__label {
-  color: #334155;
+  color: var(--color-text-primary);
   font-size: 14px;
   font-weight: var(--font-weight-regular);
   line-height: 20px;
@@ -94,28 +94,28 @@
   align-items: center;
   height: 58px;
   padding: 17px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
   border-radius: 8px;
 }
 
 .rescue-budget-update-page__amount-prefix {
   margin-right: 8px;
-  color: #ec5b13;
+  color: var(--color-brand-primary);
   font-size: 20px;
   line-height: 24px;
 }
 
 .rescue-budget-update-page__amount-control {
   flex: 1;
-  color: #1e293b;
+  color: var(--color-text-primary);
   font-size: 16px;
   line-height: 22px;
   font-weight: var(--font-weight-semibold);
 }
 
 .rescue-budget-update-page__hint {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 12px;
   line-height: 16px;
 }
@@ -124,8 +124,8 @@
   position: relative;
   min-height: 160px;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
   border-radius: 12px;
 }
 
@@ -134,7 +134,7 @@
   top: 18px;
   left: 18px;
   right: 18px;
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 14px;
   line-height: 24px;
   pointer-events: none;
@@ -144,7 +144,7 @@
   width: 100%;
   min-height: 160px;
   padding: 18px;
-  color: #0f172a;
+  color: var(--color-text-primary);
   background: transparent;
   border: 0;
   border-radius: 12px;
@@ -158,8 +158,8 @@
   gap: 12px;
   align-items: flex-start;
   padding: 17px;
-  background: #fff7ed;
-  border: 1px solid rgba(236, 91, 19, 0.1);
+  background: var(--color-brand-primary-soft);
+  border: 1px solid var(--color-brand-primary-border);
   border-radius: 12px;
   margin-top: 16px;
 }
@@ -171,15 +171,15 @@
 }
 
 .rescue-budget-update-page__notice-text {
-  color: #334155;
+  color: var(--color-text-primary);
   font-size: 12px;
   line-height: 20px;
 }
 
 .rescue-budget-update-page__bottom {
   padding: 17px 16px 16px;
-  background: rgba(255, 255, 255, 0.8);
-  border-top-color: #e2e8f0;
+  background: var(--bottom-action-bg);
+  border-top-color: var(--bottom-action-border);
   backdrop-filter: blur(6px);
 }
 
@@ -188,9 +188,7 @@
   gap: 8px;
   min-height: 56px;
   border-radius: 12px;
-  box-shadow:
-    0 10px 15px -3px rgba(236, 91, 19, 0.2),
-    0 4px 6px -4px rgba(236, 91, 19, 0.2);
+  box-shadow: var(--shadow-cta);
   font-weight: var(--font-weight-regular);
 }
 

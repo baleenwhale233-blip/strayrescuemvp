@@ -1,7 +1,7 @@
 .record-detail-page {
   min-height: 100vh;
   padding-bottom: 32px;
-  background: #f8f6f6;
+  background: var(--color-bg-page);
 }
 
 .record-detail-page .page-nav {
@@ -10,20 +10,12 @@
 
 .record-detail-page .page-nav--system {
   margin-bottom: 0;
-  background: #ffffff;
+  background: var(--color-bg-card);
 }
 
 .record-detail-page .page-nav__title {
-  color: #000000;
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-regular);
-}
-
-.record-detail-page__notice,
-.record-detail-page__card,
-.record-detail-page__empty {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
 }
 
 .record-detail-page__notice {
@@ -32,19 +24,20 @@
   gap: 6px;
   margin-top: 16px;
   padding: 16px;
-  border-color: rgba(236, 91, 19, 0.16);
-  background: rgba(236, 91, 19, 0.05);
+  background: var(--color-brand-primary-soft);
+  border-color: var(--color-brand-primary-border);
+  border-radius: 12px;
 }
 
 .record-detail-page__notice-title {
-  color: #ec5b13;
+  color: var(--color-brand-primary);
   font-size: 14px;
   font-weight: var(--font-weight-semibold);
   line-height: 20px;
 }
 
 .record-detail-page__notice-copy {
-  color: #475569;
+  color: var(--color-text-secondary);
   font-size: 13px;
   line-height: 21px;
 }
@@ -64,53 +57,29 @@
 }
 
 .record-detail-page__badge {
+  min-height: 20px;
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 12px;
   line-height: 16px;
 }
 
-.record-detail-page__badge--expense {
-  color: #dc2626;
-  background: #fef2f2;
-}
-
-.record-detail-page__badge--status {
-  color: #2563eb;
-  background: #eff6ff;
-}
-
-.record-detail-page__badge--budget {
-  color: #d97706;
-  background: #fffbeb;
-}
-
-.record-detail-page__badge--support {
-  color: #16a34a;
-  background: #dcfce7;
-}
-
-.record-detail-page__badge--case {
-  color: #ec5b13;
-  background: rgba(236, 91, 19, 0.1);
-}
-
 .record-detail-page__time {
   margin-left: auto;
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 12px;
   line-height: 16px;
 }
 
 .record-detail-page__title {
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 18px;
   font-weight: var(--font-weight-semibold);
   line-height: 28px;
 }
 
 .record-detail-page__description {
-  color: #475569;
+  color: var(--color-text-secondary);
   font-size: 14px;
   line-height: 23px;
 }
@@ -127,13 +96,13 @@
   align-items: center;
   min-height: 44px;
   padding: 0 12px;
-  background: #f8fafc;
+  background: var(--color-bg-input);
   border-radius: 10px;
 }
 
 .record-detail-page__expense-index {
   flex-shrink: 0;
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 12px;
   line-height: 16px;
 }
@@ -141,7 +110,7 @@
 .record-detail-page__expense-title {
   flex: 1;
   min-width: 0;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 14px;
   line-height: 20px;
   overflow: hidden;
@@ -155,18 +124,18 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px;
-  background: #f8fafc;
+  background: var(--color-bg-input);
   border-radius: 8px;
 }
 
 .record-detail-page__label {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 12px;
   line-height: 16px;
 }
 
 .record-detail-page__amount {
-  color: #ef4444;
+  color: var(--color-danger);
   font-family: var(--font-family-numeric);
   font-size: 22px;
   font-weight: var(--font-weight-bold);
@@ -177,7 +146,7 @@
   display: flex;
   gap: 12px;
   padding: 12px;
-  background: #f8fafc;
+  background: var(--color-bg-input);
   border-radius: 8px;
 }
 
@@ -197,12 +166,12 @@
 }
 
 .record-detail-page__budget-old {
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   text-decoration: line-through;
 }
 
 .record-detail-page__budget-new {
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 .record-detail-page__images {
@@ -220,7 +189,7 @@
   aspect-ratio: 1;
   height: auto;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--color-bg-subtle);
   border-radius: 8px;
 }
 
@@ -239,8 +208,8 @@
   top: 6px;
   right: 6px;
   padding: 2px 6px;
-  color: #ffffff;
-  background: rgba(15, 23, 42, 0.48);
+  color: var(--color-brand-on-primary);
+  background: var(--color-overlay-strong);
   border-radius: 999px;
   font-size: 10px;
   line-height: 14px;
@@ -251,31 +220,13 @@
   right: 8px;
   bottom: 8px;
   padding: 2px 6px;
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.4);
+  color: var(--color-brand-on-primary);
+  background: var(--color-overlay-strong);
   border-radius: 4px;
   font-size: 10px;
   line-height: 15px;
 }
 
 .record-detail-page__empty {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   margin-top: 16px;
-  padding: 24px 16px;
-  text-align: center;
-}
-
-.record-detail-page__empty-title {
-  color: #0f172a;
-  font-size: 16px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 24px;
-}
-
-.record-detail-page__empty-copy {
-  color: #64748b;
-  font-size: 14px;
-  line-height: 22px;
 }

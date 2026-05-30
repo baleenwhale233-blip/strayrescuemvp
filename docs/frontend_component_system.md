@@ -260,6 +260,7 @@
 - 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
 - `src/pages` 与 `src/components` 当前已清掉直接 `theme-card` / `theme-button-primary` / `theme-button-secondary` 引用；后续新增页面优先从 `src/components/ui` 组合，不再直接依赖旧全局主题类
 - `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已完成首轮颜色 token 化，业务共享组件不再新增裸色值
+- 记录详情页已接入 `SurfaceCard` / `StatusBadge` / `EmptyState`，并与记账 / 更新进展 / 追加预算一起完成首轮页面颜色 token 化
 - `UploadStrip` 已支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖联系方式单图二维码与生产页多图凭证场景
 - 新增非阻断扫描入口 `npm run report:style-tokens`，用于报告 `src/components` 与 `src/pages` 中剩余裸色值和重复 `px/rpx` 尺寸
 
@@ -268,7 +269,7 @@
 - 继续减少页面级 SCSS 中的裸色值、重复尺寸和一次性卡片结构
 - 将已在详情 / 草稿预览反复出现的动物摘要、资金摘要、动作区和时间线结构逐步晋升到 `src/components/rescue`
 - 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
-- 当前 `report:style-tokens` 基线：裸色值 `250`、`px/rpx` 尺寸 `1399`；颜色热点集中在 `rescue/detail/index.scss`、记录生产页和支持闭环页，`src/components/rescue` 里的 owner / timeline / support sheet 已清掉裸色值
+- 当前 `report:style-tokens` 基线：裸色值 `154`、`px/rpx` 尺寸 `1376`；颜色热点集中在 `rescue/detail/index.scss`、支持闭环页和建档页，`record-detail / expense / progress-update / budget-update` 已清掉裸色值
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
 
 2026-05-30 已完成的首轮页面迁移：

@@ -6,6 +6,7 @@ import {
   getStoredReadonlyRecordDetail,
   type RescueReadonlyRecordDetail,
 } from "../../../components/rescue";
+import { EmptyState, StatusBadge, SurfaceCard } from "../../../components/ui";
 import {
   loadCaseRecordDetail,
   type CaseRecordDetailVM,
@@ -38,6 +39,21 @@ function getImmutableCopy(kind?: RescueReadonlyRecordDetail["kind"]) {
   }
 
   return "这条记录提交后不可修改，后续变化请新增记录保留完整轨迹。";
+}
+
+function getBadgeTone(kind?: RescueReadonlyRecordDetail["kind"]) {
+  switch (kind) {
+    case "expense":
+      return "danger";
+    case "status":
+      return "info";
+    case "budget":
+      return "warning";
+    case "support":
+      return "success";
+    default:
+      return "neutral";
+  }
 }
 
 function formatItemAmount(amount?: number) {
@@ -146,10 +162,12 @@ export default function RescueReadonlyRecordDetailPage() {
     return (
       <View className="page-shell record-detail-page">
         <NavBar showBack title="记录详情" />
-        <View className="record-detail-page__empty">
-          <Text className="record-detail-page__empty-title">暂未找到记录</Text>
-          <Text className="record-detail-page__empty-copy">请返回记录明细后重新打开。</Text>
-        </View>
+        <EmptyState
+          className="record-detail-page__empty"
+          description="请返回记录明细后重新打开。"
+          iconName="fileText"
+          title="暂未找到记录"
+        />
       </View>
     );
   }
@@ -158,20 +176,20 @@ export default function RescueReadonlyRecordDetailPage() {
     <View className="page-shell record-detail-page">
       <NavBar showBack title={getPageTitle(record.kind)} />
 
-      <View className="record-detail-page__notice">
+      <SurfaceCard className="record-detail-page__notice" variant="subtle">
         <Text className="record-detail-page__notice-title">透明账本记录</Text>
         <Text className="record-detail-page__notice-copy">{getImmutableCopy(record.kind)}</Text>
-      </View>
+      </SurfaceCard>
 
-      <View className="record-detail-page__card">
+      <SurfaceCard className="record-detail-page__card">
         <View className="record-detail-page__header">
-          <View className={`record-detail-page__badge record-detail-page__badge--${record.kind}`}>
-            <Text>{record.badgeLabel}</Text>
-          </View>
+          <StatusBadge className="record-detail-page__badge" tone={getBadgeTone(record.kind)}>
+            {record.badgeLabel}
+          </StatusBadge>
           {record.statusLabel ? (
-            <View className="record-detail-page__badge record-detail-page__badge--case">
-              <Text>{record.statusLabel}</Text>
-            </View>
+            <StatusBadge className="record-detail-page__badge" tone="brand">
+              {record.statusLabel}
+            </StatusBadge>
           ) : null}
           <Text className="record-detail-page__time">{record.timestamp}</Text>
         </View>
@@ -244,7 +262,7 @@ export default function RescueReadonlyRecordDetailPage() {
             ))}
           </View>
         ) : null}
-      </View>
+      </SurfaceCard>
     </View>
   );
 }

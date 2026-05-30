@@ -2372,3 +2372,16 @@
   `npm run format`、`format:check`、`lint`、`typecheck`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 显示裸色值降到 `250`、尺寸降到 `1399`，上述三份组件 SCSS 裸色值为 `0`。
 - 下一步 / 遗留问题：
   下一批继续治理页面级热点，优先从 `rescue/detail/index.scss`、记账 / 更新进展 / 记录详情和支持闭环页里抽语义 token；本轮未改业务逻辑，未跑 `test:domain`。
+
+## 2026-05-30 | 生产页 | 记录详情与生产页颜色 token 化
+
+- 为什么改：
+  共享 rescue 组件裸色值清零后，记录详情、记账、更新进展和追加预算仍是页面级样式热点，会继续拖慢后续模板化迁移。
+- 改了什么：
+  `record-detail` 接入 `SurfaceCard` / `StatusBadge` / `EmptyState`，并将记录详情、记账、更新进展和追加预算页的文本、表单、提示、底栏和状态色替换为现有 CSS variables。
+- 影响范围：
+  影响四个页面的展示外壳和样式 token；不改记录详情读取、图片预览、记账提交、进展发布、预算提交、草稿兜底、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 显示裸色值降到 `154`、尺寸降到 `1376`，上述四个页面对应 SCSS 裸色值为 `0`。
+- 下一步 / 遗留问题：
+  继续治理 `rescue/detail/index.scss`、支持闭环页和建档页裸色热点；本轮未改业务逻辑，预计不需要跑 `test:domain`。

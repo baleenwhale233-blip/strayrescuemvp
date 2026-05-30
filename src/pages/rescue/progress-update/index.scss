@@ -108,7 +108,7 @@
 }
 
 .rescue-update-page__section-title {
-  color: #334155;
+  color: var(--color-text-primary);
   font-size: 16px;
   line-height: 24px;
 }
@@ -119,7 +119,7 @@
 }
 
 .rescue-update-page__image-title {
-  color: #334155;
+  color: var(--color-text-primary);
   font-size: 14px;
   line-height: 20px;
 }
@@ -136,20 +136,20 @@
   align-items: center;
   min-height: 30px;
   padding: 5px 17px;
-  color: #475569;
-  background: #fff;
-  border: 1px solid #f1f5f9;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
   border-radius: 20px;
 }
 
 .rescue-update-page__stage-chip--active {
-  color: #fff;
-  background: #f06418;
-  border-color: #f06418;
+  color: var(--color-brand-on-primary);
+  background: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
 }
 
 .rescue-update-page__stage-chip-emoji {
-  color: #1e293b;
+  color: var(--color-text-primary);
   font-size: 14px;
   line-height: 20px;
 }
@@ -164,7 +164,7 @@
 }
 
 .rescue-update-page__field .ui-form-field__label {
-  color: #334155;
+  color: var(--color-text-primary);
   font-size: 14px;
   font-weight: var(--font-weight-regular);
   line-height: 20px;
@@ -174,8 +174,8 @@
   position: relative;
   min-height: 160px;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
   border-radius: 12px;
 }
 
@@ -184,7 +184,7 @@
   top: 18px;
   left: 18px;
   right: 18px;
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 14px;
   line-height: 24px;
   pointer-events: none;
@@ -194,7 +194,7 @@
   width: 100%;
   min-height: 160px;
   padding: 18px;
-  color: #0f172a;
+  color: var(--color-text-primary);
   background: transparent;
   border: 0;
   font-size: 14px;
@@ -260,7 +260,7 @@
   justify-content: center;
   min-height: 40px;
   padding: 12px;
-  background: #fff7ed;
+  background: var(--color-brand-primary-soft);
   border-radius: 8px;
 }
 
@@ -271,14 +271,14 @@
 }
 
 .rescue-update-page__notice-text {
-  color: #f06418;
+  color: var(--color-brand-primary);
   font-size: 12px;
   line-height: 16px;
 }
 
 .rescue-update-page__bottom {
   padding: 17px 16px 16px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bottom-action-bg);
   border-top: none;
   box-shadow: none;
   backdrop-filter: blur(8px);
