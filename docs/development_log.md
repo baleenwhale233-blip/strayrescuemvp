@@ -2047,3 +2047,16 @@
   `format:check`、`lint`、`typecheck`、`test:domain`、`build:weapp`、`preflight:alpha` 均通过，domain tests 57 项通过；dead-code 接线检查未发现容器残留旧大块 JSX 或未使用新增 hooks / 子组件。
 - 下一步 / 遗留问题：
   仍未执行微信开发者工具手动 smoke；构建 warning 仍为既有 `timeline-status-cat.png` 体积 warning、no async chunks warning 和 Node `punycode` deprecation warning。
+
+## 2026-05-30 | 前端组件化 | 建立 token 与 ui 基础组件入口
+
+- 为什么改：
+  项目后期不能继续只靠 Figma 贴稿推进，需要让无最新设计稿的页面也能通过稳定 token 和组件搭出符合规范的界面。
+- 改了什么：
+  新增 `docs/frontend_component_system.md`、扩展 form / bottomActionBar / sheet / upload token，新增 `src/components/ui` 基础组件与 `src/components/rescue` barrel，并将记录主页空态迁移到 `EmptyState`。
+- 影响范围：
+  影响前端组件组织、全局 token、记录主页空态和项目总控阅读入口；不改数据模型、VM、selector、repository、CloudBase 写链路或 MVP 范围。
+- 验证结果：
+  `npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 通过；`test:ui` 现覆盖 5 项，构建仅保留既有大图体积与 no async chunks warning。
+- 下一步 / 遗留问题：
+  后续按文档从记账 / 更新进展 / 追加预算开始渐进迁移，继续缩小页面级 SCSS 和硬编码样式。

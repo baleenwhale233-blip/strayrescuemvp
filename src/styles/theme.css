@@ -9,17 +9,22 @@ page {
   --color-bg-canvas: #f7f5f4;
   --color-bg-page: #f5f4f3;
   --color-bg-card: #ffffff;
+  --color-bg-input: #f8fafc;
   --color-bg-subtle: #f2f4f7;
   --color-bg-muted: #eef1f4;
 
   --color-border-light: #e6eaf0;
   --color-border-default: #d9dfe7;
   --color-border-strong: #c7cfd9;
+  --color-border-dashed: #dbe4ef;
 
   --color-text-primary: #1f2a37;
   --color-text-secondary: #667085;
   --color-text-tertiary: #98a2b3;
   --color-text-disabled: #b7c0cc;
+  --color-bg-segmented: rgba(226, 232, 240, 0.5);
+  --color-overlay-scrim: rgba(15, 23, 42, 0.32);
+  --color-overlay-strong: rgba(15, 23, 42, 0.56);
 
   --color-success: #16a34a;
   --color-success-soft: #eaf8ee;
@@ -120,6 +125,10 @@ page {
   --size-input-lg: 56px;
   --size-input-xl: 64px;
 
+  --size-upload-tile-sm: 80px;
+  --size-upload-tile-md: 96px;
+  --size-upload-tile-lg: 120px;
+
   --size-tabbar: 65px;
   --size-navbar: 98px;
 
@@ -128,6 +137,28 @@ page {
   --layout-section-gap: 16px;
   --layout-card-gap: 16px;
   --layout-form-gap: 24px;
+
+  --form-field-gap: 8px;
+  --form-control-min-height: 48px;
+  --form-control-radius: 12px;
+  --form-control-padding-x: 16px;
+  --form-control-bg: var(--color-bg-input);
+  --form-control-border: var(--color-border-default);
+
+  --bottom-action-bg: rgba(255, 255, 255, 0.96);
+  --bottom-action-border: var(--color-border-light);
+  --bottom-action-padding-x: 16px;
+  --bottom-action-padding-y: 12px;
+
+  --sheet-radius-top: 28px;
+  --sheet-bg: var(--color-bg-card);
+  --sheet-scrim: var(--color-overlay-scrim);
+  --sheet-shadow: 0 -12px 32px rgba(15, 23, 42, 0.12);
+
+  --upload-tile-size: 96px;
+  --upload-tile-radius: var(--radius-md);
+  --upload-tile-bg: var(--color-bg-input);
+  --upload-tile-border: var(--color-border-dashed);
 }
 
 page {

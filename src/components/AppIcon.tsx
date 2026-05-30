@@ -7,7 +7,7 @@ import handCoinsDefault24 from "../assets/icons/hand-coins-default-24.png";
 import plusCircleInverse24 from "../assets/icons/plus-circle-inverse-24.png";
 import sparklesDefault24 from "../assets/icons/sparkles-default-24.png";
 
-type IconName =
+export type IconName =
   | "camera"
   | "fileText"
   | "handCoins"
@@ -19,7 +19,7 @@ type IconName =
   | "briefcase"
   | "user";
 
-type IconVariant = "default" | "muted" | "brand" | "inverse";
+export type IconVariant = "default" | "muted" | "brand" | "inverse";
 
 const iconMap: Record<IconName, Partial<Record<IconVariant, string>>> = {
   camera: {

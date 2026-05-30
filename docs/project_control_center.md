@@ -1,6 +1,6 @@
 # 项目总控中心
 
-最后更新：2026-05-28
+最后更新：2026-05-30
 
 用途：
 
@@ -13,9 +13,10 @@
 1. [`README.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/README.md)
 2. 本文档
 3. [`docs/figma_progress_map.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/figma_progress_map.md)
-4. [`docs/pending_field_contracts.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/pending_field_contracts.md)
-5. [`docs/cloudbase_backend_setup.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/cloudbase_backend_setup.md)
-6. [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)
+4. [`docs/frontend_component_system.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/frontend_component_system.md)
+5. [`docs/pending_field_contracts.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/pending_field_contracts.md)
+6. [`docs/cloudbase_backend_setup.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/cloudbase_backend_setup.md)
+7. [`docs/development_log.md`](/Users/yang/Documents/New%20project/stray-rescue-mvp/docs/development_log.md)
 
 ---
 
@@ -160,6 +161,7 @@
   - 草稿箱里的“记录支持”已改成直接进入 `support/review` 的 `手动登记` tab，不再走旧弹层
   - 记录主页已按 Figma `442:6758` 新建，详情页“查看主页”已接真实页面，并已接 `getRescuerHomepage` 远端 VM；下方案例列表复用首页卡片组件，页面层聚合只作为 CloudBase 不可用时兜底
   - 主态详情底部已改成默认“分享档案”大按钮 + 小“结束”按钮；点击结束后才进入“取消 + 右滑结束记录”确认态，滑到阈值后弹确认；正式结束记录后端链路仍待接入
+  - 前端组件化治理已新增 `docs/frontend_component_system.md`，并落下 `src/components/ui` 基础组件目录与 `src/components/rescue` 业务组件 barrel；后续页面精修优先按该文档渐进迁移，不再只依赖 Figma 贴稿推进
 - 已有但还没完全吃满字段：
   - 工作台
   - 详情页主态 / 客态
