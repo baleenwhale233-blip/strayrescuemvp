@@ -4,7 +4,7 @@
   z-index: 40;
   display: flex;
   align-items: flex-end;
-  background: rgba(15, 23, 42, 0.32);
+  background: var(--sheet-scrim);
 }
 
 .support-sheet__panel {
@@ -12,9 +12,9 @@
   max-height: 92vh;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: var(--sheet-bg);
   border-radius: 28px 28px 0 0;
-  box-shadow: 0 -12px 32px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--sheet-shadow);
 }
 
 .support-sheet__handle {
@@ -26,7 +26,7 @@
 .support-sheet__handle-bar {
   width: 48px;
   height: 6px;
-  background: #d7dde7;
+  background: var(--color-border-default);
   border-radius: 999px;
 }
 
@@ -46,7 +46,7 @@
   min-height: 47px;
   margin-bottom: 16px;
   padding: 13px 16px;
-  background: #f8fafc;
+  background: var(--color-bg-input);
   border-radius: 14px;
 }
 
@@ -58,7 +58,7 @@
 .support-sheet__tip-text,
 .support-sheet__hint,
 .support-sheet__wechat-copy-text {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 12px;
   line-height: 20px;
 }
@@ -70,7 +70,7 @@
 .support-sheet__section-title {
   display: block;
   margin-bottom: 12px;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 16px;
   font-weight: var(--font-weight-semibold);
   line-height: 20px;
@@ -83,8 +83,8 @@
   width: 280px;
   height: 280px;
   margin: 0 auto 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
   border-radius: 24px;
 }
 
@@ -99,13 +99,13 @@
   align-items: center;
   justify-content: center;
   padding: 20px 16px;
-  background: #f8fafc;
+  background: var(--color-bg-input);
   border-radius: 16px;
 }
 
 .support-sheet__empty-text,
 .support-sheet__note-text {
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 12px;
   line-height: 18px;
   text-align: center;
@@ -122,27 +122,27 @@
   justify-content: space-between;
   gap: 12px;
   padding: 13px 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
   border-radius: 16px;
 }
 
 .support-sheet__wechat-id {
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 16px;
   line-height: 20px;
 }
 
 .support-sheet__wechat-copy {
   padding: 7px 13px;
-  background: #fff7ed;
+  background: var(--color-brand-primary-soft);
   border-radius: 999px;
 }
 
 .support-sheet__footer {
   padding: 12px 16px 24px;
-  background: rgba(255, 255, 255, 0.96);
-  border-top: 1px solid #f1f5f9;
+  background: var(--bottom-action-bg);
+  border-top: 1px solid var(--bottom-action-border);
 }
 
 .support-sheet__save-button {

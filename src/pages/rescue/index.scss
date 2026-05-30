@@ -1,19 +1,16 @@
 .rescue-page {
   padding-bottom: 116px;
-  background: #f8f6f6;
+  background: var(--color-bg-page);
 }
 
 .rescue-page__primary-action {
-  display: flex;
   gap: 12px;
-  min-height: 60px;
+  min-height: var(--size-button-xl);
   margin-bottom: 24px;
-  background: #ec5b13;
-  border-radius: 12px;
-  box-shadow: 0 10px 15px rgba(236, 91, 19, 0.2);
-  font-size: 18px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-heading-sm);
   font-weight: var(--font-weight-semibold);
-  line-height: 28px;
+  line-height: var(--line-height-heading-sm);
 }
 
 .rescue-page__primary-action-icon {
@@ -33,8 +30,8 @@
   overflow: hidden;
   flex-shrink: 0;
   border-radius: var(--radius-circle);
-  background: #e2e8f0;
-  border: 1px solid #f1f5f9;
+  background: var(--color-bg-muted);
+  border: 1px solid var(--color-border-light);
 }
 
 .project-list-item__avatar-image {
@@ -45,7 +42,7 @@
 .project-list-item__name {
   display: block;
   width: 100%;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 16px;
   font-weight: var(--font-weight-semibold);
   line-height: 24px;
@@ -56,7 +53,7 @@
 
 .project-list-item__state {
   display: block;
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 14px;
   line-height: 20px;
   overflow: hidden;
@@ -77,10 +74,8 @@
   gap: 16px;
   min-height: 90px;
   padding: 16px;
-  background: #ffffff;
-  border-color: #e2e8f0;
-  border-radius: 12px;
-  box-shadow: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-none);
   transition:
     transform 160ms ease,
     box-shadow 160ms ease;
@@ -119,25 +114,17 @@
 .project-list-item__notice {
   width: 100%;
   padding: 8px 10px;
-  background: #f6eded;
-  border-left: 2px solid #ff3030;
+  background: var(--color-danger-soft);
+  border-left: 2px solid var(--color-danger);
   border-radius: 8px;
 }
 
 .project-list-item__notice-text {
-  color: #594138;
+  color: var(--color-text-primary);
   font-size: 12px;
   line-height: 20px;
 }
 
 .rescue-page__empty {
-  display: block;
-  padding: 18px 16px;
-  color: #64748b;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 20px;
-  text-align: center;
+  padding: 28px 16px;
 }

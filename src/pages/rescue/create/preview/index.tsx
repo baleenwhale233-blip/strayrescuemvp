@@ -1,8 +1,9 @@
-import { Button, Image, Input, Text, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
+import { AppButton } from "../../../../components/ui";
 import { createSubmissionGuard } from "../../../../utils/submissionGuard";
 import { recordCaseProfileLocalFallback } from "../../../../domain/canonical/repository";
 import {
@@ -12,7 +13,7 @@ import {
   RescueOwnerTabs,
   RescueOwnerTimeline,
   type RescueOwnerTimelineItem,
-} from "../../../../components/RescueOwnerShared";
+} from "../../../../components/rescue";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import ownerFooterArrowIcon from "../../../../assets/rescue-detail/owner/footer-publish-arrow.svg";
 import ownerAnimalFallback from "../../../../assets/rescue-detail/owner/animal-card-cat.png";
@@ -429,12 +430,12 @@ function ActionSheet({
           />
         </View>
 
-        <View
-          className="theme-button-primary rescue-preview__sheet-button"
+        <AppButton
+          className="rescue-preview__sheet-button"
           onTap={() => onSave({ title, description, amount })}
         >
-          <Text>保存记录</Text>
-        </View>
+          保存记录
+        </AppButton>
       </View>
     </View>
   );
@@ -473,12 +474,9 @@ function RenameSheet({
           </View>
         </View>
 
-        <View
-          className="theme-button-primary rescue-preview__sheet-button"
-          onTap={() => onSave(value)}
-        >
-          <Text>保存代号</Text>
-        </View>
+        <AppButton className="rescue-preview__sheet-button" onTap={() => onSave(value)}>
+          保存代号
+        </AppButton>
       </View>
     </View>
   );
@@ -885,25 +883,20 @@ export default function RescueCreatePreviewPage() {
       </View>
 
       <View className="rescue-preview__footer">
-        <Button
-          className="theme-button-secondary rescue-preview__footer-secondary"
+        <AppButton
+          className="rescue-preview__footer-secondary"
           onTap={handleSaveDraft}
+          variant="ghost"
         >
-          <Text>保存草稿</Text>
-        </Button>
-        <Button
-          className="theme-button-primary rescue-preview__footer-primary"
+          保存草稿
+        </AppButton>
+        <AppButton
+          className="rescue-preview__footer-primary"
+          iconSrc={ownerFooterArrowIcon}
           onTap={handlePublish}
         >
-          <Text>发布记录</Text>
-          <View className="rescue-preview__footer-arrow">
-            <Image
-              className="rescue-preview__footer-arrow-icon"
-              mode="aspectFit"
-              src={ownerFooterArrowIcon}
-            />
-          </View>
-        </Button>
+          发布记录
+        </AppButton>
       </View>
 
       {activeAction ? (

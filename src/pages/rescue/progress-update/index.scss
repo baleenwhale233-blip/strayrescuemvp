@@ -21,14 +21,15 @@
   display: flex;
   gap: 16px;
   align-items: center;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
 }
 
 .rescue-update-page__animal-cover {
   width: 64px;
   height: 64px;
   flex-shrink: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
 }
 
 .rescue-update-page__animal-copy {
@@ -47,28 +48,28 @@
 }
 
 .rescue-update-page__animal-title {
-  color: #1e293b;
+  color: var(--color-text-primary);
   font-size: 18px;
   line-height: 28px;
 }
 
 .rescue-update-page__animal-status {
   padding: 2px 8px;
-  color: #f06418;
-  background: rgba(240, 100, 24, 0.1);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
   border-radius: 16px;
   font-size: 10px;
   line-height: 15px;
 }
 
 .rescue-update-page__animal-meta {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 12px;
   line-height: 16px;
 }
 
 .rescue-update-page__animal-meta--muted {
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 10px;
   line-height: 15px;
 }
@@ -159,14 +160,13 @@
 }
 
 .rescue-update-page__field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  --form-field-gap: 8px;
 }
 
-.rescue-update-page__label {
+.rescue-update-page__field .ui-form-field__label {
   color: #334155;
   font-size: 14px;
+  font-weight: var(--font-weight-regular);
   line-height: 20px;
 }
 
@@ -206,88 +206,51 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
 }
 
 .rescue-update-page__image-limit {
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 10px;
   line-height: 15px;
 }
 
-.rescue-update-page__image-row {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.rescue-update-page__image-scroll {
-  flex: 1;
-  min-width: 0;
+.rescue-update-page__image-strip {
+  --upload-tile-radius: var(--radius-md);
+  --upload-tile-size: 96px;
   height: 96px;
 }
 
-.rescue-update-page__image-grid {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  width: max-content;
-  padding-right: 8px;
-}
-
-.rescue-update-page__image-trigger,
-.rescue-update-page__image-item {
-  position: relative;
-  width: 96px;
+.rescue-update-page__image-strip .ui-upload-strip__scroll {
   height: 96px;
-  overflow: hidden;
-  border-radius: 16px;
 }
 
-.rescue-update-page__image-trigger {
-  display: flex;
-  flex-shrink: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  background: #f8fafc;
-  border: 2px dashed #dbe4ef;
+.rescue-update-page__image-strip .ui-upload-strip__content {
+  gap: 8px;
 }
 
-.rescue-update-page__image-trigger-icon {
+.rescue-update-page__image-strip .ui-upload-strip__add-icon {
   width: 22px;
   height: 20px;
 }
 
-.rescue-update-page__image-trigger-text {
-  color: #94a3b8;
+.rescue-update-page__image-strip .ui-upload-strip__add-copy {
   font-size: 9px;
   line-height: 13.5px;
 }
 
-.rescue-update-page__image-item {
-  background: #e2e8f0;
-  border-radius: 12px;
+.rescue-update-page__image-strip .ui-upload-strip__item {
+  border: none;
+  border-radius: var(--radius-sm);
 }
 
-.rescue-update-page__image {
-  width: 100%;
-  height: 100%;
-}
-
-.rescue-update-page__image-remove {
-  position: absolute;
+.rescue-update-page__image-strip .ui-upload-strip__remove {
   top: 0;
   right: 0;
   width: 24px;
   height: 24px;
-}
-
-.rescue-update-page__image-remove-icon {
-  width: 24px;
-  height: 24px;
+  background: transparent;
 }
 
 .rescue-update-page__notice {
@@ -314,18 +277,15 @@
 }
 
 .rescue-update-page__bottom {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 20;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
   padding: 17px 16px 16px;
   background: rgba(255, 255, 255, 0.8);
+  border-top: none;
+  box-shadow: none;
   backdrop-filter: blur(8px);
+}
+
+.rescue-update-page__bottom .ui-bottom-action-bar__inner {
+  gap: 12px;
 }
 
 .rescue-update-page__bottom-cancel {
@@ -342,16 +302,12 @@
   border-radius: 12px;
 }
 
-.rescue-update-page__bottom-submit-icon {
+.rescue-update-page__bottom-submit .ui-button__icon {
   width: 14.25px;
   height: 12px;
 }
 
 @media (min-width: 768px) {
-  .rescue-update-page__bottom {
-    justify-content: center;
-  }
-
   .rescue-update-page__bottom-cancel {
     width: 100.28px;
   }

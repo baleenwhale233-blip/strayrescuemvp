@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Text, View } from "@tarojs/components";
+import { Image, Text, View } from "@tarojs/components";
 import { cx } from "./classNames";
 import "./ui.scss";
 
@@ -7,6 +7,7 @@ type AppButtonProps = {
   children: ReactNode;
   className?: string;
   disabled?: boolean;
+  iconSrc?: string;
   loading?: boolean;
   loadingText?: string;
   onTap?: () => void;
@@ -18,6 +19,7 @@ export function AppButton({
   children,
   className,
   disabled = false,
+  iconSrc,
   loading = false,
   loadingText = "处理中",
   onTap,
@@ -37,7 +39,14 @@ export function AppButton({
       )}
       onTap={locked ? undefined : onTap}
     >
-      <Text>{loading ? loadingText : children}</Text>
+      {loading || typeof children === "string" || typeof children === "number" ? (
+        <Text>{loading ? loadingText : children}</Text>
+      ) : (
+        children
+      )}
+      {iconSrc && !loading ? (
+        <Image className="ui-button__icon" mode="aspectFit" src={iconSrc} />
+      ) : null}
     </View>
   );
 }

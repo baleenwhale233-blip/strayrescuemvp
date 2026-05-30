@@ -2,7 +2,7 @@ import { View } from "@tarojs/components";
 import {
   RescueOwnerTimeline,
   type RescueOwnerTimelineItem,
-} from "../../../../../components/RescueOwnerShared";
+} from "../../../../../components/rescue";
 
 export function OwnerDetailSection({ items }: { items: RescueOwnerTimelineItem[] }) {
   return (

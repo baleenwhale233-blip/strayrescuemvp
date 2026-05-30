@@ -1,7 +1,4 @@
-import {
-  RescueTimelineList,
-  type RescueTimelineSharedItem,
-} from "../../../../components/RescueTimelineShared";
+import { RescueTimelineList, type RescueTimelineSharedItem } from "../../../../components/rescue";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import {
   getTimelineAssetUrls,

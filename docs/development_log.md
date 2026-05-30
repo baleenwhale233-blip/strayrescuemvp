@@ -2060,3 +2060,315 @@
   `npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 通过；`test:ui` 现覆盖 5 项，构建仅保留既有大图体积与 no async chunks warning。
 - 下一步 / 遗留问题：
   后续按文档从记账 / 更新进展 / 追加预算开始渐进迁移，继续缩小页面级 SCSS 和硬编码样式。
+
+## 2026-05-30 | 记账页 | 迁移上传表单与底部操作组件
+
+- 为什么改：
+  记账页是记录维护者高频生产页，公共凭证上传、明细输入和固定提交栏会复用到更新进展 / 追加预算等生产页。
+- 改了什么：
+  记账页公共凭证区改用 `UploadStrip`，支出明细输入改用 `FormField`，底部提交栏改用 `BottomActionBar + AppButton`，并增强 `UploadStrip` 支持预览、删除图标和添加图标。
+- 影响范围：
+  仅影响记账页展示组件接线和 `ui` 基础组件能力；不改草稿缓存、提交校验、CloudBase 写入、localPresentation fallback、VM、selector 或 repository。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  下一刀迁移更新进展页图片上传与底部操作，并继续减少生产页硬编码样式。
+
+## 2026-05-30 | 更新进展页 | 迁移影像上传与底部操作组件
+
+- 为什么改：
+  更新进展页和记账页同属高频生产页，图片上传、长文本表单标签和吸底操作栏应复用统一组件，避免继续复制页面级实现。
+- 改了什么：
+  近况影像记录改用 `UploadStrip`，进展详情标签改用 `FormField`，底部取消 / 发布改用 `BottomActionBar + AppButton`，并保留页面专属间距与按钮宽度覆盖。
+- 影响范围：
+  仅影响更新进展页展示结构与 `ui` 组件接线；不改阶段选择、图片选择 / 预览 / 删除、草稿写入、CloudBase 上传、远端写入或 local fallback。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  下一刀迁移追加预算页底部操作与表单外壳，继续沉淀生产页模板。
+
+## 2026-05-30 | 追加预算页 | 迁移预算表单与底部提交组件
+
+- 为什么改：
+  追加预算页属于内容生产链路第三个高频页，金额字段、说明字段和吸底主按钮应与记账 / 更新进展共用基础组件口径。
+- 改了什么：
+  新预估总金额和追加原因改用 `FormField`，底部提交区改用 `BottomActionBar + AppButton`，并用页面级样式保留原按钮宽度、阴影和图标尺寸。
+- 影响范围：
+  仅影响追加预算页展示结构；不改预算金额解析、草稿 budget/timeline 写入、CloudBase 预算调整、成功提示或 local fallback。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  下一阶段可迁移支持登记 / 手动记收入相关表单，继续把闭环判断页卡片和状态展示组件化。
+
+## 2026-05-30 | 支持闭环页 | 迁移登记表单、Tab 与空态组件
+
+- 为什么改：
+  支持登记和处理登记是支持者查档后的关键闭环页面，表单、空态、Tab 和吸底提交应与生产页使用同一套基础组件。
+- 改了什么：
+  支持登记的 loading/error 改用 `EmptyState`，金额/称呼/凭证/备注改用 `FormField`，底部提交改用 `BottomActionBar + AppButton`；处理登记 tab 改用 `SegmentedTabs`，空态改用 `EmptyState`，手动登记表单与底部提交改用 UI 组件。
+- 影响范围：
+  仅影响 `support/claim` 与 `support/review` 展示结构；不改凭证上传、支持登记远端写入、待处理登记确认/未匹配、手动登记或成功反馈。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  后续可继续迁移发现页卡片/状态表达，或抽救助详情页中已拆出的 owner/guest 子组件样式口径。
+
+## 2026-05-30 | 发现页 | 收口案例卡样式所有权与进度条组件
+
+- 为什么改：
+  发现页已使用 `DiscoverCaseCard`，但页面 SCSS 里仍复制了一整套卡片样式，违背“组件持有自身样式”的组织目标，也让资金条逻辑和 UI 组件重复。
+- 改了什么：
+  发现页加载态改用 `EmptyState`，`DiscoverCaseCard` 的资金进度条改用 `ProgressBar`，并删除 `src/pages/discover/index.scss` 中重复的 `discover-card` 样式副本。
+- 影响范围：
+  仅影响发现页 loading 展示和案例卡样式归属；不改案例列表读取、案例 ID 搜索、资金 VM、排序或客态详情跳转。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  后续可继续梳理客态详情 / 主态详情中 owner/guest 子组件的卡片、状态和资金 token 使用。
+
+## 2026-05-30 | 详情页 | 迁移 Tab、资金条与页面状态组件
+
+- 为什么改：
+  rescue detail 已完成机械拆分，但客态 / 主态子组件里仍保留手写 tab、资金条和页面状态结构，需要继续向基础 UI 组件收口。
+- 改了什么：
+  客态 `GuestTabs` 和主态 `RescueOwnerTabs` 改用 `SegmentedTabs`，客态资金卡和主态动物资金卡资金条改用 `ProgressBar`，详情 loading/error 态改用 `EmptyState + AppButton`。
+- 影响范围：
+  仅影响详情页展示组件组织和样式归属；不改详情加载、分享路径、SupportSheet、owner 编辑、跳转 URL、VM、selector、repository 或 CloudBase 写链路。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  后续继续梳理详情页卡片、badge 和时间线组件的 token 使用，逐步减少巨型 `index.scss` 的裸色值。
+
+## 2026-05-30 | 详情页 | 迁移 badge 与时间线空态组件
+
+- 为什么改：
+  详情页客态概览和共享时间线仍保留手写 badge / 空态结构，旧客态时间线样式也已无 JSX 引用，需要继续减少页面级 SCSS 残留。
+- 改了什么：
+  客态最新状态和共享时间线记录类型改用 `StatusBadge`，共享时间线空态改用 `EmptyState`，并清理 `guest-timeline-event` 旧样式块。
+- 影响范围：
+  仅影响详情页状态标签、时间线空态和样式归属；不改详情加载、时间线 VM、只读记录跳转、图片展示、预算展示、支持展示或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  继续梳理详情页卡片、底部操作和 owner/guest 共享结构，逐步把可复用 UI 从页面 SCSS 中抽离。
+
+## 2026-05-30 | 主态详情 | 收口 badge 与旧时间线样式
+
+- 为什么改：
+  主态详情的动物摘要状态和最新进展标签仍是手写样式，同时 `RescueOwnerShared.scss` 还保留已被共享时间线替代的旧 owner timeline 样式。
+- 改了什么：
+  `RescueOwnerSummaryCard` 与 `RescueOwnerOverview` 的状态标签改用 `StatusBadge`，并删除 `rescue-owner-timeline__*` 旧样式块。
+- 影响范围：
+  仅影响主态详情共享组件的状态标签和样式归属；不改主态时间线 VM 映射、只读记录跳转、owner 快捷动作、编辑入口、SupportSheet 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  继续迁移详情页底部操作与卡片外壳，后续再进入身份页和记录主页的列表卡片模板治理。
+
+## 2026-05-30 | 详情页 | 迁移客态与主态底部操作栏
+
+- 为什么改：
+  详情页客态底栏和主态结束栏仍各自手写固定底部容器，与已在生产页和支持页复用的 `BottomActionBar` 口径不一致。
+- 改了什么：
+  客态底栏外壳改用 `BottomActionBar`，登记一笔 / 查看联系方式改用 `AppButton`；主态分享 / 结束栏外壳改用 `BottomActionBar`，保留分享按钮和右滑结束交互。
+- 影响范围：
+  仅影响详情页底部操作栏的组件外壳和样式归属；不改 onSupport/onClaim、微信分享、结束二段确认、右滑阈值、owner 状态机或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  继续把详情页卡片外壳向 `SurfaceCard` 或业务组件迁移，然后转入身份页和记录主页列表模板治理。
+
+## 2026-05-30 | 详情页 | 迁移卡片外壳到 SurfaceCard
+
+- 为什么改：
+  详情页客态、主态和共享时间线仍直接引用 `theme-card`，卡片基础样式没有统一通过 `SurfaceCard` 入口管理。
+- 改了什么：
+  客态资金卡、维护者卡、概览/指标卡，主态摘要/动作/概览/指标卡，以及共享时间线记录卡外壳改用 `SurfaceCard`。
+- 影响范围：
+  仅影响详情页卡片外壳组件归属；不改卡片内部内容、时间线跳转、owner 快捷动作、分享 / 结束底栏、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 均通过；build 仍仅有既有的 punycode、图片体积和 async chunks 提示。
+- 下一步 / 遗留问题：
+  后续转入身份页、记录主页和工作台列表卡片模板治理，并继续减少页面级裸色值。
+
+## 2026-05-30 | 工作台 | 迁移列表卡片与空态组件
+
+- 为什么改：
+  我的记录 / 工作台是 P1 身份页核心入口，列表卡片、主按钮和空态仍有 `theme-card` / `theme-button-primary` 与手写空态残留。
+- 改了什么：
+  `ProjectListItem` 外壳改用 `SurfaceCard`，新建记录入口改用 `AppButton`，档案 / 草稿空态改用 `EmptyState`，并将该页相关颜色收口到 CSS variables。
+- 影响范围：
+  仅影响 `src/pages/rescue/index` 展示外壳和样式 token 使用；不改工作台 VM、联系方式前置校验、草稿跳转、主态详情跳转、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续治理我的页、支持足迹、联系方式设置和记录主页的轻列表卡片 / 身份页模板；本轮 UI-only 未跑 `test:domain`。
+
+## 2026-05-30 | 支持足迹 | 迁移登记记录列表组件
+
+- 为什么改：
+  我的登记记录页属于 P1 身份页模板，汇总卡、记录列表卡和空态仍由页面手写样式维护，和工作台列表组件口径不一致。
+- 改了什么：
+  总计登记卡和每条登记记录改用 `SurfaceCard`，无登记记录状态改用 `EmptyState`，并把页面背景、文字、边框和品牌色改为 CSS variables。
+- 影响范围：
+  仅影响 `src/pages/profile/support-history` 展示外壳与样式 token 使用；不改 `loadMySupportHistory`、金额聚合、详情跳转、repository 或远端 OPENID 聚合逻辑。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续收口我的页功能入口、联系方式设置页表单卡片和记录主页公开列表模板；本轮 UI-only 不涉及 `test:domain`。
+
+## 2026-05-30 | 联系方式设置 | 迁移表单与单图上传组件
+
+- 为什么改：
+  联系方式设置页是身份页里的核心表单，字段标题、输入卡、二维码上传和底部保存仍由页面手写结构维护，难以复用到后续身份页模板。
+- 改了什么：
+  微信号 / 二维码 / 备注字段接入 `FormField`，输入卡和备注文本域接入 `SurfaceCard` 口径，二维码上传改用支持 `maxImages` 的 `UploadStrip`，保存区改用 `BottomActionBar + AppButton`。
+- 影响范围：
+  仅影响 `src/pages/profile/contact-settings` 展示外壳与 `UploadStrip` 单图能力；不改本地 / 远端资料同步、二维码上传、键盘避让、保存后跳转或 profile repository。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续治理我的页功能入口和记录主页公开列表模板；本轮未改 VM / selector / repository，未跑 `test:domain`。
+
+## 2026-05-30 | 我的页 | 迁移入口卡片与保存按钮组件
+
+- 为什么改：
+  我的页是身份页总入口，昵称输入、保存头像昵称和三个功能入口仍使用页面手写卡片 / `theme-button-primary`，和支持足迹、联系方式设置的组件口径不一致。
+- 改了什么：
+  昵称输入外壳改用 `SurfaceCard`，头像昵称保存改用 `AppButton`，我的登记记录 / 联系信息设置 / 使用说明入口行改用 `SurfaceCard`，并将该页相关颜色收口到 CSS variables。
+- 影响范围：
+  仅影响 `src/pages/profile/index` 展示外壳和 token 使用；不改微信头像选择、昵称本地缓存、远端 profile 同步、提交 guard 或入口跳转。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续治理记录主页公开列表模板；本轮未改 VM / selector / repository，未跑 `test:domain`。
+
+## 2026-05-30 | 记录主页 | 收口公开案例卡和资料卡外壳
+
+- 为什么改：
+  记录主页已经复用发现页案例卡，但 `DiscoverCaseCard` 自身仍直接引用 `theme-card`，记录主页头部资料卡也保留手写卡片样式。
+- 改了什么：
+  `DiscoverCaseCard` 外壳改用 `SurfaceCard`，卡片颜色 / 账本点位 / 状态色继续收口到 CSS variables；记录主页头部资料卡改用 `SurfaceCard`。
+- 影响范围：
+  影响发现页和记录主页共用案例卡、记录主页头部展示；不改 homepage VM、公开案例读取、资金字段、排序、记录主页加载或客态详情跳转。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  后续继续清理剩余 P0/P1 页面中的 `theme-card` / `theme-button-primary`，本轮未改 VM / selector / repository，未跑 `test:domain`。
+
+## 2026-05-30 | 支持闭环页 | 迁移剩余卡片外壳到 SurfaceCard
+
+- 为什么改：
+  登记一笔案例摘要卡和处理登记待处理卡仍直接引用 `theme-card`，和本轮支持闭环页表单 / tab / 空态组件治理不一致。
+- 改了什么：
+  `support/claim` 案例摘要卡改用 `SurfaceCard`，`support/review` 待处理登记卡改用 `SurfaceCard`，并将相关边框、状态色和摘要文字颜色继续收口到 CSS variables。
+- 影响范围：
+  仅影响支持闭环页卡片外壳和样式 token；不改登记提交、凭证上传、待处理确认 / 未匹配、手动登记、成功反馈或 repository。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续清理生产页与建档页残留 `theme-card` / `theme-button-primary`；本轮未改 VM / selector / repository，未跑 `test:domain`。
+
+## 2026-05-30 | 生产页 | 迁移剩余卡片外壳到 SurfaceCard
+
+- 为什么改：
+  记账、更新进展、追加预算虽已接入表单 / 上传 / 底部操作组件，但仍有公共凭证卡、支出明细卡、动物摘要卡和影像记录卡直接引用 `theme-card`。
+- 改了什么：
+  记账页公共凭证卡和支出明细卡、更新进展页动物摘要卡和影像记录卡、追加预算页动物摘要卡改用 `SurfaceCard`，并继续收口相关卡片颜色、边框和阴影 token。
+- 影响范围：
+  仅影响三张生产页展示外壳和样式 token；不改图片上传、支出明细编辑、阶段选择、预算金额解析、草稿写入、远端写入或 local fallback。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  剩余直连主要在建档 / 草稿预览、SupportSheet 和 RenameSheet；本轮未改 VM / selector / repository，未跑 `test:domain`。
+
+## 2026-05-30 | 组件治理 | 清理旧主题类直连
+
+- 为什么改：
+  建档、草稿预览、联系方式半弹层和改名半弹层仍直接依赖 `theme-card` / `theme-button-primary` / `theme-button-secondary`，旧全局主题类会继续绕过组件 API。
+- 改了什么：
+  `SupportSheet`、详情改名弹层、建档第一步 / 第二步和草稿预览弹层 / 底栏改用 `AppButton`，建档第二步预算卡改用 `SurfaceCard`；组件系统文档同步记录直连清零里程碑。
+- 影响范围：
+  仅影响展示外壳、按钮组件归属和组件治理文档；不改建档草稿保存、预算校验、发布记录、联系方式复制 / 二维码提示、改名保存、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`rg "theme-card|theme-button-primary|theme-button-secondary" -n src/pages src/components` 已无结果；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续扫描页面级裸色值、重复尺寸和详情 / 草稿预览重复业务结构；本轮 UI-only 未改 VM / selector / repository，未跑 `test:domain`。
+
+## 2026-05-30 | 组件治理 | 增加样式 token 扫描报告
+
+- 为什么改：
+  旧主题类清零后，下一步需要可见地追踪页面级裸色值和重复尺寸，否则后续 token 化会继续靠人工记忆找热点。
+- 改了什么：
+  新增 `scripts/report-style-tokens.mjs` 与 `npm run report:style-tokens`，非阻断扫描 `src/components` / `src/pages` 中的裸色值和 `px/rpx` 尺寸，并在组件系统文档记录使用方式。
+- 影响范围：
+  仅影响本地治理脚本、`package.json` 脚本入口和文档；不改小程序运行时代码、页面结构、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run report:style-tokens` 通过，当前报告显示详情页、草稿预览和 `RescueOwnerShared.scss` 是下一批热点；`npm run format`、`format:check`、`lint`、`typecheck` 均通过。
+- 下一步 / 遗留问题：
+  该脚本暂不接入 lint / preflight；先观察报告噪音，再按报告消化高频裸色值与重复尺寸。本轮未改业务逻辑，未跑 `test:domain`。
+
+## 2026-05-30 | 样式 token | 消化详情与草稿预览高频语义色
+
+- 为什么改：
+  `report:style-tokens` 显示详情页、草稿预览和 owner 共享样式是裸色值最集中的区域，旧 Figma 贴稿色仍然压在页面 SCSS 里。
+- 改了什么：
+  将这三处高频正文色、次级文字、弱文字、品牌色、状态色、边框色、账本轨道和分段背景替换为现有 CSS variables；保留图片遮罩、阴影、渐变末端和少量特殊底色，避免一次性视觉漂移过大。
+- 影响范围：
+  仅影响 `src/pages/rescue/detail/index.scss`、`src/pages/rescue/create/preview/index.scss`、`src/components/RescueOwnerShared.scss` 的样式 token 使用；不改组件 props、页面结构、导航、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run report:style-tokens` 显示裸色值从 `502` 降到 `377`；`npm run format`、`format:check`、`lint`、`typecheck`、`build:weapp`、`git diff --check` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续处理 `#fff / #ffffff`、特殊浅底色和重复尺寸；尺寸 token 需要更谨慎地按布局语义迁移。本轮未改业务逻辑，未跑 `test:domain`。
+
+## 2026-05-30 | 组件组织 | 业务组件源码迁入 rescue 目录
+
+- 为什么改：
+  文档已经定义 `ui / rescue / 页面内 components` 三层，但既有救助业务组件仍散在 `src/components` 根目录，目录结构没有真正承接治理规则。
+- 改了什么：
+  将 `DiscoverCaseCard`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 及其样式文件迁入 `src/components/rescue`，页面统一从 `components/rescue` barrel 引用，并同步组件系统文档。
+- 影响范围：
+  仅影响组件文件位置与 import 路径；不改组件 props、展示结构、详情跳转、联系方式半弹层、发现卡片、owner 时间线、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`build:weapp`、`git diff --check` 均通过；旧 `components/DiscoverCaseCard|RescueOwnerShared|RescueTimelineShared|SupportSheet` import 已无结果；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续从 `rescue/detail` 与 `rescue/create/preview` 中抽动物摘要、资金摘要、动作区等更细业务组件。本轮未改业务逻辑，未跑 `test:domain`。
+
+## 2026-05-30 | 草稿预览 | 删除已迁移后的旧内联样式
+
+- 为什么改：
+  草稿预览页已经复用 `RescueOwnerShared` 的摘要、动作、tab 和时间线组件，但页面 SCSS 仍保留大量旧内联组件选择器，增加后续 token 扫描噪音。
+- 改了什么：
+  将 `src/pages/rescue/create/preview/index.scss` 从旧的 784 行收缩到仅保留当前页面实际使用的弹层、底栏和 tab 面板样式；组件系统文档同步更新扫描基线。
+- 影响范围：
+  仅删除未使用页面样式和少量 token 化保留样式；不改草稿加载、保存草稿、发布记录、ActionSheet 保存、owner 共享组件、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run report:style-tokens` 显示裸色值降到 `334`、尺寸降到 `1525`；`npm run format`、`format:check`、`lint`、`typecheck`、`build:weapp` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续检查 `rescue/detail/index.scss` 的旧 guest / owner 残留选择器，并把仍在使用的结构进一步迁到 `components/rescue`。本轮未改业务逻辑，未跑 `test:domain`。
+
+## 2026-05-30 | 详情页 | 删除 owner 与时间线旧样式残留
+
+- 为什么改：
+  详情页已经使用 `components/rescue` 里的 owner 摘要 / 动作 / 时间线组件，但 `index.scss` 仍保留旧 `owner-summary`、`owner-actions`、`timeline-card` 样式块。
+- 改了什么：
+  删除详情页中确认未被 TSX 使用的旧 owner 摘要、owner 动作区、旧时间线卡、旧汇总行样式，并保留动态使用的 `owner-finish__side--cancel`。
+- 影响范围：
+  仅影响详情页未使用样式清理；不改 guest 当前结构、owner 共享组件、结束记录右滑栏、路由、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run report:style-tokens` 显示裸色值降到 `307`、尺寸降到 `1409`；`npm run format`、`format:check`、`lint`、`typecheck`、`build:weapp`、`git diff --check` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：
+  继续治理剩余裸色热点，尤其 `RescueOwnerShared.scss`、记录详情页和生产页；本轮未改业务逻辑，未跑 `test:domain`。
+
+## 2026-05-30 | 组件样式 | rescue 业务组件颜色 token 化
+
+- 为什么改：
+  `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已迁入业务组件目录，但样式仍保留一批裸色值，后续复用会放大治理成本。
+- 改了什么：
+  将三处组件里的文本、边框、状态点、卡片底色、弹层遮罩、底栏和水印色替换为现有 CSS variables，并同步组件系统文档中的扫描基线。
+- 影响范围：
+  仅影响 rescue 共享组件样式和治理文档；不改组件 props、页面结构、联系方式展示逻辑、时间线跳转、VM、selector、repository 或 CloudBase 链路。
+- 验证结果：
+  `npm run format`、`format:check`、`lint`、`typecheck`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 显示裸色值降到 `250`、尺寸降到 `1399`，上述三份组件 SCSS 裸色值为 `0`。
+- 下一步 / 遗留问题：
+  下一批继续治理页面级热点，优先从 `rescue/detail/index.scss`、记账 / 更新进展 / 记录详情和支持闭环页里抽语义 token；本轮未改业务逻辑，未跑 `test:domain`。

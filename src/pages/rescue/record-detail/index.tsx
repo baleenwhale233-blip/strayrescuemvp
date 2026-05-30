@@ -5,7 +5,7 @@ import { NavBar } from "../../../components/NavBar";
 import {
   getStoredReadonlyRecordDetail,
   type RescueReadonlyRecordDetail,
-} from "../../../components/RescueTimelineShared";
+} from "../../../components/rescue";
 import {
   loadCaseRecordDetail,
   type CaseRecordDetailVM,

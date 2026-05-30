@@ -1,6 +1,7 @@
 import { Image, Text, View } from "@tarojs/components";
-import evidenceCompleteIcon from "../assets/icons/evidence-complete-14.svg";
-import type { HomepageCaseCardVM } from "../domain/canonical/repository";
+import evidenceCompleteIcon from "../../assets/icons/evidence-complete-14.svg";
+import { ProgressBar, SurfaceCard } from "../ui";
+import type { HomepageCaseCardVM } from "../../domain/canonical/repository";
 import "./DiscoverCaseCard.scss";
 
 function getStatusEmoji(statusLabel: string) {
@@ -58,10 +59,6 @@ function getFundingToneClass(fundingStatusSummary: string) {
   return "discover-card__funding--pressure";
 }
 
-function getProgressWidth(percent: number) {
-  return `${Math.min(Math.max(percent, 0), 100)}%`;
-}
-
 export function DiscoverCaseCard({
   item,
   onTap,
@@ -70,7 +67,7 @@ export function DiscoverCaseCard({
   onTap?: () => void;
 }) {
   return (
-    <View className="discover-card theme-card" onTap={onTap}>
+    <SurfaceCard className="discover-card" interactive onTap={onTap}>
       <View className="discover-card__cover">
         {item.coverImageUrl ? (
           <Image
@@ -112,20 +109,11 @@ export function DiscoverCaseCard({
           </Text>
         </View>
 
-        <View className="discover-card__progress">
-          <View
-            className="discover-card__progress-advance"
-            style={{
-              width: getProgressWidth(
-                item.supportedProgressPercent + item.rescuerAdvanceProgressPercent,
-              ),
-            }}
-          />
-          <View
-            className="discover-card__progress-fill"
-            style={{ width: getProgressWidth(item.supportedProgressPercent) }}
-          />
-        </View>
+        <ProgressBar
+          className="discover-card__progress"
+          value={item.supportedProgressPercent}
+          secondaryValue={item.supportedProgressPercent + item.rescuerAdvanceProgressPercent}
+        />
 
         <View className="discover-card__ledger-meta">
           <View className="discover-card__ledger-meta-item">
@@ -147,6 +135,6 @@ export function DiscoverCaseCard({
           <Text className="discover-card__updated">{item.updatedAtLabel}</Text>
         </View>
       </View>
-    </View>
+    </SurfaceCard>
   );
 }

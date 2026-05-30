@@ -1,8 +1,9 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { Image, Input, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
-import { DiscoverCaseCard } from "../../components/DiscoverCaseCard";
+import { DiscoverCaseCard } from "../../components/rescue";
 import { NavBar } from "../../components/NavBar";
+import { EmptyState } from "../../components/ui";
 import searchIcon from "../../assets/icons/search-muted-18.svg";
 import {
   loadHomepageCaseCardVMs,
@@ -83,7 +84,14 @@ export default function DiscoverPage() {
       </View>
 
       <View className="discover-page__list">
-        {loading ? <Text className="discover-page__empty">正在加载记录...</Text> : null}
+        {loading ? (
+          <EmptyState
+            className="discover-page__empty"
+            iconName="fileText"
+            title="正在加载记录"
+            description="正在整理可以公开查看的救助档案。"
+          />
+        ) : null}
 
         {cards.map((item) => (
           <DiscoverCaseCard

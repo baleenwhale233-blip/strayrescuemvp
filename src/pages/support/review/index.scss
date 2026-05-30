@@ -6,21 +6,14 @@
 }
 
 .support-review-page__tabs {
-  display: flex;
-  gap: 0;
-  align-items: center;
-  padding: 4px;
   margin-top: 24px;
   background: rgba(226, 232, 240, 0.5);
   border-radius: 12px;
+  gap: 0;
 }
 
-.support-review-page__tab {
-  display: flex;
-  flex: 1;
+.support-review-page__tabs .ui-segmented-tabs__item {
   gap: 8px;
-  align-items: center;
-  justify-content: center;
   min-height: 40px;
   padding: 10px 16px;
   color: #666;
@@ -29,13 +22,12 @@
   line-height: 20px;
 }
 
-.support-review-page__tab--active {
+.support-review-page__tabs .ui-segmented-tabs__item--active {
   color: #f06418;
-  background: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.support-review-page__badge {
+.support-review-page__tabs .ui-segmented-tabs__badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -58,9 +50,9 @@
 
 .support-review-page__card {
   padding: 13px;
-  border-radius: 12px;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-color: var(--color-border-light);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
 }
 
 .support-review-page__card-top {
@@ -191,24 +183,7 @@
 }
 
 .support-review-page__empty {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 20px 16px;
   margin-top: 24px;
-  text-align: center;
-}
-
-.support-review-page__empty-title {
-  color: #1e1e1e;
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.support-review-page__empty-copy {
-  color: #666;
-  font-size: 12px;
-  line-height: 18px;
 }
 
 .support-review-page__manual {
@@ -217,6 +192,7 @@
 }
 
 .support-review-page__field {
+  --form-field-gap: 8px;
   margin-top: 24px;
 }
 
@@ -224,11 +200,10 @@
   margin-top: 0;
 }
 
-.support-review-page__label {
-  display: block;
-  margin-bottom: 8px;
+.support-review-page__field .ui-form-field__label {
   color: #334155;
   font-size: 14px;
+  font-weight: var(--font-weight-regular);
   line-height: 20px;
 }
 
@@ -275,13 +250,9 @@
 }
 
 .support-review-page__manual-bottom {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
   padding: 17px 16px 16px;
   background: rgba(255, 255, 255, 0.8);
-  border-top: 1px solid #e2e8f0;
+  border-top-color: #e2e8f0;
   backdrop-filter: blur(6px);
 }
 
@@ -291,18 +262,12 @@
   border-radius: 12px;
 }
 
-.support-review-page__submit-arrow {
+.support-review-page__submit .ui-button__icon {
   width: 19px;
   height: 16px;
-  margin-left: 8px;
 }
 
 @media (min-width: 768px) {
-  .support-review-page__manual-bottom {
-    display: flex;
-    justify-content: center;
-  }
-
   .support-review-page__submit {
     max-width: 390px;
   }

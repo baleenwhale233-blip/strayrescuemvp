@@ -2,6 +2,14 @@ import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import {
+  AppButton,
+  BottomActionBar,
+  EmptyState,
+  FormField,
+  SegmentedTabs,
+  SurfaceCard,
+} from "../../../components/ui";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
@@ -195,34 +203,24 @@ export default function SupportReviewPage() {
     <View key={reloadSeed} className="page-shell support-review-page">
       <NavBar showBack title="处理登记" />
 
-      <View className="support-review-page__tabs">
-        <View
-          className={`support-review-page__tab ${
-            activeTab === "pending" ? "support-review-page__tab--active" : ""
-          }`}
-          onTap={() => setActiveTab("pending")}
-        >
-          <Text>待处理登记</Text>
-          {activeTab === "pending" ? (
-            <View className="support-review-page__badge">
-              <Text>{pendingBadgeCount}</Text>
-            </View>
-          ) : null}
-        </View>
-        <View
-          className={`support-review-page__tab ${
-            activeTab === "manual" ? "support-review-page__tab--active" : ""
-          }`}
-          onTap={() => setActiveTab("manual")}
-        >
-          <Text>手动登记</Text>
-        </View>
-      </View>
+      <SegmentedTabs
+        className="support-review-page__tabs"
+        value={activeTab}
+        items={[
+          {
+            label: "待处理登记",
+            value: "pending",
+            badge: activeTab === "pending" ? `${pendingBadgeCount}` : undefined,
+          },
+          { label: "手动登记", value: "manual" },
+        ]}
+        onChange={(value) => setActiveTab(value as ReviewTab)}
+      />
 
       {activeTab === "pending" ? (
         <View className="support-review-page__list">
           {displayedPendingEntries.map((entry) => (
-            <View key={entry.id} className="support-review-page__card theme-card">
+            <SurfaceCard key={entry.id} className="support-review-page__card">
               <View className="support-review-page__card-top">
                 {entry.proofUrl ? (
                   <View className="support-review-page__proof">
@@ -274,22 +272,21 @@ export default function SupportReviewPage() {
                   </View>
                 </View>
               </View>
-            </View>
+            </SurfaceCard>
           ))}
 
           {!displayedPendingEntries.length ? (
-            <View className="support-review-page__empty theme-card">
-              <Text className="support-review-page__empty-title">暂时没有待处理登记</Text>
-              <Text className="support-review-page__empty-copy">
-                新的登记提交后，会先出现在这里等待处理。
-              </Text>
-            </View>
+            <EmptyState
+              className="support-review-page__empty"
+              iconName="handCoins"
+              title="暂时没有待处理登记"
+              description="新的登记提交后，会先出现在这里等待处理。"
+            />
           ) : null}
         </View>
       ) : (
         <View className="support-review-page__manual">
-          <View className="support-review-page__field">
-            <Text className="support-review-page__label">登记金额</Text>
+          <FormField className="support-review-page__field" label="登记金额">
             <View className="support-review-page__amount-wrap">
               <Text className="support-review-page__currency">¥</Text>
               <Input
@@ -300,31 +297,26 @@ export default function SupportReviewPage() {
                 onInput={(event) => setManualAmount(event.detail.value)}
               />
             </View>
-          </View>
+          </FormField>
 
-          <View className="support-review-page__field">
-            <Text className="support-review-page__label">登记人称呼</Text>
+          <FormField className="support-review-page__field" label="登记人称呼">
             <Input
               className="support-review-page__input"
               placeholder="微信 ID / 昵称等"
               value={manualSupporter}
               onInput={(event) => setManualSupporter(event.detail.value)}
             />
-          </View>
+          </FormField>
 
-          <View className="support-review-page__manual-bottom">
-            <View
-              className="support-review-page__submit theme-button-primary"
+          <BottomActionBar className="support-review-page__manual-bottom">
+            <AppButton
+              className="support-review-page__submit"
+              iconSrc={submitArrowIcon}
               onTap={handleSubmitManual}
             >
-              <Text>提交登记</Text>
-              <Image
-                className="support-review-page__submit-arrow"
-                mode="aspectFit"
-                src={submitArrowIcon}
-              />
-            </View>
-          </View>
+              提交登记
+            </AppButton>
+          </BottomActionBar>
         </View>
       )}
     </View>

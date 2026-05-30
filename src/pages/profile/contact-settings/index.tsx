@@ -1,8 +1,15 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { Input, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import {
+  AppButton,
+  BottomActionBar,
+  FormField,
+  SurfaceCard,
+  UploadStrip,
+} from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
@@ -223,9 +230,8 @@ export default function ContactSettingsPage() {
       <NavBar showBack title="联系信息" />
 
       <View className="contact-settings-page__body">
-        <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信号（二选一即可）</Text>
-          <View className="contact-settings-page__input-card">
+        <FormField label="微信号（二选一即可）">
+          <SurfaceCard className="contact-settings-page__input-card">
             <Input
               className="contact-settings-page__input"
               placeholder="请填写微信号"
@@ -233,35 +239,24 @@ export default function ContactSettingsPage() {
               value={wechatId}
               onInput={(event) => setWechatId(event.detail.value)}
             />
-          </View>
-        </View>
+          </SurfaceCard>
+        </FormField>
 
-        <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信二维码（二选一即可）</Text>
-          <View className="contact-settings-page__qr-trigger" onTap={handlePickQrImage}>
-            {qrImagePath ? (
-              <Image
-                className="contact-settings-page__qr-image"
-                mode="aspectFill"
-                src={qrImagePath}
-              />
-            ) : (
-              <>
-                <Image
-                  className="contact-settings-page__qr-icon"
-                  mode="aspectFit"
-                  src={addPhotoIcon}
-                />
-                <Text className="contact-settings-page__qr-text">添加照片</Text>
-              </>
-            )}
-          </View>
-        </View>
+        <FormField label="微信二维码（二选一即可）">
+          <UploadStrip
+            addIconSrc={addPhotoIcon}
+            addLabel="添加照片"
+            className="contact-settings-page__qr-upload"
+            images={qrImagePath ? [qrImagePath] : []}
+            maxImages={1}
+            onAdd={handlePickQrImage}
+            onPreview={handlePickQrImage}
+          />
+        </FormField>
 
-        <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">备注（选填）</Text>
+        <FormField label="备注（选填）">
           <TextareaWithOverlayPlaceholder
-            wrapperClassName="contact-settings-page__textarea-card"
+            wrapperClassName="contact-settings-page__textarea-card ui-surface-card"
             textareaClassName="contact-settings-page__textarea"
             placeholderClassName="contact-settings-page__textarea-placeholder"
             placeholder="如果需要联系您，有什么要提前说明的"
@@ -270,19 +265,18 @@ export default function ContactSettingsPage() {
             value={note}
             onInput={(event) => setNote(event.detail.value)}
           />
-        </View>
+        </FormField>
       </View>
 
-      <View className="contact-settings-page__bottom">
-        <View className="theme-button-primary contact-settings-page__submit" onTap={handleSubmit}>
-          <Text>保存</Text>
-          <Image
-            className="contact-settings-page__submit-icon"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
+      <BottomActionBar className="contact-settings-page__bottom">
+        <AppButton
+          className="contact-settings-page__submit"
+          iconSrc={submitArrowIcon}
+          onTap={handleSubmit}
+        >
+          保存
+        </AppButton>
+      </BottomActionBar>
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import { Image, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
-import { AppIcon } from "./AppIcon";
-import linkArrowOrangeIcon from "../assets/rescue-detail/link-arrow-orange-8.svg";
+import linkArrowOrangeIcon from "../../assets/rescue-detail/link-arrow-orange-8.svg";
+import { EmptyState, StatusBadge, SurfaceCard } from "../ui";
 import "./RescueTimelineShared.scss";
 
 export type RescueTimelineSharedKind = "expense" | "status" | "budget" | "support";
@@ -53,8 +53,19 @@ export function getStoredReadonlyRecordDetail() {
   return stored && typeof stored === "object" ? (stored as RescueReadonlyRecordDetail) : undefined;
 }
 
-function getBadgeClass(kind: RescueTimelineSharedKind) {
-  return `rescue-timeline__badge rescue-timeline__badge--${kind}`;
+function getBadgeTone(kind: RescueTimelineSharedKind) {
+  switch (kind) {
+    case "expense":
+      return "danger";
+    case "status":
+      return "info";
+    case "budget":
+      return "warning";
+    case "support":
+      return "success";
+    default:
+      return "neutral";
+  }
 }
 
 function getDotClass(kind: RescueTimelineSharedKind) {
@@ -89,13 +100,12 @@ export function RescueTimelineList({
 }) {
   if (!items.length) {
     return emptyState ? (
-      <View className="rescue-timeline__empty theme-card">
-        <View className="rescue-timeline__empty-icon">
-          <AppIcon name="fileText" size={24} />
-        </View>
-        <Text className="rescue-timeline__empty-title">{emptyState.title}</Text>
-        <Text className="rescue-timeline__empty-copy">{emptyState.description}</Text>
-      </View>
+      <EmptyState
+        className="rescue-timeline__empty"
+        description={emptyState.description}
+        iconName="fileText"
+        title={emptyState.title}
+      />
     ) : null;
   }
 
@@ -104,8 +114,8 @@ export function RescueTimelineList({
       {items.map((item) => (
         <View key={item.id} className="rescue-timeline__item">
           <View className={getDotClass(item.kind)} />
-          <View
-            className={`rescue-timeline__card theme-card ${
+          <SurfaceCard
+            className={`rescue-timeline__card ${
               canOpenReadonlyDetail(item) ? "rescue-timeline__card--clickable" : ""
             }`}
             onTap={() => {
@@ -116,13 +126,13 @@ export function RescueTimelineList({
           >
             <View className="rescue-timeline__header">
               <View className="rescue-timeline__badges">
-                <View className={getBadgeClass(item.kind)}>
-                  <Text>{item.badgeLabel}</Text>
-                </View>
+                <StatusBadge className="rescue-timeline__badge" tone={getBadgeTone(item.kind)}>
+                  {item.badgeLabel}
+                </StatusBadge>
                 {item.kind === "status" && item.statusLabel ? (
-                  <View className="rescue-timeline__badge rescue-timeline__badge--case">
-                    <Text>{item.statusLabel}</Text>
-                  </View>
+                  <StatusBadge className="rescue-timeline__badge" tone="brand">
+                    {item.statusLabel}
+                  </StatusBadge>
                 ) : null}
               </View>
               <Text className="rescue-timeline__time">{item.timestamp}</Text>
@@ -228,7 +238,7 @@ export function RescueTimelineList({
                 />
               </View>
             ) : null}
-          </View>
+          </SurfaceCard>
         </View>
       ))}
     </View>

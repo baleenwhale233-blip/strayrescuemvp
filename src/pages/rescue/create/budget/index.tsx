@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
+import { AppButton, SurfaceCard } from "../../../../components/ui";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import enterRescueIcon from "../../../../assets/rescue-create/step2-enter-icon.svg";
 import { getCurrentDraft, updateCurrentDraft } from "../../../../domain/canonical/repository";
@@ -85,7 +86,7 @@ export default function RescueCreateBudgetPage() {
         <Text className="rescue-budget-page__name">{name || "未命名档案"}</Text>
       </View>
 
-      <View className="rescue-budget-page__card theme-card">
+      <SurfaceCard className="rescue-budget-page__card">
         <Text className="rescue-budget-page__title">设定预估金额</Text>
         <Text className="rescue-budget-page__subtitle">
           请预估一下后续记录里大概会涉及多少费用？
@@ -119,17 +120,16 @@ export default function RescueCreateBudgetPage() {
             onInput={(event) => setBudgetNote(event.detail.value)}
           />
         </View>
-      </View>
+      </SurfaceCard>
 
       <View className="rescue-budget-page__footer">
-        <View className="theme-button-primary rescue-budget-page__button" onTap={handleNext}>
-          <Text>进入记录页</Text>
-          <Image
-            className="rescue-budget-page__button-icon"
-            mode="aspectFit"
-            src={enterRescueIcon}
-          />
-        </View>
+        <AppButton
+          className="rescue-budget-page__button"
+          iconSrc={enterRescueIcon}
+          onTap={handleNext}
+        >
+          进入记录页
+        </AppButton>
         <Text className="rescue-budget-page__footer-hint">
           稍后您可以在“我的记录”里随时调整此预估金额
         </Text>

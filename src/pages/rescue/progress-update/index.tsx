@@ -1,8 +1,15 @@
-import { Image, ScrollView, Text, View } from "@tarojs/components";
+import { Image, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import {
+  AppButton,
+  BottomActionBar,
+  FormField,
+  SurfaceCard,
+  UploadStrip,
+} from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -328,7 +335,7 @@ export default function RescueStatusUpdatePage() {
       <NavBar showBack title="更新进展" />
 
       <View className="rescue-update-page__body">
-        <View className="rescue-update-page__animal-card theme-card">
+        <SurfaceCard className="rescue-update-page__animal-card">
           <Image
             className="rescue-update-page__animal-cover"
             mode="aspectFill"
@@ -344,7 +351,7 @@ export default function RescueStatusUpdatePage() {
               {contextCard.rescueStartedAtLabel}
             </Text>
           </View>
-        </View>
+        </SurfaceCard>
 
         <View className="rescue-update-page__section">
           <View className="rescue-update-page__section-head">
@@ -371,8 +378,7 @@ export default function RescueStatusUpdatePage() {
           </View>
         </View>
 
-        <View className="rescue-update-page__field">
-          <Text className="rescue-update-page__label">进展详情描述</Text>
+        <FormField className="rescue-update-page__field" label="进展详情描述">
           <TextareaWithOverlayPlaceholder
             wrapperClassName="rescue-update-page__textarea-wrap"
             textareaClassName="rescue-update-page__textarea"
@@ -383,9 +389,9 @@ export default function RescueStatusUpdatePage() {
             value={description}
             onInput={(event) => setDescription(event.detail.value)}
           />
-        </View>
+        </FormField>
 
-        <View className="rescue-update-page__image-card theme-card">
+        <SurfaceCard className="rescue-update-page__image-card">
           <View className="rescue-update-page__image-head">
             <View className="rescue-update-page__image-title-wrap">
               <Image
@@ -398,48 +404,16 @@ export default function RescueStatusUpdatePage() {
             <Text className="rescue-update-page__image-limit">最多 9 张</Text>
           </View>
 
-          <View className="rescue-update-page__image-row">
-            <View className="rescue-update-page__image-trigger" onTap={handlePickImage}>
-              <Image
-                className="rescue-update-page__image-trigger-icon"
-                mode="aspectFit"
-                src={addPhotoIcon}
-              />
-              <Text className="rescue-update-page__image-trigger-text">添加照片</Text>
-            </View>
-
-            <ScrollView
-              className="rescue-update-page__image-scroll"
-              scrollX
-              enhanced
-              showScrollbar={false}
-            >
-              <View className="rescue-update-page__image-grid">
-                {imageUrls.map((image, index) => (
-                  <View
-                    key={`${image}-${index}`}
-                    className="rescue-update-page__image-item"
-                    onTap={() => handlePreviewImage(image)}
-                  >
-                    <Image className="rescue-update-page__image" mode="aspectFill" src={image} />
-                    <View
-                      className="rescue-update-page__image-remove"
-                      onTap={(event) => {
-                        event.stopPropagation();
-                        handleRemoveImage(index);
-                      }}
-                    >
-                      <Image
-                        className="rescue-update-page__image-remove-icon"
-                        mode="aspectFit"
-                        src={uploadDeleteIcon}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
+          <UploadStrip
+            addIconSrc={addPhotoIcon}
+            addLabel="添加照片"
+            className="rescue-update-page__image-strip"
+            images={imageUrls}
+            removeIconSrc={uploadDeleteIcon}
+            onAdd={handlePickImage}
+            onPreview={handlePreviewImage}
+            onRemove={handleRemoveImage}
+          />
 
           <View className="rescue-update-page__notice">
             <Image
@@ -451,28 +425,25 @@ export default function RescueStatusUpdatePage() {
               请至少上传一张照片，以确保护助信息真实性
             </Text>
           </View>
-        </View>
+        </SurfaceCard>
       </View>
 
-      <View className="rescue-update-page__bottom">
-        <View
-          className="theme-button-secondary rescue-update-page__bottom-cancel"
+      <BottomActionBar className="rescue-update-page__bottom">
+        <AppButton
+          className="rescue-update-page__bottom-cancel"
+          variant="secondary"
           onTap={handleCancel}
         >
-          <Text>取消</Text>
-        </View>
-        <View
-          className="theme-button-primary rescue-update-page__bottom-submit"
+          取消
+        </AppButton>
+        <AppButton
+          className="rescue-update-page__bottom-submit"
+          iconSrc={submitArrowIcon}
           onTap={handleSubmit}
         >
-          <Text>发布进展</Text>
-          <Image
-            className="rescue-update-page__bottom-submit-icon"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
+          发布进展
+        </AppButton>
+      </BottomActionBar>
     </View>
   );
 }

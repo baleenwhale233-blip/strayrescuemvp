@@ -1,7 +1,14 @@
-import { Image, Input, ScrollView, Text, View } from "@tarojs/components";
+import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidHide, useDidShow, usePageScroll, useRouter, useUnload } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import {
+  AppButton,
+  BottomActionBar,
+  FormField,
+  SurfaceCard,
+  UploadStrip,
+} from "../../../components/ui";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
@@ -512,7 +519,7 @@ export default function RescueExpensePage() {
       </View>
 
       <View className="rescue-expense-page__body">
-        <View className="rescue-expense-page__evidence theme-card">
+        <SurfaceCard className="rescue-expense-page__evidence">
           <View className="rescue-expense-page__section-copy">
             <Text className="rescue-expense-page__section-title">公共凭证</Text>
             <Text className="rescue-expense-page__section-desc">
@@ -520,52 +527,16 @@ export default function RescueExpensePage() {
             </Text>
           </View>
 
-          <View className="rescue-expense-page__upload-row">
-            <View className="rescue-expense-page__upload-trigger" onTap={handlePickEvidence}>
-              <Image
-                className="rescue-expense-page__upload-trigger-icon"
-                mode="aspectFit"
-                src={addPhotoIcon}
-              />
-              <Text className="rescue-expense-page__upload-trigger-text">添加照片</Text>
-            </View>
-
-            <ScrollView
-              className="rescue-expense-page__upload-scroll"
-              scrollX
-              enhanced
-              showScrollbar={false}
-            >
-              <View className="rescue-expense-page__upload-grid">
-                {publicEvidenceImages.map((image, index) => (
-                  <View
-                    key={`${image}-${index}`}
-                    className="rescue-expense-page__upload-item"
-                    onTap={() => handlePreviewEvidence(image)}
-                  >
-                    <Image
-                      className="rescue-expense-page__upload-image"
-                      mode="aspectFill"
-                      src={image}
-                    />
-                    <View
-                      className="rescue-expense-page__upload-remove"
-                      onTap={(event) => {
-                        event.stopPropagation();
-                        handleRemoveEvidence(index);
-                      }}
-                    >
-                      <Image
-                        className="rescue-expense-page__upload-remove-icon"
-                        mode="aspectFit"
-                        src={uploadDeleteIcon}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
+          <UploadStrip
+            addIconSrc={addPhotoIcon}
+            addLabel="添加照片"
+            className="rescue-expense-page__upload-strip"
+            images={publicEvidenceImages}
+            removeIconSrc={uploadDeleteIcon}
+            onAdd={handlePickEvidence}
+            onPreview={handlePreviewEvidence}
+            onRemove={handleRemoveEvidence}
+          />
 
           <View className="rescue-expense-page__note">
             <Image className="rescue-expense-page__note-icon" mode="aspectFit" src={noteInfoIcon} />
@@ -573,7 +544,7 @@ export default function RescueExpensePage() {
               一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
             </Text>
           </View>
-        </View>
+        </SurfaceCard>
 
         <View className="rescue-expense-page__details">
           <View className="rescue-expense-page__details-head">
@@ -598,7 +569,7 @@ export default function RescueExpensePage() {
             </View>
 
             {expenseLines.map((line, index) => (
-              <View key={line.id} className="rescue-expense-page__line theme-card">
+              <SurfaceCard key={line.id} className="rescue-expense-page__line">
                 <View className="rescue-expense-page__line-head">
                   <Text className="rescue-expense-page__line-index">
                     支出 {String(expenseLines.length - index).padStart(2, "0")}
@@ -615,8 +586,7 @@ export default function RescueExpensePage() {
                   </View>
                 </View>
 
-                <View className="rescue-expense-page__field">
-                  <Text className="rescue-expense-page__label">项目描述</Text>
+                <FormField className="rescue-expense-page__field" label="项目描述">
                   <Input
                     className="rescue-expense-page__input"
                     placeholder="例如：猫粮 5kg / 绝育费"
@@ -625,10 +595,9 @@ export default function RescueExpensePage() {
                       handleLineChange(line.id, "description", event.detail.value)
                     }
                   />
-                </View>
+                </FormField>
 
-                <View className="rescue-expense-page__field">
-                  <Text className="rescue-expense-page__label">金额 (¥)</Text>
+                <FormField className="rescue-expense-page__field" label="金额 (¥)">
                   <Input
                     className="rescue-expense-page__input"
                     type="digit"
@@ -636,23 +605,22 @@ export default function RescueExpensePage() {
                     value={line.amount}
                     onInput={(event) => handleLineChange(line.id, "amount", event.detail.value)}
                   />
-                </View>
-              </View>
+                </FormField>
+              </SurfaceCard>
             ))}
           </View>
         </View>
       </View>
 
-      <View className="rescue-expense-page__bottom">
-        <View className="theme-button-primary rescue-expense-page__submit" onTap={handleSubmit}>
-          <Text>确认并挂载至账本</Text>
-          <Image
-            className="rescue-expense-page__submit-arrow"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
+      <BottomActionBar className="rescue-expense-page__bottom">
+        <AppButton
+          className="rescue-expense-page__submit"
+          iconSrc={submitArrowIcon}
+          onTap={handleSubmit}
+        >
+          确认并挂载至账本
+        </AppButton>
+      </BottomActionBar>
     </View>
   );
 }

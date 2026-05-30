@@ -2,6 +2,7 @@ import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useRef, useState } from "react";
 import { NavBar } from "../../components/NavBar";
+import { AppButton, SurfaceCard } from "../../components/ui";
 import { createSubmissionGuard } from "../../utils/submissionGuard";
 import supportHistoryIcon from "../../assets/profile/support-history.svg";
 import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
@@ -329,38 +330,41 @@ export default function ProfilePage() {
               )}
             </View>
           </Button>
-          <Input
-            className="profile-page__name-input"
-            type="nickname"
-            maxlength={24}
-            placeholder="填写你的昵称"
-            placeholderStyle="color:#98A2B3;"
-            value={profileUser.nickName}
-            onInput={(event) =>
-              setProfileUser((current) => {
-                const nextUser = mergeProfileUser(current, {
-                  nickName: event.detail.value,
-                });
-                saveProfileUser(nextUser);
-                return nextUser;
-              })
-            }
-          />
-          <View
-            className={`theme-button-primary profile-page__save-button ${
-              savingProfile ? "profile-page__save-button--disabled" : ""
-            }`}
+          <SurfaceCard className="profile-page__name-card">
+            <Input
+              className="profile-page__name-input"
+              type="nickname"
+              maxlength={24}
+              placeholder="填写你的昵称"
+              placeholderStyle="color:#98A2B3;"
+              value={profileUser.nickName}
+              onInput={(event) =>
+                setProfileUser((current) => {
+                  const nextUser = mergeProfileUser(current, {
+                    nickName: event.detail.value,
+                  });
+                  saveProfileUser(nextUser);
+                  return nextUser;
+                })
+              }
+            />
+          </SurfaceCard>
+          <AppButton
+            className="profile-page__save-button"
+            loading={savingProfile}
+            loadingText="保存中"
             onTap={handleSaveProfile}
           >
-            <Text>{savingProfile ? "保存中" : "保存头像昵称"}</Text>
-          </View>
+            保存头像昵称
+          </AppButton>
         </View>
 
         <View className="profile-page__menu">
           {MENU_ITEMS.map((item) => (
-            <View
+            <SurfaceCard
               key={item.key}
               className="profile-page__menu-item"
+              interactive
               onTap={() => handleMenuTap(item.key)}
             >
               <View className="profile-page__menu-main">
@@ -370,7 +374,7 @@ export default function ProfilePage() {
                 <Text className="profile-page__menu-label">{item.label}</Text>
               </View>
               <Image className="profile-page__chevron" mode="aspectFit" src={chevronIcon} />
-            </View>
+            </SurfaceCard>
           ))}
         </View>
       </View>

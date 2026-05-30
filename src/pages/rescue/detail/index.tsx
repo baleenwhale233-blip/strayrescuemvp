@@ -1,7 +1,7 @@
 import { PageMeta, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useState } from "react";
-import { SupportSheet } from "../../../components/SupportSheet";
+import { SupportSheet } from "../../../components/rescue";
 import { DetailPageState } from "./components/DetailPageState";
 import { GuestDetail } from "./components/GuestDetail";
 import { OwnerDetail } from "./components/OwnerDetail";

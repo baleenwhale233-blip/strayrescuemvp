@@ -1,4 +1,5 @@
 import { Button, Image, Text, View } from "@tarojs/components";
+import { BottomActionBar } from "../../../../../components/ui";
 import shareMutedIcon from "../../../../../assets/rescue-detail/share-muted-18.svg";
 import type {
   OwnerFinishBarMode,
@@ -29,7 +30,7 @@ export function OwnerFinishSection({
   onStartFinish: () => void;
 }) {
   return (
-    <View className={`owner-finish owner-finish--${finishMode}`}>
+    <BottomActionBar className={`owner-finish owner-finish--${finishMode}`}>
       <View className="owner-finish__row">
         <Button
           className={`owner-finish__side owner-finish__side--${finishBar.sideAction}`}
@@ -64,6 +65,6 @@ export function OwnerFinishSection({
         )}
       </View>
       {finishBar.hint ? <Text className="owner-finish__hint">{finishBar.hint}</Text> : null}
-    </View>
+    </BottomActionBar>
   );
 }

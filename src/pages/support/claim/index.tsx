@@ -1,11 +1,17 @@
 import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
-import { AppIcon } from "../../../components/AppIcon";
 import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import {
+  AppButton,
+  BottomActionBar,
+  EmptyState,
+  FormField,
+  SurfaceCard,
+} from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -91,15 +97,12 @@ export default function SupportClaimPage() {
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="登记一笔" />
-        <View className="support-claim__state">
-          <View className="support-claim__state-icon">
-            <AppIcon name="handCoins" size={24} />
-          </View>
-          <Text className="support-claim__state-title">正在加载档案信息</Text>
-          <Text className="support-claim__state-copy">
-            先把档案卡片和登记表单准备好，请稍等片刻。
-          </Text>
-        </View>
+        <EmptyState
+          className="support-claim__state"
+          iconName="handCoins"
+          title="正在加载档案信息"
+          description="先把档案卡片和登记表单准备好，请稍等片刻。"
+        />
       </View>
     );
   }
@@ -111,15 +114,12 @@ export default function SupportClaimPage() {
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="登记一笔" />
-        <View className="support-claim__state">
-          <View className="support-claim__state-icon">
-            <AppIcon name="fileText" size={24} />
-          </View>
-          <Text className="support-claim__state-title">档案信息加载失败</Text>
-          <Text className="support-claim__state-copy">
-            当前没能拿到档案信息，你可以返回上一页后稍后再试。
-          </Text>
-        </View>
+        <EmptyState
+          className="support-claim__state"
+          iconName="fileText"
+          title="档案信息加载失败"
+          description="当前没能拿到档案信息，你可以返回上一页后稍后再试。"
+        />
       </View>
     );
   }
@@ -188,7 +188,7 @@ export default function SupportClaimPage() {
     >
       <NavBar showBack title="登记一笔" />
 
-      <View className="support-claim__case-card theme-card">
+      <SurfaceCard className="support-claim__case-card">
         <View className="support-claim__case-avatar-wrap">
           <Image
             className="support-claim__case-avatar"
@@ -207,10 +207,9 @@ export default function SupportClaimPage() {
             记录开始时间: {getRescueStartedAtLabel(detail)}
           </Text>
         </View>
-      </View>
+      </SurfaceCard>
 
-      <View className="support-claim__field">
-        <Text className="support-claim__label">登记金额</Text>
+      <FormField className="support-claim__field" label="登记金额">
         <View className="support-claim__single-input support-claim__single-input--amount">
           <Text className="support-claim__currency">¥</Text>
           <Input
@@ -221,19 +220,20 @@ export default function SupportClaimPage() {
             onInput={(event) => setAmount(event.detail.value)}
           />
         </View>
-      </View>
+      </FormField>
 
-      <View className="support-claim__field">
-        <Text className="support-claim__label">您的称呼</Text>
+      <FormField className="support-claim__field" label="您的称呼">
         <Input
           className="support-claim__text-input"
           value={nickname}
           onInput={(event) => setNickname(event.detail.value)}
         />
-      </View>
+      </FormField>
 
-      <View className="support-claim__field support-claim__field--upload">
-        <Text className="support-claim__label">相关截图/凭证</Text>
+      <FormField
+        className="support-claim__field support-claim__field--upload"
+        label="相关截图/凭证"
+      >
         <View className="support-claim__upload" onTap={handlePickImage}>
           {imagePath ? (
             <Image className="support-claim__upload-image" mode="aspectFill" src={imagePath} />
@@ -250,10 +250,9 @@ export default function SupportClaimPage() {
             </>
           )}
         </View>
-      </View>
+      </FormField>
 
-      <View className="support-claim__field">
-        <Text className="support-claim__label">备注</Text>
+      <FormField className="support-claim__field" label="备注">
         <TextareaWithOverlayPlaceholder
           wrapperClassName="support-claim__textarea-wrap"
           textareaClassName="support-claim__textarea"
@@ -264,14 +263,13 @@ export default function SupportClaimPage() {
           value={note}
           onInput={(event) => setNote(event.detail.value)}
         />
-      </View>
+      </FormField>
 
-      <View className="support-claim__bottom">
-        <View className="theme-button-primary support-claim__submit" onTap={handleSubmit}>
-          <Text>提交登记</Text>
-          <Image className="support-claim__submit-arrow" mode="aspectFit" src={submitArrowIcon} />
-        </View>
-      </View>
+      <BottomActionBar className="support-claim__bottom">
+        <AppButton className="support-claim__submit" iconSrc={submitArrowIcon} onTap={handleSubmit}>
+          提交登记
+        </AppButton>
+      </BottomActionBar>
     </View>
   );
 }

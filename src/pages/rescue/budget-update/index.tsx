@@ -3,6 +3,7 @@ import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { AppButton, BottomActionBar, FormField, SurfaceCard } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -268,7 +269,7 @@ export default function RescueBudgetUpdatePage() {
       <NavBar showBack title="追加预算" />
 
       <View className="rescue-budget-update-page__body">
-        <View className="rescue-budget-update-page__animal-card theme-card">
+        <SurfaceCard className="rescue-budget-update-page__animal-card">
           <Image
             className="rescue-budget-update-page__animal-cover"
             mode="aspectFill"
@@ -288,10 +289,9 @@ export default function RescueBudgetUpdatePage() {
               {contextCard.rescueStartedAtLabel}
             </Text>
           </View>
-        </View>
+        </SurfaceCard>
 
-        <View className="rescue-budget-update-page__field">
-          <Text className="rescue-budget-update-page__label">新预估总金额</Text>
+        <FormField className="rescue-budget-update-page__field" label="新预估总金额">
           <View className="rescue-budget-update-page__amount-input">
             <Text className="rescue-budget-update-page__amount-prefix">¥</Text>
             <Input
@@ -305,10 +305,9 @@ export default function RescueBudgetUpdatePage() {
           <Text className="rescue-budget-update-page__hint">
             当前已登记：{contextCard.supportedAmountLabel}
           </Text>
-        </View>
+        </FormField>
 
-        <View className="rescue-budget-update-page__field">
-          <Text className="rescue-budget-update-page__label">追加原因/说明</Text>
+        <FormField className="rescue-budget-update-page__field" label="追加原因/说明">
           <TextareaWithOverlayPlaceholder
             wrapperClassName="rescue-budget-update-page__textarea-wrap"
             textareaClassName="rescue-budget-update-page__textarea"
@@ -319,7 +318,7 @@ export default function RescueBudgetUpdatePage() {
             value={reason}
             onInput={(event) => setReason(event.detail.value)}
           />
-        </View>
+        </FormField>
 
         <View className="rescue-budget-update-page__notice">
           <Image
@@ -333,19 +332,15 @@ export default function RescueBudgetUpdatePage() {
         </View>
       </View>
 
-      <View className="rescue-budget-update-page__bottom">
-        <View
-          className="theme-button-primary rescue-budget-update-page__bottom-submit"
+      <BottomActionBar className="rescue-budget-update-page__bottom">
+        <AppButton
+          className="rescue-budget-update-page__bottom-submit"
+          iconSrc={submitArrowIcon}
           onTap={handleSubmit}
         >
-          <Text>确认追加并更新时间线</Text>
-          <Image
-            className="rescue-budget-update-page__bottom-submit-icon"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
+          确认追加并更新时间线
+        </AppButton>
+      </BottomActionBar>
     </View>
   );
 }

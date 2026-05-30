@@ -1,7 +1,7 @@
 .contact-settings-page {
   min-height: 100vh;
   padding-bottom: 128px;
-  background: #f8f6f6;
+  background: var(--color-bg-page);
 }
 
 .contact-settings-page .page-nav {
@@ -10,11 +10,11 @@
 
 .contact-settings-page .page-nav--system {
   margin-bottom: 0;
-  background: #ffffff;
+  background: var(--color-bg-card);
 }
 
 .contact-settings-page .page-nav__title {
-  color: #000000;
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-regular);
 }
 
@@ -25,61 +25,38 @@
   padding-top: 24px;
 }
 
-.contact-settings-page__field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contact-settings-page__label {
-  color: #334155;
-  font-size: 14px;
-  line-height: 20px;
-}
-
 .contact-settings-page__input-card {
   height: 48px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-none);
 }
 
 .contact-settings-page__input {
   width: 100%;
   height: 48px;
   padding: 0 17px;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 16px;
   line-height: 24px;
 }
 
-.contact-settings-page__qr-trigger {
-  display: flex;
+.contact-settings-page__qr-upload {
   width: 96px;
-  height: 96px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: #f8fafc;
-  border: 2px dashed #e2e8f0;
-  border-radius: 16px;
+  --upload-tile-size: 96px;
 }
 
-.contact-settings-page__qr-image {
-  width: 100%;
-  height: 100%;
+.contact-settings-page__qr-upload .ui-upload-strip__content {
+  gap: 0;
 }
 
-.contact-settings-page__qr-icon {
+.contact-settings-page__qr-upload .ui-upload-strip__add-icon {
   width: 22px;
   height: 20px;
 }
 
-.contact-settings-page__qr-text {
+.contact-settings-page__qr-upload .ui-upload-strip__add-copy {
   margin-top: 4px;
-  color: #94a3b8;
   font-size: 9px;
   line-height: 14px;
 }
@@ -88,9 +65,8 @@
   position: relative;
   min-height: 160px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-none);
 }
 
 .contact-settings-page__textarea-placeholder {
@@ -98,7 +74,7 @@
   top: 18px;
   right: 18px;
   left: 18px;
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 14px;
   line-height: 20px;
   pointer-events: none;
@@ -108,7 +84,7 @@
   width: 100%;
   min-height: 160px;
   padding: 18px;
-  color: #0f172a;
+  color: var(--color-text-primary);
   background: transparent;
   border: 0;
   font-size: 14px;
@@ -117,27 +93,23 @@
 }
 
 .contact-settings-page__bottom {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 20;
   padding: 17px 16px 16px;
   background: rgba(255, 255, 255, 0.8);
-  border-top: 1px solid #e2e8f0;
+  border-top-color: var(--color-border-light);
   backdrop-filter: blur(6px);
 }
 
-.contact-settings-page__submit {
-  gap: 8px;
-  min-height: 56px;
-  border-radius: 12px;
-  box-shadow:
-    0 10px 15px -3px rgba(236, 91, 19, 0.2),
-    0 4px 6px -4px rgba(236, 91, 19, 0.2);
+.contact-settings-page__bottom .ui-bottom-action-bar__inner {
+  max-width: none;
 }
 
-.contact-settings-page__submit-icon {
+.contact-settings-page__submit {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 12px;
+}
+
+.contact-settings-page__submit .ui-button__icon {
   width: 19px;
   height: 16px;
 }

@@ -2,7 +2,7 @@ import { View } from "@tarojs/components";
 import {
   RescueOwnerOverview,
   type RescueOwnerOverviewProps,
-} from "../../../../../components/RescueOwnerShared";
+} from "../../../../../components/rescue";
 
 export function OwnerOverviewSection({ overview }: { overview: RescueOwnerOverviewProps }) {
   return (

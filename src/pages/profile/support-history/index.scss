@@ -1,7 +1,7 @@
 .support-history-page {
   min-height: 100vh;
   padding-bottom: 32px;
-  background: #f8f6f6;
+  background: var(--color-bg-page);
 }
 
 .support-history-page .page-nav {
@@ -10,11 +10,11 @@
 
 .support-history-page .page-nav--system {
   margin-bottom: 0;
-  background: #ffffff;
+  background: var(--color-bg-card);
 }
 
 .support-history-page .page-nav__title {
-  color: #000000;
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-regular);
 }
 
@@ -25,20 +25,19 @@
   min-height: 62px;
   margin-top: 24px;
   padding: 17px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-none);
 }
 
 .support-history-page__summary-label {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 14px;
   font-weight: var(--font-weight-medium);
   line-height: 24px;
 }
 
 .support-history-page__summary-value {
-  color: #ec5b13;
+  color: var(--color-brand-primary);
   font-size: 18px;
   font-weight: var(--font-weight-bold);
   line-height: 28px;
@@ -47,7 +46,7 @@
 .support-history-page__section-title {
   display: block;
   margin-top: 16px;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 18px;
   font-weight: var(--font-weight-semibold);
   line-height: 28px;
@@ -65,18 +64,17 @@
   align-items: center;
   min-height: 91px;
   padding: 17px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-none);
 }
 
 .support-history-page__avatar {
   width: 56px;
   height: 56px;
   flex-shrink: 0;
-  background: #e2e8f0;
-  border: 1px solid #f1f5f9;
-  border-radius: 999px;
+  background: var(--color-bg-muted);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-circle);
 }
 
 .support-history-page__item-copy {
@@ -88,14 +86,14 @@
 }
 
 .support-history-page__item-title {
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 16px;
   font-weight: var(--font-weight-semibold);
   line-height: 24px;
 }
 
 .support-history-page__item-meta {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 14px;
   line-height: 20px;
 }
@@ -109,24 +107,4 @@
 
 .support-history-page__empty {
   padding: 28px 20px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  text-align: center;
-}
-
-.support-history-page__empty-title {
-  display: block;
-  color: #0f172a;
-  font-size: 16px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 24px;
-}
-
-.support-history-page__empty-copy {
-  display: block;
-  margin-top: 8px;
-  color: #64748b;
-  font-size: 14px;
-  line-height: 22px;
 }

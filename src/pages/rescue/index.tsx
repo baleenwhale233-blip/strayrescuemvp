@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import { NavBar } from "../../components/NavBar";
 import { SectionHeader } from "../../components/SectionHeader";
+import { AppButton, EmptyState, SurfaceCard } from "../../components/ui";
 import { hasCompleteRescuerContactProfile } from "../../data/rescuerContactProfile";
 import {
   caseIdToDraftId,
@@ -72,8 +73,9 @@ function ProjectListItem({
   const notice = compact ? undefined : getProjectNotice(project);
 
   return (
-    <View
-      className={`project-list-item theme-card${notice ? " project-list-item--with-notice" : ""}`}
+    <SurfaceCard
+      className={`project-list-item${notice ? " project-list-item--with-notice" : ""}`}
+      interactive
       onTap={() => onTap(project)}
     >
       <View className="project-list-item__main">
@@ -102,7 +104,7 @@ function ProjectListItem({
           <Text className="project-list-item__notice-text">{notice}</Text>
         </View>
       ) : null}
-    </View>
+    </SurfaceCard>
   );
 }
 
@@ -180,12 +182,12 @@ export default function RescuePage() {
     <View className="page-shell rescue-page">
       <NavBar title="我的记录" />
 
-      <View className="theme-button-primary rescue-page__primary-action" onTap={handleCreate}>
+      <AppButton className="rescue-page__primary-action" onTap={handleCreate}>
         <View className="rescue-page__primary-action-icon">
           <AppIcon name="plusCircle" size={24} variant="inverse" />
         </View>
         <Text>新建记录</Text>
-      </View>
+      </AppButton>
 
       <View className="rescue-page__section">
         <SectionHeader title="我的档案" badge={activeBadge} />
@@ -200,7 +202,11 @@ export default function RescuePage() {
               />
             ))
           ) : (
-            <Text className="rescue-page__empty">你还没有进行中的记录</Text>
+            <EmptyState
+              className="rescue-page__empty"
+              title="你还没有进行中的记录"
+              description="新建公开记录后，会显示在这里继续维护。"
+            />
           )}
         </View>
       </View>
@@ -218,7 +224,11 @@ export default function RescuePage() {
               />
             ))
           ) : (
-            <Text className="rescue-page__empty">当前没有草稿</Text>
+            <EmptyState
+              className="rescue-page__empty"
+              title="当前没有草稿"
+              description="未发布的记录会先保存在草稿箱。"
+            />
           )}
         </View>
       </View>

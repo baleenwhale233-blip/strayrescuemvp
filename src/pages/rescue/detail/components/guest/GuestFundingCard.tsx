@@ -1,11 +1,12 @@
 import { Image, Text, View } from "@tarojs/components";
 import infoMutedIcon from "../../../../../assets/rescue-detail/info-muted-13.svg";
+import { ProgressBar, SurfaceCard } from "../../../../../components/ui";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getFundingStatusText } from "../../detailViewModels";
 
 export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
   return (
-    <View className="detail-card theme-card">
+    <SurfaceCard className="detail-card">
       <View className="detail-card__head">
         <Text className="detail-card__title">记录资金状态</Text>
         <Image className="detail-card__info-icon" mode="aspectFit" src={infoMutedIcon} />
@@ -15,12 +16,7 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
         <Text className="detail-card__budget-text">总预算 {detail.ledger.targetAmountLabel}</Text>
       </View>
 
-      <View className="detail-card__progress">
-        <View
-          className="detail-card__progress-fill"
-          style={{ width: `${Math.min(detail.ledger.progressPercent, 100)}%` }}
-        />
-      </View>
+      <ProgressBar className="detail-card__progress" value={detail.ledger.progressPercent} />
 
       <View className="detail-card__metric">
         <View className="detail-card__metric-label">
@@ -53,6 +49,6 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
       <View className="detail-card__notice">
         <Text>{getFundingStatusText(detail)}</Text>
       </View>
-    </View>
+    </SurfaceCard>
   );
 }

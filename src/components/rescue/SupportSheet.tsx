@@ -1,7 +1,8 @@
 import { Image, ScrollView, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
-import type { SupportSheetData } from "../domain/canonical/types";
-import infoIcon from "../assets/support-sheet/info.svg";
+import type { SupportSheetData } from "../../domain/canonical/types";
+import infoIcon from "../../assets/support-sheet/info.svg";
+import { AppButton } from "../ui";
 import "./SupportSheet.scss";
 
 type SupportSheetProps = {
@@ -119,12 +120,9 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
           catchMove
           onTap={(event) => event.stopPropagation()}
         >
-          <View
-            className="theme-button-primary support-sheet__save-button"
-            onTap={handlePrimaryAction}
-          >
-            <Text>{hasPaymentQr ? "保存二维码" : hasWechatId ? "复制微信号" : "关闭"}</Text>
-          </View>
+          <AppButton className="support-sheet__save-button" onTap={handlePrimaryAction}>
+            {hasPaymentQr ? "保存二维码" : hasWechatId ? "复制微信号" : "关闭"}
+          </AppButton>
         </View>
       </View>
     </View>

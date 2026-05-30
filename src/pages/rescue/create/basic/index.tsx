@@ -5,6 +5,7 @@ import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
+import { AppButton } from "../../../../components/ui";
 import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
 import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
 import {
@@ -227,14 +228,13 @@ export default function RescueCreateBasicPage() {
       </View>
 
       <View className="rescue-create-page__footer">
-        <View className="theme-button-primary rescue-create-page__primary" onTap={handleNext}>
-          <Text>下一步：设定目标</Text>
-          <Image
-            className="rescue-create-page__primary-arrow"
-            mode="aspectFit"
-            src={nextArrowIcon}
-          />
-        </View>
+        <AppButton
+          className="rescue-create-page__primary"
+          iconSrc={nextArrowIcon}
+          onTap={handleNext}
+        >
+          下一步：设定目标
+        </AppButton>
         <Text className="rescue-create-page__footer-hint">
           所有内容都会保存在这条记录里，后续可继续补充明细和进展
         </Text>

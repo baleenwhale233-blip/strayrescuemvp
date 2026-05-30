@@ -11,7 +11,7 @@
   bottom: 8px;
   left: 16px;
   width: 2px;
-  background: #e2e8f0;
+  background: var(--color-border-light);
   transform: translateX(-50%);
   content: "";
 }
@@ -28,25 +28,25 @@
   z-index: 1;
   width: 12px;
   height: 12px;
-  border: 3px solid #fff;
+  border: 3px solid var(--color-bg-card);
   border-radius: 999px;
   transform: translateX(-50%);
 }
 
 .rescue-timeline__dot--expense {
-  background: #f76808;
+  background: var(--color-ledger-spent);
 }
 
 .rescue-timeline__dot--status {
-  background: #3b82f6;
+  background: var(--color-info);
 }
 
 .rescue-timeline__dot--budget {
-  background: #f59e0b;
+  background: var(--color-warning);
 }
 
 .rescue-timeline__dot--support {
-  background: #22c55e;
+  background: var(--color-success);
 }
 
 .rescue-timeline__card {
@@ -83,49 +83,25 @@
   min-width: 0;
 }
 
-.rescue-timeline__badge {
+.rescue-timeline__badge.ui-status-badge {
+  min-height: 20px;
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 12px;
   line-height: 16px;
 }
 
-.rescue-timeline__badge--status {
-  color: #2563eb;
-  background: #eff6ff;
-}
-
-.rescue-timeline__badge--case {
-  color: #ec5b13;
-  background: rgba(236, 91, 19, 0.1);
-}
-
-.rescue-timeline__badge--expense {
-  color: #dc2626;
-  background: #fef2f2;
-}
-
-.rescue-timeline__badge--budget {
-  color: #d97706;
-  background: #fffbeb;
-}
-
-.rescue-timeline__badge--support {
-  color: #16a34a;
-  background: #dcfce7;
-}
-
 .rescue-timeline__time,
 .rescue-timeline__link,
 .rescue-timeline__budget-label {
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 12px;
   line-height: 16px;
 }
 
 .rescue-timeline__title {
   display: block;
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 14px;
   line-height: 20px;
   overflow: hidden;
@@ -136,7 +112,7 @@
 
 .rescue-timeline__description {
   display: block;
-  color: #475569;
+  color: var(--color-text-secondary);
   font-size: 14px;
   line-height: 22.75px;
 }
@@ -159,20 +135,20 @@
 }
 
 .rescue-timeline__support-title {
-  color: #0f172a;
+  color: var(--color-text-primary);
   font-size: 14px;
   line-height: 20px;
 }
 
 .rescue-timeline__support-note {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 12px;
   line-height: 16px;
 }
 
 .rescue-timeline__support-amount {
   flex-shrink: 0;
-  color: #22c55e;
+  color: var(--color-success);
   font-family: var(--font-family-numeric);
   font-size: 18px;
   font-weight: var(--font-weight-bold);
@@ -181,7 +157,7 @@
 }
 
 .rescue-timeline__amount {
-  color: #ef4444;
+  color: var(--color-danger);
   font-family: var(--font-family-numeric);
   font-size: 18px;
   font-weight: var(--font-weight-bold);
@@ -189,7 +165,7 @@
 }
 
 .rescue-timeline__amount--income {
-  color: #22c55e;
+  color: var(--color-success);
 }
 
 .rescue-timeline__link-wrap {
@@ -207,7 +183,7 @@
 }
 
 .rescue-timeline__link {
-  color: #ec5b13;
+  color: var(--color-brand-primary);
 }
 
 .rescue-timeline__link-icon {
@@ -218,7 +194,7 @@
 .rescue-timeline__budget-panel {
   align-items: stretch;
   padding: 12px;
-  background: #f8fafc;
+  background: var(--color-bg-input);
   border-radius: 8px;
 }
 
@@ -237,12 +213,12 @@
 }
 
 .rescue-timeline__budget-value--muted {
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   text-decoration: line-through;
 }
 
 .rescue-timeline__budget-value--budget {
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 .rescue-timeline__images {
@@ -263,7 +239,7 @@
   position: relative;
   height: 96px;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--color-bg-subtle);
   border-radius: 8px;
 }
 
@@ -291,41 +267,13 @@
   right: 8px;
   bottom: 8px;
   padding: 2px 6px;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.4);
+  color: var(--color-brand-on-primary);
+  background: var(--color-overlay-strong);
   border-radius: 4px;
   font-size: 10px;
   line-height: 15px;
 }
 
 .rescue-timeline__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
   padding: 32px 20px;
-  text-align: center;
-}
-
-.rescue-timeline__empty-icon {
-  display: inline-flex;
-  width: 48px;
-  height: 48px;
-  align-items: center;
-  justify-content: center;
-  background: #fff1e8;
-  border-radius: 16px;
-}
-
-.rescue-timeline__empty-title {
-  color: #0f172a;
-  font-size: 18px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 28px;
-}
-
-.rescue-timeline__empty-copy {
-  color: #64748b;
-  font-size: 14px;
-  line-height: 22px;
 }

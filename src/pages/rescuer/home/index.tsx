@@ -1,8 +1,8 @@
 import { Image, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useState } from "react";
-import { DiscoverCaseCard } from "../../../components/DiscoverCaseCard";
-import { EmptyState } from "../../../components/ui";
+import { DiscoverCaseCard } from "../../../components/rescue";
+import { EmptyState, SurfaceCard } from "../../../components/ui";
 import { NavBar } from "../../../components/NavBar";
 import rescuerAvatarFallback from "../../../assets/detail/rescuer-avatar.png";
 import {
@@ -49,7 +49,7 @@ export default function RescuerHomePage() {
     <View className="page-shell rescuer-home-page">
       <NavBar showBack title="记录主页" />
 
-      <View className="rescuer-home-page__profile">
+      <SurfaceCard className="rescuer-home-page__profile">
         <Image
           className="rescuer-home-page__avatar"
           mode="aspectFill"
@@ -62,7 +62,7 @@ export default function RescuerHomePage() {
             {vm.rescuer.stats.verifiedReceiptCount} 张真实凭证
           </Text>
         </View>
-      </View>
+      </SurfaceCard>
 
       <View className="rescuer-home-page__list">
         {vm.cards.length ? (

@@ -1,0 +1,430 @@
+.rescue-owner-card,
+.rescue-owner-actions {
+  box-sizing: border-box;
+}
+
+.rescue-owner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 17px;
+}
+
+.rescue-owner-card__top,
+.rescue-owner-card__title-row,
+.rescue-owner-card__id-row,
+.rescue-owner-card__metric,
+.rescue-owner-card__metric-label,
+.rescue-owner-actions__primary,
+.rescue-owner-actions__wide,
+.rescue-owner-actions__primary-main,
+.rescue-owner-actions__wide-main,
+.rescue-owner-tabs,
+.rescue-owner-overview__latest-header,
+.rescue-owner-overview__latest-badges {
+  display: flex;
+  align-items: center;
+}
+
+.rescue-owner-card__top {
+  gap: 16px;
+}
+
+.rescue-owner-card__cover-wrap {
+  flex-shrink: 0;
+}
+
+.rescue-owner-card__cover {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.rescue-owner-card__copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.rescue-owner-card__title-row {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.rescue-owner-card__title {
+  color: var(--color-text-primary);
+  font-size: 20px;
+  font-weight: var(--font-weight-regular);
+  line-height: 28px;
+}
+
+.rescue-owner-card__status.ui-status-badge {
+  min-height: 20px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.rescue-owner-card__id-row {
+  gap: 6px;
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  line-height: 19.5px;
+}
+
+.rescue-owner-card__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.rescue-owner-card__copy-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.rescue-owner-card__ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rescue-owner-card__budget {
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 24px;
+  letter-spacing: 0.6px;
+}
+
+.rescue-owner-card__progress {
+  height: 12px;
+  background: var(--color-border-default);
+}
+
+.rescue-owner-card__progress .ui-progress-bar__secondary {
+  background: var(--color-ledger-pending);
+}
+
+.rescue-owner-card__progress .ui-progress-bar__value {
+  background: var(--color-brand-primary);
+}
+
+.rescue-owner-card__metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rescue-owner-card__metric {
+  justify-content: space-between;
+  min-height: 16px;
+  color: var(--color-text-primary);
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.rescue-owner-card__metric-label {
+  gap: 6px;
+}
+
+.rescue-owner-card__dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+.rescue-owner-card__dot--expense {
+  background: var(--color-border-default);
+}
+
+.rescue-owner-card__dot--support {
+  background: var(--color-brand-primary);
+}
+
+.rescue-owner-card__dot--balance {
+  background: var(--color-success);
+}
+
+.rescue-owner-card__dot--gap {
+  background: var(--color-danger);
+}
+
+.rescue-owner-actions {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.rescue-owner-actions__primary,
+.rescue-owner-actions__wide {
+  border-radius: 16px;
+}
+
+.rescue-owner-actions__primary {
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 20px 16px;
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-primary) 0%,
+    var(--color-ledger-balance) 100%
+  );
+  box-shadow: var(--shadow-cta);
+}
+
+.rescue-owner-actions__primary-main,
+.rescue-owner-actions__wide-main {
+  gap: 16px;
+}
+
+.rescue-owner-actions__primary-label {
+  color: var(--color-brand-on-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.rescue-owner-actions__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.rescue-owner-actions__card,
+.rescue-owner-actions__wide {
+  display: flex;
+  align-items: center;
+  background: var(--color-info-soft);
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.rescue-owner-actions__card {
+  min-height: 101px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px;
+}
+
+.rescue-owner-actions__card--purple {
+  background: var(--color-status-progress-bg);
+  border-color: var(--color-border-light);
+}
+
+.rescue-owner-actions__wide {
+  justify-content: space-between;
+  min-height: 74px;
+  padding: 17px;
+  grid-column: span 2;
+  background: var(--color-brand-primary-soft);
+  border-color: var(--color-brand-primary-border);
+}
+
+.rescue-owner-actions__icon,
+.rescue-owner-actions__icon--primary {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.rescue-owner-actions__budget-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background: var(--color-warning-soft);
+  border-radius: 12px;
+}
+
+.rescue-owner-actions__budget-icon {
+  width: 19px;
+  height: 18px;
+}
+
+.rescue-owner-actions__chevron-primary {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.rescue-owner-actions__chevron {
+  width: 7.4px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.rescue-owner-actions__card-title {
+  color: var(--color-text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.rescue-owner-actions__card-subtitle {
+  color: var(--color-text-tertiary);
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.rescue-owner-tabs {
+  gap: 8px;
+  margin-top: 16px;
+  padding: 4px;
+  background: var(--color-bg-segmented);
+  border-radius: 12px;
+}
+
+.rescue-owner-tabs .ui-segmented-tabs__item {
+  flex: 1;
+  padding: 8px 0;
+  color: var(--color-text-secondary);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.rescue-owner-tabs .ui-segmented-tabs__item--active {
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+}
+
+.rescue-owner-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rescue-owner-overview__about,
+.rescue-owner-overview__metric,
+.rescue-owner-overview__latest {
+  overflow: hidden;
+  padding: 17px;
+}
+
+.rescue-owner-overview__title,
+.rescue-owner-overview__metric-label {
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.rescue-owner-overview__paragraph {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 22.75px;
+}
+
+.rescue-owner-overview__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rescue-owner-overview__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 16px;
+}
+
+.rescue-owner-overview__metric-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.rescue-owner-overview__metric-icon--expense {
+  background: var(--color-danger-soft);
+}
+
+.rescue-owner-overview__metric-icon--income {
+  background: var(--color-success-soft);
+}
+
+.rescue-owner-overview__metric-icon-image {
+  width: 18px;
+  height: 18px;
+}
+
+.rescue-owner-overview__metric-value {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  line-height: 28px;
+}
+
+.rescue-owner-overview__metric-value--expense {
+  color: var(--color-danger);
+}
+
+.rescue-owner-overview__metric-value--income {
+  color: var(--color-success);
+}
+
+.rescue-owner-overview__latest-header {
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rescue-owner-overview__latest-badges {
+  gap: 4px;
+}
+
+.rescue-owner-overview__badge.ui-status-badge {
+  min-height: 20px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.rescue-owner-overview__time {
+  color: var(--color-text-tertiary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.rescue-owner-overview__latest-image-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-border-light);
+  border-radius: 8px;
+}
+
+.rescue-owner-overview__latest-image-wrap {
+  height: 164.6px;
+  margin-top: 12px;
+}
+
+.rescue-owner-overview__latest-image {
+  width: 100%;
+  height: 100%;
+}
+
+.rescue-owner-overview__watermark {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 2px 6px;
+  color: var(--color-brand-on-primary);
+  background: var(--color-overlay-strong);
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 15px;
+}

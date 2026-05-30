@@ -1,15 +1,16 @@
 import { Image, Text, View } from "@tarojs/components";
+import { ProgressBar, SegmentedTabs, StatusBadge, SurfaceCard } from "../ui";
 import { RescueTimelineList, type RescueTimelineSharedItem } from "./RescueTimelineShared";
-import ownerActionBudgetIcon from "../assets/rescue-detail/owner/action-budget.svg";
-import ownerActionChevronIcon from "../assets/rescue-detail/owner/action-chevron.svg";
-import ownerActionChevronPrimaryIcon from "../assets/rescue-detail/owner/action-chevron-primary.svg";
-import ownerActionExpenseIcon from "../assets/rescue-detail/owner/action-expense.svg";
-import ownerActionIncomeIcon from "../assets/rescue-detail/owner/action-income.svg";
-import ownerActionUpdateIcon from "../assets/rescue-detail/owner/action-update.svg";
-import ownerCopyIcon from "../assets/rescue-detail/owner/copy-muted.svg";
-import ownerEditIcon from "../assets/rescue-detail/owner/edit-muted.svg";
-import summaryExpenseIcon from "../assets/rescue-detail/summary-expense-18.svg";
-import summaryIncomeIcon from "../assets/rescue-detail/summary-income-17.svg";
+import ownerActionBudgetIcon from "../../assets/rescue-detail/owner/action-budget.svg";
+import ownerActionChevronIcon from "../../assets/rescue-detail/owner/action-chevron.svg";
+import ownerActionChevronPrimaryIcon from "../../assets/rescue-detail/owner/action-chevron-primary.svg";
+import ownerActionExpenseIcon from "../../assets/rescue-detail/owner/action-expense.svg";
+import ownerActionIncomeIcon from "../../assets/rescue-detail/owner/action-income.svg";
+import ownerActionUpdateIcon from "../../assets/rescue-detail/owner/action-update.svg";
+import ownerCopyIcon from "../../assets/rescue-detail/owner/copy-muted.svg";
+import ownerEditIcon from "../../assets/rescue-detail/owner/edit-muted.svg";
+import summaryExpenseIcon from "../../assets/rescue-detail/summary-expense-18.svg";
+import summaryIncomeIcon from "../../assets/rescue-detail/summary-income-17.svg";
 import "./RescueOwnerShared.scss";
 
 export type RescueOwnerTab = "overview" | "detail";
@@ -78,7 +79,7 @@ export function RescueOwnerSummaryCard({
   onEditCover,
 }: RescueOwnerSummaryCardProps) {
   return (
-    <View className="rescue-owner-card theme-card">
+    <SurfaceCard className="rescue-owner-card">
       <View className="rescue-owner-card__top">
         <View className="rescue-owner-card__cover-wrap" onTap={onEditCover}>
           <Image className="rescue-owner-card__cover" mode="aspectFill" src={coverImage} />
@@ -95,7 +96,9 @@ export function RescueOwnerSummaryCard({
                 />
               </View>
             ) : null}
-            <Text className="rescue-owner-card__status">{statusLabel}</Text>
+            <StatusBadge className="rescue-owner-card__status" tone="brand">
+              {statusLabel}
+            </StatusBadge>
           </View>
           <View className="rescue-owner-card__id-row">
             <Text>ID: {publicCaseId}</Text>
@@ -112,16 +115,11 @@ export function RescueOwnerSummaryCard({
 
       <View className="rescue-owner-card__ledger">
         <Text className="rescue-owner-card__budget">总预算 {budgetLabel}</Text>
-        <View className="rescue-owner-card__progress">
-          <View
-            className="rescue-owner-card__progress-advance"
-            style={{ width: `${Math.min(advanceProgressPercent ?? 0, 100)}%` }}
-          />
-          <View
-            className="rescue-owner-card__progress-fill"
-            style={{ width: `${Math.min(progressPercent, 100)}%` }}
-          />
-        </View>
+        <ProgressBar
+          className="rescue-owner-card__progress"
+          value={progressPercent}
+          secondaryValue={advanceProgressPercent}
+        />
         <View className="rescue-owner-card__metrics">
           <View className="rescue-owner-card__metric">
             <View className="rescue-owner-card__metric-label">
@@ -152,7 +150,7 @@ export function RescueOwnerSummaryCard({
           </View>
         </View>
       </View>
-    </View>
+    </SurfaceCard>
   );
 }
 
@@ -186,7 +184,7 @@ export function RescueOwnerQuickActions({
       </View>
 
       <View className="rescue-owner-actions__grid">
-        <View className="rescue-owner-actions__card theme-card" onTap={onStatus}>
+        <SurfaceCard className="rescue-owner-actions__card" onTap={onStatus}>
           <Image
             className="rescue-owner-actions__icon"
             mode="aspectFit"
@@ -194,10 +192,10 @@ export function RescueOwnerQuickActions({
           />
           <Text className="rescue-owner-actions__card-title">更新进展</Text>
           <Text className="rescue-owner-actions__card-subtitle">添加照片和阶段信息</Text>
-        </View>
+        </SurfaceCard>
 
-        <View
-          className="rescue-owner-actions__card rescue-owner-actions__card--purple theme-card"
+        <SurfaceCard
+          className="rescue-owner-actions__card rescue-owner-actions__card--purple"
           onTap={onIncome}
         >
           <Image
@@ -207,9 +205,9 @@ export function RescueOwnerQuickActions({
           />
           <Text className="rescue-owner-actions__card-title">处理登记</Text>
           <Text className="rescue-owner-actions__card-subtitle">处理线下转账或外部登记</Text>
-        </View>
+        </SurfaceCard>
 
-        <View className="rescue-owner-actions__wide theme-card" onTap={onBudget}>
+        <SurfaceCard className="rescue-owner-actions__wide" onTap={onBudget}>
           <View className="rescue-owner-actions__wide-main">
             <View className="rescue-owner-actions__budget-wrap">
               <Image
@@ -225,7 +223,7 @@ export function RescueOwnerQuickActions({
             mode="aspectFit"
             src={ownerActionChevronIcon}
           />
-        </View>
+        </SurfaceCard>
       </View>
     </View>
   );
@@ -239,24 +237,15 @@ export function RescueOwnerTabs({
   onChange: (tab: RescueOwnerTab) => void;
 }) {
   return (
-    <View className="rescue-owner-tabs">
-      <View
-        className={`rescue-owner-tabs__item ${
-          activeTab === "overview" ? "rescue-owner-tabs__item--active" : ""
-        }`}
-        onTap={() => onChange("overview")}
-      >
-        <Text>记录摘要</Text>
-      </View>
-      <View
-        className={`rescue-owner-tabs__item ${
-          activeTab === "detail" ? "rescue-owner-tabs__item--active" : ""
-        }`}
-        onTap={() => onChange("detail")}
-      >
-        <Text>记录详情</Text>
-      </View>
-    </View>
+    <SegmentedTabs
+      className="rescue-owner-tabs"
+      value={activeTab}
+      items={[
+        { label: "记录摘要", value: "overview" },
+        { label: "记录详情", value: "detail" },
+      ]}
+      onChange={(value) => onChange(value as RescueOwnerTab)}
+    />
   );
 }
 
@@ -268,17 +257,17 @@ export function RescueOwnerOverview({
 }: RescueOwnerOverviewProps) {
   return (
     <View className="rescue-owner-overview">
-      <View className="rescue-owner-overview__about theme-card">
+      <SurfaceCard className="rescue-owner-overview__about">
         <Text className="rescue-owner-overview__title">关于这条记录</Text>
         {paragraphs.map((paragraph) => (
           <Text key={paragraph} className="rescue-owner-overview__paragraph">
             {paragraph}
           </Text>
         ))}
-      </View>
+      </SurfaceCard>
 
       <View className="rescue-owner-overview__metrics">
-        <View className="rescue-owner-overview__metric theme-card">
+        <SurfaceCard className="rescue-owner-overview__metric">
           <View className="rescue-owner-overview__metric-icon rescue-owner-overview__metric-icon--expense">
             <Image
               className="rescue-owner-overview__metric-icon-image"
@@ -290,9 +279,9 @@ export function RescueOwnerOverview({
           <Text className="rescue-owner-overview__metric-value rescue-owner-overview__metric-value--expense">
             {expenseLabel}
           </Text>
-        </View>
+        </SurfaceCard>
 
-        <View className="rescue-owner-overview__metric theme-card">
+        <SurfaceCard className="rescue-owner-overview__metric">
           <View className="rescue-owner-overview__metric-icon rescue-owner-overview__metric-icon--income">
             <Image
               className="rescue-owner-overview__metric-icon-image"
@@ -304,19 +293,19 @@ export function RescueOwnerOverview({
           <Text className="rescue-owner-overview__metric-value rescue-owner-overview__metric-value--income">
             {incomeLabel}
           </Text>
-        </View>
+        </SurfaceCard>
       </View>
 
       {latestStatus ? (
-        <View className="rescue-owner-overview__latest theme-card">
+        <SurfaceCard className="rescue-owner-overview__latest">
           <View className="rescue-owner-overview__latest-header">
             <View className="rescue-owner-overview__latest-badges">
-              <Text className="rescue-owner-overview__badge rescue-owner-overview__badge--status">
+              <StatusBadge className="rescue-owner-overview__badge" tone="info">
                 最新进展
-              </Text>
-              <Text className="rescue-owner-overview__badge rescue-owner-overview__badge--case">
+              </StatusBadge>
+              <StatusBadge className="rescue-owner-overview__badge" tone="brand">
                 {latestStatus.statusLabel}
-              </Text>
+              </StatusBadge>
             </View>
             <Text className="rescue-owner-overview__time">{latestStatus.timestamp}</Text>
           </View>
@@ -331,7 +320,7 @@ export function RescueOwnerOverview({
               <Text className="rescue-owner-overview__watermark">透明账本·严禁盗用</Text>
             </View>
           ) : null}
-        </View>
+        </SurfaceCard>
       ) : null}
     </View>
   );

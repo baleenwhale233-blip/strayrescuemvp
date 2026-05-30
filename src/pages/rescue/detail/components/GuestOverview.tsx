@@ -1,5 +1,6 @@
 import { Image, Text, View } from "@tarojs/components";
 import summaryExpenseIcon from "../../../../assets/rescue-detail/summary-expense-18.svg";
+import { StatusBadge, SurfaceCard } from "../../../../components/ui";
 import summaryIncomeIcon from "../../../../assets/rescue-detail/summary-income-17.svg";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import {
@@ -16,7 +17,7 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
 
   return (
     <View className="guest-tab-content">
-      <View className="guest-section-card theme-card">
+      <SurfaceCard className="guest-section-card">
         <Text className="guest-section-card__eyebrow">关于我</Text>
         <View className="guest-section-card__paragraphs">
           {paragraphs.map((paragraph) => (
@@ -25,10 +26,10 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
             </Text>
           ))}
         </View>
-      </View>
+      </SurfaceCard>
 
       <View className="guest-overview-metrics">
-        <View className="guest-metric-card theme-card">
+        <SurfaceCard className="guest-metric-card">
           <View className="guest-metric-card__icon guest-metric-card__icon--expense">
             <Image
               className="guest-metric-card__icon-image"
@@ -40,9 +41,9 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
           <Text className="guest-metric-card__value guest-metric-card__value--expense">
             {formatSignedAmount(detail.ledger.confirmedExpenseAmountLabel, "-")}
           </Text>
-        </View>
+        </SurfaceCard>
 
-        <View className="guest-metric-card theme-card">
+        <SurfaceCard className="guest-metric-card">
           <View className="guest-metric-card__icon guest-metric-card__icon--income">
             <Image
               className="guest-metric-card__icon-image"
@@ -54,19 +55,19 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
           <Text className="guest-metric-card__value guest-metric-card__value--income">
             {formatSignedAmount(detail.ledger.supportedAmountLabel, "+")}
           </Text>
-        </View>
+        </SurfaceCard>
       </View>
 
       {latestItem ? (
-        <View className="guest-section-card theme-card">
+        <SurfaceCard className="guest-section-card">
           <View className="guest-section-card__header">
             <View className="guest-section-card__badges">
-              <View className="guest-section-card__badge guest-section-card__badge--status">
-                <Text>最新状态</Text>
-              </View>
-              <View className="guest-section-card__badge guest-section-card__badge--case">
-                <Text>{detail.statusLabel}</Text>
-              </View>
+              <StatusBadge className="guest-section-card__badge" tone="info">
+                最新状态
+              </StatusBadge>
+              <StatusBadge className="guest-section-card__badge" tone="brand">
+                {detail.statusLabel}
+              </StatusBadge>
             </View>
             <Text className="guest-section-card__time">{latestItem.timestampLabel}</Text>
           </View>
@@ -85,7 +86,7 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
               <Text className="guest-section-card__watermark">透明账本·严禁盗用</Text>
             </View>
           ) : null}
-        </View>
+        </SurfaceCard>
       ) : null}
     </View>
   );

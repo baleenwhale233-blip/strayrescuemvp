@@ -96,7 +96,7 @@
 
 放救助业务展示组件。它们可以接收页面组装后的 VM 或展示 props，但不能自己请求数据。
 
-当前先通过 barrel 暴露既有组件：
+当前已承接既有救助业务组件源码：
 
 - `DiscoverCaseCard`
 - `RescueOwnerShared`
@@ -256,6 +256,158 @@
 
 - 扩展 form / bottomActionBar / sheet / upload 等组件 token
 - 新增 `src/components/ui` 基础组件目录
-- 新增 `src/components/rescue` barrel，先承接既有救助业务组件
-- 将记录主页空态迁移到 `EmptyState`
+- 新增并落地 `src/components/rescue` 业务组件目录，承接 `DiscoverCaseCard`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet`
+- 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
+- `src/pages` 与 `src/components` 当前已清掉直接 `theme-card` / `theme-button-primary` / `theme-button-secondary` 引用；后续新增页面优先从 `src/components/ui` 组合，不再直接依赖旧全局主题类
+- `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已完成首轮颜色 token 化，业务共享组件不再新增裸色值
+- `UploadStrip` 已支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖联系方式单图二维码与生产页多图凭证场景
+- 新增非阻断扫描入口 `npm run report:style-tokens`，用于报告 `src/components` 与 `src/pages` 中剩余裸色值和重复 `px/rpx` 尺寸
+
+下一阶段重点：
+
+- 继续减少页面级 SCSS 中的裸色值、重复尺寸和一次性卡片结构
+- 将已在详情 / 草稿预览反复出现的动物摘要、资金摘要、动作区和时间线结构逐步晋升到 `src/components/rescue`
+- 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
+- 当前 `report:style-tokens` 基线：裸色值 `250`、`px/rpx` 尺寸 `1399`；颜色热点集中在 `rescue/detail/index.scss`、记录生产页和支持闭环页，`src/components/rescue` 里的 owner / timeline / support sheet 已清掉裸色值
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
+
+2026-05-30 已完成的首轮页面迁移：
+
+- 生产页：记账 / 更新进展 / 追加预算已接入 `FormField`、`UploadStrip`、`BottomActionBar`、`AppButton`、`SurfaceCard`
+- 支持闭环页：登记一笔 / 处理登记已接入 `FormField`、`SegmentedTabs`、`EmptyState`、`BottomActionBar`、`SurfaceCard`
+- 发现页：案例卡资金条已接入 `ProgressBar`，loading 态已接入 `EmptyState`，卡片样式所有权回收到 `DiscoverCaseCard`
+- 发现 / 记录主页共用案例卡：`DiscoverCaseCard` 外壳已接入 `SurfaceCard`
+- 详情页：客态 / 主态 tab、资金条、badge、页面态、底部操作栏和卡片外壳已逐步接入 UI 组件
+- 工作台：列表卡片已接入 `SurfaceCard`，新建记录按钮接入 `AppButton`，档案 / 草稿空态接入 `EmptyState`
+- 我的页：昵称输入外壳和功能入口行已接入 `SurfaceCard`，头像昵称保存接入 `AppButton`
+- 支持足迹：汇总卡和登记记录列表卡已接入 `SurfaceCard`，空态接入 `EmptyState`
+- 联系方式设置：字段标签接入 `FormField`，二维码上传接入单图 `UploadStrip`，保存区接入 `BottomActionBar + AppButton`
+
+2026-05-30 记账页第一刀迁移：
+
+- `src/pages/rescue/expense/index.tsx` 公共凭证上传区迁移到 `UploadStrip`
+- 支出明细输入项迁移到 `FormField`
+- 底部固定提交区迁移到 `BottomActionBar + AppButton`
+- 保留原有图片预览、删除、草稿缓存、主态 / 草稿提交和本地 fallback 逻辑
+
+2026-05-30 更新进展页第一刀迁移：
+
+- `src/pages/rescue/progress-update/index.tsx` 近况影像上传区迁移到 `UploadStrip`
+- 进展详情描述标签迁移到 `FormField`
+- 底部取消 / 发布操作迁移到 `BottomActionBar + AppButton`
+- 保留原有阶段选择、图片预览、删除、草稿写入、远端写入和本地 fallback 逻辑
+
+2026-05-30 追加预算页第一刀迁移：
+
+- `src/pages/rescue/budget-update/index.tsx` 金额与说明字段迁移到 `FormField`
+- 底部固定提交区迁移到 `BottomActionBar + AppButton`
+- 保留原有预算金额解析、草稿预算事件、远端预算调整和本地 fallback 逻辑
+
+2026-05-30 生产高频页卡片外壳迁移：
+
+- `src/pages/rescue/expense/index.tsx` 公共凭证卡和支出明细卡迁移到 `SurfaceCard`
+- `src/pages/rescue/progress-update/index.tsx` 动物摘要卡和影像记录卡迁移到 `SurfaceCard`
+- `src/pages/rescue/budget-update/index.tsx` 动物摘要卡迁移到 `SurfaceCard`
+- 记账 / 更新进展 / 追加预算三页当前不再直接引用 `theme-card` / `theme-button-primary`
+- 保留原有图片上传、支出明细、阶段选择、预算提交、草稿写入和远端写链路
+
+2026-05-30 支持登记 / 处理登记首批迁移：
+
+- `src/pages/support/claim/index.tsx` loading/error 状态迁移到 `EmptyState`
+- 支持登记金额、称呼、凭证和备注标签迁移到 `FormField`
+- 支持登记底部提交迁移到 `BottomActionBar + AppButton`
+- `src/pages/support/review/index.tsx` tab 迁移到 `SegmentedTabs`，空态迁移到 `EmptyState`
+- 手动登记金额、称呼和底部提交迁移到 `FormField` / `BottomActionBar + AppButton`
+- 保留原有支持凭证上传、远端登记、处理登记、手动登记和成功反馈逻辑
+
+2026-05-30 支持闭环卡片外壳迁移：
+
+- `src/pages/support/claim/index.tsx` 的案例摘要卡迁移到 `SurfaceCard`
+- `src/pages/support/review/index.tsx` 的待处理登记卡迁移到 `SurfaceCard`
+- 保留原有登记提交、待处理确认 / 未匹配、凭证展示和手动登记逻辑
+
+2026-05-30 发现页首批迁移：
+
+- `src/pages/discover/index.tsx` 加载态迁移到 `EmptyState`
+- `DiscoverCaseCard` 资金条迁移到 `ProgressBar`
+- 移除发现页内重复的 `discover-card` 样式副本，由 `src/components/DiscoverCaseCard.scss` 统一持有卡片样式
+- 保留原有首页案例读取、案例 ID 搜索和客态详情跳转逻辑
+
+2026-05-30 发现 / 记录主页共用案例卡外壳迁移：
+
+- `DiscoverCaseCard` 外层从 `theme-card` 迁移到 `SurfaceCard`
+- 资金条继续使用 `ProgressBar`
+- 卡片颜色、边框、账本点位和状态色改为 CSS variables
+- 发现页和记录主页继续共用同一张业务案例卡，不改列表读取或详情跳转逻辑
+
+2026-05-30 详情页子组件首批迁移：
+
+- 客态详情 tab 迁移到 `SegmentedTabs`
+- 主态详情共享 tab `RescueOwnerTabs` 迁移到 `SegmentedTabs`
+- 客态资金卡和主态动物资金卡的资金条迁移到 `ProgressBar`
+- 详情页 loading / error 页面态迁移到 `EmptyState + AppButton`
+- 保留原有详情加载、分享、SupportSheet、owner 编辑、跳转和时间线展示逻辑
+
+2026-05-30 详情页 badge / 时间线空态迁移：
+
+- 客态概览最新状态 badge 迁移到 `StatusBadge`
+- 共享时间线记录类型 badge 迁移到 `StatusBadge`
+- 共享时间线空态迁移到 `EmptyState`
+- 清理详情页中已无 JSX 引用的旧客态时间线样式
+- 保留原有时间线详情跳转、状态点、图片水印和预算 / 支持展示逻辑
+
+2026-05-30 主态详情 badge 与旧时间线样式收口：
+
+- 主态动物摘要卡状态标签迁移到 `StatusBadge`
+- 主态概览最新进展 badge 迁移到 `StatusBadge`
+- 清理 `RescueOwnerShared.scss` 中已被 `RescueTimelineShared` 替代的旧 owner timeline 样式
+- 保留原有主态时间线数据映射、只读详情跳转、预算 / 进展 / 支持展示逻辑
+
+2026-05-30 详情页底部操作栏迁移：
+
+- 客态详情底部操作栏外壳迁移到 `BottomActionBar`
+- 客态登记一笔 / 查看联系方式操作迁移到 `AppButton`
+- 主态分享 / 结束记录底栏外壳迁移到 `BottomActionBar`
+- 保留微信原生 `Button openType="share"` 和主态右滑结束交互，避免影响分享与结束确认状态机
+
+2026-05-30 详情页卡片外壳迁移：
+
+- 客态资金卡、记录维护者卡、概览卡和指标卡外壳迁移到 `SurfaceCard`
+- 主态动物摘要卡、快捷动作卡、概览卡和指标卡外壳迁移到 `SurfaceCard`
+- 共享时间线记录卡外壳迁移到 `SurfaceCard`
+- 清空详情页相关组件中的 `theme-card` 直接引用，卡片基础样式统一由 UI 组件提供
+
+2026-05-30 工作台列表模板迁移：
+
+- `src/pages/rescue/index.tsx` 的工作台列表项外壳迁移到 `SurfaceCard`
+- 新建记录入口迁移到 `AppButton`
+- 我的档案和草稿箱空态迁移到 `EmptyState`
+- 保留原有联系方式前置校验、工作台 VM、草稿预览跳转和主态详情跳转逻辑
+
+2026-05-30 支持足迹列表模板迁移：
+
+- `src/pages/profile/support-history/index.tsx` 的总计登记卡迁移到 `SurfaceCard`
+- 登记记录列表项迁移到 `SurfaceCard`
+- 无记录空态迁移到 `EmptyState`
+- 保留原有 `loadMySupportHistory`、金额合计和客态详情跳转逻辑
+
+2026-05-30 我的页入口模板迁移：
+
+- `src/pages/profile/index.tsx` 的昵称输入外壳迁移到 `SurfaceCard`
+- 头像昵称保存按钮迁移到 `AppButton`
+- 我的登记记录 / 联系信息设置 / 使用说明入口行迁移到 `SurfaceCard`
+- 保留原有微信头像选择、昵称本地保存、远端资料同步和入口跳转逻辑
+
+2026-05-30 联系方式设置表单模板迁移：
+
+- `src/pages/profile/contact-settings/index.tsx` 的微信号、二维码和备注字段标题迁移到 `FormField`
+- 微信号输入卡和备注文本域卡片样式迁移到 `SurfaceCard` 口径
+- 二维码上传迁移到 `UploadStrip`，并补 `maxImages` 支持单图上传场景
+- 底部保存区迁移到 `BottomActionBar + AppButton`
+- 保留原有本地 / 远端资料同步、二维码上传、键盘避让和保存后跳转逻辑
+
+2026-05-30 记录主页头部卡片迁移：
+
+- `src/pages/rescuer/home/index.tsx` 的记录维护者头部资料卡迁移到 `SurfaceCard`
+- 头部卡片背景、边框、头像和文字色改为 CSS variables
+- 继续复用 `DiscoverCaseCard` 展示公开案例列表，保留原有主页 VM 加载和客态详情跳转逻辑
