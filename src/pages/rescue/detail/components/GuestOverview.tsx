@@ -10,6 +10,7 @@ import {
   getLatestOverviewItem,
   getSummaryParagraphs,
 } from "../detailViewModels";
+import "./GuestOverview.scss";
 
 export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
   const paragraphs = getSummaryParagraphs(detail);

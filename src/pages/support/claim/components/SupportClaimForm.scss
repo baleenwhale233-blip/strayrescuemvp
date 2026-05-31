@@ -1,0 +1,62 @@
+.support-claim__case-summary {
+  margin-top: var(--space-4);
+}
+
+.support-claim__field {
+  --form-field-gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.support-claim__field .ui-form-field__label {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-sm);
+}
+
+.support-claim__field--upload {
+  --form-field-gap: var(--space-3);
+}
+
+.support-claim__text-input {
+  width: 100%;
+  height: var(--size-input-md);
+  padding: 0 var(--form-control-padding-x);
+  display: block;
+  box-sizing: border-box;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  font-weight: 600;
+  line-height: var(--size-input-md);
+  background: var(--color-bg-card);
+  border: var(--border-width-default) solid var(--color-border-light);
+  border-radius: var(--radius-xs);
+}
+
+.support-claim__text-input::placeholder {
+  color: var(--color-text-tertiary);
+  font-weight: 400;
+}
+
+.support-claim__upload-strip {
+  --upload-add-copy-font-size: var(--font-size-upload-add-copy);
+  --upload-add-copy-line-height: var(--line-height-upload-add-copy);
+  --upload-add-icon-height: var(--size-upload-add-icon-height);
+  --upload-add-icon-width: var(--size-upload-add-icon-width);
+  --upload-tile-radius: var(--radius-md);
+  --upload-tile-size: var(--size-upload-tile-md);
+  height: var(--size-upload-tile-md);
+}
+
+.support-claim__upload-strip .ui-upload-strip__scroll {
+  height: var(--size-upload-tile-md);
+}
+
+.support-claim__upload-strip .ui-upload-strip__content {
+  gap: var(--space-2);
+}
+
+.support-claim__upload-strip .ui-upload-strip__item {
+  border: none;
+  border-radius: var(--radius-md);
+}

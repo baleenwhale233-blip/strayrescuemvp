@@ -1,5 +1,4 @@
 import { Image, Text, View } from "@tarojs/components";
-import Taro from "@tarojs/taro";
 import linkArrowOrangeIcon from "../../assets/rescue-detail/link-arrow-orange-8.svg";
 import { EmptyState, SurfaceCard } from "../ui";
 import {
@@ -33,31 +32,7 @@ export type RescueTimelineSharedItem = {
   budgetCurrentLabel?: string;
 };
 
-const RECORD_DETAIL_STORAGE_KEY = "rescue-readonly-record-detail";
-
 export type RescueReadonlyRecordDetail = RescueTimelineSharedItem;
-
-function openReadonlyRecordDetail(item: RescueTimelineSharedItem) {
-  Taro.setStorageSync(RECORD_DETAIL_STORAGE_KEY, item);
-  const recordType = item.recordType || (item.kind === "status" ? "progress_update" : item.kind);
-  const query = [
-    `id=${encodeURIComponent(item.recordId || item.id)}`,
-    `kind=${item.kind}`,
-    `recordType=${recordType}`,
-    item.caseId ? `caseId=${encodeURIComponent(item.caseId)}` : "",
-  ]
-    .filter(Boolean)
-    .join("&");
-
-  Taro.navigateTo({
-    url: `/pages/rescue/record-detail/index?${query}`,
-  });
-}
-
-export function getStoredReadonlyRecordDetail() {
-  const stored = Taro.getStorageSync(RECORD_DETAIL_STORAGE_KEY);
-  return stored && typeof stored === "object" ? (stored as RescueReadonlyRecordDetail) : undefined;
-}
 
 function getDotClass(kind: RescueTimelineSharedKind) {
   return `rescue-timeline__dot rescue-timeline__dot--${kind}`;
@@ -72,12 +47,14 @@ function canOpenReadonlyDetail(item: RescueTimelineSharedItem) {
 export function RescueTimelineList({
   items,
   emptyState,
+  onReadonlyRecordTap,
 }: {
   items: RescueTimelineSharedItem[];
   emptyState?: {
     title: string;
     description: string;
   };
+  onReadonlyRecordTap?: (item: RescueReadonlyRecordDetail) => void;
 }) {
   if (!items.length) {
     return emptyState ? (
@@ -97,11 +74,13 @@ export function RescueTimelineList({
           <View className={getDotClass(item.kind)} />
           <SurfaceCard
             className={`rescue-timeline__card ${
-              canOpenReadonlyDetail(item) ? "rescue-timeline__card--clickable" : ""
+              onReadonlyRecordTap && canOpenReadonlyDetail(item)
+                ? "rescue-timeline__card--clickable"
+                : ""
             }`}
             onTap={() => {
-              if (canOpenReadonlyDetail(item)) {
-                openReadonlyRecordDetail(item);
+              if (onReadonlyRecordTap && canOpenReadonlyDetail(item)) {
+                onReadonlyRecordTap(item);
               }
             }}
           >

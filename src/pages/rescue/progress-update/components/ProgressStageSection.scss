@@ -1,0 +1,30 @@
+.rescue-update-page__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rescue-update-page__section-head {
+  --section-header-icon-height: var(--size-asset-icon-stage);
+  --section-header-icon-width: var(--size-asset-icon-stage);
+  --section-header-justify: flex-start;
+  --section-header-title-font-size: var(--font-size-body-lg);
+  --section-header-title-line-height: var(--line-height-body-lg);
+
+  padding: 0 var(--space-1);
+}
+
+.rescue-update-page__stage-choices {
+  --choice-chip-active-bg: var(--color-brand-primary);
+  --choice-chip-active-border-color: var(--color-brand-primary);
+  --choice-chip-active-color: var(--color-brand-on-primary);
+  --choice-chip-active-leading-color: var(--color-text-primary);
+  --choice-chip-bg: var(--color-bg-card);
+  --choice-chip-color: var(--color-text-secondary);
+  --choice-chip-label-font-size: var(--font-size-caption);
+  --choice-chip-label-line-height: var(--size-icon-sm);
+  --choice-chip-leading-color: var(--color-text-primary);
+  --choice-chip-min-height: var(--size-choice-chip-sm);
+  --choice-chip-radius: var(--radius-lg);
+  --choice-chip-padding: var(--space-1) var(--space-4);
+}

@@ -4,6 +4,7 @@ import { RescueLedgerSummary } from "../../../../../components/rescue";
 import { SurfaceCard } from "../../../../../components/ui";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getFundingStatusText } from "../../detailViewModels";
+import "./GuestFundingCard.scss";
 
 export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
   return (

@@ -1,20 +1,9 @@
-import { Text, View } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { RescueCaseSummaryCard } from "../../../components/rescue";
-import {
-  ChoiceChipGroup,
-  type ChoiceChipOption,
-  DualActionFooter,
-  FormField,
-  NoticeBanner,
-  PageShell,
-  SectionHeader,
-  SurfaceCard,
-  TextareaField,
-  UploadStrip,
-} from "../../../components/ui";
+import { type ChoiceChipOption, PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -22,12 +11,6 @@ import {
   clearCaseContentWriteLocalFallback,
   recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
-import addPhotoIcon from "../../../assets/rescue-update/add-photo-icon.svg";
-import imageSectionIcon from "../../../assets/rescue-update/image-section-icon.svg";
-import imageNoticeIcon from "../../../assets/rescue-update/image-notice-icon.svg";
-import stageIcon from "../../../assets/rescue-update/stage-icon.svg";
-import submitArrowIcon from "../../../assets/rescue-update/footer-submit-arrow.svg";
-import uploadDeleteIcon from "../../../assets/rescue-expense/upload-delete-24.svg";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   createRemoteProgressUpdateByCaseId,
@@ -41,6 +24,10 @@ import {
 } from "../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import type { CaseCurrentStatus, PublicDetailVM } from "../../../domain/canonical/types";
+import { ProgressDescriptionField } from "./components/ProgressDescriptionField";
+import { ProgressImageCard } from "./components/ProgressImageCard";
+import { ProgressStageSection } from "./components/ProgressStageSection";
+import { ProgressUpdateFooter } from "./components/ProgressUpdateFooter";
 import "./index.scss";
 
 type UpdateLoadStatus = "loading" | "ready" | "error";
@@ -342,65 +329,27 @@ export default function RescueStatusUpdatePage() {
           title={contextCard.title}
         />
 
-        <View className="rescue-update-page__section">
-          <SectionHeader
-            className="rescue-update-page__section-head"
-            iconSrc={stageIcon}
-            title="当前阶段"
-          />
-          <ChoiceChipGroup
-            className="rescue-update-page__stage-choices"
-            options={STATUS_OPTIONS}
-            value={selectedStatus}
-            onChange={setSelectedStatus}
-          />
-        </View>
+        <ProgressStageSection
+          options={STATUS_OPTIONS}
+          value={selectedStatus}
+          onChange={setSelectedStatus}
+        />
 
-        <FormField className="rescue-update-page__field" label="进展详情描述">
-          <TextareaField
-            className="rescue-update-page__textarea"
-            placeholder="请详细描述这条记录的最新进展"
-            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-            maxlength={800}
-            value={description}
-            onInput={(event) => setDescription(event.detail.value)}
-          />
-        </FormField>
+        <ProgressDescriptionField
+          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+          value={description}
+          onChange={setDescription}
+        />
 
-        <SurfaceCard className="rescue-update-page__image-card">
-          <SectionHeader
-            aside={<Text className="rescue-update-page__image-limit">最多 9 张</Text>}
-            className="rescue-update-page__image-head"
-            iconSrc={imageSectionIcon}
-            title="近况影像记录"
-          />
-
-          <UploadStrip
-            addIconSrc={addPhotoIcon}
-            addLabel="添加照片"
-            className="rescue-update-page__image-strip"
-            images={imageUrls}
-            removeIconSrc={uploadDeleteIcon}
-            onAdd={handlePickImage}
-            onPreview={handlePreviewImage}
-            onRemove={handleRemoveImage}
-          />
-
-          <NoticeBanner className="rescue-update-page__notice" iconSrc={imageNoticeIcon}>
-            请至少上传一张照片，以确保护助信息真实性
-          </NoticeBanner>
-        </SurfaceCard>
+        <ProgressImageCard
+          images={imageUrls}
+          onAdd={handlePickImage}
+          onPreview={handlePreviewImage}
+          onRemove={handleRemoveImage}
+        />
       </View>
 
-      <DualActionFooter
-        className="rescue-update-page__bottom"
-        primaryIconSrc={submitArrowIcon}
-        primaryLabel="发布进展"
-        secondaryLabel="取消"
-        secondaryVariant="secondary"
-        onPrimary={handleSubmit}
-        onSecondary={handleCancel}
-      />
+      <ProgressUpdateFooter onCancel={handleCancel} onSubmit={handleSubmit} />
     </PageShell>
   );
 }

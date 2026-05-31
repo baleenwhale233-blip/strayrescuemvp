@@ -2718,3 +2718,73 @@
 - 影响范围：仅影响样式 token、发现页、详情页、更新进展页、记账页和相关业务组件 SCSS；不改页面结构、提交链路、上传、导航、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸 `px/rpx` 尺寸从 21 降至 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：下一轮重点从“尺寸清零”转到组件边界复核：继续评估 `support/review` 待处理卡、详情页残余大 SCSS 和发现 / 详情页 exact 资产槽位是否还需要进一步晋升。
+
+## 2026-05-31 | 详情页组件 | 下沉局部组件样式所有权
+
+- 日期：2026-05-31
+- 改动主题：将详情页局部组件样式从入口 SCSS 下沉到组件同目录。
+- 为什么改：详情页已经拆出 owner / guest 局部组件，但 449 行样式仍集中在入口文件，组件结构和样式所有权不一致。
+- 改了什么：为页面态、rename sheet、客态正文、hero、资金卡、维护者卡、概览、tab 和 owner 内容增加同目录 SCSS；入口 `index.scss` 缩小到 15 行，并移除失效的旧 owner `.detail-tabs` 规则。
+- 影响范围：仅影响详情页样式文件组织和组件系统文档；不改 DOM、视觉值、加载、分享、导航、tab、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续复核生产页、支持处理页和身份页边界；`support/review` 待处理卡仍只服务单页，出现第二个消费者前暂不晋升。
+
+## 2026-05-31 | 记账页组件 | 拆出页面内展示组件
+
+- 日期：2026-05-31
+- 改动主题：将记账页凭证、合计和明细结构拆为页面内组件。
+- 为什么改：记账页入口同时维护草稿 / 提交逻辑和大块展示结构，虽然这些结构暂不适合晋升全局组件，但继续内联会让页面职责过重。
+- 改了什么：新增 `ExpenseCompactTotal`、`ExpenseEvidenceCard`、`ExpenseDetailsSection` 和 `ExpenseLine` 类型；入口只保留状态、上传选择、明细变更、草稿持久化和提交链路，`index.scss` 从 302 行缩到 50 行。
+- 影响范围：仅影响记账页组件组织和样式文件归属；不改凭证选择 / 预览 / 删除、支出明细状态、草稿缓存、远端提交、本地 fallback、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续复核支持处理页与身份页；缺乏复用证据的单页结构继续保留页面局部，不晋升到 `ui` 或 `rescue`。
+
+## 2026-05-31 | 页面局部组件 | 收口处理登记与我的页结构
+
+- 日期：2026-05-31
+- 改动主题：将处理登记页和我的页的单页展示结构拆为页面内组件。
+- 为什么改：处理登记待处理卡、手动登记表单、我的页头像编辑和菜单都只服务单页，不适合晋升共享层，但继续内联会让页面入口承担过多展示职责。
+- 改了什么：新增 `PendingSupportEntryList`、`ManualSupportEntryForm`、`ProfileUserEditor`、`ProfileMenuList`、`ProfileFooter` 及页面局部类型；处理登记入口 SCSS 从 193 行缩到 25 行，我的页入口 SCSS 从 140 行缩到 27 行。
+- 影响范围：仅影响处理登记页和我的页组件组织 / 样式归属；不改登记处理、手动登记、资料加载、头像上传、资料保存、导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续审计剩余页面入口，重点确认草稿预览、更新进展和追加预算是否还有值得页面内拆分的稳定展示结构。
+
+## 2026-05-31 | 草稿预览 | 拆出页面内 Sheet 组件
+
+- 日期：2026-05-31
+- 改动主题：将草稿预览页 quick action 与改代号弹层拆成页面内组件。
+- 为什么改：草稿预览入口已经承载草稿读取、预览 VM、封面替换、保存和发布；继续内联两个弹层会让展示结构和业务流程缠在一起。
+- 改了什么：新增 `PreviewSheetFrame`、`PreviewActionSheet`、`PreviewRenameSheet`，共用弹层外壳样式；入口 `index.tsx` 从 907 行缩到 765 行，入口 SCSS 从 89 行缩到 7 行。
+- 影响范围：仅影响草稿预览页页面内组件组织和样式归属；不改草稿读取、预览数据、quick action 写入、改名、封面替换、保存、发布、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续审计更新进展、追加预算和联系方式等剩余入口；没有复用证据的结构继续留作页面内组件。
+
+## 2026-05-31 | 更新进展页 | 拆出页面内展示组件
+
+- 日期：2026-05-31
+- 改动主题：将更新进展页阶段、描述、影像和底部发布区拆为页面内组件。
+- 为什么改：更新进展入口同时维护上下文加载、图片选择、草稿 / 远端提交和完整展示结构；共享基础组件已在，但页面入口仍承担过多展示职责。
+- 改了什么：新增 `ProgressStageSection`、`ProgressDescriptionField`、`ProgressImageCard`、`ProgressUpdateFooter`；入口只保留业务状态与提交链路，`index.scss` 从 138 行缩到 13 行。
+- 影响范围：仅影响更新进展页组件组织和样式归属；不改状态枚举、图片选择 / 预览 / 删除、草稿写入、远端提交、本地 fallback、VM、selector、repository 或 CloudBase。
+- 验证结果：`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续审计追加预算、联系方式设置和记录详情等剩余入口；没有复用证据的结构继续保留页面内组件。
+
+## 2026-05-31 | 页面组件治理 | 收口剩余入口展示结构
+
+- 日期：2026-05-31
+- 改动主题：将追加预算、联系方式设置、登记一笔、记录详情、工作台和建档两步的稳定展示结构收为页面内组件。
+- 为什么改：首轮 token 和共享组件已完成后，剩余入口仍有表单、列表、记录卡和建档步骤展示内联在页面层；这些结构暂不适合晋升共享层，但应从业务加载 / 提交逻辑里拆出。
+- 改了什么：新增 `BudgetUpdateForm`、`ContactSettingsForm`、`SupportClaimForm`、`RecordDetailNotice`、`RecordDetailCard`、`WorkbenchCreateAction`、`WorkbenchProjectSections`、`CreateBasicForm`、`CreateBudgetForm`；所有 180 行以上页面入口现在都有页面内 `components/` 承接展示结构。
+- 影响范围：仅影响页面内组件组织、样式归属和组件系统文档；不改 draft / case 读取、表单校验、图片选择 / 上传、远端写入、本地 fallback、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：首轮组件化治理进入回归阶段；后续重点是真机 / 微信开发者工具验收、视觉精修和新增页面守门，只有出现第二个真实消费者时再继续晋升共享组件。
+
+## 2026-05-31 | 详情页组件 | 回收共享时间线导航职责
+
+- 日期：2026-05-31
+- 改动主题：将共享时间线中的只读记录缓存与跳转移回详情页边界。
+- 为什么改：`RescueTimelineList` 仍直接调用 Taro storage 与导航，和“页面负责导航、共享组件只接受语义 props”的组件治理目标不一致。
+- 改了什么：新增 `record-detail/readonlyRecordDetail.ts` helper；时间线组件改为暴露 `onReadonlyRecordTap`；详情入口接管记录详情跳转、案例 ID 复制、记录主页跳转和结束记录确认动作。
+- 影响范围：仅影响详情页导航职责归属和组件系统文档；保留原有只读详情缓存 key、跳转 query、复制、owner 快捷动作和结束确认交互，不改 VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`preflight:alpha`、`test:ui`、`report:style-tokens` 与 `git diff --check` 均通过；preflight 覆盖 repo safety、`format:check`、`lint`、`typecheck`、57 个 domain tests、`build:weapp` 和 smoke manifest；UI tests 5/5 通过，裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：运行完整验证和最终组件化审计；真机 / 微信开发者工具验收继续按 Alpha 回归计划执行。

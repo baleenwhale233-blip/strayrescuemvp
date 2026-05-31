@@ -1,23 +1,14 @@
-import { Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
-import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
-import {
-  HintActionFooter,
-  PageShell,
-  StepIndicator,
-  TextareaField,
-  UploadStrip,
-} from "../../../../components/ui";
-import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
-import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
+import { PageShell } from "../../../../components/ui";
 import {
   getCurrentDraft,
   startDraftSession,
   updateCurrentDraft,
 } from "../../../../domain/canonical/repository";
+import { CreateBasicForm } from "./components/CreateBasicForm";
 import "./index.scss";
 
 export default function RescueCreateBasicPage() {
@@ -161,54 +152,17 @@ export default function RescueCreateBasicPage() {
     >
       <NavBar showBack title="新建记录" onBack={handleBack} />
 
-      <StepIndicator activeIndex={0} total={3} />
-
-      <View className="rescue-create-page__upload-card">
-        <UploadStrip
-          addIcon={<AppIcon name="camera" size={24} variant="default" />}
-          addLabel="拍摄正脸清晰图作为档案封面"
-          images={coverPath ? [coverPath] : []}
-          maxImages={1}
-          removeIconSrc={uploadDeleteIcon}
-          variant="cover"
-          onAdd={handleChooseImage}
-          onRemove={handleDeleteImage}
-        />
-      </View>
-
-      <View className="rescue-create-page__form-group">
-        <Text className="rescue-create-page__label">小家伙的代号</Text>
-        <View className="rescue-create-page__input-card">
-          <Input
-            className="rescue-create-page__input"
-            maxlength={24}
-            placeholder="如：车祸三花 / 纸箱里的橘猫"
-            placeholderStyle="color:var(--color-text-tertiary);"
-            value={name}
-            onInput={(event) => setName(event.detail.value)}
-          />
-        </View>
-      </View>
-
-      <View className="rescue-create-page__form-group">
-        <Text className="rescue-create-page__label">一句话事件简述</Text>
-        <TextareaField
-          className="rescue-create-page__textarea"
-          placeholder="在哪发现的（不用太过具体）？它怎么了？"
-          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-          maxlength={120}
-          value={summary}
-          onInput={(event) => setSummary(event.detail.value)}
-        />
-      </View>
-
-      <HintActionFooter
-        hint="所有内容都会保存在这条记录里，后续可继续补充明细和进展"
-        iconSrc={nextArrowIcon}
-        onTap={handleNext}
-      >
-        下一步：设定目标
-      </HintActionFooter>
+      <CreateBasicForm
+        coverPath={coverPath}
+        cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+        name={name}
+        summary={summary}
+        onCoverDelete={handleDeleteImage}
+        onCoverPick={handleChooseImage}
+        onNameChange={setName}
+        onNext={handleNext}
+        onSummaryChange={setSummary}
+      />
     </PageShell>
   );
 }

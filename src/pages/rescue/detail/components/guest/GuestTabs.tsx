@@ -1,5 +1,6 @@
 import { SegmentedTabs } from "../../../../../components/ui";
 import type { DetailTab } from "../../types";
+import "./GuestTabs.scss";
 
 export function GuestTabs({
   activeTab,

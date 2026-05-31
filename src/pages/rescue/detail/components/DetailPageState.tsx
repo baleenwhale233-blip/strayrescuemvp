@@ -1,6 +1,7 @@
 import { View } from "@tarojs/components";
 import { NavBar } from "../../../../components/NavBar";
 import { AppButton, EmptyState } from "../../../../components/ui";
+import "./DetailPageState.scss";
 
 export function DetailPageState({
   title,

@@ -1,6 +1,7 @@
 import { Input, Text, View } from "@tarojs/components";
 import { useState } from "react";
 import { AppButton } from "../../../../components/ui";
+import "./RenameSheet.scss";
 
 export function RenameSheet({
   initialValue,

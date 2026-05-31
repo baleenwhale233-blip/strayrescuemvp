@@ -1,20 +1,9 @@
-import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import {
-  AppButton,
-  EmptyState,
-  FormField,
-  MoneyInput,
-  PageShell,
-  SegmentedTabs,
-  SubmitActionBar,
-  SurfaceCard,
-} from "../../../components/ui";
+import { PageShell, SegmentedTabs } from "../../../components/ui";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
-import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
   createRemoteManualSupportEntryByCaseId,
   draftIdToCaseId,
@@ -25,18 +14,12 @@ import {
   type RescueCreateDraft,
 } from "../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
+import { ManualSupportEntryForm } from "./components/ManualSupportEntryForm";
+import { PendingSupportEntryList } from "./components/PendingSupportEntryList";
+import type { PendingSupportEntryCard } from "./types";
 import "./index.scss";
 
 type ReviewTab = "pending" | "manual";
-
-type PendingEntryCard = {
-  id: string;
-  supporterName: string;
-  latestEntryAtLabel: string;
-  amountLabel: string;
-  note?: string;
-  proofUrl?: string;
-};
 
 function formatCurrencyLabel(amount: number) {
   return `¥${amount.toLocaleString("zh-CN", {
@@ -45,7 +28,7 @@ function formatCurrencyLabel(amount: number) {
   })}`;
 }
 
-function getDraftPendingEntries(draft?: RescueCreateDraft): PendingEntryCard[] {
+function getDraftPendingEntries(draft?: RescueCreateDraft): PendingSupportEntryCard[] {
   if (!draft) {
     return [];
   }
@@ -220,97 +203,19 @@ export default function SupportReviewPage() {
       />
 
       {activeTab === "pending" ? (
-        <View className="support-review-page__list">
-          {displayedPendingEntries.map((entry) => (
-            <SurfaceCard key={entry.id} className="support-review-page__card">
-              <View className="support-review-page__card-top">
-                {entry.proofUrl ? (
-                  <View className="support-review-page__proof">
-                    <Image
-                      className="support-review-page__proof-image"
-                      mode="aspectFill"
-                      src={entry.proofUrl}
-                    />
-                  </View>
-                ) : (
-                  <View className="support-review-page__proof support-review-page__proof--empty">
-                    <Text className="support-review-page__proof-empty-text">未附凭证</Text>
-                  </View>
-                )}
-
-                <View className="support-review-page__card-copy">
-                  <View className="support-review-page__card-head">
-                    <Text className="support-review-page__card-name">{entry.supporterName}</Text>
-                    <Text className="support-review-page__card-time">
-                      {entry.latestEntryAtLabel}
-                    </Text>
-                  </View>
-                  <Text className="support-review-page__card-amount">{entry.amountLabel}</Text>
-                  <Text className="support-review-page__card-note">
-                    “{entry.note || "待处理登记记录"}”
-                  </Text>
-                </View>
-              </View>
-
-              <View className="support-review-page__actions">
-                <AppButton
-                  className="support-review-page__button"
-                  size="md"
-                  variant="secondary"
-                  onTap={() => handleUnmatched(entry.id, "duplicate_submission")}
-                >
-                  标记重复
-                </AppButton>
-                <View className="support-review-page__actions-right">
-                  <AppButton
-                    className="support-review-page__button"
-                    size="md"
-                    variant="secondary"
-                    onTap={() => handleUnmatched(entry.id, "other")}
-                  >
-                    暂未匹配
-                  </AppButton>
-                  <AppButton
-                    className="support-review-page__button"
-                    size="md"
-                    variant="primary"
-                    onTap={() => handleConfirm(entry.id)}
-                  >
-                    确认记录
-                  </AppButton>
-                </View>
-              </View>
-            </SurfaceCard>
-          ))}
-
-          {!displayedPendingEntries.length ? (
-            <EmptyState
-              className="support-review-page__empty"
-              iconName="handCoins"
-              title="暂时没有待处理登记"
-              description="新的登记提交后，会先出现在这里等待处理。"
-            />
-          ) : null}
-        </View>
+        <PendingSupportEntryList
+          entries={displayedPendingEntries}
+          onConfirm={handleConfirm}
+          onUnmatched={handleUnmatched}
+        />
       ) : (
-        <View className="support-review-page__manual">
-          <FormField className="support-review-page__field" label="登记金额">
-            <MoneyInput value={manualAmount} onValueChange={setManualAmount} />
-          </FormField>
-
-          <FormField className="support-review-page__field" label="登记人称呼">
-            <Input
-              className="support-review-page__input"
-              placeholder="微信 ID / 昵称等"
-              value={manualSupporter}
-              onInput={(event) => setManualSupporter(event.detail.value)}
-            />
-          </FormField>
-
-          <SubmitActionBar iconSrc={submitArrowIcon} onTap={handleSubmitManual}>
-            提交登记
-          </SubmitActionBar>
-        </View>
+        <ManualSupportEntryForm
+          amount={manualAmount}
+          supporter={manualSupporter}
+          onAmountChange={setManualAmount}
+          onSubmit={handleSubmitManual}
+          onSupporterChange={setManualSupporter}
+        />
       )}
     </PageShell>
   );

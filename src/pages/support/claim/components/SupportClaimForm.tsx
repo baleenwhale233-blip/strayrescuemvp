@@ -1,0 +1,110 @@
+import { Input } from "@tarojs/components";
+import addPhotoIcon from "../../../../assets/support-claim/add-photo-22.svg";
+import submitArrowIcon from "../../../../assets/support-claim/submit-arrow-19.svg";
+import { RescueCaseSummaryCard } from "../../../../components/rescue";
+import {
+  FormField,
+  MoneyInput,
+  SubmitActionBar,
+  TextareaField,
+  UploadStrip,
+} from "../../../../components/ui";
+import "./SupportClaimForm.scss";
+
+export interface SupportClaimSummary {
+  coverSrc: string;
+  publicCaseId: string;
+  rescueStartedAtLabel: string;
+  statusLabel: string;
+  title: string;
+}
+
+export function SupportClaimForm({
+  amount,
+  cursorSpacing,
+  imagePath,
+  nickname,
+  note,
+  summary,
+  onAmountChange,
+  onCoverError,
+  onImageAdd,
+  onImagePreview,
+  onImageRemove,
+  onNicknameChange,
+  onNoteChange,
+  onSubmit,
+}: {
+  amount: string;
+  cursorSpacing: number;
+  imagePath: string;
+  nickname: string;
+  note: string;
+  summary: SupportClaimSummary;
+  onAmountChange: (value: string) => void;
+  onCoverError: () => void;
+  onImageAdd: () => void;
+  onImagePreview: (src: string) => void;
+  onImageRemove: () => void;
+  onNicknameChange: (value: string) => void;
+  onNoteChange: (value: string) => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <>
+      <RescueCaseSummaryCard
+        className="support-claim__case-summary"
+        coverSrc={summary.coverSrc}
+        mediaVariant="framed"
+        publicCaseId={summary.publicCaseId}
+        rescueStartedAtLabel={summary.rescueStartedAtLabel}
+        statusLabel={summary.statusLabel}
+        title={summary.title}
+        onCoverError={onCoverError}
+      />
+
+      <FormField className="support-claim__field" label="登记金额">
+        <MoneyInput value={amount} onValueChange={onAmountChange} />
+      </FormField>
+
+      <FormField className="support-claim__field" label="您的称呼">
+        <Input
+          className="support-claim__text-input"
+          value={nickname}
+          onInput={(event) => onNicknameChange(event.detail.value)}
+        />
+      </FormField>
+
+      <FormField
+        className="support-claim__field support-claim__field--upload"
+        label="相关截图/凭证"
+      >
+        <UploadStrip
+          addIconSrc={addPhotoIcon}
+          addLabel="添加照片"
+          className="support-claim__upload-strip"
+          images={imagePath ? [imagePath] : []}
+          maxImages={1}
+          onAdd={onImageAdd}
+          onPreview={onImagePreview}
+          onRemove={onImageRemove}
+        />
+      </FormField>
+
+      <FormField className="support-claim__field" label="备注">
+        <TextareaField
+          className="support-claim__textarea"
+          placeholder="可补充留言、用途或对账备注"
+          cursorSpacing={cursorSpacing}
+          maxlength={120}
+          value={note}
+          onInput={(event) => onNoteChange(event.detail.value)}
+        />
+      </FormField>
+
+      <SubmitActionBar iconSrc={submitArrowIcon} onTap={onSubmit}>
+        提交登记
+      </SubmitActionBar>
+    </>
+  );
+}

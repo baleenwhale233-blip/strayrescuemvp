@@ -1,8 +1,8 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
-import { AppButton, DualActionFooter, PageShell, TextareaField } from "../../../../components/ui";
+import { DualActionFooter, PageShell } from "../../../../components/ui";
 import { createSubmissionGuard } from "../../../../utils/submissionGuard";
 import { recordCaseProfileLocalFallback } from "../../../../domain/canonical/repository";
 import {
@@ -37,6 +37,8 @@ import {
 } from "../../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
+import { PreviewActionSheet } from "./components/PreviewActionSheet";
+import { PreviewRenameSheet } from "./components/PreviewRenameSheet";
 import "./index.scss";
 
 type ActionType = RescueCreateEntryTone | null;
@@ -333,150 +335,6 @@ function buildDraftFromOwnerAndPublicDetail(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-}
-
-function ActionSheet({
-  action,
-  onClose,
-  onSave,
-}: {
-  action: Exclude<ActionType, null>;
-  onClose: () => void;
-  onSave: (values: { title: string; description: string; amount: string }) => void;
-}) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-
-  const copy = {
-    expense: {
-      title: "记一笔支出",
-      titlePlaceholder: "如：清创手术费 + 抗生素",
-      descriptionPlaceholder: "补充票据说明或支出背景",
-      amountPlaceholder: "850.00",
-      amountLabel: "支出金额",
-    },
-    status: {
-      title: "写进展更新",
-      titlePlaceholder: "如：完成首次清创，精神状态尚可",
-      descriptionPlaceholder: "补充医生建议、恢复情况或下一步安排",
-      amountPlaceholder: "",
-      amountLabel: "",
-    },
-    income: {
-      title: "记录场外收入",
-      titlePlaceholder: "如：线下登记已到账",
-      descriptionPlaceholder: "可补充来源、留言或对账说明",
-      amountPlaceholder: "200.00",
-      amountLabel: "收入金额",
-    },
-    budget: {
-      title: "修改预算",
-      titlePlaceholder: "如：新增后期康复理疗预算",
-      descriptionPlaceholder: "说明为什么需要提高预算或调整阶段目标",
-      amountPlaceholder: "5250.00",
-      amountLabel: "新预算金额",
-    },
-  }[action];
-
-  return (
-    <View className="rescue-preview__sheet-overlay" onTap={onClose}>
-      <View className="rescue-preview__sheet" onTap={(event) => event.stopPropagation()}>
-        <View className="rescue-preview__sheet-handle">
-          <View className="rescue-preview__sheet-handle-bar" />
-        </View>
-
-        <Text className="rescue-preview__sheet-title">{copy.title}</Text>
-
-        <View className="rescue-preview__sheet-field">
-          <Text className="rescue-preview__sheet-label">标题</Text>
-          <View className="rescue-preview__sheet-input-card">
-            <Input
-              className="rescue-preview__sheet-input"
-              maxlength={40}
-              placeholder={copy.titlePlaceholder}
-              value={title}
-              onInput={(event) => setTitle(event.detail.value)}
-            />
-          </View>
-        </View>
-
-        {copy.amountLabel ? (
-          <View className="rescue-preview__sheet-field">
-            <Text className="rescue-preview__sheet-label">{copy.amountLabel}</Text>
-            <View className="rescue-preview__sheet-input-card">
-              <Input
-                className="rescue-preview__sheet-input"
-                type="digit"
-                placeholder={copy.amountPlaceholder}
-                value={amount}
-                onInput={(event) => setAmount(event.detail.value)}
-              />
-            </View>
-          </View>
-        ) : null}
-
-        <View className="rescue-preview__sheet-field">
-          <Text className="rescue-preview__sheet-label">补充说明</Text>
-          <TextareaField
-            className="rescue-preview__sheet-textarea"
-            placeholder={copy.descriptionPlaceholder}
-            maxlength={160}
-            value={description}
-            onInput={(event) => setDescription(event.detail.value)}
-          />
-        </View>
-
-        <AppButton
-          className="rescue-preview__sheet-button"
-          onTap={() => onSave({ title, description, amount })}
-        >
-          保存记录
-        </AppButton>
-      </View>
-    </View>
-  );
-}
-
-function RenameSheet({
-  initialValue,
-  onClose,
-  onSave,
-}: {
-  initialValue: string;
-  onClose: () => void;
-  onSave: (value: string) => void;
-}) {
-  const [value, setValue] = useState(initialValue);
-
-  return (
-    <View className="rescue-preview__sheet-overlay" onTap={onClose}>
-      <View className="rescue-preview__sheet" onTap={(event) => event.stopPropagation()}>
-        <View className="rescue-preview__sheet-handle">
-          <View className="rescue-preview__sheet-handle-bar" />
-        </View>
-
-        <Text className="rescue-preview__sheet-title">修改代号</Text>
-
-        <View className="rescue-preview__sheet-field">
-          <Text className="rescue-preview__sheet-label">小家伙的代号</Text>
-          <View className="rescue-preview__sheet-input-card">
-            <Input
-              className="rescue-preview__sheet-input"
-              maxlength={24}
-              placeholder="如：车祸三花 / 纸箱里的橘猫"
-              value={value}
-              onInput={(event) => setValue(event.detail.value)}
-            />
-          </View>
-        </View>
-
-        <AppButton className="rescue-preview__sheet-button" onTap={() => onSave(value)}>
-          保存代号
-        </AppButton>
-      </View>
-    </View>
-  );
 }
 
 export default function RescueCreatePreviewPage() {
@@ -888,7 +746,7 @@ export default function RescueCreatePreviewPage() {
       />
 
       {activeAction ? (
-        <ActionSheet
+        <PreviewActionSheet
           action={activeAction}
           onClose={() => setActiveAction(null)}
           onSave={handleSaveAction}
@@ -896,7 +754,7 @@ export default function RescueCreatePreviewPage() {
       ) : null}
 
       {editingTitle ? (
-        <RenameSheet
+        <PreviewRenameSheet
           initialValue={draft.name}
           onClose={() => setEditingTitle(false)}
           onSave={handleSaveTitle}

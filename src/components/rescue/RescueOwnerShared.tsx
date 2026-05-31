@@ -2,7 +2,11 @@ import { Image, Text, View } from "@tarojs/components";
 import { SegmentedTabs, StatusBadge, SurfaceCard } from "../ui";
 import { RescueLedgerSummary } from "./RescueLedgerSummary";
 import { RescueEvidenceGrid, RescueRecordHeader } from "./RescueRecordShared";
-import { RescueTimelineList, type RescueTimelineSharedItem } from "./RescueTimelineShared";
+import {
+  RescueTimelineList,
+  type RescueReadonlyRecordDetail,
+  type RescueTimelineSharedItem,
+} from "./RescueTimelineShared";
 import ownerActionBudgetIcon from "../../assets/rescue-detail/owner/action-budget.svg";
 import ownerActionChevronIcon from "../../assets/rescue-detail/owner/action-chevron.svg";
 import ownerActionChevronPrimaryIcon from "../../assets/rescue-detail/owner/action-chevron-primary.svg";
@@ -306,12 +310,14 @@ export function RescueOwnerOverview({
 export function RescueOwnerTimeline({
   items,
   emptyState,
+  onReadonlyRecordTap,
 }: {
   items: RescueOwnerTimelineItem[];
   emptyState?: {
     title: string;
     description: string;
   };
+  onReadonlyRecordTap?: (item: RescueReadonlyRecordDetail) => void;
 }) {
   if (!items.length) {
     return <RescueTimelineList emptyState={emptyState} items={[]} />;
@@ -323,5 +329,11 @@ export function RescueOwnerTimeline({
     images: item.images,
   }));
 
-  return <RescueTimelineList emptyState={emptyState} items={sharedItems} />;
+  return (
+    <RescueTimelineList
+      emptyState={emptyState}
+      items={sharedItems}
+      onReadonlyRecordTap={onReadonlyRecordTap}
+    />
+  );
 }

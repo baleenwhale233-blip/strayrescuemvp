@@ -1,25 +1,16 @@
-import { Input, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import {
-  FormField,
-  PageShell,
-  SubmitActionBar,
-  SurfaceCard,
-  TextareaField,
-  UploadStrip,
-} from "../../../components/ui";
+import { PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
-import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
-import submitArrowIcon from "../../../assets/rescue-create/step1-next-arrow.svg";
 import {
   getRescuerContactProfile,
   saveRescuerContactProfile,
 } from "../../../data/rescuerContactProfile";
 import { loadMyProfile, updateRemoteMyProfile } from "../../../domain/canonical/repository";
 import { uploadProfileAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
+import { ContactSettingsForm } from "./components/ContactSettingsForm";
 import "./index.scss";
 
 export default function ContactSettingsPage() {
@@ -229,50 +220,16 @@ export default function ContactSettingsPage() {
     >
       <NavBar showBack title="联系信息" />
 
-      <View className="contact-settings-page__body">
-        <FormField label="微信号（二选一即可）">
-          <SurfaceCard className="contact-settings-page__input-card">
-            <Input
-              className="contact-settings-page__input"
-              placeholder="请填写微信号"
-              placeholderStyle="color:var(--color-text-tertiary);"
-              value={wechatId}
-              onInput={(event) => setWechatId(event.detail.value)}
-            />
-          </SurfaceCard>
-        </FormField>
-
-        <FormField label="微信二维码（二选一即可）">
-          <UploadStrip
-            addIconSrc={addPhotoIcon}
-            addLabel="添加照片"
-            className="contact-settings-page__qr-upload"
-            images={qrImagePath ? [qrImagePath] : []}
-            maxImages={1}
-            onAdd={handlePickQrImage}
-            onPreview={handlePickQrImage}
-          />
-        </FormField>
-
-        <FormField label="备注（选填）">
-          <TextareaField
-            className="contact-settings-page__textarea"
-            placeholder="如果需要联系您，有什么要提前说明的"
-            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-            maxlength={120}
-            value={note}
-            onInput={(event) => setNote(event.detail.value)}
-          />
-        </FormField>
-      </View>
-
-      <SubmitActionBar
-        className="contact-settings-page__bottom"
-        iconSrc={submitArrowIcon}
-        onTap={handleSubmit}
-      >
-        保存
-      </SubmitActionBar>
+      <ContactSettingsForm
+        cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+        note={note}
+        qrImagePath={qrImagePath}
+        wechatId={wechatId}
+        onNoteChange={setNote}
+        onPickQrImage={handlePickQrImage}
+        onSubmit={handleSubmit}
+        onWechatIdChange={setWechatId}
+      />
     </PageShell>
   );
 }

@@ -1,19 +1,15 @@
-import { Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import {
-  getStoredReadonlyRecordDetail,
-  RescueBudgetComparison,
-  RescueEvidenceGrid,
-  RescueRecordHeader,
-  type RescueReadonlyRecordDetail,
-} from "../../../components/rescue";
-import { EmptyState, PageShell, SectionHeader, SurfaceCard } from "../../../components/ui";
+import { type RescueReadonlyRecordDetail } from "../../../components/rescue";
+import { EmptyState, PageShell } from "../../../components/ui";
 import {
   loadCaseRecordDetail,
   type CaseRecordDetailVM,
 } from "../../../domain/canonical/repository";
+import { RecordDetailCard } from "./components/RecordDetailCard";
+import { RecordDetailNotice } from "./components/RecordDetailNotice";
+import { getStoredReadonlyRecordDetail } from "./readonlyRecordDetail";
 import "./index.scss";
 
 function getPageTitle(kind?: RescueReadonlyRecordDetail["kind"]) {
@@ -164,71 +160,12 @@ export default function RescueReadonlyRecordDetailPage() {
     <PageShell className="record-detail-page">
       <NavBar showBack title={getPageTitle(record.kind)} />
 
-      <SurfaceCard className="record-detail-page__notice" variant="subtle">
-        <SectionHeader
-          className="record-detail-page__notice-head"
-          description={getImmutableCopy(record.kind)}
-          title="透明账本记录"
-        />
-      </SurfaceCard>
-
-      <SurfaceCard className="record-detail-page__card">
-        <RescueRecordHeader
-          badgeLabel={record.badgeLabel}
-          kind={record.kind}
-          statusLabel={record.statusLabel}
-          timestamp={record.timestamp}
-        />
-
-        <Text className="record-detail-page__title">{record.title}</Text>
-
-        {record.description ? (
-          <Text className="record-detail-page__description">{record.description}</Text>
-        ) : null}
-
-        {record.kind === "expense" ? (
-          <View className="record-detail-page__expense-lines">
-            {getExpenseItems(record).map((item, index) => (
-              <View
-                key={`${typeof item === "string" ? item : item.description}-${index}`}
-                className="record-detail-page__expense-line"
-              >
-                <Text className="record-detail-page__expense-index">
-                  支出 {String(index + 1).padStart(2, "0")}
-                </Text>
-                <Text className="record-detail-page__expense-title">
-                  {typeof item === "string" ? item : item.description}
-                </Text>
-                {typeof item !== "string" && item.amountLabel ? (
-                  <Text className="record-detail-page__expense-index">{item.amountLabel}</Text>
-                ) : null}
-              </View>
-            ))}
-          </View>
-        ) : null}
-
-        {record.amountLabel ? (
-          <View className="record-detail-page__row">
-            <Text className="record-detail-page__label">金额</Text>
-            <Text className="record-detail-page__amount">{record.amountLabel}</Text>
-          </View>
-        ) : null}
-
-        {record.budgetPreviousLabel && record.budgetCurrentLabel ? (
-          <RescueBudgetComparison
-            currentLabel={record.budgetCurrentLabel}
-            previousLabel={record.budgetPreviousLabel}
-          />
-        ) : null}
-
-        {record.images?.length ? (
-          <RescueEvidenceGrid
-            images={record.images}
-            variant="detail"
-            onImageTap={handlePreviewImage}
-          />
-        ) : null}
-      </SurfaceCard>
+      <RecordDetailNotice description={getImmutableCopy(record.kind)} />
+      <RecordDetailCard
+        expenseItems={getExpenseItems(record)}
+        record={record}
+        onImageTap={handlePreviewImage}
+      />
     </PageShell>
   );
 }

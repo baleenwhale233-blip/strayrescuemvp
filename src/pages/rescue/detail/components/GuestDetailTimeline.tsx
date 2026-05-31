@@ -1,5 +1,6 @@
 import { RescueTimelineList, type RescueTimelineSharedItem } from "../../../../components/rescue";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
+import { openReadonlyRecordDetail } from "../../record-detail/readonlyRecordDetail";
 import {
   getTimelineAssetUrls,
   getTimelineKind,
@@ -31,5 +32,7 @@ export function GuestDetailTimeline({ detail }: { detail: PublicDetailVM }) {
     };
   });
 
-  return <RescueTimelineList items={timelineItems} />;
+  return (
+    <RescueTimelineList items={timelineItems} onReadonlyRecordTap={openReadonlyRecordDetail} />
+  );
 }

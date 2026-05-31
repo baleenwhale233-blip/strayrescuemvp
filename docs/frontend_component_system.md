@@ -279,24 +279,33 @@
 - 新增 `src/components/ui` 基础组件目录
 - 新增并落地 `src/components/rescue` 业务组件目录，承接 `DiscoverCaseCard`、`RescueCaseSummaryCard`、`RescueDetailActions`、`RescueLedgerSummary`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet`
 - 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `ListEntry` / `MoneyInput` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
+- 记账页已将公共凭证卡、滚动吸顶合计和支出明细区拆为页面内 `components/`，入口继续负责草稿恢复、图片选择、明细状态、远端 / 本地 fallback 提交和成功反馈
 - `src/pages` 与 `src/components` 当前已清掉直接 `theme-card` / `theme-button-primary` / `theme-button-secondary` 引用；后续新增页面优先从 `src/components/ui` 组合，不再直接依赖旧全局主题类
 - `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已完成首轮颜色 token 化，业务共享组件不再新增裸色值
 - `RescueOwnerShared` 与 `RescueTimelineShared` 已开始首轮尺寸 token 化，常规间距、圆角、字号、图标和上传格尺寸优先使用现有 `space / radius / font / size` CSS variables
 - 记录详情页已接入 `SurfaceCard` / `StatusBadge` / `EmptyState`，并与记账 / 更新进展 / 追加预算一起完成首轮页面颜色 token 化
 - 支持登记页已用 `StatusBadge` 和单图 `UploadStrip` 收口状态与凭证上传；处理登记页待处理操作按钮已迁到 `AppButton`
 - 建档基础信息页和预算页已完成首轮颜色 token 化，页面 / 导航 / 步骤条 / 上传 / 表单 / 底栏 / 金额输入等颜色统一使用 CSS variables
-- 详情页 `index.scss` 已完成首轮颜色 token 化，客态 hero、资金卡、救助人卡、底部操作栏和主态结束栏不再保留页面级裸色值
-- 详情页 `index.scss` 已开始首轮尺寸 token 化，rename sheet、客态卡片 / tab / 底栏、主态结束栏等常规尺寸优先迁到现有 CSS variables
+- 详情页 `index.scss` 已从 449 行缩小到 15 行，只保留页面壳、正文最大宽度和 owner 宽度差异；页面态、rename sheet、客态 hero、资金卡、维护者卡、tab、概览和 owner tab 内容样式已下沉到局部组件同目录 SCSS
+- 详情页局部组件 SCSS 已完成颜色与常规尺寸 token 化；失效的旧 owner `.detail-tabs` 页面选择器已移除
 - 记账 / 更新进展 / 追加预算三个生产高频页已开始首轮尺寸 token 化，表单、上传区、提示条、动物卡和底部操作栏的常规尺寸优先使用现有 CSS variables
+- 更新进展页已将阶段选择、进展描述、近况影像卡和发布 footer 拆为页面内 `components/`，入口继续负责上下文加载、图片选择、草稿 / 远端提交、本地 fallback 和成功反馈
+- 追加预算页已将预算表单、说明、提示条和提交区拆为页面内 `BudgetUpdateForm`，入口继续负责 draft / case 上下文、金额校验、远端写入和本地 fallback
 - 支持登记 / 处理登记两个闭环页已开始首轮尺寸 token 化，case 卡、凭证图、金额输入、tab、操作按钮和底部提交栏的常规尺寸优先使用现有 CSS variables
+- 支持登记页已将案例摘要、金额、称呼、凭证、备注和提交区拆为页面内 `SupportClaimForm`，入口继续负责详情加载、截图选择 / 上传、登记提交和错误映射
 - 记录详情页和建档基础信息 / 预算页已开始首轮尺寸 token 化，记录卡、金额行、图片网格、步骤条、上传拍照区、金额输入和固定底栏的常规尺寸优先使用现有 CSS variables
+- 记录详情页已将不可修改提示与详情内容卡拆为页面内 `RecordDetailNotice` / `RecordDetailCard`，入口继续负责远端详情读取、本地只读记录 fallback 和图片预览
 - `SupportSheet`、`DiscoverCaseCard` 和我的页已开始首轮尺寸 token 化，联系弹层、发现卡片、头像昵称和身份入口的常规尺寸优先使用现有 CSS variables
 - 草稿预览、联系方式设置、支持足迹、guide 和工作台入口页已开始首轮尺寸 token 化，弹层表单、二维码上传、列表卡、说明正文和工作台列表的常规尺寸优先使用现有 CSS variables
+- 工作台已将新建记录 CTA 与档案 / 草稿列表拆为页面内 `WorkbenchCreateAction` / `WorkbenchProjectSections`，入口继续负责资料完整性校验、VM 加载和导航
+- 建档基础信息 / 预算页已将封面、代号、摘要、预算金额、说明和底部下一步动作拆为页面内 `CreateBasicForm` / `CreateBudgetForm`，入口继续负责 draft 读取、校验、保存和跳转
+- 联系方式设置页已将微信号、二维码、备注和保存区拆为页面内 `ContactSettingsForm`，入口继续负责本地 / 远端资料同步、二维码上传和保存后跳转
 - `RescueCaseSummaryCard` 已承接更新进展、追加预算和支持登记页的动物 / 案例摘要卡；页面只传展示 props，不再各自维护重复卡片结构
 - `RescueLedgerSummary` 已承接发现卡、客态详情资金卡和主态动物卡资金区的预算、进度条、金额指标和资金状态表达；页面 / 卡片只传展示 props
 - `ListEntry` 已承接我的页功能入口、支持足迹列表和工作台档案卡的 `leading + title / subtitle + trailing + notice` 通用骨架；页面只保留导航、图标、文案和业务 notice
 - `RescueRecordShared` 已承接客态概览、主态概览、时间线和记录详情页的记录头部、预算前后对比、凭证图片网格和透明账本水印；页面只保留记录数据组装与图片预览回调
-- `support/review` 待处理卡当前仍只服务单页，暂保留页面局部结构；等出现第二个支持处理入口或明确同类页面后再晋升，避免过早抽象
+- `RescueTimelineList` / `RescueOwnerTimeline` 不再直接写 storage 或执行页面跳转；只通过 `onReadonlyRecordTap` 暴露只读记录点击事件，由详情页入口和记录详情 helper 负责缓存与导航
+- `support/review` 待处理列表与手动登记表单已收为页面内组件；待处理卡仍只服务单页，等出现第二个支持处理入口或明确同类页面后再晋升，避免过早抽象
 - `SubmitActionBar` 已承接支持登记、处理登记手动登记、追加预算和联系方式设置的单按钮固定提交底栏；页面只保留提交回调、按钮文案和少量宽度差异变量
 - `TextareaField` 已承接支持登记、追加预算、联系方式设置、更新进展、建档基础信息、建档预算和草稿预览弹层的 overlay placeholder 文本域；页面通过 CSS variables 保留高度、背景和字号差异
 - `HintActionFooter` 已承接建档基础信息和建档预算页的固定主按钮 + 辅助提示 footer；页面只保留下一步回调、按钮文案、图标和提示文案
@@ -322,25 +331,27 @@
 
 下一阶段重点：
 
-- 继续复核详情页、生产页和基础 UI 样式中的组件边界，区分应继续晋升的结构与可以保留的页面局部结构
-- 继续将已在详情 / 草稿预览反复出现的资金摘要、支持处理卡和身份列表结构逐步晋升到 `src/components/rescue` 或 `src/components/ui`
+- 首轮组件化治理后，所有 180 行以上页面入口都已有页面内 `components/` 承接稳定展示结构；下一步以真机 / 微信开发者工具回归、视觉精修和新增页面守门为主
+- 继续观察已在详情 / 草稿预览 / 工作台反复出现的结构；只有出现第二个真实消费者或明确同类页面时，才继续晋升到 `src/components/rescue` 或 `src/components/ui`
 - 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
 - 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `0`；后续新增页面 / 组件默认不得在 `src/pages` 与 `src/components` 中新增裸色值或裸 `px/rpx` 尺寸
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
 
 2026-05-30 起已完成的首轮页面迁移：
 
-- 生产页：记账 / 更新进展 / 追加预算已接入 `FormField`、`UploadStrip`、`BottomActionBar`、`AppButton`、`SurfaceCard`、`MoneyInput`、`NoticeBanner`，并完成首轮常规尺寸 token 化；更新进展 / 追加预算的动物摘要卡已迁到 `RescueCaseSummaryCard`
-- 支持闭环页：登记一笔 / 处理登记已接入 `FormField`、`MoneyInput`、`SegmentedTabs`、`EmptyState`、`BottomActionBar`、`SurfaceCard`、`StatusBadge`、`UploadStrip`、`AppButton`，并完成首轮常规尺寸 token 化；登记一笔的案例摘要卡已迁到 `RescueCaseSummaryCard`
-- 建档页：基础信息 / 预算页完成首轮颜色与常规尺寸 token 化，草稿预览页完成首轮常规尺寸 token 化；基础信息页封面上传已迁到 `UploadStrip cover`，预算页金额输入已迁到 `MoneyInput`，基础信息 / 预算页步骤点已迁到 `StepIndicator`，下一步再评估是否把动物摘要迁入共享组件
+- 生产页：记账 / 更新进展 / 追加预算已接入 `FormField`、`UploadStrip`、`BottomActionBar`、`AppButton`、`SurfaceCard`、`MoneyInput`、`NoticeBanner`，并完成首轮常规尺寸 token 化；更新进展 / 追加预算的动物摘要卡已迁到 `RescueCaseSummaryCard`；记账页的凭证、合计和明细列表结构已收口为页面内组件，更新进展页的阶段、描述、影像和发布区、追加预算页的表单和提交区也已收口为页面内组件
+- 支持闭环页：登记一笔 / 处理登记已接入 `FormField`、`MoneyInput`、`SegmentedTabs`、`EmptyState`、`BottomActionBar`、`SurfaceCard`、`StatusBadge`、`UploadStrip`、`AppButton`，并完成首轮常规尺寸 token 化；登记一笔的案例摘要卡已迁到 `RescueCaseSummaryCard`，登记表单已收口为页面内组件
+- 建档页：基础信息 / 预算页完成首轮颜色与常规尺寸 token 化，草稿预览页完成首轮常规尺寸 token 化；基础信息页封面上传已迁到 `UploadStrip cover`，预算页金额输入已迁到 `MoneyInput`，基础信息 / 预算页步骤点已迁到 `StepIndicator`，建档两步表单均已收口为页面内组件；暂不把动物摘要晋升共享组件，等第二个真实消费者出现
 - 发现页：案例卡资金摘要已接入 `RescueLedgerSummary`，loading 态已接入 `EmptyState`，卡片样式所有权回收到 `DiscoverCaseCard`，发现卡片完成首轮常规尺寸 token 化
 - 发现 / 记录主页共用案例卡：`DiscoverCaseCard` 外壳已接入 `SurfaceCard`
-- 详情页：客态 / 主态 tab、客态资金摘要、主态动物卡资金区、badge、页面态、底部操作栏和卡片外壳已逐步接入共享组件，`index.scss` 已清掉页面级裸色值
-- 工作台：列表卡片已接入 `ListEntry`，列表封面接入 `Avatar`，新建记录按钮接入 `AppButton`，档案 / 草稿空态接入 `EmptyState`
+- 详情页：客态 / 主态 tab、客态资金摘要、主态动物卡资金区、badge、页面态、底部操作栏和卡片外壳已逐步接入共享组件；入口 `index.scss` 已从 449 行缩小到只保留 15 行页面布局，局部样式改由对应组件持有；只读记录详情跳转、复制案例 ID、记录主页跳转和结束记录确认由页面入口统一持有
+- 草稿预览页：quick action 写入记录和改代号弹层已拆为页面内 sheet 组件，并共用 `PreviewSheetFrame`；入口继续负责草稿读取、预览 VM、封面替换、发布和保存
+- 工作台：列表卡片已接入 `ListEntry`，列表封面接入 `Avatar`，新建记录按钮接入 `AppButton`，档案 / 草稿空态接入 `EmptyState`，新建 CTA 与档案 / 草稿列表已收为页面内组件
 - 我的页：头像接入 `Avatar`，昵称输入外壳接入 `SurfaceCard`，功能入口行接入 `ListEntry`，头像昵称保存接入 `AppButton`，并完成首轮常规尺寸 token 化
+- 我的页头像昵称编辑、入口菜单和页脚已收为页面内组件；入口保留资料加载、头像上传同步、资料保存和导航锁
 - 我的 guide 页、联系方式设置、草稿预览、支持足迹和工作台入口已完成首轮常规尺寸 token 化；发现页搜索框、联系方式底栏、草稿预览底栏和页面内 `placeholderStyle` 已完成颜色 token 化
 - 支持足迹：汇总卡接入 `SurfaceCard`，登记记录列表卡接入 `ListEntry`，列表封面接入 `Avatar`，空态接入 `EmptyState`
-- 联系方式设置：字段标签接入 `FormField`，二维码上传接入单图 `UploadStrip`，保存区接入 `BottomActionBar + AppButton`
+- 联系方式设置：字段标签接入 `FormField`，二维码上传接入单图 `UploadStrip`，保存区接入 `BottomActionBar + AppButton`，表单和保存区已收为页面内组件
 
 2026-05-30 记账页第一刀迁移：
 

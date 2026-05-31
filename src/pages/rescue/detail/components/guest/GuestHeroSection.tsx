@@ -3,6 +3,7 @@ import copyWhiteIcon from "../../../../../assets/rescue-detail/copy-white-12.svg
 import evidenceCompleteOrangeIcon from "../../../../../assets/rescue-detail/evidence-complete-orange-14.svg";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getHeroImage } from "../../detailViewModels";
+import "./GuestHeroSection.scss";
 
 export function GuestHeroSection({
   detail,

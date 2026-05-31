@@ -1,0 +1,37 @@
+.rescue-create-page__upload-card {
+  padding: var(--space-2) 0 var(--space-6);
+}
+
+.rescue-create-page__form-group {
+  margin-bottom: var(--space-6);
+}
+
+.rescue-create-page__label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
+}
+
+.rescue-create-page__input-card {
+  overflow: hidden;
+  background: var(--color-bg-card);
+  border: var(--border-width-default) solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+}
+
+.rescue-create-page__input {
+  width: 100%;
+  height: var(--size-input-lg);
+  padding: 0 var(--form-control-padding-x);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
+}
+
+.rescue-create-page__textarea {
+  --textarea-field-height: var(--size-textarea-sm);
+  --textarea-field-min-height: var(--size-textarea-sm);
+  --textarea-field-font-size: var(--font-size-body-lg);
+}

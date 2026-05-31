@@ -1,0 +1,44 @@
+.rescue-expense-page__evidence {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  gap: var(--layout-card-gap);
+  padding: var(--space-4);
+  border: none;
+  box-shadow: var(--shadow-card);
+}
+
+.rescue-expense-page__section-copy {
+  --section-header-title-font-size: var(--font-size-body-lg);
+  --section-header-title-line-height: var(--line-height-body-lg);
+}
+
+.rescue-expense-page__upload-strip {
+  --upload-add-icon-height: var(--size-upload-add-icon-height);
+  --upload-add-icon-width: var(--size-upload-add-icon-width);
+  --upload-tile-radius: var(--radius-md);
+
+  height: var(--size-upload-tile-md);
+}
+
+.rescue-expense-page__upload-strip .ui-upload-strip__scroll {
+  height: var(--size-upload-tile-md);
+}
+
+.rescue-expense-page__upload-strip .ui-upload-strip__add-copy {
+  font-size: var(--font-size-badge-xs);
+  line-height: var(--font-size-body-sm);
+}
+
+.rescue-expense-page__upload-strip .ui-upload-strip__item {
+  border: none;
+  border-radius: var(--radius-sm);
+}
+
+.rescue-expense-page__upload-strip .ui-upload-strip__remove {
+  top: 0;
+  right: 0;
+  width: var(--size-icon-lg);
+  height: var(--size-icon-lg);
+  background: transparent;
+}

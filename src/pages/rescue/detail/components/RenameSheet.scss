@@ -1,0 +1,74 @@
+.detail-rename-sheet__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  background: var(--color-overlay-scrim);
+}
+
+.detail-rename-sheet {
+  width: 100%;
+  padding: 0 var(--space-4) var(--space-6);
+  background: var(--color-bg-page);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.detail-rename-sheet__handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--space-6);
+}
+
+.detail-rename-sheet__handle-bar {
+  width: var(--space-12);
+  height: var(--blur-sm);
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
+}
+
+.detail-rename-sheet__title {
+  display: block;
+  padding: var(--space-2) 0 var(--space-4);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading-sm);
+  text-align: center;
+}
+
+.detail-rename-sheet__field {
+  margin-bottom: var(--space-4);
+}
+
+.detail-rename-sheet__label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body-sm);
+}
+
+.detail-rename-sheet__input-card {
+  overflow: hidden;
+  background: var(--color-bg-card);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+}
+
+.detail-rename-sheet__input {
+  width: 100%;
+  height: calc(var(--size-input-md) + var(--space-1));
+  padding: 0 var(--space-4);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
+}
+
+.detail-rename-sheet__button {
+  min-height: var(--size-input-md);
+  margin-top: var(--space-2);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}

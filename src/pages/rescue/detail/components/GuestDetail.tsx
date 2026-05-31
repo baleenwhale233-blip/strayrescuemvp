@@ -1,5 +1,4 @@
 import { View } from "@tarojs/components";
-import Taro from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { RescueGuestActionBar } from "../../../../components/rescue";
@@ -11,38 +10,33 @@ import { GuestHeroSection } from "./guest/GuestHeroSection";
 import { GuestOverviewSection } from "./guest/GuestOverviewSection";
 import { GuestRescuerCard } from "./guest/GuestRescuerCard";
 import { GuestTabs } from "./guest/GuestTabs";
+import "./GuestDetail.scss";
 
 export function GuestDetail({
   detail,
   onSupport,
   onClaim,
+  onCopyPublicCaseId,
+  onOpenHomepage,
 }: {
   detail: PublicDetailVM;
   onSupport: () => void;
   onClaim: () => void;
+  onCopyPublicCaseId: () => void;
+  onOpenHomepage: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<DetailTab>("overview");
-
-  const handleCopyPublicCaseId = () => {
-    Taro.setClipboardData({ data: detail.publicCaseId });
-  };
-
-  const handleOpenHomepage = () => {
-    Taro.navigateTo({
-      url: `/pages/rescuer/home/index?rescuerId=${detail.rescuer.id}&caseId=${detail.caseId}`,
-    });
-  };
 
   return (
     <View className="detail-page detail-page--guest">
       <NavBar showBack title="记录明细" />
 
-      <GuestHeroSection detail={detail} onCopyPublicCaseId={handleCopyPublicCaseId} />
+      <GuestHeroSection detail={detail} onCopyPublicCaseId={onCopyPublicCaseId} />
 
       <View className="detail-page__body">
         <GuestFundingCard detail={detail} />
 
-        <GuestRescuerCard detail={detail} onOpenHomepage={handleOpenHomepage} />
+        <GuestRescuerCard detail={detail} onOpenHomepage={onOpenHomepage} />
 
         <GuestTabs activeTab={activeTab} onChange={setActiveTab} />
 

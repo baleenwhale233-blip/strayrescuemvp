@@ -2,6 +2,7 @@ import { Text, View } from "@tarojs/components";
 import { Avatar, SurfaceCard } from "../../../../../components/ui";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getRescuerAvatar } from "../../detailViewModels";
+import "./GuestRescuerCard.scss";
 
 export function GuestRescuerCard({
   detail,

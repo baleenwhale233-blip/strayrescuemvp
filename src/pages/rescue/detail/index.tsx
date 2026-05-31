@@ -45,6 +45,35 @@ export default function RescueDetailPage() {
     setPublicDetail,
   });
 
+  const navigateToCaseAction = (path: string) => {
+    const currentCaseId = publicDetail?.caseId || caseId;
+    if (!currentCaseId) {
+      return;
+    }
+
+    Taro.navigateTo({
+      url: `${path}?caseId=${currentCaseId}`,
+    });
+  };
+
+  const handleFinishRecord = async () => {
+    const result = await Taro.showModal({
+      title: "结束记录？",
+      content: "请确认这条记录已经完成、已结案，或确实需要关闭。",
+      confirmText: "确认结束",
+      cancelText: "再等等",
+    });
+
+    if (!result.confirm) {
+      return;
+    }
+
+    Taro.showToast({
+      title: "结束记录链路待接入",
+      icon: "none",
+    });
+  };
+
   if (detailStatus === "loading") {
     return (
       <PageShell key={reloadSeed} className="detail-page-shell">
@@ -76,6 +105,14 @@ export default function RescueDetailPage() {
       {mode === "guest" ? (
         <GuestDetail
           detail={publicDetail}
+          onCopyPublicCaseId={() => {
+            Taro.setClipboardData({ data: publicDetail.publicCaseId });
+          }}
+          onOpenHomepage={() => {
+            Taro.navigateTo({
+              url: `/pages/rescuer/home/index?rescuerId=${publicDetail.rescuer.id}&caseId=${publicDetail.caseId}`,
+            });
+          }}
           onSupport={() =>
             runGuestActionWithLock(() => {
               if (supportOpen) {
@@ -96,8 +133,16 @@ export default function RescueDetailPage() {
       ) : ownerDetail ? (
         <OwnerDetail
           initialTab={initialOwnerTab}
+          onBudget={() => navigateToCaseAction("/pages/rescue/budget-update/index")}
           onChangeCover={handleChangeCover}
+          onCopyPublicCaseId={() => {
+            Taro.setClipboardData({ data: ownerDetail.publicCaseId });
+          }}
+          onExpense={() => navigateToCaseAction("/pages/rescue/expense/index")}
+          onFinishRecord={handleFinishRecord}
+          onIncome={() => navigateToCaseAction("/pages/support/review/index")}
           onRenameTitle={handleRenameTitle}
+          onStatus={() => navigateToCaseAction("/pages/rescue/progress-update/index")}
           ownerDetail={ownerDetail}
           publicDetail={publicDetail}
         />

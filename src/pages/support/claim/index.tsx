@@ -1,29 +1,18 @@
-import { Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
-import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
-import { RescueCaseSummaryCard } from "../../../components/rescue";
-import {
-  EmptyState,
-  FormField,
-  MoneyInput,
-  PageShell,
-  SubmitActionBar,
-  TextareaField,
-  UploadStrip,
-} from "../../../components/ui";
+import { EmptyState, PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
-import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
   createRemoteSupportEntryByCaseId,
   loadPublicDetailVMByCaseId,
 } from "../../../domain/canonical/repository";
 import { uploadSupportProofImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
+import { SupportClaimForm } from "./components/SupportClaimForm";
 import "./index.scss";
 
 type ClaimLoadStatus = "loading" | "ready" | "error";
@@ -197,59 +186,28 @@ export default function SupportClaimPage() {
     >
       <NavBar showBack title="登记一笔" />
 
-      <RescueCaseSummaryCard
-        className="support-claim__case-summary"
-        coverSrc={caseCoverSrc}
-        mediaVariant="framed"
-        publicCaseId={detail.publicCaseId}
-        rescueStartedAtLabel={`记录开始时间: ${getRescueStartedAtLabel(detail)}`}
-        statusLabel={detail.statusLabel}
-        title={detail.title}
+      <SupportClaimForm
+        amount={amount}
+        cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+        imagePath={imagePath}
+        nickname={nickname}
+        note={note}
+        summary={{
+          coverSrc: caseCoverSrc,
+          publicCaseId: detail.publicCaseId,
+          rescueStartedAtLabel: `记录开始时间: ${getRescueStartedAtLabel(detail)}`,
+          statusLabel: detail.statusLabel,
+          title: detail.title,
+        }}
+        onAmountChange={setAmount}
         onCoverError={() => setCaseCoverSrc(animalProfileExact)}
+        onImageAdd={handlePickImage}
+        onImagePreview={handlePreviewImage}
+        onImageRemove={() => setImagePath("")}
+        onNicknameChange={setNickname}
+        onNoteChange={setNote}
+        onSubmit={handleSubmit}
       />
-
-      <FormField className="support-claim__field" label="登记金额">
-        <MoneyInput value={amount} onValueChange={setAmount} />
-      </FormField>
-
-      <FormField className="support-claim__field" label="您的称呼">
-        <Input
-          className="support-claim__text-input"
-          value={nickname}
-          onInput={(event) => setNickname(event.detail.value)}
-        />
-      </FormField>
-
-      <FormField
-        className="support-claim__field support-claim__field--upload"
-        label="相关截图/凭证"
-      >
-        <UploadStrip
-          className="support-claim__upload-strip"
-          addIconSrc={addPhotoIcon}
-          addLabel="添加照片"
-          images={imagePath ? [imagePath] : []}
-          maxImages={1}
-          onAdd={handlePickImage}
-          onPreview={(src) => handlePreviewImage(src)}
-          onRemove={() => setImagePath("")}
-        />
-      </FormField>
-
-      <FormField className="support-claim__field" label="备注">
-        <TextareaField
-          className="support-claim__textarea"
-          placeholder="可补充留言、用途或对账备注"
-          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-          maxlength={120}
-          value={note}
-          onInput={(event) => setNote(event.detail.value)}
-        />
-      </FormField>
-
-      <SubmitActionBar iconSrc={submitArrowIcon} onTap={handleSubmit}>
-        提交登记
-      </SubmitActionBar>
     </PageShell>
   );
 }
