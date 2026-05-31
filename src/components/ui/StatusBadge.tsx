@@ -3,7 +3,14 @@ import { Text, View } from "@tarojs/components";
 import { cx } from "./classNames";
 import "./ui.scss";
 
-type StatusBadgeTone = "neutral" | "brand" | "success" | "warning" | "danger" | "info" | "draft";
+export type StatusBadgeTone =
+  | "neutral"
+  | "brand"
+  | "success"
+  | "warning"
+  | "danger"
+  | "info"
+  | "draft";
 
 type StatusBadgeProps = {
   children: ReactNode;

@@ -1,7 +1,8 @@
 import { Image, Text, View } from "@tarojs/components";
 import summaryExpenseIcon from "../../../../assets/rescue-detail/summary-expense-18.svg";
-import { StatusBadge, SurfaceCard } from "../../../../components/ui";
+import { SurfaceCard } from "../../../../components/ui";
 import summaryIncomeIcon from "../../../../assets/rescue-detail/summary-income-17.svg";
+import { RescueEvidenceGrid, RescueRecordHeader } from "../../../../components/rescue";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import {
   formatSignedAmount,
@@ -60,31 +61,19 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
 
       {latestItem ? (
         <SurfaceCard className="guest-section-card">
-          <View className="guest-section-card__header">
-            <View className="guest-section-card__badges">
-              <StatusBadge className="guest-section-card__badge" tone="info">
-                最新状态
-              </StatusBadge>
-              <StatusBadge className="guest-section-card__badge" tone="brand">
-                {detail.statusLabel}
-              </StatusBadge>
-            </View>
-            <Text className="guest-section-card__time">{latestItem.timestampLabel}</Text>
-          </View>
+          <RescueRecordHeader
+            badgeLabel="最新状态"
+            badgeTone="info"
+            statusLabel={detail.statusLabel}
+            timestamp={latestItem.timestampLabel}
+          />
 
           <Text className="guest-section-card__paragraph">
             {latestItem.description || latestItem.title}
           </Text>
 
           {overviewImage ? (
-            <View className="guest-section-card__hero-image-wrap">
-              <Image
-                className="guest-section-card__hero-image"
-                mode="aspectFill"
-                src={overviewImage}
-              />
-              <Text className="guest-section-card__watermark">透明账本·严禁盗用</Text>
-            </View>
+            <RescueEvidenceGrid images={[overviewImage]} variant="overview" watermarkTone="scrim" />
           ) : null}
         </SurfaceCard>
       ) : null}

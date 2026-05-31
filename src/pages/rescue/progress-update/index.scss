@@ -112,38 +112,6 @@
   line-height: var(--line-height-body-sm);
 }
 
-.rescue-update-page__textarea-wrap {
-  position: relative;
-  min-height: 160px;
-  overflow: hidden;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-sm);
-}
-
-.rescue-update-page__textarea-placeholder {
-  position: absolute;
-  top: 18px;
-  left: 18px;
-  right: 18px;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-lg);
-  pointer-events: none;
-}
-
-.rescue-update-page__textarea {
-  width: 100%;
-  min-height: 160px;
-  padding: 18px;
-  color: var(--color-text-primary);
-  background: transparent;
-  border: 0;
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-lg);
-  box-sizing: border-box;
-}
-
 .rescue-update-page__image-card {
   display: flex;
   flex-direction: column;
@@ -219,43 +187,16 @@
 }
 
 .rescue-update-page__bottom {
-  padding: var(--space-4);
-  background: var(--bottom-action-bg);
-  border-top: none;
-  box-shadow: none;
-  backdrop-filter: blur(8px);
-}
-
-.rescue-update-page__bottom .ui-bottom-action-bar__inner {
-  gap: var(--space-3);
-}
-
-.rescue-update-page__bottom-cancel {
-  width: 100.28px;
-  min-height: var(--size-button-lg);
-  border-radius: var(--radius-sm);
-}
-
-.rescue-update-page__bottom-submit {
-  width: 245.72px;
-  flex: none;
-  gap: var(--space-2);
-  min-height: var(--size-button-lg);
-  border-radius: var(--radius-sm);
-}
-
-.rescue-update-page__bottom-submit .ui-button__icon {
-  width: 14.25px;
-  height: 12px;
-}
-
-@media (min-width: 768px) {
-  .rescue-update-page__bottom-cancel {
-    width: 100.28px;
-  }
-
-  .rescue-update-page__bottom-submit {
-    max-width: 246px;
-    width: 245.72px;
-  }
+  --dual-action-footer-backdrop-filter: blur(8px);
+  --dual-action-footer-border-width: 0;
+  --dual-action-footer-padding: var(--space-4);
+  --dual-action-footer-shadow: none;
+  --dual-action-primary-flex: none;
+  --dual-action-primary-icon-height: 12px;
+  --dual-action-primary-icon-width: 14.25px;
+  --dual-action-primary-max-width: 246px;
+  --dual-action-primary-min-height: var(--size-button-lg);
+  --dual-action-primary-width: 245.72px;
+  --dual-action-secondary-min-height: var(--size-button-lg);
+  --dual-action-secondary-width: 100.28px;
 }

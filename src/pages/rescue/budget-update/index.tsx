@@ -3,8 +3,7 @@ import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { RescueCaseSummaryCard } from "../../../components/rescue";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
-import { AppButton, BottomActionBar, FormField, MoneyInput } from "../../../components/ui";
+import { FormField, MoneyInput, SubmitActionBar, TextareaField } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -291,10 +290,8 @@ export default function RescueBudgetUpdatePage() {
         </FormField>
 
         <FormField className="rescue-budget-update-page__field" label="追加原因/说明">
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="rescue-budget-update-page__textarea-wrap"
-            textareaClassName="rescue-budget-update-page__textarea"
-            placeholderClassName="rescue-budget-update-page__textarea-placeholder"
+          <TextareaField
+            className="rescue-budget-update-page__textarea"
             placeholder="请说明为什么要追加预算，如：病情反复需要额手术、住院时间延长等"
             cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={160}
@@ -315,15 +312,13 @@ export default function RescueBudgetUpdatePage() {
         </View>
       </View>
 
-      <BottomActionBar className="rescue-budget-update-page__bottom">
-        <AppButton
-          className="rescue-budget-update-page__bottom-submit"
-          iconSrc={submitArrowIcon}
-          onTap={handleSubmit}
-        >
-          确认追加并更新时间线
-        </AppButton>
-      </BottomActionBar>
+      <SubmitActionBar
+        className="rescue-budget-update-page__bottom"
+        iconSrc={submitArrowIcon}
+        onTap={handleSubmit}
+      >
+        确认追加并更新时间线
+      </SubmitActionBar>
     </View>
   );
 }

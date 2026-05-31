@@ -132,19 +132,12 @@
 }
 
 .profile-page__menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 72px;
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-none);
-}
-
-.profile-page__menu-main {
-  display: flex;
-  align-items: center;
-  min-width: 0;
+  --list-entry-min-height: 72px;
+  --list-entry-radius: var(--radius-md);
+  --list-entry-shadow: var(--shadow-none);
+  --list-entry-title-font-size: var(--font-size-body-sm);
+  --list-entry-title-font-weight: var(--font-weight-regular);
+  --list-entry-title-line-height: var(--line-height-body-sm);
 }
 
 .profile-page__menu-icon-wrap {
@@ -161,13 +154,6 @@
 .profile-page__menu-icon {
   width: var(--size-icon-md);
   height: var(--size-icon-md);
-}
-
-.profile-page__menu-label {
-  margin-left: var(--space-4);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
 }
 
 .profile-page__chevron {

@@ -1,6 +1,7 @@
 import { Image, Text, View } from "@tarojs/components";
 import { SegmentedTabs, StatusBadge, SurfaceCard } from "../ui";
 import { RescueLedgerSummary } from "./RescueLedgerSummary";
+import { RescueEvidenceGrid, RescueRecordHeader } from "./RescueRecordShared";
 import { RescueTimelineList, type RescueTimelineSharedItem } from "./RescueTimelineShared";
 import ownerActionBudgetIcon from "../../assets/rescue-detail/owner/action-budget.svg";
 import ownerActionChevronIcon from "../../assets/rescue-detail/owner/action-chevron.svg";
@@ -286,27 +287,15 @@ export function RescueOwnerOverview({
 
       {latestStatus ? (
         <SurfaceCard className="rescue-owner-overview__latest">
-          <View className="rescue-owner-overview__latest-header">
-            <View className="rescue-owner-overview__latest-badges">
-              <StatusBadge className="rescue-owner-overview__badge" tone="info">
-                最新进展
-              </StatusBadge>
-              <StatusBadge className="rescue-owner-overview__badge" tone="brand">
-                {latestStatus.statusLabel}
-              </StatusBadge>
-            </View>
-            <Text className="rescue-owner-overview__time">{latestStatus.timestamp}</Text>
-          </View>
+          <RescueRecordHeader
+            badgeLabel="最新进展"
+            badgeTone="info"
+            statusLabel={latestStatus.statusLabel}
+            timestamp={latestStatus.timestamp}
+          />
           <Text className="rescue-owner-overview__paragraph">{latestStatus.text}</Text>
           {latestStatus.imageUrl ? (
-            <View className="rescue-owner-overview__latest-image-wrap">
-              <Image
-                className="rescue-owner-overview__latest-image"
-                mode="aspectFill"
-                src={latestStatus.imageUrl}
-              />
-              <Text className="rescue-owner-overview__watermark">透明账本·严禁盗用</Text>
-            </View>
+            <RescueEvidenceGrid images={[latestStatus.imageUrl]} variant="overview" />
           ) : null}
         </SurfaceCard>
       ) : null}

@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import {
   AppButton,
-  BottomActionBar,
   EmptyState,
   FormField,
   MoneyInput,
   SegmentedTabs,
+  SubmitActionBar,
   SurfaceCard,
 } from "../../../components/ui";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
@@ -306,15 +306,9 @@ export default function SupportReviewPage() {
             />
           </FormField>
 
-          <BottomActionBar className="support-review-page__manual-bottom">
-            <AppButton
-              className="support-review-page__submit"
-              iconSrc={submitArrowIcon}
-              onTap={handleSubmitManual}
-            >
-              提交登记
-            </AppButton>
-          </BottomActionBar>
+          <SubmitActionBar iconSrc={submitArrowIcon} onTap={handleSubmitManual}>
+            提交登记
+          </SubmitActionBar>
         </View>
       )}
     </View>

@@ -2,7 +2,7 @@ import { Image, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { EmptyState, SurfaceCard } from "../../../components/ui";
+import { EmptyState, ListEntry, SurfaceCard } from "../../../components/ui";
 import fallbackCoverImage from "../../../assets/detail/guest-hero-cat.png";
 import chevronIcon from "../../../assets/rescue-detail/owner/action-chevron.svg";
 import { loadMySupportHistory } from "../../../domain/canonical/repository";
@@ -63,23 +63,27 @@ export default function SupportHistoryPage() {
       <View className="support-history-page__list">
         {items.length ? (
           items.map((item) => (
-            <SurfaceCard
+            <ListEntry
               key={item.caseId}
               className="support-history-page__item"
-              interactive
+              leading={
+                <Image
+                  className="support-history-page__avatar"
+                  mode="aspectFill"
+                  src={item.coverImageUrl}
+                />
+              }
               onTap={() => handleOpenCase(item.caseId)}
-            >
-              <Image
-                className="support-history-page__avatar"
-                mode="aspectFill"
-                src={item.coverImageUrl}
-              />
-              <View className="support-history-page__item-copy">
-                <Text className="support-history-page__item-title">{item.title}</Text>
-                <Text className="support-history-page__item-meta">登记 {item.amountLabel}</Text>
-              </View>
-              <Image className="support-history-page__chevron" mode="aspectFit" src={chevronIcon} />
-            </SurfaceCard>
+              subtitle={`登记 ${item.amountLabel}`}
+              title={item.title}
+              trailing={
+                <Image
+                  className="support-history-page__chevron"
+                  mode="aspectFit"
+                  src={chevronIcon}
+                />
+              }
+            />
           ))
         ) : (
           <EmptyState

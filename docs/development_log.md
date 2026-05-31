@@ -2538,3 +2538,63 @@
 - 影响范围：仅影响主态动物资金卡展示结构与组件样式；不改 owner detail 数据、资金计算、编辑封面 / 标题、复制 ID、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `453` 降到 `449`。
 - 下一步 / 遗留问题：继续评估底部动作区、身份列表项和支持记录卡是否晋升组件；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 列表入口骨架晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `ListEntry` 并迁移我的页入口、支持足迹列表和工作台档案卡。
+- 为什么改：三处都重复维护 `SurfaceCard + leading + title / subtitle + trailing + 可选 notice` 骨架，继续留在页面会让身份页和工作台列表样式分叉。
+- 改了什么：在 `src/components/ui` 新增 `ListEntry` 与可覆盖 CSS variables；三处页面改为只传图标 / 头像、文案、跳转回调和业务 notice，并删除页面级通用 flex、标题、副标题和 notice 布局样式。
+- 影响范围：仅影响列表入口展示结构、样式和组件系统文档；不改个人资料保存、支持足迹读取、工作台 VM、导航目标、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `449` 降到 `448`。
+- 下一步 / 遗留问题：继续评估支持处理卡、记录详情卡、身份页头部与底部动作区是否晋升组件；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | 业务组件 | 记录展示骨架晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `RescueRecordShared`，统一记录头部、预算对比与凭证图片网格。
+- 为什么改：客态概览、主态概览、时间线和记录详情页重复维护 badge + 时间、预算前后金额、图片网格和透明账本水印，已经满足 rescue 业务组件晋升规则。
+- 改了什么：新增 `RescueRecordHeader`、`RescueBudgetComparison`、`RescueEvidenceGrid`，迁移四处消费点并删除页面 / 组件级重复 SCSS；`support/review` 待处理卡因暂时只有单页消费，继续保留页面局部结构。
+- 影响范围：仅影响记录展示结构、样式与组件系统文档；不改记录读取、远端详情映射、图片预览、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `448` 降到 `424`。
+- 下一步 / 遗留问题：继续复核详情页剩余巨型 SCSS、底部动作区和身份页头部，优先晋升已有两处以上复用证据的结构；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 单按钮提交底栏晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `SubmitActionBar` 并迁移四处单按钮固定提交底栏。
+- 为什么改：支持登记、处理登记手动登记、追加预算和联系方式设置都重复维护紧凑底栏、主按钮尺寸、圆角和提交图标尺寸，已达到基础组件晋升条件。
+- 改了什么：在 `src/components/ui` 新增 `SubmitActionBar`，复用 `BottomActionBar + AppButton`；四个页面改为只传提交回调、图标和文案，并删除页面级底栏 / submit 按钮重复样式。
+- 影响范围：仅影响单按钮提交底栏展示结构与样式、组件系统文档；不改登记、预算提交、联系方式保存、上传、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `424` 降到 `414`。
+- 下一步 / 遗留问题：继续评估双按钮底栏、建档 footer 和详情页客态 / 主态动作区是否可进一步收口；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 文本域外壳晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `TextareaField` 并迁移多页 overlay placeholder 文本域。
+- 为什么改：支持登记、追加预算、联系方式设置、更新进展、建档基础信息、建档预算和草稿预览弹层都重复维护相同文本域外壳、placeholder 和 textarea 样式。
+- 改了什么：在 `src/components/ui` 新增 `TextareaField`，用 CSS variables 承接高度、背景、边框、字号和行高差异；七处页面改为只传 value、placeholder、maxlength、cursorSpacing 和 onInput，并删除旧 `TextareaWithOverlayPlaceholder`。
+- 影响范围：仅影响文本域展示结构与样式、组件系统文档；不改表单状态、草稿保存、提交、上传、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `414` 降到 `376`。
+- 下一步 / 遗留问题：继续复核建档 footer、双按钮底栏和详情页剩余动作区；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 建档提示 footer 晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `HintActionFooter` 并迁移建档基础信息 / 预算页固定 footer。
+- 为什么改：建档两步都重复维护固定底栏、主按钮和辅助提示文案，属于同一建档流程内的稳定基础交互结构。
+- 改了什么：在 `src/components/ui` 新增 `HintActionFooter`，复用 `AppButton` 并内置提示文案布局；两页改为只传文案、图标和下一步回调，并删除页面级 footer / button / hint 重复样式。
+- 影响范围：仅影响建档两页 footer 展示结构与样式、组件系统文档；不改建档草稿、校验、下一步导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `376` 降到 `373`。
+- 下一步 / 遗留问题：继续复核详情页客态 / 主态动作区和双按钮底栏；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 双按钮底栏与分段控件收口
+
+- 日期：2026-05-31
+- 改动主题：新增 `DualActionFooter`，并把 `SegmentedTabs` 的页面重复样式收口到变量。
+- 为什么改：草稿预览和更新进展页重复维护固定双按钮底栏；客态详情、主态详情和处理登记页重复维护分段 tab 的 item、active 与 badge 样式。
+- 改了什么：在 `src/components/ui` 新增 `DualActionFooter` 并迁移两页 footer；扩展 `SegmentedTabs` CSS variables，让页面只保留宽度、间距、徽标和毛玻璃等差异。
+- 影响范围：仅影响双按钮底栏与分段控件展示结构 / 样式、组件系统文档；不改发布、保存草稿、取消、提交、tab 切换状态、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸降至 369。
+- 下一步 / 遗留问题：继续复核详情页 guest / owner 底部业务动作区和剩余大 SCSS；本轮未改数据层，预计不跑 `test:domain`。

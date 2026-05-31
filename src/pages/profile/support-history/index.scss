@@ -60,12 +60,7 @@
 }
 
 .support-history-page__item {
-  display: flex;
-  align-items: center;
-  min-height: 91px;
-  padding: var(--space-4);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-none);
+  --list-entry-min-height: 91px;
 }
 
 .support-history-page__avatar {
@@ -77,32 +72,10 @@
   border-radius: var(--radius-circle);
 }
 
-.support-history-page__item-copy {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
-  margin-left: var(--space-4);
-}
-
-.support-history-page__item-title {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-lg);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-body-lg);
-}
-
-.support-history-page__item-meta {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
-}
-
 .support-history-page__chevron {
   width: 7.4px;
   height: var(--font-size-caption);
   flex-shrink: 0;
-  margin-left: var(--space-4);
 }
 
 .support-history-page__empty {

@@ -2,9 +2,13 @@ import { Image, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
-import { AppButton, MoneyInput, SurfaceCard } from "../../../../components/ui";
+import {
+  HintActionFooter,
+  MoneyInput,
+  SurfaceCard,
+  TextareaField,
+} from "../../../../components/ui";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import enterRescueIcon from "../../../../assets/rescue-create/step2-enter-icon.svg";
 import { getCurrentDraft, updateCurrentDraft } from "../../../../domain/canonical/repository";
@@ -104,10 +108,8 @@ export default function RescueCreateBudgetPage() {
 
         <View className="rescue-budget-page__field">
           <Text className="rescue-budget-page__label">预估说明 (选填)</Text>
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="rescue-budget-page__textarea-wrap"
-            textareaClassName="rescue-budget-page__textarea"
-            placeholderClassName="rescue-budget-page__textarea-placeholder"
+          <TextareaField
+            className="rescue-budget-page__textarea"
             placeholder="请简要说明这笔预估费用将用于哪些方面？(如：后续3天住院费、特配处方粮、第2次复查化验等)"
             cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={160}
@@ -117,18 +119,14 @@ export default function RescueCreateBudgetPage() {
         </View>
       </SurfaceCard>
 
-      <View className="rescue-budget-page__footer">
-        <AppButton
-          className="rescue-budget-page__button"
-          iconSrc={enterRescueIcon}
-          onTap={handleNext}
-        >
-          进入记录页
-        </AppButton>
-        <Text className="rescue-budget-page__footer-hint">
-          稍后您可以在“我的记录”里随时调整此预估金额
-        </Text>
-      </View>
+      <HintActionFooter
+        className="rescue-budget-page__footer"
+        hint="稍后您可以在“我的记录”里随时调整此预估金额"
+        iconSrc={enterRescueIcon}
+        onTap={handleNext}
+      >
+        进入记录页
+      </HintActionFooter>
     </View>
   );
 }

@@ -39,28 +39,6 @@
   height: 100%;
 }
 
-.project-list-item__name {
-  display: block;
-  width: 100%;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-lg);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-body-lg);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.project-list-item__state {
-  display: block;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .rescue-page__list {
   display: flex;
   flex-direction: column;
@@ -68,61 +46,23 @@
 }
 
 .project-list-item {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--layout-card-gap);
-  min-height: 90px;
-  padding: var(--space-4);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-none);
+  --list-entry-min-height: 90px;
+  --list-entry-notice-bg: var(--color-danger-soft);
+  --list-entry-notice-border-color: var(--color-danger);
+  --list-entry-notice-border-width: 2px;
+
   transition:
     transform 160ms ease,
     box-shadow 160ms ease;
 }
 
 .project-list-item--with-notice {
-  gap: var(--space-2);
-}
-
-.project-list-item__main {
-  display: flex;
-  align-items: center;
-  gap: var(--layout-card-gap);
-  min-width: 0;
+  --list-entry-gap: var(--space-2);
 }
 
 .project-list-item__avatar {
   width: var(--size-avatar-md);
   height: var(--size-avatar-md);
-}
-
-.project-list-item__content {
-  flex: 1;
-  min-width: 0;
-}
-
-.project-list-item__arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-}
-
-.project-list-item__notice {
-  width: 100%;
-  padding: var(--space-2) 10px;
-  background: var(--color-danger-soft);
-  border-left: 2px solid var(--color-danger);
-  border-radius: var(--radius-xs);
-}
-
-.project-list-item__notice-text {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-caption);
-  line-height: var(--line-height-body-sm);
 }
 
 .rescue-page__empty {

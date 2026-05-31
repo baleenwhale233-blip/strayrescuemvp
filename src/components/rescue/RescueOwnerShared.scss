@@ -17,9 +17,7 @@
 .rescue-owner-actions__wide,
 .rescue-owner-actions__primary-main,
 .rescue-owner-actions__wide-main,
-.rescue-owner-tabs,
-.rescue-owner-overview__latest-header,
-.rescue-owner-overview__latest-badges {
+.rescue-owner-tabs {
   display: flex;
   align-items: center;
 }
@@ -208,26 +206,9 @@
 }
 
 .rescue-owner-tabs {
-  gap: var(--space-2);
+  --segmented-tab-padding: var(--space-2) 0;
+
   margin-top: var(--space-4);
-  padding: var(--space-1);
-  background: var(--color-bg-segmented);
-  border-radius: var(--radius-sm);
-}
-
-.rescue-owner-tabs .ui-segmented-tabs__item {
-  flex: 1;
-  padding: var(--space-2) 0;
-  color: var(--color-text-secondary);
-  border-radius: var(--radius-xs);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
-  text-align: center;
-}
-
-.rescue-owner-tabs .ui-segmented-tabs__item--active {
-  color: var(--color-text-primary);
-  background: var(--color-bg-card);
 }
 
 .rescue-owner-overview {
@@ -305,56 +286,4 @@
 
 .rescue-owner-overview__metric-value--income {
   color: var(--color-success);
-}
-
-.rescue-owner-overview__latest-header {
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
-.rescue-owner-overview__latest-badges {
-  gap: var(--space-1);
-}
-
-.rescue-owner-overview__badge.ui-status-badge {
-  min-height: var(--size-icon-md);
-  padding: 2px var(--space-2);
-  border-radius: var(--space-1);
-  font-size: var(--font-size-caption);
-  line-height: var(--size-icon-sm);
-}
-
-.rescue-owner-overview__time {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-  line-height: var(--size-icon-sm);
-}
-
-.rescue-owner-overview__latest-image-wrap {
-  position: relative;
-  overflow: hidden;
-  background: var(--color-border-light);
-  border-radius: var(--radius-xs);
-}
-
-.rescue-owner-overview__latest-image-wrap {
-  height: 164.6px;
-  margin-top: var(--space-3);
-}
-
-.rescue-owner-overview__latest-image {
-  width: 100%;
-  height: 100%;
-}
-
-.rescue-owner-overview__watermark {
-  position: absolute;
-  right: var(--space-2);
-  bottom: var(--space-2);
-  padding: 2px 6px;
-  color: var(--color-brand-on-primary);
-  background: var(--color-overlay-strong);
-  border-radius: var(--space-1);
-  font-size: 10px;
-  line-height: 15px;
 }

@@ -79,7 +79,12 @@
 - `SegmentedTabs`
 - `EmptyState`
 - `BottomActionBar`
+- `SubmitActionBar`
+- `DualActionFooter`
 - `FormField`
+- `HintActionFooter`
+- `TextareaField`
+- `ListEntry`
 - `MoneyInput`
 - `UploadStrip`
 
@@ -103,6 +108,7 @@
 - `RescueCaseSummaryCard`
 - `RescueLedgerSummary`
 - `RescueOwnerShared`
+- `RescueRecordShared`
 - `RescueTimelineShared`
 - `SupportSheet`
 
@@ -260,7 +266,7 @@
 - 扩展 form / bottomActionBar / sheet / upload 等组件 token
 - 新增 `src/components/ui` 基础组件目录
 - 新增并落地 `src/components/rescue` 业务组件目录，承接 `DiscoverCaseCard`、`RescueCaseSummaryCard`、`RescueLedgerSummary`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet`
-- 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `MoneyInput` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
+- 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `ListEntry` / `MoneyInput` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
 - `src/pages` 与 `src/components` 当前已清掉直接 `theme-card` / `theme-button-primary` / `theme-button-secondary` 引用；后续新增页面优先从 `src/components/ui` 组合，不再直接依赖旧全局主题类
 - `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已完成首轮颜色 token 化，业务共享组件不再新增裸色值
 - `RescueOwnerShared` 与 `RescueTimelineShared` 已开始首轮尺寸 token 化，常规间距、圆角、字号、图标和上传格尺寸优先使用现有 `space / radius / font / size` CSS variables
@@ -276,6 +282,14 @@
 - 草稿预览、联系方式设置、支持足迹、guide 和工作台入口页已开始首轮尺寸 token 化，弹层表单、二维码上传、列表卡、说明正文和工作台列表的常规尺寸优先使用现有 CSS variables
 - `RescueCaseSummaryCard` 已承接更新进展、追加预算和支持登记页的动物 / 案例摘要卡；页面只传展示 props，不再各自维护重复卡片结构
 - `RescueLedgerSummary` 已承接发现卡、客态详情资金卡和主态动物卡资金区的预算、进度条、金额指标和资金状态表达；页面 / 卡片只传展示 props
+- `ListEntry` 已承接我的页功能入口、支持足迹列表和工作台档案卡的 `leading + title / subtitle + trailing + notice` 通用骨架；页面只保留导航、图标、文案和业务 notice
+- `RescueRecordShared` 已承接客态概览、主态概览、时间线和记录详情页的记录头部、预算前后对比、凭证图片网格和透明账本水印；页面只保留记录数据组装与图片预览回调
+- `support/review` 待处理卡当前仍只服务单页，暂保留页面局部结构；等出现第二个支持处理入口或明确同类页面后再晋升，避免过早抽象
+- `SubmitActionBar` 已承接支持登记、处理登记手动登记、追加预算和联系方式设置的单按钮固定提交底栏；页面只保留提交回调、按钮文案和少量宽度差异变量
+- `TextareaField` 已承接支持登记、追加预算、联系方式设置、更新进展、建档基础信息、建档预算和草稿预览弹层的 overlay placeholder 文本域；页面通过 CSS variables 保留高度、背景和字号差异
+- `HintActionFooter` 已承接建档基础信息和建档预算页的固定主按钮 + 辅助提示 footer；页面只保留下一步回调、按钮文案、图标和提示文案
+- `DualActionFooter` 已承接草稿预览和更新进展页的固定双按钮底栏；页面通过 CSS variables 保留按钮宽度、图标尺寸和底栏毛玻璃差异
+- `SegmentedTabs` 已补充 CSS variables，客态详情、主态详情和处理登记页不再重复维护通用 tab item / active / badge 样式，只保留页面间距和徽标差异
 - `MoneyInput` 已承接支持登记、处理登记手动登记、追加预算和建档预算页的金额输入结构；页面只保留金额状态、校验和提交逻辑
 - `src/components` 与 `src/pages` 的首轮裸色值扫描已清零，后续颜色新增必须优先走 CSS variables
 - `UploadStrip` 已支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖联系方式单图二维码与生产页多图凭证场景
@@ -286,7 +300,7 @@
 - 继续复核详情页、生产页和基础 UI 样式中的剩余裸尺寸，区分可 token 化值与真正的素材 / 容器特例
 - 继续将已在详情 / 草稿预览反复出现的资金摘要、动作区和身份列表结构逐步晋升到 `src/components/rescue` 或 `src/components/ui`
 - 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
-- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `449`；下一轮重点继续观察详情页、生产页和基础 UI 样式中的剩余高频尺寸是否能按语义迁入 spacing / radius / size token 或被标记为视觉特例
+- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `448`；下一轮重点继续观察详情页、生产页和基础 UI 样式中的剩余高频尺寸是否能按语义迁入 spacing / radius / size token 或被标记为视觉特例
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
 
 2026-05-30 起已完成的首轮页面迁移：
@@ -297,10 +311,10 @@
 - 发现页：案例卡资金摘要已接入 `RescueLedgerSummary`，loading 态已接入 `EmptyState`，卡片样式所有权回收到 `DiscoverCaseCard`，发现卡片完成首轮常规尺寸 token 化
 - 发现 / 记录主页共用案例卡：`DiscoverCaseCard` 外壳已接入 `SurfaceCard`
 - 详情页：客态 / 主态 tab、客态资金摘要、主态动物卡资金区、badge、页面态、底部操作栏和卡片外壳已逐步接入共享组件，`index.scss` 已清掉页面级裸色值
-- 工作台：列表卡片已接入 `SurfaceCard`，新建记录按钮接入 `AppButton`，档案 / 草稿空态接入 `EmptyState`
-- 我的页：昵称输入外壳和功能入口行已接入 `SurfaceCard`，头像昵称保存接入 `AppButton`，并完成首轮常规尺寸 token 化
+- 工作台：列表卡片已接入 `ListEntry`，新建记录按钮接入 `AppButton`，档案 / 草稿空态接入 `EmptyState`
+- 我的页：昵称输入外壳接入 `SurfaceCard`，功能入口行接入 `ListEntry`，头像昵称保存接入 `AppButton`，并完成首轮常规尺寸 token 化
 - 我的 guide 页、联系方式设置、草稿预览、支持足迹和工作台入口已完成首轮常规尺寸 token 化；发现页搜索框、联系方式底栏、草稿预览底栏和页面内 `placeholderStyle` 已完成颜色 token 化
-- 支持足迹：汇总卡和登记记录列表卡已接入 `SurfaceCard`，空态接入 `EmptyState`
+- 支持足迹：汇总卡接入 `SurfaceCard`，登记记录列表卡接入 `ListEntry`，空态接入 `EmptyState`
 - 联系方式设置：字段标签接入 `FormField`，二维码上传接入单图 `UploadStrip`，保存区接入 `BottomActionBar + AppButton`
 
 2026-05-30 记账页第一刀迁移：

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import { NavBar } from "../../components/NavBar";
 import { SectionHeader } from "../../components/SectionHeader";
-import { AppButton, EmptyState, SurfaceCard } from "../../components/ui";
+import { AppButton, EmptyState, ListEntry } from "../../components/ui";
 import { hasCompleteRescuerContactProfile } from "../../data/rescuerContactProfile";
 import {
   caseIdToDraftId,
@@ -73,12 +73,9 @@ function ProjectListItem({
   const notice = compact ? undefined : getProjectNotice(project);
 
   return (
-    <SurfaceCard
+    <ListEntry
       className={`project-list-item${notice ? " project-list-item--with-notice" : ""}`}
-      interactive
-      onTap={() => onTap(project)}
-    >
-      <View className="project-list-item__main">
+      leading={
         <View className="project-list-item__avatar">
           <Image
             className="project-list-item__avatar-image"
@@ -86,25 +83,13 @@ function ProjectListItem({
             src={project.coverImageUrl || fallbackCoverImage}
           />
         </View>
-
-        <View className="project-list-item__content">
-          <Text className="project-list-item__name">{project.title}</Text>
-          {!compact ? (
-            <Text className="project-list-item__state">{getProjectSubtitle(project)}</Text>
-          ) : null}
-        </View>
-
-        <View className="project-list-item__arrow">
-          <AppIcon name="chevronRight" size={16} variant="muted" />
-        </View>
-      </View>
-
-      {notice ? (
-        <View className="project-list-item__notice">
-          <Text className="project-list-item__notice-text">{notice}</Text>
-        </View>
-      ) : null}
-    </SurfaceCard>
+      }
+      notice={notice}
+      onTap={() => onTap(project)}
+      subtitle={!compact ? getProjectSubtitle(project) : undefined}
+      title={project.title}
+      trailing={<AppIcon name="chevronRight" size={16} variant="muted" />}
+    />
   );
 }
 

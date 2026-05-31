@@ -6,49 +6,6 @@
   margin-top: var(--space-4);
 }
 
-.rescue-preview__footer {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-4) var(--space-6);
-  background: var(--bottom-action-bg);
-  border-top: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-bottom-bar);
-}
-
-.rescue-preview__footer-secondary,
-.rescue-preview__footer-primary {
-  position: relative;
-  z-index: 1;
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-body-sm);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-body-sm);
-}
-
-.rescue-preview__footer-secondary {
-  width: 120px;
-  min-height: 50px;
-  flex-shrink: 0;
-  padding: 0 var(--space-1);
-  color: var(--color-brand-primary);
-  background: var(--color-brand-primary-soft);
-  border-color: var(--color-brand-primary-border);
-  box-shadow: none;
-}
-
-.rescue-preview__footer-primary {
-  flex: 1;
-  gap: var(--space-1);
-  min-height: var(--size-input-md);
-  box-shadow: var(--shadow-cta);
-}
-
 .rescue-preview__sheet-overlay {
   position: fixed;
   inset: 0;
@@ -101,8 +58,7 @@
   line-height: var(--line-height-body-sm);
 }
 
-.rescue-preview__sheet-input-card,
-.rescue-preview__sheet-textarea-card {
+.rescue-preview__sheet-input-card {
   overflow: hidden;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border-default);
@@ -118,32 +74,11 @@
   line-height: var(--line-height-body-lg);
 }
 
-.rescue-preview__sheet-textarea-card {
-  position: relative;
-  min-height: 120px;
-}
-
-.rescue-preview__sheet-textarea-placeholder {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  left: 18px;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-lg);
-  pointer-events: none;
-}
-
 .rescue-preview__sheet-textarea {
-  width: 100%;
-  min-height: 120px;
-  padding: 18px;
-  color: var(--color-text-primary);
-  background: transparent;
-  border: 0;
-  box-sizing: border-box;
-  font-size: var(--font-size-body-lg);
-  line-height: var(--line-height-body-lg);
+  --textarea-field-border-color: var(--color-border-default);
+  --textarea-field-height: 120px;
+  --textarea-field-min-height: 120px;
+  --textarea-field-font-size: var(--font-size-body-lg);
 }
 
 .rescue-preview__sheet-button {

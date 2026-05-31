@@ -2,12 +2,11 @@ import { Input, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import {
-  AppButton,
-  BottomActionBar,
   FormField,
+  SubmitActionBar,
   SurfaceCard,
+  TextareaField,
   UploadStrip,
 } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
@@ -255,10 +254,8 @@ export default function ContactSettingsPage() {
         </FormField>
 
         <FormField label="备注（选填）">
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="contact-settings-page__textarea-card ui-surface-card"
-            textareaClassName="contact-settings-page__textarea"
-            placeholderClassName="contact-settings-page__textarea-placeholder"
+          <TextareaField
+            className="contact-settings-page__textarea"
             placeholder="如果需要联系您，有什么要提前说明的"
             cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={120}
@@ -268,15 +265,13 @@ export default function ContactSettingsPage() {
         </FormField>
       </View>
 
-      <BottomActionBar className="contact-settings-page__bottom">
-        <AppButton
-          className="contact-settings-page__submit"
-          iconSrc={submitArrowIcon}
-          onTap={handleSubmit}
-        >
-          保存
-        </AppButton>
-      </BottomActionBar>
+      <SubmitActionBar
+        className="contact-settings-page__bottom"
+        iconSrc={submitArrowIcon}
+        onTap={handleSubmit}
+      >
+        保存
+      </SubmitActionBar>
     </View>
   );
 }

@@ -2,7 +2,7 @@ import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useRef, useState } from "react";
 import { NavBar } from "../../components/NavBar";
-import { AppButton, SurfaceCard } from "../../components/ui";
+import { AppButton, ListEntry, SurfaceCard } from "../../components/ui";
 import { createSubmissionGuard } from "../../utils/submissionGuard";
 import supportHistoryIcon from "../../assets/profile/support-history.svg";
 import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
@@ -361,20 +361,20 @@ export default function ProfilePage() {
 
         <View className="profile-page__menu">
           {MENU_ITEMS.map((item) => (
-            <SurfaceCard
+            <ListEntry
               key={item.key}
               className="profile-page__menu-item"
-              interactive
-              onTap={() => handleMenuTap(item.key)}
-            >
-              <View className="profile-page__menu-main">
+              leading={
                 <View className="profile-page__menu-icon-wrap">
                   <Image className="profile-page__menu-icon" mode="aspectFit" src={item.icon} />
                 </View>
-                <Text className="profile-page__menu-label">{item.label}</Text>
-              </View>
-              <Image className="profile-page__chevron" mode="aspectFit" src={chevronIcon} />
-            </SurfaceCard>
+              }
+              onTap={() => handleMenuTap(item.key)}
+              title={item.label}
+              trailing={
+                <Image className="profile-page__chevron" mode="aspectFit" src={chevronIcon} />
+              }
+            />
           ))}
         </View>
       </View>

@@ -1,10 +1,16 @@
 import { Image, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import linkArrowOrangeIcon from "../../assets/rescue-detail/link-arrow-orange-8.svg";
-import { EmptyState, StatusBadge, SurfaceCard } from "../ui";
+import { EmptyState, SurfaceCard } from "../ui";
+import {
+  RescueBudgetComparison,
+  RescueEvidenceGrid,
+  RescueRecordHeader,
+  type RescueRecordKind,
+} from "./RescueRecordShared";
 import "./RescueTimelineShared.scss";
 
-export type RescueTimelineSharedKind = "expense" | "status" | "budget" | "support";
+export type RescueTimelineSharedKind = RescueRecordKind;
 
 export type RescueTimelineSharedItem = {
   id: string;
@@ -53,21 +59,6 @@ export function getStoredReadonlyRecordDetail() {
   return stored && typeof stored === "object" ? (stored as RescueReadonlyRecordDetail) : undefined;
 }
 
-function getBadgeTone(kind: RescueTimelineSharedKind) {
-  switch (kind) {
-    case "expense":
-      return "danger";
-    case "status":
-      return "info";
-    case "budget":
-      return "warning";
-    case "support":
-      return "success";
-    default:
-      return "neutral";
-  }
-}
-
 function getDotClass(kind: RescueTimelineSharedKind) {
   return `rescue-timeline__dot rescue-timeline__dot--${kind}`;
 }
@@ -76,16 +67,6 @@ function canOpenReadonlyDetail(item: RescueTimelineSharedItem) {
   return (
     item.kind === "expense" || (item.kind === "status" && item.recordType === "progress_update")
   );
-}
-
-function getExpenseImageSlots(images: string[]) {
-  const normalized = images.slice(0, 3);
-
-  while (normalized.length < 3) {
-    normalized.push("");
-  }
-
-  return normalized;
 }
 
 export function RescueTimelineList({
@@ -124,19 +105,12 @@ export function RescueTimelineList({
               }
             }}
           >
-            <View className="rescue-timeline__header">
-              <View className="rescue-timeline__badges">
-                <StatusBadge className="rescue-timeline__badge" tone={getBadgeTone(item.kind)}>
-                  {item.badgeLabel}
-                </StatusBadge>
-                {item.kind === "status" && item.statusLabel ? (
-                  <StatusBadge className="rescue-timeline__badge" tone="brand">
-                    {item.statusLabel}
-                  </StatusBadge>
-                ) : null}
-              </View>
-              <Text className="rescue-timeline__time">{item.timestamp}</Text>
-            </View>
+            <RescueRecordHeader
+              badgeLabel={item.badgeLabel}
+              kind={item.kind}
+              statusLabel={item.kind === "status" ? item.statusLabel : undefined}
+              timestamp={item.timestamp}
+            />
 
             {item.kind !== "support" ? (
               <Text className="rescue-timeline__title">{item.title}</Text>
@@ -161,20 +135,10 @@ export function RescueTimelineList({
             ) : null}
 
             {item.budgetPreviousLabel && item.budgetCurrentLabel ? (
-              <View className="rescue-timeline__budget-panel">
-                <View className="rescue-timeline__budget-column">
-                  <Text className="rescue-timeline__budget-label">原预算总计</Text>
-                  <Text className="rescue-timeline__budget-value rescue-timeline__budget-value--muted">
-                    {item.budgetPreviousLabel}
-                  </Text>
-                </View>
-                <View className="rescue-timeline__budget-column">
-                  <Text className="rescue-timeline__budget-label">现预算总计</Text>
-                  <Text className="rescue-timeline__budget-value rescue-timeline__budget-value--budget">
-                    {item.budgetCurrentLabel}
-                  </Text>
-                </View>
-              </View>
+              <RescueBudgetComparison
+                currentLabel={item.budgetCurrentLabel}
+                previousLabel={item.budgetPreviousLabel}
+              />
             ) : null}
 
             {item.amountLabel && item.kind !== "support" ? (
@@ -194,38 +158,10 @@ export function RescueTimelineList({
             ) : null}
 
             {item.images?.length ? (
-              item.kind === "expense" ? (
-                <View className="rescue-timeline__images rescue-timeline__images--expense">
-                  {getExpenseImageSlots(item.images).map((src, index) => (
-                    <View
-                      key={src || `expense-empty-${item.id}-${index}`}
-                      className={`rescue-timeline__image-wrap rescue-timeline__image-wrap--expense ${
-                        src ? "" : "rescue-timeline__image-wrap--empty"
-                      }`}
-                    >
-                      {src ? (
-                        <>
-                          <Image className="rescue-timeline__image" mode="aspectFill" src={src} />
-                          <Text className="rescue-timeline__watermark">透明账本·严禁盗用</Text>
-                        </>
-                      ) : null}
-                    </View>
-                  ))}
-                </View>
-              ) : (
-                <View
-                  className={`rescue-timeline__images ${
-                    item.images.length === 1 ? "rescue-timeline__images--single" : ""
-                  }`}
-                >
-                  {item.images.map((src) => (
-                    <View key={src} className="rescue-timeline__image-wrap">
-                      <Image className="rescue-timeline__image" mode="aspectFill" src={src} />
-                      <Text className="rescue-timeline__watermark">透明账本·严禁盗用</Text>
-                    </View>
-                  ))}
-                </View>
-              )
+              <RescueEvidenceGrid
+                images={item.images}
+                variant={item.kind === "expense" ? "timeline-expense" : "timeline"}
+              />
             ) : null}
 
             {item.kind === "status" ? (

@@ -6,39 +6,22 @@
 }
 
 .support-review-page__tabs {
+  --segmented-badge-bg: var(--color-brand-primary);
+  --segmented-badge-border-radius: var(--radius-pill);
+  --segmented-badge-color: var(--color-brand-on-primary);
+  --segmented-badge-display: inline-flex;
+  --segmented-badge-font-size: 10px;
+  --segmented-badge-line-height: 10px;
+  --segmented-badge-min-height: 14px;
+  --segmented-badge-min-width: 24px;
+  --segmented-badge-padding: 2px 6px;
+  --segmented-tab-active-color: var(--color-brand-primary);
+  --segmented-tab-gap: var(--space-2);
+  --segmented-tab-min-height: 40px;
+  --segmented-tab-padding: 10px var(--space-4);
+  --segmented-tabs-gap: 0;
+
   margin-top: var(--space-6);
-  background: var(--color-bg-segmented);
-  border-radius: var(--radius-sm);
-  gap: 0;
-}
-
-.support-review-page__tabs .ui-segmented-tabs__item {
-  gap: var(--space-2);
-  min-height: 40px;
-  padding: 10px var(--space-4);
-  color: var(--color-text-secondary);
-  border-radius: var(--radius-xs);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
-}
-
-.support-review-page__tabs .ui-segmented-tabs__item--active {
-  color: var(--color-brand-primary);
-  box-shadow: var(--shadow-card);
-}
-
-.support-review-page__tabs .ui-segmented-tabs__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  min-height: 14px;
-  padding: 2px 6px;
-  color: var(--color-brand-on-primary);
-  background: var(--color-brand-primary);
-  border-radius: 999px;
-  font-size: 10px;
-  line-height: 10px;
 }
 
 .support-review-page__list {
@@ -207,28 +190,4 @@
   color: var(--color-text-primary);
   font-size: var(--font-size-body-lg);
   line-height: var(--size-input-md);
-}
-
-.support-review-page__manual-bottom {
-  padding: var(--space-4);
-  background: var(--bottom-action-bg);
-  border-top-color: var(--bottom-action-border);
-  backdrop-filter: blur(6px);
-}
-
-.support-review-page__submit {
-  width: 100%;
-  min-height: var(--size-button-lg);
-  border-radius: var(--radius-sm);
-}
-
-.support-review-page__submit .ui-button__icon {
-  width: 19px;
-  height: 16px;
-}
-
-@media (min-width: 768px) {
-  .support-review-page__submit {
-    max-width: 390px;
-  }
 }

@@ -51,31 +51,8 @@
   padding: 0 var(--form-control-padding-x);
 }
 
-.support-claim__text-input::placeholder,
-.support-claim__textarea::placeholder {
+.support-claim__text-input::placeholder {
   color: var(--color-text-tertiary);
-  font-weight: 400;
-}
-
-.support-claim__textarea-wrap {
-  position: relative;
-  width: 100%;
-  min-height: 160px;
-  overflow: hidden;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-sm);
-}
-
-.support-claim__textarea-placeholder {
-  position: absolute;
-  top: 18px;
-  left: 18px;
-  right: 18px;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-lg);
-  pointer-events: none;
   font-weight: 400;
 }
 
@@ -106,35 +83,4 @@
 .support-claim__upload-strip .ui-upload-strip__item {
   border: none;
   border-radius: var(--radius-md);
-}
-
-.support-claim__textarea {
-  width: 100%;
-  height: 160px;
-  min-height: 160px;
-  padding: 18px;
-  color: var(--color-text-primary);
-  background: transparent;
-  border: 0;
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-lg);
-  box-sizing: border-box;
-}
-
-.support-claim__bottom {
-  padding: var(--space-4);
-  background: var(--bottom-action-bg);
-  border-top-color: var(--bottom-action-border);
-  backdrop-filter: blur(6px);
-}
-
-.support-claim__submit {
-  width: 100%;
-  min-height: var(--size-button-lg);
-  border-radius: var(--radius-sm);
-}
-
-.support-claim__submit .ui-button__icon {
-  width: 19px;
-  height: 16px;
 }

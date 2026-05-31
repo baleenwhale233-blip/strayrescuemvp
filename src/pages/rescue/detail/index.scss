@@ -242,7 +242,6 @@
 
 .detail-card__head,
 .rescuer-card,
-.detail-tabs,
 .owner-finish__swipe {
   display: flex;
   align-items: center;
@@ -250,7 +249,6 @@
 
 .detail-card__head,
 .rescuer-card,
-.detail-tabs,
 .owner-finish__swipe {
   justify-content: space-between;
 }
@@ -373,65 +371,6 @@
   line-height: 22.75px;
 }
 
-.guest-section-card__header,
-.guest-section-card__badges {
-  display: flex;
-  align-items: center;
-}
-
-.guest-section-card__header {
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
-.guest-section-card__badges {
-  gap: var(--space-1);
-  min-width: 0;
-}
-
-.guest-section-card__badge.ui-status-badge {
-  min-height: var(--size-icon-md);
-  padding: 2px var(--space-2);
-  border-radius: var(--space-1);
-  font-size: var(--font-size-caption);
-  line-height: var(--size-icon-sm);
-}
-
-.guest-section-card__time {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-  line-height: var(--size-icon-sm);
-}
-
-.guest-section-card__hero-image-wrap {
-  position: relative;
-  overflow: hidden;
-  background: var(--color-border-light);
-  border-radius: var(--radius-xs);
-}
-
-.guest-section-card__hero-image-wrap {
-  height: 164.6px;
-  margin-top: var(--space-3);
-}
-
-.guest-section-card__hero-image {
-  width: 100%;
-  height: 100%;
-}
-
-.guest-section-card__watermark {
-  position: absolute;
-  right: var(--space-2);
-  bottom: var(--space-2);
-  padding: 2px 6px;
-  color: var(--color-brand-on-primary);
-  background: var(--color-overlay-scrim);
-  border-radius: var(--space-1);
-  font-size: 10px;
-  line-height: 15px;
-}
-
 .guest-overview-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -487,25 +426,7 @@
 }
 
 .detail-tabs {
-  gap: var(--space-2);
-  padding: var(--space-1);
-  background: var(--color-bg-segmented);
-  border-radius: var(--radius-sm);
-}
-
-.detail-tabs .ui-segmented-tabs__item {
-  flex: 1;
-  padding: var(--space-2) 0;
-  color: var(--color-text-secondary);
-  text-align: center;
-  border-radius: var(--radius-xs);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
-}
-
-.detail-tabs .ui-segmented-tabs__item--active {
-  color: var(--color-text-primary);
-  background: var(--color-bg-card);
+  --segmented-tab-padding: var(--space-2) 0;
 }
 
 .guest-bottom-bar.ui-bottom-action-bar {

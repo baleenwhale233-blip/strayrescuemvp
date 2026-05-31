@@ -61,55 +61,11 @@
   line-height: 14px;
 }
 
-.contact-settings-page__textarea-card {
-  position: relative;
-  min-height: 160px;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-none);
-}
-
-.contact-settings-page__textarea-placeholder {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  left: 18px;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
-  pointer-events: none;
-}
-
 .contact-settings-page__textarea {
-  width: 100%;
-  min-height: 160px;
-  padding: 18px;
-  color: var(--color-text-primary);
-  background: transparent;
-  border: 0;
-  font-size: var(--font-size-body-sm);
-  line-height: var(--line-height-body-sm);
-  box-sizing: border-box;
+  --textarea-field-line-height: var(--line-height-body-sm);
+  --textarea-field-placeholder-line-height: var(--line-height-body-sm);
 }
 
 .contact-settings-page__bottom {
-  padding: var(--space-4);
-  background: var(--bottom-action-bg);
-  border-top-color: var(--color-border-light);
-  backdrop-filter: blur(6px);
-}
-
-.contact-settings-page__bottom .ui-bottom-action-bar__inner {
-  max-width: none;
-}
-
-.contact-settings-page__submit {
-  width: 100%;
-  min-height: var(--size-button-lg);
-  border-radius: var(--radius-sm);
-}
-
-.contact-settings-page__submit .ui-button__icon {
-  width: 19px;
-  height: 16px;
+  --submit-action-inner-max-width: none;
 }

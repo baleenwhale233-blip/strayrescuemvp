@@ -3,9 +3,8 @@ import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
-import { AppButton } from "../../../../components/ui";
+import { HintActionFooter, TextareaField } from "../../../../components/ui";
 import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
 import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
 import {
@@ -215,10 +214,8 @@ export default function RescueCreateBasicPage() {
 
       <View className="rescue-create-page__form-group">
         <Text className="rescue-create-page__label">一句话事件简述</Text>
-        <TextareaWithOverlayPlaceholder
-          wrapperClassName="rescue-create-page__textarea-card"
-          textareaClassName="rescue-create-page__textarea"
-          placeholderClassName="rescue-create-page__textarea-placeholder"
+        <TextareaField
+          className="rescue-create-page__textarea"
           placeholder="在哪发现的（不用太过具体）？它怎么了？"
           cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
           maxlength={120}
@@ -227,18 +224,13 @@ export default function RescueCreateBasicPage() {
         />
       </View>
 
-      <View className="rescue-create-page__footer">
-        <AppButton
-          className="rescue-create-page__primary"
-          iconSrc={nextArrowIcon}
-          onTap={handleNext}
-        >
-          下一步：设定目标
-        </AppButton>
-        <Text className="rescue-create-page__footer-hint">
-          所有内容都会保存在这条记录里，后续可继续补充明细和进展
-        </Text>
-      </View>
+      <HintActionFooter
+        hint="所有内容都会保存在这条记录里，后续可继续补充明细和进展"
+        iconSrc={nextArrowIcon}
+        onTap={handleNext}
+      >
+        下一步：设定目标
+      </HintActionFooter>
     </View>
   );
 }

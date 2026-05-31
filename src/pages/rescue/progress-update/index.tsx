@@ -3,12 +3,11 @@ import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { RescueCaseSummaryCard } from "../../../components/rescue";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import {
-  AppButton,
-  BottomActionBar,
+  DualActionFooter,
   FormField,
   SurfaceCard,
+  TextareaField,
   UploadStrip,
 } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
@@ -370,10 +369,8 @@ export default function RescueStatusUpdatePage() {
         </View>
 
         <FormField className="rescue-update-page__field" label="进展详情描述">
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="rescue-update-page__textarea-wrap"
-            textareaClassName="rescue-update-page__textarea"
-            placeholderClassName="rescue-update-page__textarea-placeholder"
+          <TextareaField
+            className="rescue-update-page__textarea"
             placeholder="请详细描述这条记录的最新进展"
             cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
             maxlength={800}
@@ -419,22 +416,15 @@ export default function RescueStatusUpdatePage() {
         </SurfaceCard>
       </View>
 
-      <BottomActionBar className="rescue-update-page__bottom">
-        <AppButton
-          className="rescue-update-page__bottom-cancel"
-          variant="secondary"
-          onTap={handleCancel}
-        >
-          取消
-        </AppButton>
-        <AppButton
-          className="rescue-update-page__bottom-submit"
-          iconSrc={submitArrowIcon}
-          onTap={handleSubmit}
-        >
-          发布进展
-        </AppButton>
-      </BottomActionBar>
+      <DualActionFooter
+        className="rescue-update-page__bottom"
+        primaryIconSrc={submitArrowIcon}
+        primaryLabel="发布进展"
+        secondaryLabel="取消"
+        secondaryVariant="secondary"
+        onPrimary={handleSubmit}
+        onSecondary={handleCancel}
+      />
     </View>
   );
 }

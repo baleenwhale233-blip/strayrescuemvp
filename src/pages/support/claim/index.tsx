@@ -5,13 +5,12 @@ import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
 import { RescueCaseSummaryCard } from "../../../components/rescue";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import {
-  AppButton,
-  BottomActionBar,
   EmptyState,
   FormField,
   MoneyInput,
+  SubmitActionBar,
+  TextareaField,
   UploadStrip,
 } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
@@ -237,10 +236,8 @@ export default function SupportClaimPage() {
       </FormField>
 
       <FormField className="support-claim__field" label="备注">
-        <TextareaWithOverlayPlaceholder
-          wrapperClassName="support-claim__textarea-wrap"
-          textareaClassName="support-claim__textarea"
-          placeholderClassName="support-claim__textarea-placeholder"
+        <TextareaField
+          className="support-claim__textarea"
           placeholder="可补充留言、用途或对账备注"
           cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
           maxlength={120}
@@ -249,11 +246,9 @@ export default function SupportClaimPage() {
         />
       </FormField>
 
-      <BottomActionBar className="support-claim__bottom">
-        <AppButton className="support-claim__submit" iconSrc={submitArrowIcon} onTap={handleSubmit}>
-          提交登记
-        </AppButton>
-      </BottomActionBar>
+      <SubmitActionBar iconSrc={submitArrowIcon} onTap={handleSubmit}>
+        提交登记
+      </SubmitActionBar>
     </View>
   );
 }

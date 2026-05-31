@@ -2,8 +2,7 @@ import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
-import { AppButton } from "../../../../components/ui";
+import { AppButton, DualActionFooter, TextareaField } from "../../../../components/ui";
 import { createSubmissionGuard } from "../../../../utils/submissionGuard";
 import { recordCaseProfileLocalFallback } from "../../../../domain/canonical/repository";
 import {
@@ -419,10 +418,8 @@ function ActionSheet({
 
         <View className="rescue-preview__sheet-field">
           <Text className="rescue-preview__sheet-label">补充说明</Text>
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="rescue-preview__sheet-textarea-card"
-            textareaClassName="rescue-preview__sheet-textarea"
-            placeholderClassName="rescue-preview__sheet-textarea-placeholder"
+          <TextareaField
+            className="rescue-preview__sheet-textarea"
             placeholder={copy.descriptionPlaceholder}
             maxlength={160}
             value={description}
@@ -882,22 +879,13 @@ export default function RescueCreatePreviewPage() {
         )}
       </View>
 
-      <View className="rescue-preview__footer">
-        <AppButton
-          className="rescue-preview__footer-secondary"
-          onTap={handleSaveDraft}
-          variant="ghost"
-        >
-          保存草稿
-        </AppButton>
-        <AppButton
-          className="rescue-preview__footer-primary"
-          iconSrc={ownerFooterArrowIcon}
-          onTap={handlePublish}
-        >
-          发布记录
-        </AppButton>
-      </View>
+      <DualActionFooter
+        primaryIconSrc={ownerFooterArrowIcon}
+        primaryLabel="发布记录"
+        secondaryLabel="保存草稿"
+        onPrimary={handlePublish}
+        onSecondary={handleSaveDraft}
+      />
 
       {activeAction ? (
         <ActionSheet

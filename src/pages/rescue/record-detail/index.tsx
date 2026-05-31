@@ -1,12 +1,15 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import {
   getStoredReadonlyRecordDetail,
+  RescueBudgetComparison,
+  RescueEvidenceGrid,
+  RescueRecordHeader,
   type RescueReadonlyRecordDetail,
 } from "../../../components/rescue";
-import { EmptyState, StatusBadge, SurfaceCard } from "../../../components/ui";
+import { EmptyState, SurfaceCard } from "../../../components/ui";
 import {
   loadCaseRecordDetail,
   type CaseRecordDetailVM,
@@ -39,21 +42,6 @@ function getImmutableCopy(kind?: RescueReadonlyRecordDetail["kind"]) {
   }
 
   return "这条记录提交后不可修改，后续变化请新增记录保留完整轨迹。";
-}
-
-function getBadgeTone(kind?: RescueReadonlyRecordDetail["kind"]) {
-  switch (kind) {
-    case "expense":
-      return "danger";
-    case "status":
-      return "info";
-    case "budget":
-      return "warning";
-    case "support":
-      return "success";
-    default:
-      return "neutral";
-  }
 }
 
 function formatItemAmount(amount?: number) {
@@ -182,17 +170,12 @@ export default function RescueReadonlyRecordDetailPage() {
       </SurfaceCard>
 
       <SurfaceCard className="record-detail-page__card">
-        <View className="record-detail-page__header">
-          <StatusBadge className="record-detail-page__badge" tone={getBadgeTone(record.kind)}>
-            {record.badgeLabel}
-          </StatusBadge>
-          {record.statusLabel ? (
-            <StatusBadge className="record-detail-page__badge" tone="brand">
-              {record.statusLabel}
-            </StatusBadge>
-          ) : null}
-          <Text className="record-detail-page__time">{record.timestamp}</Text>
-        </View>
+        <RescueRecordHeader
+          badgeLabel={record.badgeLabel}
+          kind={record.kind}
+          statusLabel={record.statusLabel}
+          timestamp={record.timestamp}
+        />
 
         <Text className="record-detail-page__title">{record.title}</Text>
 
@@ -229,38 +212,18 @@ export default function RescueReadonlyRecordDetailPage() {
         ) : null}
 
         {record.budgetPreviousLabel && record.budgetCurrentLabel ? (
-          <View className="record-detail-page__budget">
-            <View className="record-detail-page__budget-column">
-              <Text className="record-detail-page__label">原预算总计</Text>
-              <Text className="record-detail-page__budget-old">{record.budgetPreviousLabel}</Text>
-            </View>
-            <View className="record-detail-page__budget-column">
-              <Text className="record-detail-page__label">现预算总计</Text>
-              <Text className="record-detail-page__budget-new">{record.budgetCurrentLabel}</Text>
-            </View>
-          </View>
+          <RescueBudgetComparison
+            currentLabel={record.budgetCurrentLabel}
+            previousLabel={record.budgetPreviousLabel}
+          />
         ) : null}
 
         {record.images?.length ? (
-          <View
-            className={`record-detail-page__images ${
-              record.images.length === 1 ? "record-detail-page__images--single" : ""
-            }`}
-          >
-            {record.images.map((src, index) => (
-              <View
-                key={`${src}-${index}`}
-                className="record-detail-page__image-wrap"
-                onTap={() => handlePreviewImage(src)}
-              >
-                <Image className="record-detail-page__image" mode="aspectFill" src={src} />
-                <Text className="record-detail-page__image-count">
-                  {index + 1}/{record.images?.length || 1}
-                </Text>
-                <Text className="record-detail-page__watermark">透明账本·严禁盗用</Text>
-              </View>
-            ))}
-          </View>
+          <RescueEvidenceGrid
+            images={record.images}
+            variant="detail"
+            onImageTap={handlePreviewImage}
+          />
         ) : null}
       </SurfaceCard>
     </View>
