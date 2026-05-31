@@ -723,8 +723,11 @@
 }
 
 .ui-submit-action-bar__button .ui-button__icon {
-  width: 19px;
-  height: 16px;
+  width: calc(
+    var(--size-icon-sm) + var(--border-width-default) + var(--border-width-default) +
+      var(--border-width-default)
+  );
+  height: var(--size-icon-sm);
 }
 
 .ui-dual-action-footer {
@@ -741,8 +744,8 @@
   --dual-action-primary-max-width: none;
   --dual-action-primary-min-height: var(--size-input-md);
   --dual-action-primary-width: auto;
-  --dual-action-secondary-min-height: 50px;
-  --dual-action-secondary-width: 120px;
+  --dual-action-secondary-min-height: calc(var(--size-input-md) + var(--border-width-strong));
+  --dual-action-secondary-width: var(--size-upload-tile-lg);
 
   padding: var(--dual-action-footer-padding);
   background: var(--dual-action-footer-bg);
@@ -794,7 +797,9 @@
   --hint-action-footer-bg: var(--color-bg-page);
   --hint-action-footer-border-color: var(--color-border-light);
   --hint-action-footer-border-width: var(--border-width-default);
-  --hint-action-footer-min-height: 121px;
+  --hint-action-footer-min-height: calc(
+    var(--layout-bottom-action-offset-md) + var(--border-width-default)
+  );
 
   position: fixed;
   right: 0;

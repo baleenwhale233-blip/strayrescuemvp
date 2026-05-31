@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 62px;
+  min-height: calc(var(--size-button-xl) + var(--border-width-strong));
   margin-top: var(--space-6);
   padding: var(--space-4);
   border-radius: var(--radius-xs);
@@ -57,7 +57,7 @@
 }
 
 .support-history-page__item {
-  --list-entry-min-height: 91px;
+  --list-entry-min-height: calc(var(--size-list-entry-lg) + var(--border-width-default));
 }
 
 .support-history-page__avatar {
@@ -65,7 +65,7 @@
 }
 
 .support-history-page__chevron {
-  width: 7.4px;
+  width: var(--size-chevron-sm-width);
   height: var(--font-size-caption);
   flex-shrink: 0;
 }

@@ -70,7 +70,7 @@
 }
 
 .profile-page__save-button {
-  min-width: 164px;
+  min-width: var(--layout-bottom-action-offset-create);
   min-height: var(--size-button-md);
   padding: 0 var(--space-5);
 }

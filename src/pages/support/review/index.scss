@@ -157,7 +157,7 @@
 
 .support-review-page__manual {
   padding-top: var(--space-6);
-  padding-bottom: 89px;
+  padding-bottom: calc(var(--size-button-lg) + var(--space-8) + var(--border-width-default));
 }
 
 .support-review-page__field {

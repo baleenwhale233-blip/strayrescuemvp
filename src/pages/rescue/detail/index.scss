@@ -58,7 +58,7 @@
 
 .detail-rename-sheet__handle-bar {
   width: var(--space-12);
-  height: 6px;
+  height: var(--blur-sm);
   background: var(--color-border-strong);
   border-radius: var(--radius-pill);
 }

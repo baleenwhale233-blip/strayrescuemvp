@@ -149,6 +149,9 @@ page {
   --size-upload-add-icon-height: 20px;
   --size-contact-qr-card: 280px;
   --size-contact-qr-image: 246px;
+  --size-list-entry-lg: 90px;
+  --size-animal-avatar-xl: 128px;
+  --size-ledger-status-max-width: 132px;
 
   --size-tabbar: 65px;
   --size-navbar: 98px;

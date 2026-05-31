@@ -1,5 +1,5 @@
 .rescue-page {
-  padding-bottom: 116px;
+  padding-bottom: calc(var(--layout-bottom-action-offset-md) - var(--space-1));
   background: var(--color-bg-page);
 }
 
@@ -38,10 +38,10 @@
 }
 
 .project-list-item {
-  --list-entry-min-height: 90px;
+  --list-entry-min-height: var(--size-list-entry-lg);
   --list-entry-notice-bg: var(--color-danger-soft);
   --list-entry-notice-border-color: var(--color-danger);
-  --list-entry-notice-border-width: 2px;
+  --list-entry-notice-border-width: var(--border-width-strong);
 
   transition:
     transform 160ms ease,

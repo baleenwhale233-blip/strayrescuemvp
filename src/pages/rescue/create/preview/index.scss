@@ -1,5 +1,5 @@
 .rescue-preview-page {
-  padding-bottom: 132px;
+  padding-bottom: calc(var(--layout-bottom-action-offset-md) + var(--space-3));
 }
 
 .rescue-preview__tab-panel {
@@ -31,7 +31,7 @@
 
 .rescue-preview__sheet-handle-bar {
   width: var(--size-input-md);
-  height: 6px;
+  height: var(--blur-sm);
   background: var(--color-border-strong);
   border-radius: var(--radius-pill);
 }
@@ -61,13 +61,13 @@
 .rescue-preview__sheet-input-card {
   overflow: hidden;
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border-default);
+  border: var(--border-width-default) solid var(--color-border-default);
   border-radius: var(--radius-sm);
 }
 
 .rescue-preview__sheet-input {
   width: 100%;
-  height: 52px;
+  height: calc(var(--size-input-md) + var(--space-1));
   padding: 0 var(--form-control-padding-x);
   color: var(--color-text-primary);
   font-size: var(--font-size-body-lg);
@@ -76,8 +76,8 @@
 
 .rescue-preview__sheet-textarea {
   --textarea-field-border-color: var(--color-border-default);
-  --textarea-field-height: 120px;
-  --textarea-field-min-height: 120px;
+  --textarea-field-height: var(--size-textarea-md);
+  --textarea-field-min-height: var(--size-textarea-md);
   --textarea-field-font-size: var(--font-size-body-lg);
 }
 

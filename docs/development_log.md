@@ -2688,3 +2688,13 @@
 - 影响范围：仅影响联系信息相关样式 token、SCSS 与组件系统文档；不改联系方式保存、二维码上传、复制微信号、弹层操作、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 62 降至 52；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：继续分类剩余 52 个裸尺寸，优先进展页 exact 图标、草稿预览弹层和详情页残余大 SCSS。
+
+## 2026-05-31 | Token 治理 | 列表与弹层尺寸尾项收口
+
+- 日期：2026-05-31
+- 改动主题：新增列表大行高、动物大头像和资金状态宽度 token，并复用已有 token 收口弹层、时间线和底部避让尺寸。
+- 为什么改：二维码尺寸收口后，剩余尺寸里仍有可复用的列表行、资金状态、时间线描边、草稿弹层输入和底部固定区域尺寸；这些不应继续散落在页面 SCSS。
+- 改了什么：补 `listEntry / animalAvatar / ledgerStatus` 尺寸 token；替换支持足迹 / 工作台列表高度、建档预算头像、资金状态宽度、时间线描边、草稿预览弹层、详情 rename sheet 和通用底栏里的常规裸尺寸。
+- 影响范围：仅影响样式 token、基础 UI 样式、业务组件样式和页面 SCSS；不改数据读取、提交、上传、导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 52 降至 24；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：剩余 24 个尺寸主要是 exact 图标尺寸、媒体查询断点和建档封面上传区高度，下一轮继续区分资产特例和可组件化结构。

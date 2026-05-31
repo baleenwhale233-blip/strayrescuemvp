@@ -10,7 +10,7 @@
   top: var(--space-2);
   bottom: var(--space-2);
   left: var(--space-4);
-  width: 2px;
+  width: var(--border-width-strong);
   background: var(--color-border-light);
   transform: translateX(-50%);
   content: "";
@@ -28,7 +28,7 @@
   z-index: 1;
   width: var(--size-icon-xs);
   height: var(--size-icon-xs);
-  border: 3px solid var(--color-bg-card);
+  border: calc(var(--border-width-default) + var(--border-width-strong)) solid var(--color-bg-card);
   border-radius: var(--radius-pill);
   transform: translateX(-50%);
 }
@@ -94,7 +94,7 @@
   display: block;
   color: var(--color-text-secondary);
   font-size: var(--font-size-body-sm);
-  line-height: 22.75px;
+  line-height: var(--line-height-body-rich);
 }
 
 .rescue-timeline__support-copy {

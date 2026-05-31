@@ -30,7 +30,7 @@
 
 .rescue-ledger-summary__status {
   flex-shrink: 0;
-  max-width: 132px;
+  max-width: var(--size-ledger-status-max-width);
   text-align: right;
 }
 
@@ -137,14 +137,14 @@
 
 .rescue-ledger-summary__notice {
   margin-top: var(--space-1);
-  padding: var(--space-2) 10px;
+  padding: var(--space-2) calc(var(--space-2) + var(--border-width-strong));
   color: var(--color-text-secondary);
   background: var(--color-bg-canvas);
   border-radius: var(--radius-xs);
   font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-body-sm);
-  letter-spacing: 0.6px;
+  letter-spacing: 0;
 }
 
 .rescue-ledger-summary--compact .rescue-ledger-summary__progress {

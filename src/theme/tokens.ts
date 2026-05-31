@@ -187,6 +187,15 @@ export const sizes = {
     card: 280,
     image: 246,
   },
+  listEntry: {
+    lg: 90,
+  },
+  animalAvatar: {
+    xl: 128,
+  },
+  ledgerStatus: {
+    maxWidth: 132,
+  },
   layout: {
     tabbar: 65,
     navbar: 98,
