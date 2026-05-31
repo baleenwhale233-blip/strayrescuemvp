@@ -2708,3 +2708,13 @@
 - 影响范围：仅影响建档基础信息页封面上传展示、基础上传组件和样式 token；不改草稿读取、封面路径保存、下一步校验、导航、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 24 降至 21；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：继续处理剩余 21 个尺寸，优先把进展页 / 记账页 exact 图标规格和媒体查询断点分类成可 token 化项或明确保留的视觉特例。
+
+## 2026-05-31 | Token 治理 | 导出资产尺寸与断点收口
+
+- 日期：2026-05-31
+- 改动主题：新增导出资产图标和更新进展底栏尺寸 token，清零页面 / 组件裸尺寸扫描。
+- 为什么改：封面上传迁移后，剩余裸尺寸主要来自 Figma 导出 SVG 的 viewBox 规格、更新进展页 fixed footer exact 宽度和两个移动断点；继续散落在页面 SCSS 会让 token 治理无法形成可执行约束。
+- 改了什么：在 `theme.css` 与 `tokens.ts` 补 `assetIcon`、进展更新底栏宽度 token；替换进展页 section 图标、发布箭头、记账删除图标、详情 info 图标、发现搜索 / 凭证图标尺寸，并将 `480px` 断点改为等价 `30em`。
+- 影响范围：仅影响样式 token、发现页、详情页、更新进展页、记账页和相关业务组件 SCSS；不改页面结构、提交链路、上传、导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸 `px/rpx` 尺寸从 21 降至 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：下一轮重点从“尺寸清零”转到组件边界复核：继续评估 `support/review` 待处理卡、详情页残余大 SCSS 和发现 / 详情页 exact 资产槽位是否还需要进一步晋升。

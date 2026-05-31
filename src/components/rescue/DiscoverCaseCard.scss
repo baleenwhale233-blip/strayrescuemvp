@@ -122,8 +122,8 @@
 }
 
 .discover-card__evidence-icon {
-  width: 14px;
-  height: 13px;
+  width: var(--size-asset-icon-evidence-width);
+  height: var(--size-asset-icon-evidence-height);
 }
 
 .discover-card__evidence-dot {

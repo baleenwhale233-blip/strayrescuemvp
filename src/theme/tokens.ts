@@ -147,6 +147,30 @@ export const sizes = {
     smWidth: 7.4,
     smHeight: 12,
   },
+  assetIcon: {
+    search: {
+      width: 18,
+      height: 16.5,
+    },
+    evidence: {
+      width: 14,
+      height: 13,
+    },
+    infoSm: 13.333,
+    stage: 16.67,
+    imageSection: {
+      width: 16.67,
+      height: 15,
+    },
+    progressSubmit: {
+      width: 14.25,
+      height: 12,
+    },
+    expenseDelete: {
+      width: 12,
+      height: 13.5,
+    },
+  },
   avatar: {
     sm: 40,
     md: 56,
@@ -198,6 +222,11 @@ export const sizes = {
   },
   ledgerStatus: {
     maxWidth: 132,
+  },
+  progressUpdateFooter: {
+    primaryMaxWidth: 246,
+    primaryWidth: 245.72,
+    secondaryWidth: 100.28,
   },
   layout: {
     tabbar: 65,

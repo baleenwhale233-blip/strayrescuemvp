@@ -23,8 +23,8 @@
 }
 
 .rescue-update-page__section-head {
-  --section-header-icon-height: 16.67px;
-  --section-header-icon-width: 16.67px;
+  --section-header-icon-height: var(--size-asset-icon-stage);
+  --section-header-icon-width: var(--size-asset-icon-stage);
   --section-header-justify: flex-start;
   --section-header-title-font-size: var(--font-size-body-lg);
   --section-header-title-line-height: var(--line-height-body-lg);
@@ -32,8 +32,8 @@
 }
 
 .rescue-update-page__image-head {
-  --section-header-icon-height: 15px;
-  --section-header-icon-width: 16.67px;
+  --section-header-icon-height: var(--size-asset-icon-image-section-height);
+  --section-header-icon-width: var(--size-asset-icon-image-section-width);
   --section-header-title-font-size: var(--font-size-body-sm);
   --section-header-title-line-height: var(--line-height-body-sm);
 }
@@ -128,11 +128,11 @@
   --dual-action-footer-padding: var(--space-4);
   --dual-action-footer-shadow: none;
   --dual-action-primary-flex: none;
-  --dual-action-primary-icon-height: 12px;
-  --dual-action-primary-icon-width: 14.25px;
-  --dual-action-primary-max-width: 246px;
+  --dual-action-primary-icon-height: var(--size-asset-icon-progress-submit-height);
+  --dual-action-primary-icon-width: var(--size-asset-icon-progress-submit-width);
+  --dual-action-primary-max-width: var(--size-progress-update-primary-button-max-width);
   --dual-action-primary-min-height: var(--size-button-lg);
-  --dual-action-primary-width: 245.72px;
+  --dual-action-primary-width: var(--size-progress-update-primary-button-width);
   --dual-action-secondary-min-height: var(--size-button-lg);
-  --dual-action-secondary-width: 100.28px;
+  --dual-action-secondary-width: var(--size-progress-update-secondary-button-width);
 }

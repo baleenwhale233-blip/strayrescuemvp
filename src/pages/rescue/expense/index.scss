@@ -251,15 +251,15 @@
 
 .rescue-expense-page__line-delete {
   display: inline-flex;
-  width: 12px;
-  height: 13.5px;
+  width: var(--size-asset-icon-expense-delete-width);
+  height: var(--size-asset-icon-expense-delete-height);
   align-items: center;
   justify-content: center;
 }
 
 .rescue-expense-page__line-delete-icon {
-  width: 12px;
-  height: 13.5px;
+  width: var(--size-asset-icon-expense-delete-width);
+  height: var(--size-asset-icon-expense-delete-height);
 }
 
 .rescue-expense-page__field {

@@ -123,6 +123,18 @@ page {
   --size-icon-xl: 28px;
   --size-chevron-sm-width: 7.4px;
   --size-chevron-sm-height: 12px;
+  --size-asset-icon-search-width: 18px;
+  --size-asset-icon-search-height: 16.5px;
+  --size-asset-icon-evidence-width: 14px;
+  --size-asset-icon-evidence-height: 13px;
+  --size-asset-icon-info-sm: 13.333px;
+  --size-asset-icon-stage: 16.67px;
+  --size-asset-icon-image-section-width: 16.67px;
+  --size-asset-icon-image-section-height: 15px;
+  --size-asset-icon-progress-submit-width: 14.25px;
+  --size-asset-icon-progress-submit-height: 12px;
+  --size-asset-icon-expense-delete-width: 12px;
+  --size-asset-icon-expense-delete-height: 13.5px;
 
   --size-avatar-sm: 40px;
   --size-avatar-md: 56px;
@@ -153,6 +165,9 @@ page {
   --size-list-entry-lg: 90px;
   --size-animal-avatar-xl: 128px;
   --size-ledger-status-max-width: 132px;
+  --size-progress-update-primary-button-max-width: 246px;
+  --size-progress-update-primary-button-width: 245.72px;
+  --size-progress-update-secondary-button-width: 100.28px;
 
   --size-tabbar: 65px;
   --size-navbar: 98px;

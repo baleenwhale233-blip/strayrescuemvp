@@ -19,8 +19,8 @@
   position: absolute;
   top: calc(var(--space-3) + var(--border-width-default));
   left: var(--font-size-heading-sm);
-  width: 18px;
-  height: 16.5px;
+  width: var(--size-asset-icon-search-width);
+  height: var(--size-asset-icon-search-height);
 }
 
 .discover-page__search-icon-image {

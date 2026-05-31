@@ -260,8 +260,8 @@
 }
 
 .detail-card__info-icon {
-  width: 13.333px;
-  height: 13.333px;
+  width: var(--size-asset-icon-info-sm);
+  height: var(--size-asset-icon-info-sm);
 }
 
 .detail-card__ledger {
@@ -420,7 +420,7 @@
   --segmented-tab-padding: var(--space-2) 0;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30em) {
   .guest-overview-metrics {
     gap: var(--space-3);
   }
