@@ -2518,3 +2518,23 @@
 - 影响范围：仅影响金额输入展示结构与样式、组件系统文档；不改金额校验、提交、草稿、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `458` 降到 `457`。
 - 下一步 / 遗留问题：继续评估资金摘要、底部动作区、身份列表项和支持记录卡是否晋升组件；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | 业务组件 | 资金摘要组件晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `RescueLedgerSummary` 并迁移发现卡与客态详情资金卡。
+- 为什么改：发现卡和客态详情资金卡都重复维护预算行、资金进度条、金额指标和资金状态表达，已满足资金摘要晋升为 rescue 业务展示组件的条件。
+- 改了什么：在 `src/components/rescue` 新增 `RescueLedgerSummary`，让 `DiscoverCaseCard` 与 `GuestFundingCard` 只传展示 props；删除对应的发现卡 ledger 样式和详情页 `detail-card__metric / progress / notice` 页面级样式。
+- 影响范围：仅影响资金摘要展示结构与样式、组件系统文档；不改资金计算、首页卡 VM、详情页 VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `457` 降到 `453`。
+- 下一步 / 遗留问题：继续把主态动物卡资金区、底部动作区、身份列表项和支持记录卡纳入组件晋升评估；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | 业务组件 | 主态资金区接入资金摘要组件
+
+- 日期：2026-05-31
+- 改动主题：`RescueOwnerSummaryCard` 的主态动物卡资金区接入 `RescueLedgerSummary`。
+- 为什么改：发现卡与客态详情已收口到资金摘要组件后，主态动物卡仍保留单独的预算、进度和三行金额指标结构，会让资金表达继续分叉。
+- 改了什么：扩展 `RescueLedgerSummary` 的 `owner` variant 与 muted tone，并让 `RescueOwnerSummaryCard` 通过展示 props 传入垫付、登记和缺口 / 结余指标；删除 owner 卡内原有 ledger / metric / dot / progress 样式。
+- 影响范围：仅影响主态动物资金卡展示结构与组件样式；不改 owner detail 数据、资金计算、编辑封面 / 标题、复制 ID、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `453` 降到 `449`。
+- 下一步 / 遗留问题：继续评估底部动作区、身份列表项和支持记录卡是否晋升组件；本轮未改数据层，预计不跑 `test:domain`。

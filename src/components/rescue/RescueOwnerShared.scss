@@ -13,8 +13,6 @@
 .rescue-owner-card__top,
 .rescue-owner-card__title-row,
 .rescue-owner-card__id-row,
-.rescue-owner-card__metric,
-.rescue-owner-card__metric-label,
 .rescue-owner-actions__primary,
 .rescue-owner-actions__wide,
 .rescue-owner-actions__primary-main,
@@ -87,74 +85,6 @@
 .rescue-owner-card__copy-icon {
   width: 13px;
   height: 13px;
-}
-
-.rescue-owner-card__ledger {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.rescue-owner-card__budget {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-lg);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-body-lg);
-  letter-spacing: 0.6px;
-}
-
-.rescue-owner-card__progress {
-  height: var(--space-3);
-  background: var(--color-border-default);
-}
-
-.rescue-owner-card__progress .ui-progress-bar__secondary {
-  background: var(--color-ledger-pending);
-}
-
-.rescue-owner-card__progress .ui-progress-bar__value {
-  background: var(--color-brand-primary);
-}
-
-.rescue-owner-card__metrics {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.rescue-owner-card__metric {
-  justify-content: space-between;
-  min-height: 16px;
-  color: var(--color-text-primary);
-  font-size: 12px;
-  line-height: 14px;
-}
-
-.rescue-owner-card__metric-label {
-  gap: 6px;
-}
-
-.rescue-owner-card__dot {
-  width: var(--space-2);
-  height: var(--space-2);
-  flex-shrink: 0;
-  border-radius: var(--radius-pill);
-}
-
-.rescue-owner-card__dot--expense {
-  background: var(--color-border-default);
-}
-
-.rescue-owner-card__dot--support {
-  background: var(--color-brand-primary);
-}
-
-.rescue-owner-card__dot--balance {
-  background: var(--color-success);
-}
-
-.rescue-owner-card__dot--gap {
-  background: var(--color-danger);
 }
 
 .rescue-owner-actions {

@@ -1,6 +1,7 @@
 import { Image, Text, View } from "@tarojs/components";
 import infoMutedIcon from "../../../../../assets/rescue-detail/info-muted-13.svg";
-import { ProgressBar, SurfaceCard } from "../../../../../components/ui";
+import { RescueLedgerSummary } from "../../../../../components/rescue";
+import { SurfaceCard } from "../../../../../components/ui";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getFundingStatusText } from "../../detailViewModels";
 
@@ -12,43 +13,31 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
         <Image className="detail-card__info-icon" mode="aspectFit" src={infoMutedIcon} />
       </View>
 
-      <View className="detail-card__budget-row">
-        <Text className="detail-card__budget-text">总预算 {detail.ledger.targetAmountLabel}</Text>
-      </View>
-
-      <ProgressBar className="detail-card__progress" value={detail.ledger.progressPercent} />
-
-      <View className="detail-card__metric">
-        <View className="detail-card__metric-label">
-          <View className="detail-card__metric-dot detail-card__metric-dot--slate" />
-          <Text>当前垫付</Text>
-        </View>
-        <Text className="detail-card__metric-value">
-          {detail.ledger.confirmedExpenseAmountLabel}
-        </Text>
-      </View>
-      <View className="detail-card__metric">
-        <View className="detail-card__metric-label">
-          <View className="detail-card__metric-dot detail-card__metric-dot--brand" />
-          <Text>已确认登记</Text>
-        </View>
-        <Text className="detail-card__metric-value detail-card__metric-value--brand">
-          {detail.ledger.supportedAmountLabel}
-        </Text>
-      </View>
-      <View className="detail-card__metric">
-        <View className="detail-card__metric-label">
-          <View className="detail-card__metric-dot detail-card__metric-dot--danger" />
-          <Text>当前差额</Text>
-        </View>
-        <Text className="detail-card__metric-value detail-card__metric-value--danger">
-          {detail.ledger.verifiedGapAmountLabel}
-        </Text>
-      </View>
-
-      <View className="detail-card__notice">
-        <Text>{getFundingStatusText(detail)}</Text>
-      </View>
+      <RescueLedgerSummary
+        className="detail-card__ledger"
+        metrics={[
+          {
+            label: "当前垫付",
+            tone: "neutral",
+            value: detail.ledger.confirmedExpenseAmountLabel,
+          },
+          {
+            label: "已确认登记",
+            tone: "brand",
+            value: detail.ledger.supportedAmountLabel,
+            valueTone: "brand",
+          },
+          {
+            label: "当前差额",
+            tone: "danger",
+            value: detail.ledger.verifiedGapAmountLabel,
+            valueTone: "danger",
+          },
+        ]}
+        notice={getFundingStatusText(detail)}
+        progressPercent={detail.ledger.progressPercent}
+        targetAmountLabel={detail.ledger.targetAmountLabel}
+      />
     </SurfaceCard>
   );
 }

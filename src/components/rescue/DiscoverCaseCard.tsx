@@ -1,7 +1,8 @@
 import { Image, Text, View } from "@tarojs/components";
 import evidenceCompleteIcon from "../../assets/icons/evidence-complete-14.svg";
-import { ProgressBar, SurfaceCard } from "../ui";
+import { SurfaceCard } from "../ui";
 import type { HomepageCaseCardVM } from "../../domain/canonical/repository";
+import { RescueLedgerSummary, type RescueLedgerStatusTone } from "./RescueLedgerSummary";
 import "./DiscoverCaseCard.scss";
 
 function getStatusEmoji(statusLabel: string) {
@@ -47,16 +48,16 @@ function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }
   );
 }
 
-function getFundingToneClass(fundingStatusSummary: string) {
+function getFundingTone(fundingStatusSummary: string): RescueLedgerStatusTone {
   if (fundingStatusSummary === "当前垫付已覆盖") {
-    return "discover-card__funding--covered";
+    return "neutral";
   }
 
   if (fundingStatusSummary === "即将筹满") {
-    return "discover-card__funding--almost";
+    return "warning";
   }
 
-  return "discover-card__funding--pressure";
+  return "danger";
 }
 
 export function DiscoverCaseCard({
@@ -100,35 +101,31 @@ export function DiscoverCaseCard({
           </Text>
         </View>
 
-        <View className="discover-card__ledger-head">
-          <Text className="discover-card__budget">总预算 {item.targetAmountLabel}</Text>
-          <Text
-            className={`discover-card__funding ${getFundingToneClass(item.fundingStatusSummary)}`}
-          >
-            {item.fundingStatusSummary}
-          </Text>
-        </View>
-
-        <ProgressBar
-          className="discover-card__progress"
-          value={item.supportedProgressPercent}
-          secondaryValue={item.supportedProgressPercent + item.rescuerAdvanceProgressPercent}
+        <RescueLedgerSummary
+          className="discover-card__ledger"
+          metricLayout="inline"
+          metrics={[
+            {
+              label: "已确认登记",
+              tone: "brand",
+              value: item.supportedAmountLabel,
+            },
+            {
+              align: "end",
+              label: "已确认垫付",
+              tone: "pending",
+              value: item.rescuerAdvanceAmountLabel,
+            },
+          ]}
+          progressPercent={item.supportedProgressPercent}
+          secondaryProgressPercent={
+            item.supportedProgressPercent + item.rescuerAdvanceProgressPercent
+          }
+          statusLabel={item.fundingStatusSummary}
+          statusTone={getFundingTone(item.fundingStatusSummary)}
+          targetAmountLabel={item.targetAmountLabel}
+          variant="compact"
         />
-
-        <View className="discover-card__ledger-meta">
-          <View className="discover-card__ledger-meta-item">
-            <View className="discover-card__ledger-meta-dot discover-card__ledger-meta-dot--brand" />
-            <Text className="discover-card__ledger-meta-label">已确认登记</Text>
-            <Text className="discover-card__ledger-meta-value">{item.supportedAmountLabel}</Text>
-          </View>
-          <View className="discover-card__ledger-meta-item discover-card__ledger-meta-item--end">
-            <View className="discover-card__ledger-meta-dot discover-card__ledger-meta-dot--slate" />
-            <Text className="discover-card__ledger-meta-label">已确认垫付</Text>
-            <Text className="discover-card__ledger-meta-value">
-              {item.rescuerAdvanceAmountLabel}
-            </Text>
-          </View>
-        </View>
 
         <View className="discover-card__footer">
           <EvidenceLabel level={item.evidenceLevel} />

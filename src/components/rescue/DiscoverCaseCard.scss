@@ -57,9 +57,7 @@
 }
 
 .discover-card__title-row,
-.discover-card__ledger-head,
-.discover-card__footer,
-.discover-card__ledger-meta {
+.discover-card__footer {
   display: flex;
   gap: var(--space-3);
   align-items: center;
@@ -103,87 +101,8 @@
   font-weight: 600;
 }
 
-.discover-card__ledger-head {
+.discover-card__ledger {
   margin-top: 2px;
-}
-
-.discover-card__budget,
-.discover-card__funding {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-sm);
-  font-weight: 600;
-  line-height: var(--size-icon-sm);
-}
-
-.discover-card__funding {
-  flex-shrink: 0;
-  max-width: 132px;
-  text-align: right;
-}
-
-.discover-card__funding--covered {
-  color: var(--color-text-secondary);
-}
-
-.discover-card__funding--almost {
-  color: var(--color-warning);
-}
-
-.discover-card__funding--pressure {
-  color: var(--color-danger);
-}
-
-.discover-card__progress {
-  height: var(--space-3);
-  background: var(--color-ledger-track);
-}
-
-.discover-card__progress .ui-progress-bar__secondary {
-  background: var(--color-ledger-pending);
-}
-
-.discover-card__progress .ui-progress-bar__value {
-  background: var(--color-ledger-spent);
-}
-
-.discover-card__ledger-meta {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-sm);
-  line-height: 14px;
-}
-
-.discover-card__ledger-meta-item {
-  display: inline-flex;
-  gap: var(--space-1);
-  align-items: center;
-  min-width: 0;
-  flex: 1;
-}
-
-.discover-card__ledger-meta-item--end {
-  justify-content: flex-end;
-}
-
-.discover-card__ledger-meta-label,
-.discover-card__ledger-meta-value {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-  line-height: 14px;
-  white-space: nowrap;
-}
-
-.discover-card__ledger-meta-dot {
-  width: var(--space-2);
-  height: var(--space-2);
-  border-radius: var(--radius-circle);
-}
-
-.discover-card__ledger-meta-dot--brand {
-  background: var(--color-ledger-spent);
-}
-
-.discover-card__ledger-meta-dot--slate {
-  background: var(--color-ledger-track);
 }
 
 .discover-card__footer {

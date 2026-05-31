@@ -1,5 +1,6 @@
 import { Image, Text, View } from "@tarojs/components";
-import { ProgressBar, SegmentedTabs, StatusBadge, SurfaceCard } from "../ui";
+import { SegmentedTabs, StatusBadge, SurfaceCard } from "../ui";
+import { RescueLedgerSummary } from "./RescueLedgerSummary";
 import { RescueTimelineList, type RescueTimelineSharedItem } from "./RescueTimelineShared";
 import ownerActionBudgetIcon from "../../assets/rescue-detail/owner/action-budget.svg";
 import ownerActionChevronIcon from "../../assets/rescue-detail/owner/action-chevron.svg";
@@ -113,43 +114,30 @@ export function RescueOwnerSummaryCard({
         </View>
       </View>
 
-      <View className="rescue-owner-card__ledger">
-        <Text className="rescue-owner-card__budget">总预算 {budgetLabel}</Text>
-        <ProgressBar
-          className="rescue-owner-card__progress"
-          value={progressPercent}
-          secondaryValue={advanceProgressPercent}
-        />
-        <View className="rescue-owner-card__metrics">
-          <View className="rescue-owner-card__metric">
-            <View className="rescue-owner-card__metric-label">
-              <View className="rescue-owner-card__dot rescue-owner-card__dot--expense" />
-              <Text>已确认垫付</Text>
-            </View>
-            <Text>{expenseLabel}</Text>
-          </View>
-          <View className="rescue-owner-card__metric">
-            <View className="rescue-owner-card__metric-label">
-              <View className="rescue-owner-card__dot rescue-owner-card__dot--support" />
-              <Text>已确认登记</Text>
-            </View>
-            <Text>{supportLabel}</Text>
-          </View>
-          <View className="rescue-owner-card__metric">
-            <View className="rescue-owner-card__metric-label">
-              <View
-                className={`rescue-owner-card__dot ${
-                  thirdMode === "balance"
-                    ? "rescue-owner-card__dot--balance"
-                    : "rescue-owner-card__dot--gap"
-                }`}
-              />
-              <Text>{thirdLabel}</Text>
-            </View>
-            <Text>{thirdValue}</Text>
-          </View>
-        </View>
-      </View>
+      <RescueLedgerSummary
+        className="rescue-owner-card__ledger"
+        metrics={[
+          {
+            label: "已确认垫付",
+            tone: "muted",
+            value: expenseLabel,
+          },
+          {
+            label: "已确认登记",
+            tone: "brand",
+            value: supportLabel,
+          },
+          {
+            label: thirdLabel,
+            tone: thirdMode === "balance" ? "success" : "danger",
+            value: thirdValue,
+          },
+        ]}
+        progressPercent={progressPercent}
+        secondaryProgressPercent={advanceProgressPercent}
+        targetAmountLabel={budgetLabel}
+        variant="owner"
+      />
     </SurfaceCard>
   );
 }

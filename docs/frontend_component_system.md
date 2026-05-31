@@ -100,6 +100,8 @@
 当前已承接既有救助业务组件源码：
 
 - `DiscoverCaseCard`
+- `RescueCaseSummaryCard`
+- `RescueLedgerSummary`
 - `RescueOwnerShared`
 - `RescueTimelineShared`
 - `SupportSheet`
@@ -257,7 +259,7 @@
 
 - 扩展 form / bottomActionBar / sheet / upload 等组件 token
 - 新增 `src/components/ui` 基础组件目录
-- 新增并落地 `src/components/rescue` 业务组件目录，承接 `DiscoverCaseCard`、`RescueCaseSummaryCard`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet`
+- 新增并落地 `src/components/rescue` 业务组件目录，承接 `DiscoverCaseCard`、`RescueCaseSummaryCard`、`RescueLedgerSummary`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet`
 - 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `MoneyInput` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
 - `src/pages` 与 `src/components` 当前已清掉直接 `theme-card` / `theme-button-primary` / `theme-button-secondary` 引用；后续新增页面优先从 `src/components/ui` 组合，不再直接依赖旧全局主题类
 - `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已完成首轮颜色 token 化，业务共享组件不再新增裸色值
@@ -273,6 +275,7 @@
 - `SupportSheet`、`DiscoverCaseCard` 和我的页已开始首轮尺寸 token 化，联系弹层、发现卡片、头像昵称和身份入口的常规尺寸优先使用现有 CSS variables
 - 草稿预览、联系方式设置、支持足迹、guide 和工作台入口页已开始首轮尺寸 token 化，弹层表单、二维码上传、列表卡、说明正文和工作台列表的常规尺寸优先使用现有 CSS variables
 - `RescueCaseSummaryCard` 已承接更新进展、追加预算和支持登记页的动物 / 案例摘要卡；页面只传展示 props，不再各自维护重复卡片结构
+- `RescueLedgerSummary` 已承接发现卡、客态详情资金卡和主态动物卡资金区的预算、进度条、金额指标和资金状态表达；页面 / 卡片只传展示 props
 - `MoneyInput` 已承接支持登记、处理登记手动登记、追加预算和建档预算页的金额输入结构；页面只保留金额状态、校验和提交逻辑
 - `src/components` 与 `src/pages` 的首轮裸色值扫描已清零，后续颜色新增必须优先走 CSS variables
 - `UploadStrip` 已支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖联系方式单图二维码与生产页多图凭证场景
@@ -283,7 +286,7 @@
 - 继续复核详情页、生产页和基础 UI 样式中的剩余裸尺寸，区分可 token 化值与真正的素材 / 容器特例
 - 继续将已在详情 / 草稿预览反复出现的资金摘要、动作区和身份列表结构逐步晋升到 `src/components/rescue` 或 `src/components/ui`
 - 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
-- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `457`；下一轮重点继续观察详情页、生产页和基础 UI 样式中的剩余高频尺寸是否能按语义迁入 spacing / radius / size token 或被标记为视觉特例
+- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `449`；下一轮重点继续观察详情页、生产页和基础 UI 样式中的剩余高频尺寸是否能按语义迁入 spacing / radius / size token 或被标记为视觉特例
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
 
 2026-05-30 起已完成的首轮页面迁移：
@@ -291,9 +294,9 @@
 - 生产页：记账 / 更新进展 / 追加预算已接入 `FormField`、`UploadStrip`、`BottomActionBar`、`AppButton`、`SurfaceCard`、`MoneyInput`，并完成首轮常规尺寸 token 化；更新进展 / 追加预算的动物摘要卡已迁到 `RescueCaseSummaryCard`
 - 支持闭环页：登记一笔 / 处理登记已接入 `FormField`、`MoneyInput`、`SegmentedTabs`、`EmptyState`、`BottomActionBar`、`SurfaceCard`、`StatusBadge`、`UploadStrip`、`AppButton`，并完成首轮常规尺寸 token 化；登记一笔的案例摘要卡已迁到 `RescueCaseSummaryCard`
 - 建档页：基础信息 / 预算页完成首轮颜色与常规尺寸 token 化，草稿预览页完成首轮常规尺寸 token 化；预算页金额输入已迁到 `MoneyInput`，下一步再评估是否把动物摘要、步骤条和底部动作迁入共享组件
-- 发现页：案例卡资金条已接入 `ProgressBar`，loading 态已接入 `EmptyState`，卡片样式所有权回收到 `DiscoverCaseCard`，发现卡片完成首轮常规尺寸 token 化
+- 发现页：案例卡资金摘要已接入 `RescueLedgerSummary`，loading 态已接入 `EmptyState`，卡片样式所有权回收到 `DiscoverCaseCard`，发现卡片完成首轮常规尺寸 token 化
 - 发现 / 记录主页共用案例卡：`DiscoverCaseCard` 外壳已接入 `SurfaceCard`
-- 详情页：客态 / 主态 tab、资金条、badge、页面态、底部操作栏和卡片外壳已逐步接入 UI 组件，`index.scss` 已清掉页面级裸色值
+- 详情页：客态 / 主态 tab、客态资金摘要、主态动物卡资金区、badge、页面态、底部操作栏和卡片外壳已逐步接入共享组件，`index.scss` 已清掉页面级裸色值
 - 工作台：列表卡片已接入 `SurfaceCard`，新建记录按钮接入 `AppButton`，档案 / 草稿空态接入 `EmptyState`
 - 我的页：昵称输入外壳和功能入口行已接入 `SurfaceCard`，头像昵称保存接入 `AppButton`，并完成首轮常规尺寸 token 化
 - 我的 guide 页、联系方式设置、草稿预览、支持足迹和工作台入口已完成首轮常规尺寸 token 化；发现页搜索框、联系方式底栏、草稿预览底栏和页面内 `placeholderStyle` 已完成颜色 token 化
