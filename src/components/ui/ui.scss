@@ -7,7 +7,7 @@
 
 .ui-page-shell--centered {
   width: 100%;
-  max-width: 390px;
+  max-width: var(--layout-page-max-width);
   margin: 0 auto;
 }
 
@@ -394,14 +394,14 @@
 .ui-bottom-action-bar__inner {
   display: flex;
   width: 100%;
-  max-width: 390px;
+  max-width: var(--layout-page-max-width);
   margin: 0 auto;
   gap: var(--space-3);
 }
 
 .ui-submit-action-bar {
   --submit-action-button-max-width: none;
-  --submit-action-inner-max-width: 390px;
+  --submit-action-inner-max-width: var(--layout-page-max-width);
 
   padding: var(--space-4);
   backdrop-filter: blur(6px);
@@ -429,7 +429,7 @@
   --dual-action-footer-bg: var(--bottom-action-bg);
   --dual-action-footer-border-color: var(--color-border-light);
   --dual-action-footer-border-width: 1px;
-  --dual-action-footer-inner-max-width: 390px;
+  --dual-action-footer-inner-max-width: var(--layout-page-max-width);
   --dual-action-footer-padding: var(--space-4) var(--space-4) var(--space-6);
   --dual-action-footer-shadow: var(--shadow-bottom-bar);
   --dual-action-primary-flex: 1;

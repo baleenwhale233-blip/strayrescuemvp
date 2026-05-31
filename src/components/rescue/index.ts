@@ -1,5 +1,6 @@
 export * from "./DiscoverCaseCard";
 export * from "./RescueCaseSummaryCard";
+export * from "./RescueDetailActions";
 export * from "./RescueLedgerSummary";
 export * from "./RescueOwnerShared";
 export * from "./RescueRecordShared";

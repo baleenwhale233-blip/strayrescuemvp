@@ -2598,3 +2598,13 @@
 - 影响范围：仅影响双按钮底栏与分段控件展示结构 / 样式、组件系统文档；不改发布、保存草稿、取消、提交、tab 切换状态、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸降至 369。
 - 下一步 / 遗留问题：继续复核详情页 guest / owner 底部业务动作区和剩余大 SCSS；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | 业务组件 | 详情页动作栏晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `RescueDetailActions`，收口客态底栏和主态结束记录栏。
+- 为什么改：详情页仍是最大样式热点，底部动作区虽已有局部组件，但样式和页面宽度仍散落在 `index.scss` 与基础 UI 样式里。
+- 改了什么：将 guest `分享 / 登记一笔 / 查看联系方式` 与 owner `分享档案 / 结束记录` 动作栏迁入 `src/components/rescue`，并新增页面宽度 / 正文宽度布局 token。
+- 影响范围：仅影响详情页底部动作栏展示结构、布局 token 和组件系统文档；不改分享、联系方式弹层、登记跳转、结束确认状态机、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 369 降至 346。
+- 下一步 / 遗留问题：继续治理详情页剩余 hero / 卡片尺寸与记账、处理登记页面热点；本轮未改数据层，预计不跑 `test:domain`。

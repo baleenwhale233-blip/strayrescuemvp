@@ -156,6 +156,8 @@ export const sizes = {
 export const layout = {
   pagePaddingX: 16,
   pagePaddingTop: 8,
+  pageMaxWidth: 390,
+  pageContentMaxWidth: 358,
   sectionGap: 16,
   cardGap: 16,
   formGap: 24,

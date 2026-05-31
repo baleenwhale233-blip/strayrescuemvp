@@ -40,6 +40,7 @@
 - 圆角：卡片、按钮、胶囊、圆形
 - 阴影：卡片、CTA、底部操作栏、弹层
 - 尺寸：图标、头像、按钮、输入框、上传格
+- 布局：页面最大宽度、正文内容最大宽度、导航与底部栏避让
 
 ### 组件 token
 
@@ -106,6 +107,7 @@
 
 - `DiscoverCaseCard`
 - `RescueCaseSummaryCard`
+- `RescueDetailActions`
 - `RescueLedgerSummary`
 - `RescueOwnerShared`
 - `RescueRecordShared`
@@ -116,7 +118,6 @@
 
 - 动物摘要卡
 - 资金摘要卡
-- 记录维护者动作区
 - 支持登记卡
 - 记录详情卡
 - 联系方式展示模块
@@ -265,7 +266,7 @@
 
 - 扩展 form / bottomActionBar / sheet / upload 等组件 token
 - 新增 `src/components/ui` 基础组件目录
-- 新增并落地 `src/components/rescue` 业务组件目录，承接 `DiscoverCaseCard`、`RescueCaseSummaryCard`、`RescueLedgerSummary`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet`
+- 新增并落地 `src/components/rescue` 业务组件目录，承接 `DiscoverCaseCard`、`RescueCaseSummaryCard`、`RescueDetailActions`、`RescueLedgerSummary`、`RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet`
 - 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `ListEntry` / `MoneyInput` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
 - `src/pages` 与 `src/components` 当前已清掉直接 `theme-card` / `theme-button-primary` / `theme-button-secondary` 引用；后续新增页面优先从 `src/components/ui` 组合，不再直接依赖旧全局主题类
 - `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已完成首轮颜色 token 化，业务共享组件不再新增裸色值
@@ -289,8 +290,10 @@
 - `TextareaField` 已承接支持登记、追加预算、联系方式设置、更新进展、建档基础信息、建档预算和草稿预览弹层的 overlay placeholder 文本域；页面通过 CSS variables 保留高度、背景和字号差异
 - `HintActionFooter` 已承接建档基础信息和建档预算页的固定主按钮 + 辅助提示 footer；页面只保留下一步回调、按钮文案、图标和提示文案
 - `DualActionFooter` 已承接草稿预览和更新进展页的固定双按钮底栏；页面通过 CSS variables 保留按钮宽度、图标尺寸和底栏毛玻璃差异
+- `RescueDetailActions` 已承接客态详情底部 `分享 / 登记一笔 / 查看联系方式` 与主态详情 `分享档案 / 结束记录` 动作栏；详情页只保留状态机、分享、弹窗和导航事件
 - `SegmentedTabs` 已补充 CSS variables，客态详情、主态详情和处理登记页不再重复维护通用 tab item / active / badge 样式，只保留页面间距和徽标差异
 - `MoneyInput` 已承接支持登记、处理登记手动登记、追加预算和建档预算页的金额输入结构；页面只保留金额状态、校验和提交逻辑
+- 新增 `--layout-page-max-width` 与 `--layout-page-content-max-width`，用于收口页面主体、详情正文和底部操作栏内宽，不再在组件 / 页面里重复散落 `390px / 358px`
 - `src/components` 与 `src/pages` 的首轮裸色值扫描已清零，后续颜色新增必须优先走 CSS variables
 - `UploadStrip` 已支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖联系方式单图二维码与生产页多图凭证场景
 - 新增非阻断扫描入口 `npm run report:style-tokens`，用于报告 `src/components` 与 `src/pages` 中剩余裸色值和重复 `px/rpx` 尺寸
@@ -298,9 +301,9 @@
 下一阶段重点：
 
 - 继续复核详情页、生产页和基础 UI 样式中的剩余裸尺寸，区分可 token 化值与真正的素材 / 容器特例
-- 继续将已在详情 / 草稿预览反复出现的资金摘要、动作区和身份列表结构逐步晋升到 `src/components/rescue` 或 `src/components/ui`
+- 继续将已在详情 / 草稿预览反复出现的资金摘要、支持处理卡和身份列表结构逐步晋升到 `src/components/rescue` 或 `src/components/ui`
 - 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
-- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `448`；下一轮重点继续观察详情页、生产页和基础 UI 样式中的剩余高频尺寸是否能按语义迁入 spacing / radius / size token 或被标记为视觉特例
+- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `346`；下一轮重点继续观察详情页、生产页和基础 UI 样式中的剩余高频尺寸是否能按语义迁入 spacing / radius / size token 或被标记为视觉特例
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
 
 2026-05-30 起已完成的首轮页面迁移：

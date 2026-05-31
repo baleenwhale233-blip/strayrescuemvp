@@ -2,6 +2,7 @@ import { View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
+import { RescueOwnerFinishBar } from "../../../../components/rescue";
 import type { OwnerDetailVM } from "../../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import {
@@ -13,7 +14,6 @@ import { getOwnerOverviewProps, toOwnerTimelineItems } from "../detailViewModels
 import type { DetailTab } from "../types";
 import { OwnerActionSection } from "./owner/OwnerActionSection";
 import { OwnerDetailSection } from "./owner/OwnerDetailSection";
-import { OwnerFinishSection } from "./owner/OwnerFinishSection";
 import { OwnerHeroSection } from "./owner/OwnerHeroSection";
 import { OwnerOverviewSection } from "./owner/OwnerOverviewSection";
 import { OwnerTabs } from "./owner/OwnerTabs";
@@ -157,7 +157,7 @@ export function OwnerDetail({
         <OwnerDetailSection items={ownerTimelineItems} />
       )}
 
-      <OwnerFinishSection
+      <RescueOwnerFinishBar
         finishBar={finishBar}
         finishDragX={finishDragX}
         finishMode={finishMode}

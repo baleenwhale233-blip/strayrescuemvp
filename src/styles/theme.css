@@ -134,6 +134,8 @@ page {
 
   --layout-page-padding-x: 16px;
   --layout-page-padding-top: 8px;
+  --layout-page-max-width: 390px;
+  --layout-page-content-max-width: 358px;
   --layout-section-gap: 16px;
   --layout-card-gap: 16px;
   --layout-form-gap: 24px;

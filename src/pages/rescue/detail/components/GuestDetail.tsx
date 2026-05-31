@@ -2,9 +2,9 @@ import { View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
+import { RescueGuestActionBar } from "../../../../components/rescue";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import type { DetailTab } from "../types";
-import { GuestActionBar } from "./guest/GuestActionBar";
 import { GuestDetailSection } from "./guest/GuestDetailSection";
 import { GuestFundingCard } from "./guest/GuestFundingCard";
 import { GuestHeroSection } from "./guest/GuestHeroSection";
@@ -53,7 +53,7 @@ export function GuestDetail({
         )}
       </View>
 
-      <GuestActionBar onClaim={onClaim} onSupport={onSupport} />
+      <RescueGuestActionBar onClaim={onClaim} onSupport={onSupport} />
     </View>
   );
 }
