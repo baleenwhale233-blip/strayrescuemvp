@@ -1,0 +1,132 @@
+import { Image, ScrollView, Text, View } from "@tarojs/components";
+import type { SupportSheetData } from "../../domain/canonical/types";
+import { AppIcon } from "../AppIcon";
+import { AppButton, SectionHeader } from "../ui";
+import "./SupportSheet.scss";
+
+type SupportSheetProps = {
+  visible: boolean;
+  support: SupportSheetData;
+  onClose: () => void;
+  onCopyWechat: (wechatId: string) => void | Promise<void>;
+  onSaveQrHint: () => void;
+};
+
+export function SupportSheet({
+  visible,
+  support,
+  onClose,
+  onCopyWechat,
+  onSaveQrHint,
+}: SupportSheetProps) {
+  if (!visible) {
+    return null;
+  }
+
+  const hasWechatId = Boolean(support.wechatId?.trim());
+  const hasPaymentQr = Boolean(support.paymentQrUrl?.trim());
+
+  const handleCopyWechat = async () => {
+    if (!hasWechatId) {
+      return;
+    }
+
+    await onCopyWechat(support.wechatId || "");
+  };
+
+  const handlePrimaryAction = async () => {
+    if (hasPaymentQr) {
+      onSaveQrHint();
+      return;
+    }
+
+    if (hasWechatId) {
+      await handleCopyWechat();
+      return;
+    }
+
+    onClose();
+  };
+
+  return (
+    <View
+      className="support-sheet__overlay"
+      catchMove
+      onTap={onClose}
+      onTouchMove={(event) => event.stopPropagation()}
+    >
+      <View
+        className="support-sheet__panel"
+        catchMove
+        onTap={(event) => event.stopPropagation()}
+        onTouchMove={(event) => event.stopPropagation()}
+      >
+        <View className="support-sheet__handle">
+          <View className="support-sheet__handle-bar" />
+        </View>
+
+        <ScrollView className="support-sheet__scroll" scrollY showScrollbar={false}>
+          <View className="support-sheet__content">
+            <View className="support-sheet__tip">
+              <AppIcon className="support-sheet__tip-icon" name="info" size={16} variant="brand" />
+              <Text className="support-sheet__tip-text">{support.contactTip}</Text>
+            </View>
+
+            {hasPaymentQr ? (
+              <View className="support-sheet__section">
+                <SectionHeader className="support-sheet__section-title" title="联系二维码" />
+
+                <View className="support-sheet__qr-card">
+                  <Image
+                    className="support-sheet__qr-image"
+                    mode="aspectFit"
+                    src={support.paymentQrUrl!}
+                  />
+                </View>
+
+                <Text className="support-sheet__hint">{support.directHint}</Text>
+              </View>
+            ) : (
+              <View className="support-sheet__section">
+                <SectionHeader className="support-sheet__section-title" title="联系二维码" />
+                <View className="support-sheet__empty-card">
+                  <Text className="support-sheet__empty-text">暂未提供二维码</Text>
+                </View>
+                <Text className="support-sheet__hint">{support.directHint}</Text>
+              </View>
+            )}
+
+            {hasWechatId ? (
+              <View className="support-sheet__section">
+                <SectionHeader className="support-sheet__section-title" title="联系微信号" />
+
+                <View className="support-sheet__wechat-card">
+                  <Text className="support-sheet__wechat-id">{support.wechatId}</Text>
+                  <View className="support-sheet__wechat-copy" onTap={handleCopyWechat}>
+                    <Text className="support-sheet__wechat-copy-text">复制微信号</Text>
+                  </View>
+                </View>
+
+                <Text className="support-sheet__hint">{support.contactHint}</Text>
+              </View>
+            ) : null}
+
+            <View className="support-sheet__note-card">
+              <Text className="support-sheet__note-text">{support.directTip}</Text>
+            </View>
+          </View>
+        </ScrollView>
+
+        <View
+          className="support-sheet__footer"
+          catchMove
+          onTap={(event) => event.stopPropagation()}
+        >
+          <AppButton className="support-sheet__save-button" onTap={handlePrimaryAction}>
+            {hasPaymentQr ? "保存二维码" : hasWechatId ? "复制微信号" : "关闭"}
+          </AppButton>
+        </View>
+      </View>
+    </View>
+  );
+}

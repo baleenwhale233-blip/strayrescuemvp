@@ -1,13 +1,20 @@
 import { View } from "@tarojs/components";
 import {
   RescueOwnerTimeline,
+  type RescueReadonlyRecordDetail,
   type RescueOwnerTimelineItem,
-} from "../../../../../components/RescueOwnerShared";
+} from "../../../../../components/rescue";
 
-export function OwnerDetailSection({ items }: { items: RescueOwnerTimelineItem[] }) {
+export function OwnerDetailSection({
+  items,
+  onReadonlyRecordTap,
+}: {
+  items: RescueOwnerTimelineItem[];
+  onReadonlyRecordTap: (item: RescueReadonlyRecordDetail) => void;
+}) {
   return (
     <View className="owner-tab-content owner-tab-content--timeline">
-      <RescueOwnerTimeline items={items} />
+      <RescueOwnerTimeline items={items} onReadonlyRecordTap={onReadonlyRecordTap} />
     </View>
   );
 }

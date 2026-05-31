@@ -12,7 +12,7 @@
   },
   "readySignal": {
     "type": "selector",
-    "value": ".rescue-update-page__animal-card",
+    "value": ".rescue-case-summary-card",
     "timeoutMs": 30000,
     "stableMs": 1500
   },
@@ -23,7 +23,7 @@
     "fullPage": true,
     "segments": ["animal-card", "stage", "textarea", "image-card", "bottom-bar"],
     "segmentSelectors": {
-      "animal-card": ".rescue-update-page__animal-card",
+      "animal-card": ".rescue-case-summary-card",
       "stage": ".rescue-update-page__section",
       "textarea": ".rescue-update-page__field",
       "image-card": ".rescue-update-page__image-card",

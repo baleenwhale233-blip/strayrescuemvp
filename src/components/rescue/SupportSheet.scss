@@ -1,0 +1,148 @@
+.support-sheet__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  background: var(--sheet-scrim);
+}
+
+.support-sheet__panel {
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet-bg);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--sheet-shadow);
+}
+
+.support-sheet__handle {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+
+.support-sheet__handle-bar {
+  width: var(--size-input-md);
+  height: var(--blur-sm);
+  background: var(--color-border-default);
+  border-radius: var(--radius-pill);
+}
+
+.support-sheet__scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.support-sheet__content {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.support-sheet__tip {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: calc(var(--size-input-md) - var(--border-width-default));
+  margin-bottom: var(--space-4);
+  padding: calc(var(--space-3) + var(--border-width-default)) var(--space-4);
+  background: var(--color-bg-input);
+  border-radius: var(--font-size-body-sm);
+}
+
+.support-sheet__tip-icon {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+}
+
+.support-sheet__tip-text,
+.support-sheet__hint,
+.support-sheet__wechat-copy-text {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-body-sm);
+}
+
+.support-sheet__section {
+  margin-bottom: var(--space-4);
+}
+
+.support-sheet__section-title {
+  margin-bottom: var(--space-3);
+  --section-header-title-font-size: var(--font-size-body-lg);
+  --section-header-title-line-height: var(--line-height-body-sm);
+}
+
+.support-sheet__qr-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-contact-qr-card);
+  height: var(--size-contact-qr-card);
+  margin: 0 auto var(--space-3);
+  background: var(--color-bg-card);
+  border: var(--border-width-default) solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+}
+
+.support-sheet__qr-image {
+  width: var(--size-contact-qr-image);
+  height: var(--size-contact-qr-image);
+}
+
+.support-sheet__empty-card,
+.support-sheet__note-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-bg-input);
+  border-radius: var(--radius-md);
+}
+
+.support-sheet__empty-text,
+.support-sheet__note-text {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  text-align: center;
+}
+
+.support-sheet__hint {
+  display: block;
+  text-align: center;
+}
+
+.support-sheet__wechat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: calc(var(--space-3) + var(--border-width-default)) var(--space-4);
+  background: var(--color-bg-card);
+  border: var(--border-width-default) solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.support-sheet__wechat-id {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-sm);
+}
+
+.support-sheet__wechat-copy {
+  padding: calc(var(--space-2) - var(--border-width-default))
+    calc(var(--space-3) + var(--border-width-default));
+  background: var(--color-brand-primary-soft);
+  border-radius: var(--radius-pill);
+}
+
+.support-sheet__footer {
+  padding: var(--space-3) var(--space-4) var(--space-6);
+  background: var(--bottom-action-bg);
+  border-top: var(--border-width-default) solid var(--bottom-action-border);
+}
+
+.support-sheet__save-button {
+  width: 100%;
+}

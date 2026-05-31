@@ -1,4 +1,4 @@
-import { RescueOwnerTabs } from "../../../../../components/RescueOwnerShared";
+import { RescueOwnerTabs } from "../../../../../components/rescue";
 import type { DetailTab } from "../../types";
 
 export function OwnerTabs({

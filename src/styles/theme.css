@@ -9,17 +9,22 @@ page {
   --color-bg-canvas: #f7f5f4;
   --color-bg-page: #f5f4f3;
   --color-bg-card: #ffffff;
+  --color-bg-input: #f8fafc;
   --color-bg-subtle: #f2f4f7;
   --color-bg-muted: #eef1f4;
 
   --color-border-light: #e6eaf0;
   --color-border-default: #d9dfe7;
   --color-border-strong: #c7cfd9;
+  --color-border-dashed: #dbe4ef;
 
   --color-text-primary: #1f2a37;
   --color-text-secondary: #667085;
   --color-text-tertiary: #98a2b3;
   --color-text-disabled: #b7c0cc;
+  --color-bg-segmented: rgba(226, 232, 240, 0.5);
+  --color-overlay-scrim: rgba(15, 23, 42, 0.32);
+  --color-overlay-strong: rgba(15, 23, 42, 0.56);
 
   --color-success: #16a34a;
   --color-success-soft: #eaf8ee;
@@ -72,6 +77,14 @@ page {
   --line-height-body-md: 22px;
   --line-height-body-sm: 20px;
   --line-height-caption: 18px;
+  --line-height-body-rich: 22.75px;
+  --line-height-badge-xs: 15px;
+  --line-height-upload-add-copy: 13.5px;
+  --font-size-badge-xs: 10px;
+  --font-size-upload-add-copy: 9px;
+
+  --border-width-default: 1px;
+  --border-width-strong: 2px;
 
   --space-0: 0;
   --space-1: 4px;
@@ -100,12 +113,28 @@ page {
   --shadow-card-strong: 0 6px 18px rgba(16, 24, 40, 0.08);
   --shadow-cta: 0 8px 20px rgba(247, 104, 8, 0.22);
   --shadow-bottom-bar: 0 -2px 12px rgba(16, 24, 40, 0.06);
+  --shadow-text-overlay: 0 1px 2px var(--color-overlay-strong);
+  --blur-sm: 6px;
 
   --size-icon-xs: 12px;
   --size-icon-sm: 16px;
   --size-icon-md: 20px;
   --size-icon-lg: 24px;
   --size-icon-xl: 28px;
+  --size-chevron-sm-width: 7.4px;
+  --size-chevron-sm-height: 12px;
+  --size-asset-icon-search-width: 18px;
+  --size-asset-icon-search-height: 16.5px;
+  --size-asset-icon-evidence-width: 14px;
+  --size-asset-icon-evidence-height: 13px;
+  --size-asset-icon-info-sm: 13.333px;
+  --size-asset-icon-stage: 16.67px;
+  --size-asset-icon-image-section-width: 16.67px;
+  --size-asset-icon-image-section-height: 15px;
+  --size-asset-icon-progress-submit-width: 14.25px;
+  --size-asset-icon-progress-submit-height: 12px;
+  --size-asset-icon-expense-delete-width: 12px;
+  --size-asset-icon-expense-delete-height: 13.5px;
 
   --size-avatar-sm: 40px;
   --size-avatar-md: 56px;
@@ -115,19 +144,70 @@ page {
   --size-button-md: 44px;
   --size-button-lg: 56px;
   --size-button-xl: 60px;
+  --size-choice-chip-sm: 30px;
 
   --size-input-md: 48px;
   --size-input-lg: 56px;
   --size-input-xl: 64px;
+  --size-money-input-lg: 58px;
+  --size-textarea-sm: 106px;
+  --size-textarea-md: 120px;
+  --size-textarea-lg: 160px;
+
+  --size-upload-tile-sm: 80px;
+  --size-upload-tile-md: 96px;
+  --size-upload-tile-lg: 120px;
+  --size-upload-add-icon-width: 22px;
+  --size-upload-add-icon-height: 20px;
+  --size-upload-cover-min-height: 262px;
+  --size-contact-qr-card: 280px;
+  --size-contact-qr-image: 246px;
+  --size-list-entry-lg: 90px;
+  --size-animal-avatar-xl: 128px;
+  --size-ledger-status-max-width: 132px;
+  --size-progress-update-primary-button-max-width: 246px;
+  --size-progress-update-primary-button-width: 245.72px;
+  --size-progress-update-secondary-button-width: 100.28px;
 
   --size-tabbar: 65px;
   --size-navbar: 98px;
+  --size-hero-lg: 320px;
 
   --layout-page-padding-x: 16px;
   --layout-page-padding-top: 8px;
+  --layout-page-max-width: 390px;
+  --layout-page-content-max-width: 358px;
+  --layout-bottom-action-offset-md: 120px;
+  --layout-bottom-action-offset-lg: 140px;
+  --layout-bottom-action-offset-xl: 144px;
+  --layout-bottom-action-offset-create: 164px;
   --layout-section-gap: 16px;
   --layout-card-gap: 16px;
   --layout-form-gap: 24px;
+
+  --form-field-gap: 8px;
+  --form-control-min-height: 48px;
+  --form-control-radius: 12px;
+  --form-control-padding-x: 16px;
+  --form-money-input-padding-left-lg: 45px;
+  --form-textarea-padding: 18px;
+  --form-control-bg: var(--color-bg-input);
+  --form-control-border: var(--color-border-default);
+
+  --bottom-action-bg: rgba(255, 255, 255, 0.96);
+  --bottom-action-border: var(--color-border-light);
+  --bottom-action-padding-x: 16px;
+  --bottom-action-padding-y: 12px;
+
+  --sheet-radius-top: 28px;
+  --sheet-bg: var(--color-bg-card);
+  --sheet-scrim: var(--color-overlay-scrim);
+  --sheet-shadow: 0 -12px 32px rgba(15, 23, 42, 0.12);
+
+  --upload-tile-size: 96px;
+  --upload-tile-radius: var(--radius-md);
+  --upload-tile-bg: var(--color-bg-input);
+  --upload-tile-border: var(--color-border-dashed);
 }
 
 page {

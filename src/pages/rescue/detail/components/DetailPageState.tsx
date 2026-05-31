@@ -1,6 +1,7 @@
-import { Text, View } from "@tarojs/components";
-import { AppIcon } from "../../../../components/AppIcon";
+import { View } from "@tarojs/components";
 import { NavBar } from "../../../../components/NavBar";
+import { AppButton, EmptyState } from "../../../../components/ui";
+import "./DetailPageState.scss";
 
 export function DetailPageState({
   title,
@@ -19,15 +20,16 @@ export function DetailPageState({
     <View className="detail-state">
       <NavBar showBack title="记录明细" />
       <View className="detail-state__content">
-        <View className={`detail-state__icon ${loading ? "detail-state__icon--loading" : ""}`}>
-          <AppIcon name={loading ? "sparkles" : "fileText"} size={24} />
-        </View>
-        <Text className="detail-state__title">{title}</Text>
-        <Text className="detail-state__description">{description}</Text>
+        <EmptyState
+          className="detail-state__empty"
+          iconName={loading ? "sparkles" : "fileText"}
+          title={title}
+          description={description}
+        />
         {actionText && onAction ? (
-          <View className="detail-state__action theme-button-primary" onTap={onAction}>
-            <Text>{actionText}</Text>
-          </View>
+          <AppButton className="detail-state__action" size="md" onTap={onAction}>
+            {actionText}
+          </AppButton>
         ) : null}
       </View>
     </View>

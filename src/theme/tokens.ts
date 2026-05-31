@@ -10,15 +10,20 @@ export const colors = {
     bgCanvas: "#F7F5F4",
     bgPage: "#F5F4F3",
     bgCard: "#FFFFFF",
+    bgInput: "#F8FAFC",
     bgSubtle: "#F2F4F7",
     bgMuted: "#EEF1F4",
     borderLight: "#E6EAF0",
     borderDefault: "#D9DFE7",
     borderStrong: "#C7CFD9",
+    borderDashed: "#DBE4EF",
     textPrimary: "#1F2A37",
     textSecondary: "#667085",
     textTertiary: "#98A2B3",
     textDisabled: "#B7C0CC",
+    bgSegmented: "rgba(226, 232, 240, 0.5)",
+    overlayScrim: "rgba(15, 23, 42, 0.32)",
+    overlayStrong: "rgba(15, 23, 42, 0.56)",
   },
   semantic: {
     success: "#16A34A",
@@ -60,6 +65,8 @@ export const typography = {
     bodySm: 14,
     caption: 12,
     micro: 11,
+    badgeXs: 10,
+    uploadAddCopy: 9,
   },
   fontWeight: {
     regular: 400,
@@ -76,7 +83,15 @@ export const typography = {
     bodyMd: 22,
     bodySm: 20,
     caption: 18,
+    bodyRich: 22.75,
+    badgeXs: 15,
+    uploadAddCopy: 13.5,
   },
+} as const;
+
+export const borderWidth = {
+  default: 1,
+  strong: 2,
 } as const;
 
 export const spacing = {
@@ -111,6 +126,13 @@ export const shadows = {
   cardStrong: "0 6px 18px rgba(16, 24, 40, 0.08)",
   cta: "0 8px 20px rgba(247, 104, 8, 0.22)",
   bottomBar: "0 -2px 12px rgba(16, 24, 40, 0.06)",
+  textOverlay: "0 1px 2px var(--color-overlay-strong)",
+} as const;
+
+export const effects = {
+  blur: {
+    sm: 6,
+  },
 } as const;
 
 export const sizes = {
@@ -120,6 +142,34 @@ export const sizes = {
     md: 20,
     lg: 24,
     xl: 28,
+  },
+  chevron: {
+    smWidth: 7.4,
+    smHeight: 12,
+  },
+  assetIcon: {
+    search: {
+      width: 18,
+      height: 16.5,
+    },
+    evidence: {
+      width: 14,
+      height: 13,
+    },
+    infoSm: 13.333,
+    stage: 16.67,
+    imageSection: {
+      width: 16.67,
+      height: 15,
+    },
+    progressSubmit: {
+      width: 14.25,
+      height: 12,
+    },
+    expenseDelete: {
+      width: 12,
+      height: 13.5,
+    },
   },
   avatar: {
     sm: 40,
@@ -132,20 +182,68 @@ export const sizes = {
     lg: 56,
     xl: 60,
   },
+  choiceChip: {
+    sm: 30,
+  },
   input: {
     md: 48,
     lg: 56,
     xl: 64,
   },
+  moneyInput: {
+    lg: 58,
+  },
+  textarea: {
+    sm: 106,
+    md: 120,
+    lg: 160,
+  },
+  uploadTile: {
+    sm: 80,
+    md: 96,
+    lg: 120,
+  },
+  uploadAddIcon: {
+    width: 22,
+    height: 20,
+  },
+  uploadCover: {
+    minHeight: 262,
+  },
+  contactQr: {
+    card: 280,
+    image: 246,
+  },
+  listEntry: {
+    lg: 90,
+  },
+  animalAvatar: {
+    xl: 128,
+  },
+  ledgerStatus: {
+    maxWidth: 132,
+  },
+  progressUpdateFooter: {
+    primaryMaxWidth: 246,
+    primaryWidth: 245.72,
+    secondaryWidth: 100.28,
+  },
   layout: {
     tabbar: 65,
     navbar: 98,
+    heroLg: 320,
   },
 } as const;
 
 export const layout = {
   pagePaddingX: 16,
   pagePaddingTop: 8,
+  pageMaxWidth: 390,
+  pageContentMaxWidth: 358,
+  bottomActionOffsetMd: 120,
+  bottomActionOffsetLg: 140,
+  bottomActionOffsetXl: 144,
+  bottomActionOffsetCreate: 164,
   sectionGap: 16,
   cardGap: 16,
   formGap: 24,
@@ -190,6 +288,39 @@ export const componentTokens = {
     pending: colors.ledger.pending,
     height: 8,
   },
+  form: {
+    labelColor: colors.neutral.textPrimary,
+    descriptionColor: colors.neutral.textSecondary,
+    controlBackground: colors.neutral.bgInput,
+    controlBorderColor: colors.neutral.borderDefault,
+    controlRadius: radius.sm,
+    controlMinHeight: sizes.input.md,
+    moneyInputPaddingLeftLg: 45,
+    textareaPadding: 18,
+  },
+  bottomActionBar: {
+    background: "rgba(255, 255, 255, 0.96)",
+    borderColor: colors.neutral.borderLight,
+    shadow: shadows.bottomBar,
+    paddingX: spacing[4],
+    paddingY: spacing[3],
+  },
+  sheet: {
+    background: colors.neutral.bgCard,
+    scrim: colors.neutral.overlayScrim,
+    radiusTop: 28,
+    shadow: "0 -12px 32px rgba(15, 23, 42, 0.12)",
+  },
+  upload: {
+    tileBackground: colors.neutral.bgInput,
+    tileBorderColor: colors.neutral.borderDashed,
+    tileRadius: radius.md,
+    tileSize: sizes.uploadTile.md,
+    addIconWidth: sizes.uploadAddIcon.width,
+    addIconHeight: sizes.uploadAddIcon.height,
+    addCopyFontSize: typography.fontSize.uploadAddCopy,
+    addCopyLineHeight: typography.lineHeight.uploadAddCopy,
+  },
 } as const;
 
 export const cssVar = {
@@ -209,6 +340,8 @@ export const tokens = {
   spacing,
   radius,
   shadows,
+  borderWidth,
+  effects,
   sizes,
   layout,
   componentTokens,

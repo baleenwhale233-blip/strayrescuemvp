@@ -1,9 +1,10 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { Input, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
-import { DiscoverCaseCard } from "../../components/DiscoverCaseCard";
+import { AppIcon } from "../../components/AppIcon";
+import { DiscoverCaseCard } from "../../components/rescue";
 import { NavBar } from "../../components/NavBar";
-import searchIcon from "../../assets/icons/search-muted-18.svg";
+import { EmptyState, PageShell } from "../../components/ui";
 import {
   loadHomepageCaseCardVMs,
   searchCaseByPublicIdExact,
@@ -64,12 +65,17 @@ export default function DiscoverPage() {
   };
 
   return (
-    <View className="page-shell discover-page">
+    <PageShell className="discover-page">
       <NavBar title="发现" />
 
       <View className="discover-page__search">
         <View className="discover-page__search-icon" onTap={handleSearch}>
-          <Image className="discover-page__search-icon-image" mode="aspectFit" src={searchIcon} />
+          <AppIcon
+            className="discover-page__search-icon-image"
+            name="search"
+            size={18}
+            variant="muted"
+          />
         </View>
         <Input
           className="discover-page__search-input"
@@ -83,7 +89,14 @@ export default function DiscoverPage() {
       </View>
 
       <View className="discover-page__list">
-        {loading ? <Text className="discover-page__empty">正在加载记录...</Text> : null}
+        {loading ? (
+          <EmptyState
+            className="discover-page__empty"
+            iconName="fileText"
+            title="正在加载记录"
+            description="正在整理可以公开查看的救助档案。"
+          />
+        ) : null}
 
         {cards.map((item) => (
           <DiscoverCaseCard
@@ -93,6 +106,6 @@ export default function DiscoverPage() {
           />
         ))}
       </View>
-    </View>
+    </PageShell>
   );
 }

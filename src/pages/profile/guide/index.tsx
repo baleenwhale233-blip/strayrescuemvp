@@ -1,5 +1,6 @@
 import { Text, View } from "@tarojs/components";
 import { NavBar } from "../../../components/NavBar";
+import { PageShell, SectionHeader } from "../../../components/ui";
 import "./index.scss";
 
 type GuideSection = {
@@ -100,7 +101,7 @@ const SECTIONS: GuideSection[] = [
 
 export default function ProfileGuidePage() {
   return (
-    <View className="page-shell profile-guide-page">
+    <PageShell className="profile-guide-page">
       <NavBar showBack title="使用说明" />
 
       <View className="profile-guide-page__hero">
@@ -114,7 +115,7 @@ export default function ProfileGuidePage() {
       <View className="profile-guide-page__content">
         {SECTIONS.map((section) => (
           <View key={section.title} className="profile-guide-page__section">
-            <Text className="profile-guide-page__section-title">{section.title}</Text>
+            <SectionHeader className="profile-guide-page__section-title" title={section.title} />
             {section.paragraphs?.map((paragraph) => (
               <Text key={paragraph} className="profile-guide-page__paragraph">
                 {paragraph}
@@ -133,6 +134,6 @@ export default function ProfileGuidePage() {
           </View>
         ))}
       </View>
-    </View>
+    </PageShell>
   );
 }

@@ -1,0 +1,50 @@
+.rescue-budget-update-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 0;
+}
+
+.rescue-budget-update-page__case-summary {
+  margin-top: var(--space-4);
+}
+
+.rescue-budget-update-page__field {
+  --form-field-gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.rescue-budget-update-page__field .ui-form-field__label {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-sm);
+}
+
+.rescue-budget-update-page__field .ui-form-field__control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rescue-budget-update-page__amount-input {
+  --money-input-control-line-height: var(--line-height-body-md);
+  --money-input-height: var(--size-money-input-lg);
+  --money-input-padding-left: var(--form-money-input-padding-left-lg);
+  --money-input-prefix-left: var(--space-4);
+}
+
+.rescue-budget-update-page__hint {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--size-icon-sm);
+}
+
+.rescue-budget-update-page__notice {
+  --notice-banner-icon-size: var(--size-icon-md);
+  margin-top: var(--space-4);
+}
+
+.rescue-budget-update-page__bottom {
+  --submit-action-button-max-width: var(--layout-page-content-max-width);
+}

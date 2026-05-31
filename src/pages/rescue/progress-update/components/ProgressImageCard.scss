@@ -1,0 +1,66 @@
+.rescue-update-page__image-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-card-gap);
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.rescue-update-page__image-head {
+  --section-header-icon-height: var(--size-asset-icon-image-section-height);
+  --section-header-icon-width: var(--size-asset-icon-image-section-width);
+  --section-header-title-font-size: var(--font-size-body-sm);
+  --section-header-title-line-height: var(--line-height-body-sm);
+}
+
+.rescue-update-page__image-limit {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-badge-xs);
+  line-height: var(--line-height-badge-xs);
+}
+
+.rescue-update-page__image-strip {
+  --upload-add-copy-font-size: var(--font-size-upload-add-copy);
+  --upload-add-copy-line-height: var(--line-height-upload-add-copy);
+  --upload-add-icon-height: var(--size-upload-add-icon-height);
+  --upload-add-icon-width: var(--size-upload-add-icon-width);
+  --upload-tile-radius: var(--radius-md);
+  --upload-tile-size: var(--size-upload-tile-md);
+
+  height: var(--size-upload-tile-md);
+}
+
+.rescue-update-page__image-strip .ui-upload-strip__scroll {
+  height: var(--size-upload-tile-md);
+}
+
+.rescue-update-page__image-strip .ui-upload-strip__content {
+  gap: var(--space-2);
+}
+
+.rescue-update-page__image-strip .ui-upload-strip__item {
+  border: none;
+  border-radius: var(--radius-sm);
+}
+
+.rescue-update-page__image-strip .ui-upload-strip__remove {
+  top: 0;
+  right: 0;
+  width: var(--size-icon-lg);
+  height: var(--size-icon-lg);
+  background: transparent;
+}
+
+.rescue-update-page__notice {
+  --notice-banner-align: center;
+  --notice-banner-border-width: 0;
+  --notice-banner-gap: var(--space-2);
+  --notice-banner-icon-size: var(--size-icon-xs);
+  --notice-banner-justify: center;
+  --notice-banner-line-height: var(--size-icon-sm);
+  --notice-banner-min-height: var(--space-10);
+  --notice-banner-padding: var(--space-3);
+  --notice-banner-radius: var(--radius-xs);
+  --notice-banner-text-color: var(--color-brand-primary);
+}

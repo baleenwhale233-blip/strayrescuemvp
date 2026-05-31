@@ -1,0 +1,15 @@
+.rescue-page__primary-action {
+  gap: var(--space-3);
+  min-height: var(--size-button-xl);
+  margin-bottom: var(--space-6);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading-sm);
+}
+
+.rescue-page__primary-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

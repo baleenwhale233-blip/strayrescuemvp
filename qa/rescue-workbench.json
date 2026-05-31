@@ -19,11 +19,10 @@
     "devtools": true,
     "navigationMode": "relaunch",
     "fullPage": true,
-    "segments": ["primary-action", "active-list", "draft-list"],
+    "segments": ["primary-action", "active-list"],
     "segmentSelectors": {
       "primary-action": ".rescue-page__primary-action",
-      "active-list": ".rescue-page__section",
-      "draft-list": ".rescue-page__section:last-of-type"
+      "active-list": ".rescue-page__section--active"
     },
     "manualFiles": [],
     "manualDirectory": ""
@@ -36,7 +35,7 @@
   },
   "ignoreRegions": [],
   "notes": [
-    "Round 0 smoke 重点是进行中案例、草稿箱和新建救助入口是否都能打开。",
+    "Round 0 smoke 重点是进行中案例、草稿箱和新建救助入口是否都能打开；草稿箱以 fullPage 截图确认，避免底部区块裁剪在 DevTools 中产生无效区域。",
     "Round 2 还会额外关注卡片提醒是否随着 pending / unmatched / homepage eligibility 变化。"
   ]
 }

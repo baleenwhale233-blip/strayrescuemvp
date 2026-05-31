@@ -1,18 +1,16 @@
-import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
-import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
-import submitArrowIcon from "../../../assets/rescue-create/step1-next-arrow.svg";
 import {
   getRescuerContactProfile,
   saveRescuerContactProfile,
 } from "../../../data/rescuerContactProfile";
 import { loadMyProfile, updateRemoteMyProfile } from "../../../domain/canonical/repository";
 import { uploadProfileAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
+import { ContactSettingsForm } from "./components/ContactSettingsForm";
 import "./index.scss";
 
 export default function ContactSettingsPage() {
@@ -216,73 +214,22 @@ export default function ContactSettingsPage() {
     });
 
   return (
-    <View
-      className="page-shell contact-settings-page"
+    <PageShell
+      className="contact-settings-page"
       style={{ paddingBottom: `${128 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="联系信息" />
 
-      <View className="contact-settings-page__body">
-        <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信号（二选一即可）</Text>
-          <View className="contact-settings-page__input-card">
-            <Input
-              className="contact-settings-page__input"
-              placeholder="请填写微信号"
-              placeholderStyle="color:#94A3B8;"
-              value={wechatId}
-              onInput={(event) => setWechatId(event.detail.value)}
-            />
-          </View>
-        </View>
-
-        <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">微信二维码（二选一即可）</Text>
-          <View className="contact-settings-page__qr-trigger" onTap={handlePickQrImage}>
-            {qrImagePath ? (
-              <Image
-                className="contact-settings-page__qr-image"
-                mode="aspectFill"
-                src={qrImagePath}
-              />
-            ) : (
-              <>
-                <Image
-                  className="contact-settings-page__qr-icon"
-                  mode="aspectFit"
-                  src={addPhotoIcon}
-                />
-                <Text className="contact-settings-page__qr-text">添加照片</Text>
-              </>
-            )}
-          </View>
-        </View>
-
-        <View className="contact-settings-page__field">
-          <Text className="contact-settings-page__label">备注（选填）</Text>
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="contact-settings-page__textarea-card"
-            textareaClassName="contact-settings-page__textarea"
-            placeholderClassName="contact-settings-page__textarea-placeholder"
-            placeholder="如果需要联系您，有什么要提前说明的"
-            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-            maxlength={120}
-            value={note}
-            onInput={(event) => setNote(event.detail.value)}
-          />
-        </View>
-      </View>
-
-      <View className="contact-settings-page__bottom">
-        <View className="theme-button-primary contact-settings-page__submit" onTap={handleSubmit}>
-          <Text>保存</Text>
-          <Image
-            className="contact-settings-page__submit-icon"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
-    </View>
+      <ContactSettingsForm
+        cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+        note={note}
+        qrImagePath={qrImagePath}
+        wechatId={wechatId}
+        onNoteChange={setNote}
+        onPickQrImage={handlePickQrImage}
+        onSubmit={handleSubmit}
+        onWechatIdChange={setWechatId}
+      />
+    </PageShell>
   );
 }

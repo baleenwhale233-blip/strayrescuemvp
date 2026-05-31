@@ -1,8 +1,7 @@
-import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -10,8 +9,6 @@ import {
   clearCaseContentWriteLocalFallback,
   recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
-import submitArrowIcon from "../../../assets/rescue-budget-update/footer-submit-arrow.svg";
-import noteInfoIcon from "../../../assets/rescue-budget-update/notice-icon.svg";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   calculateDraftLedger,
@@ -25,6 +22,7 @@ import {
   type RescueCreateEntryTone,
 } from "../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
+import { BudgetUpdateForm } from "./components/BudgetUpdateForm";
 import "./index.scss";
 
 type BudgetUpdateLoadStatus = "loading" | "ready" | "error";
@@ -251,101 +249,31 @@ export default function RescueBudgetUpdatePage() {
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
-      <View
-        className="page-shell rescue-budget-update-page"
+      <PageShell
+        className="rescue-budget-update-page"
         style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="追加预算" />
-      </View>
+      </PageShell>
     );
   }
 
   return (
-    <View
-      className="page-shell rescue-budget-update-page"
+    <PageShell
+      className="rescue-budget-update-page"
       style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="追加预算" />
 
-      <View className="rescue-budget-update-page__body">
-        <View className="rescue-budget-update-page__animal-card theme-card">
-          <Image
-            className="rescue-budget-update-page__animal-cover"
-            mode="aspectFill"
-            src={contextCard.coverImage}
-          />
-          <View className="rescue-budget-update-page__animal-copy">
-            <View className="rescue-budget-update-page__animal-title-row">
-              <Text className="rescue-budget-update-page__animal-title">{contextCard.title}</Text>
-              <Text className="rescue-budget-update-page__animal-status">
-                {contextCard.statusLabel}
-              </Text>
-            </View>
-            <Text className="rescue-budget-update-page__animal-meta">
-              ID: {contextCard.publicCaseId}
-            </Text>
-            <Text className="rescue-budget-update-page__animal-meta rescue-budget-update-page__animal-meta--muted">
-              {contextCard.rescueStartedAtLabel}
-            </Text>
-          </View>
-        </View>
-
-        <View className="rescue-budget-update-page__field">
-          <Text className="rescue-budget-update-page__label">新预估总金额</Text>
-          <View className="rescue-budget-update-page__amount-input">
-            <Text className="rescue-budget-update-page__amount-prefix">¥</Text>
-            <Input
-              className="rescue-budget-update-page__amount-control"
-              type="digit"
-              placeholder="0.00"
-              value={budget}
-              onInput={(event) => setBudget(event.detail.value)}
-            />
-          </View>
-          <Text className="rescue-budget-update-page__hint">
-            当前已登记：{contextCard.supportedAmountLabel}
-          </Text>
-        </View>
-
-        <View className="rescue-budget-update-page__field">
-          <Text className="rescue-budget-update-page__label">追加原因/说明</Text>
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="rescue-budget-update-page__textarea-wrap"
-            textareaClassName="rescue-budget-update-page__textarea"
-            placeholderClassName="rescue-budget-update-page__textarea-placeholder"
-            placeholder="请说明为什么要追加预算，如：病情反复需要额手术、住院时间延长等"
-            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-            maxlength={160}
-            value={reason}
-            onInput={(event) => setReason(event.detail.value)}
-          />
-        </View>
-
-        <View className="rescue-budget-update-page__notice">
-          <Image
-            className="rescue-budget-update-page__notice-icon"
-            mode="aspectFit"
-            src={noteInfoIcon}
-          />
-          <Text className="rescue-budget-update-page__notice-text">
-            预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
-          </Text>
-        </View>
-      </View>
-
-      <View className="rescue-budget-update-page__bottom">
-        <View
-          className="theme-button-primary rescue-budget-update-page__bottom-submit"
-          onTap={handleSubmit}
-        >
-          <Text>确认追加并更新时间线</Text>
-          <Image
-            className="rescue-budget-update-page__bottom-submit-icon"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
-    </View>
+      <BudgetUpdateForm
+        budget={budget}
+        contextCard={contextCard}
+        cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+        reason={reason}
+        onBudgetChange={setBudget}
+        onReasonChange={setReason}
+        onSubmit={handleSubmit}
+      />
+    </PageShell>
   );
 }

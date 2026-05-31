@@ -1,21 +1,18 @@
-import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
-import { AppIcon } from "../../../components/AppIcon";
-import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { EmptyState, PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
-import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
   createRemoteSupportEntryByCaseId,
   loadPublicDetailVMByCaseId,
 } from "../../../domain/canonical/repository";
 import { uploadSupportProofImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
+import { SupportClaimForm } from "./components/SupportClaimForm";
 import "./index.scss";
 
 type ClaimLoadStatus = "loading" | "ready" | "error";
@@ -86,41 +83,35 @@ export default function SupportClaimPage() {
 
   if (loadStatus === "loading") {
     return (
-      <View
-        className="support-claim page-shell"
+      <PageShell
+        className="support-claim"
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="登记一笔" />
-        <View className="support-claim__state">
-          <View className="support-claim__state-icon">
-            <AppIcon name="handCoins" size={24} />
-          </View>
-          <Text className="support-claim__state-title">正在加载档案信息</Text>
-          <Text className="support-claim__state-copy">
-            先把档案卡片和登记表单准备好，请稍等片刻。
-          </Text>
-        </View>
-      </View>
+        <EmptyState
+          className="support-claim__state"
+          iconName="handCoins"
+          title="正在加载档案信息"
+          description="先把档案卡片和登记表单准备好，请稍等片刻。"
+        />
+      </PageShell>
     );
   }
 
   if (loadStatus === "error" || !detail) {
     return (
-      <View
-        className="support-claim page-shell"
+      <PageShell
+        className="support-claim"
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="登记一笔" />
-        <View className="support-claim__state">
-          <View className="support-claim__state-icon">
-            <AppIcon name="fileText" size={24} />
-          </View>
-          <Text className="support-claim__state-title">档案信息加载失败</Text>
-          <Text className="support-claim__state-copy">
-            当前没能拿到档案信息，你可以返回上一页后稍后再试。
-          </Text>
-        </View>
-      </View>
+        <EmptyState
+          className="support-claim__state"
+          iconName="fileText"
+          title="档案信息加载失败"
+          description="当前没能拿到档案信息，你可以返回上一页后稍后再试。"
+        />
+      </PageShell>
     );
   }
 
@@ -135,6 +126,13 @@ export default function SupportClaimPage() {
     if (picked) {
       setImagePath(picked);
     }
+  };
+
+  const handlePreviewImage = (src: string) => {
+    Taro.previewImage({
+      current: src,
+      urls: [src],
+    });
   };
 
   const handleSubmit = async () =>
@@ -182,96 +180,34 @@ export default function SupportClaimPage() {
     });
 
   return (
-    <View
-      className="support-claim page-shell"
+    <PageShell
+      className="support-claim"
       style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="登记一笔" />
 
-      <View className="support-claim__case-card theme-card">
-        <View className="support-claim__case-avatar-wrap">
-          <Image
-            className="support-claim__case-avatar"
-            mode="aspectFill"
-            src={caseCoverSrc}
-            onError={() => setCaseCoverSrc(animalProfileExact)}
-          />
-        </View>
-        <View className="support-claim__case-copy">
-          <View className="support-claim__case-head">
-            <Text className="support-claim__case-title">{detail.title}</Text>
-            <Text className="support-claim__case-status">{detail.statusLabel}</Text>
-          </View>
-          <Text className="support-claim__case-meta">ID: {detail.publicCaseId}</Text>
-          <Text className="support-claim__case-meta">
-            记录开始时间: {getRescueStartedAtLabel(detail)}
-          </Text>
-        </View>
-      </View>
-
-      <View className="support-claim__field">
-        <Text className="support-claim__label">登记金额</Text>
-        <View className="support-claim__single-input support-claim__single-input--amount">
-          <Text className="support-claim__currency">¥</Text>
-          <Input
-            className="support-claim__text-input support-claim__text-input--amount"
-            type="digit"
-            placeholder="0.00"
-            value={amount}
-            onInput={(event) => setAmount(event.detail.value)}
-          />
-        </View>
-      </View>
-
-      <View className="support-claim__field">
-        <Text className="support-claim__label">您的称呼</Text>
-        <Input
-          className="support-claim__text-input"
-          value={nickname}
-          onInput={(event) => setNickname(event.detail.value)}
-        />
-      </View>
-
-      <View className="support-claim__field support-claim__field--upload">
-        <Text className="support-claim__label">相关截图/凭证</Text>
-        <View className="support-claim__upload" onTap={handlePickImage}>
-          {imagePath ? (
-            <Image className="support-claim__upload-image" mode="aspectFill" src={imagePath} />
-          ) : (
-            <>
-              <View className="support-claim__upload-icon">
-                <Image
-                  className="support-claim__upload-icon-image"
-                  mode="aspectFit"
-                  src={addPhotoIcon}
-                />
-              </View>
-              <Text className="support-claim__upload-text">添加照片</Text>
-            </>
-          )}
-        </View>
-      </View>
-
-      <View className="support-claim__field">
-        <Text className="support-claim__label">备注</Text>
-        <TextareaWithOverlayPlaceholder
-          wrapperClassName="support-claim__textarea-wrap"
-          textareaClassName="support-claim__textarea"
-          placeholderClassName="support-claim__textarea-placeholder"
-          placeholder="可补充留言、用途或对账备注"
-          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-          maxlength={120}
-          value={note}
-          onInput={(event) => setNote(event.detail.value)}
-        />
-      </View>
-
-      <View className="support-claim__bottom">
-        <View className="theme-button-primary support-claim__submit" onTap={handleSubmit}>
-          <Text>提交登记</Text>
-          <Image className="support-claim__submit-arrow" mode="aspectFit" src={submitArrowIcon} />
-        </View>
-      </View>
-    </View>
+      <SupportClaimForm
+        amount={amount}
+        cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+        imagePath={imagePath}
+        nickname={nickname}
+        note={note}
+        summary={{
+          coverSrc: caseCoverSrc,
+          publicCaseId: detail.publicCaseId,
+          rescueStartedAtLabel: `记录开始时间: ${getRescueStartedAtLabel(detail)}`,
+          statusLabel: detail.statusLabel,
+          title: detail.title,
+        }}
+        onAmountChange={setAmount}
+        onCoverError={() => setCaseCoverSrc(animalProfileExact)}
+        onImageAdd={handlePickImage}
+        onImagePreview={handlePreviewImage}
+        onImageRemove={() => setImagePath("")}
+        onNicknameChange={setNickname}
+        onNoteChange={setNote}
+        onSubmit={handleSubmit}
+      />
+    </PageShell>
   );
 }

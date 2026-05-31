@@ -1,9 +1,17 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
+import { AppIcon } from "../../../components/AppIcon";
 import { NavBar } from "../../../components/NavBar";
+import {
+  Avatar,
+  EmptyState,
+  ListEntry,
+  PageShell,
+  SectionHeader,
+  SurfaceCard,
+} from "../../../components/ui";
 import fallbackCoverImage from "../../../assets/detail/guest-hero-cat.png";
-import chevronIcon from "../../../assets/rescue-detail/owner/action-chevron.svg";
 import { loadMySupportHistory } from "../../../domain/canonical/repository";
 import "./index.scss";
 
@@ -49,45 +57,53 @@ export default function SupportHistoryPage() {
   };
 
   return (
-    <View className="page-shell support-history-page">
+    <PageShell className="support-history-page">
       <NavBar showBack title="我的登记记录" />
 
-      <View className="support-history-page__summary">
+      <SurfaceCard className="support-history-page__summary">
         <Text className="support-history-page__summary-label">总计登记</Text>
         <Text className="support-history-page__summary-value">{formatCurrency(totalAmount)}</Text>
-      </View>
+      </SurfaceCard>
 
-      <Text className="support-history-page__section-title">登记记录（{items.length}）</Text>
+      <SectionHeader
+        className="support-history-page__section-title"
+        title={`登记记录（${items.length}）`}
+      />
 
       <View className="support-history-page__list">
         {items.length ? (
           items.map((item) => (
-            <View
+            <ListEntry
               key={item.caseId}
               className="support-history-page__item"
+              leading={
+                <Avatar
+                  className="support-history-page__avatar"
+                  fallbackSrc={fallbackCoverImage}
+                  src={item.coverImageUrl}
+                />
+              }
               onTap={() => handleOpenCase(item.caseId)}
-            >
-              <Image
-                className="support-history-page__avatar"
-                mode="aspectFill"
-                src={item.coverImageUrl}
-              />
-              <View className="support-history-page__item-copy">
-                <Text className="support-history-page__item-title">{item.title}</Text>
-                <Text className="support-history-page__item-meta">登记 {item.amountLabel}</Text>
-              </View>
-              <Image className="support-history-page__chevron" mode="aspectFit" src={chevronIcon} />
-            </View>
+              subtitle={`登记 ${item.amountLabel}`}
+              title={item.title}
+              trailing={
+                <AppIcon
+                  className="support-history-page__chevron"
+                  name="chevronRight"
+                  size={12}
+                  variant="muted"
+                />
+              }
+            />
           ))
         ) : (
-          <View className="support-history-page__empty">
-            <Text className="support-history-page__empty-title">还没有已确认登记</Text>
-            <Text className="support-history-page__empty-copy">
-              提交登记后，等待记录维护者处理，就会出现在这里。
-            </Text>
-          </View>
+          <EmptyState
+            className="support-history-page__empty"
+            title="还没有已确认登记"
+            description="提交登记后，等待记录维护者处理，就会出现在这里。"
+          />
         )}
       </View>
-    </View>
+    </PageShell>
   );
 }

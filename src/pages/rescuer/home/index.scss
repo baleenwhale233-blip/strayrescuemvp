@@ -1,7 +1,7 @@
 .rescuer-home-page {
   min-height: 100vh;
-  padding-bottom: 32px;
-  background: #f8f6f6;
+  padding-bottom: var(--space-8);
+  background: var(--color-bg-page);
 }
 
 .rescuer-home-page .page-nav {
@@ -10,32 +10,28 @@
 
 .rescuer-home-page .page-nav--system {
   margin-bottom: 0;
-  background: #ffffff;
+  background: var(--color-bg-card);
 }
 
 .rescuer-home-page .page-nav__title {
-  color: #000000;
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-regular);
 }
 
 .rescuer-home-page__profile {
   display: flex;
-  gap: 16px;
+  gap: var(--space-4);
   align-items: center;
-  margin-top: 16px;
-  padding: 17px;
-  background: rgba(236, 91, 19, 0.05);
-  border: 1px solid rgba(236, 91, 19, 0.1);
-  border-radius: 12px;
+  margin-top: var(--space-4);
+  padding: calc(var(--space-4) + var(--border-width-default));
+  background: var(--color-brand-primary-soft);
+  border-color: var(--color-brand-primary-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-none);
 }
 
 .rescuer-home-page__avatar {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-  border: 2px solid #ffffff;
-  border-radius: 999px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --avatar-size: var(--size-avatar-md);
 }
 
 .rescuer-home-page__profile-copy {
@@ -43,33 +39,28 @@
   flex: 1;
   min-width: 0;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .rescuer-home-page__name {
-  color: #0f172a;
-  font-size: 16px;
-  line-height: 24px;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
 }
 
 .rescuer-home-page__meta {
-  color: #64748b;
-  font-size: 12px;
-  line-height: 16px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--size-icon-sm);
 }
 
 .rescuer-home-page__list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
 }
 
-.rescuer-home-page__empty {
-  display: block;
-  padding: 24px 0;
-  color: #64748b;
-  font-size: 14px;
-  line-height: 22px;
-  text-align: center;
+.rescuer-home-page__empty-card {
+  margin-top: var(--space-4);
 }

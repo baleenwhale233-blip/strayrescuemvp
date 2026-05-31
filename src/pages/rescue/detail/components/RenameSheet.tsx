@@ -1,5 +1,7 @@
 import { Input, Text, View } from "@tarojs/components";
 import { useState } from "react";
+import { AppButton } from "../../../../components/ui";
+import "./RenameSheet.scss";
 
 export function RenameSheet({
   initialValue,
@@ -34,12 +36,9 @@ export function RenameSheet({
           </View>
         </View>
 
-        <View
-          className="theme-button-primary detail-rename-sheet__button"
-          onTap={() => onSave(value)}
-        >
-          <Text>保存代号</Text>
-        </View>
+        <AppButton className="detail-rename-sheet__button" onTap={() => onSave(value)}>
+          保存代号
+        </AppButton>
       </View>
     </View>
   );

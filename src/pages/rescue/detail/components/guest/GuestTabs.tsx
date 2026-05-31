@@ -1,5 +1,6 @@
-import { Text, View } from "@tarojs/components";
+import { SegmentedTabs } from "../../../../../components/ui";
 import type { DetailTab } from "../../types";
+import "./GuestTabs.scss";
 
 export function GuestTabs({
   activeTab,
@@ -9,21 +10,14 @@ export function GuestTabs({
   onChange: (tab: DetailTab) => void;
 }) {
   return (
-    <View className="detail-tabs">
-      <View
-        className={`detail-tabs__item ${
-          activeTab === "overview" ? "detail-tabs__item--active" : ""
-        }`}
-        onTap={() => onChange("overview")}
-      >
-        <Text>记录摘要</Text>
-      </View>
-      <View
-        className={`detail-tabs__item ${activeTab === "detail" ? "detail-tabs__item--active" : ""}`}
-        onTap={() => onChange("detail")}
-      >
-        <Text>记录详情</Text>
-      </View>
-    </View>
+    <SegmentedTabs
+      className="detail-tabs"
+      value={activeTab}
+      items={[
+        { label: "记录摘要", value: "overview" },
+        { label: "记录详情", value: "detail" },
+      ]}
+      onChange={(value) => onChange(value as DetailTab)}
+    />
   );
 }

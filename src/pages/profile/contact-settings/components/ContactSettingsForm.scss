@@ -1,0 +1,51 @@
+.contact-settings-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-top: var(--space-6);
+}
+
+.contact-settings-page__input-card {
+  height: var(--size-input-md);
+  overflow: hidden;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-none);
+}
+
+.contact-settings-page__input {
+  width: 100%;
+  height: var(--size-input-md);
+  padding: 0 var(--form-control-padding-x);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-lg);
+}
+
+.contact-settings-page__qr-upload {
+  width: var(--size-upload-tile-md);
+  --upload-tile-size: var(--size-upload-tile-md);
+}
+
+.contact-settings-page__qr-upload .ui-upload-strip__content {
+  gap: 0;
+}
+
+.contact-settings-page__qr-upload .ui-upload-strip__add-icon {
+  width: var(--size-upload-add-icon-width);
+  height: var(--size-upload-add-icon-height);
+}
+
+.contact-settings-page__qr-upload .ui-upload-strip__add-copy {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-upload-add-copy);
+  line-height: var(--font-size-body-sm);
+}
+
+.contact-settings-page__textarea {
+  --textarea-field-line-height: var(--line-height-body-sm);
+  --textarea-field-placeholder-line-height: var(--line-height-body-sm);
+}
+
+.contact-settings-page__bottom {
+  --submit-action-inner-max-width: none;
+}

@@ -1,0 +1,28 @@
+.detail-card {
+  padding: var(--space-5);
+  border-color: var(--color-brand-primary-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card-strong);
+}
+
+.detail-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-card__title {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-heading-md);
+}
+
+.detail-card__info-icon {
+  width: var(--size-asset-icon-info-sm);
+  height: var(--size-asset-icon-info-sm);
+}
+
+.detail-card__ledger {
+  margin-top: var(--space-4);
+}

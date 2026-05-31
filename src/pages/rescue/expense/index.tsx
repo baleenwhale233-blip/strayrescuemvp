@@ -1,7 +1,8 @@
-import { Image, Input, ScrollView, Text, View } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import Taro, { useDidHide, useDidShow, usePageScroll, useRouter, useUnload } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import { AppButton, BottomActionBar, PageShell } from "../../../components/ui";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
@@ -10,14 +11,8 @@ import {
   clearCaseContentWriteLocalFallback,
   recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
-import addLineIcon from "../../../assets/rescue-expense/add-line-20.svg";
-import addPhotoIcon from "../../../assets/rescue-expense/add-photo-22.svg";
-import lineDeleteIcon from "../../../assets/rescue-expense/line-delete-12.svg";
-import noteInfoIcon from "../../../assets/rescue-expense/note-info-16.svg";
 import qaCatImage from "../../../assets/rescue-expense/qa-cat.png";
 import qaReceiptImage from "../../../assets/rescue-expense/qa-receipt.png";
-import submitArrowIcon from "../../../assets/rescue-expense/submit-arrow-16.svg";
-import uploadDeleteIcon from "../../../assets/rescue-expense/upload-delete-24.svg";
 import {
   createRemoteExpenseRecordByCaseId,
   formatTimelineTimestamp,
@@ -27,15 +22,12 @@ import {
   syncCurrentDraft,
 } from "../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
+import { ExpenseCompactTotal } from "./components/ExpenseCompactTotal";
+import { ExpenseDetailsSection } from "./components/ExpenseDetailsSection";
+import { ExpenseEvidenceCard } from "./components/ExpenseEvidenceCard";
 import { getCompactTotalThreshold, shouldShowCompactTotal } from "./stickyTotal";
+import type { ExpenseLine } from "./types";
 import "./index.scss";
-
-type ExpenseLine = {
-  id: string;
-  order: number;
-  description: string;
-  amount: string;
-};
 
 type ExpenseDraftCache = {
   publicEvidenceImages: string[];
@@ -484,8 +476,8 @@ export default function RescueExpensePage() {
     });
 
   return (
-    <View
-      className={`page-shell rescue-expense-page${
+    <PageShell
+      className={`rescue-expense-page${
         qaPreset === "design" ? " rescue-expense-page--qa-design" : ""
       }`}
     >
@@ -494,165 +486,35 @@ export default function RescueExpensePage() {
           <NavBar showBack title="记录支出" />
         </View>
 
-        <View
-          className={`rescue-expense-page__compact-total${
-            showCompactTotal ? " rescue-expense-page__compact-total--visible" : ""
-          }`}
-        >
-          <View className="rescue-expense-page__compact-total-inner">
-            <Text className="rescue-expense-page__compact-total-label">本次合计支出</Text>
-            <View className="rescue-expense-page__compact-total-value-wrap">
-              <Text className="rescue-expense-page__compact-total-currency">¥</Text>
-              <Text className="rescue-expense-page__compact-total-value">
-                {displayedTotalLabel}
-              </Text>
-            </View>
-          </View>
-        </View>
+        <ExpenseCompactTotal amountLabel={displayedTotalLabel} visible={showCompactTotal} />
       </View>
 
       <View className="rescue-expense-page__body">
-        <View className="rescue-expense-page__evidence theme-card">
-          <View className="rescue-expense-page__section-copy">
-            <Text className="rescue-expense-page__section-title">公共凭证</Text>
-            <Text className="rescue-expense-page__section-desc">
-              请上传当次支出的所有相关凭证（最多9张）
-            </Text>
-          </View>
+        <ExpenseEvidenceCard
+          images={publicEvidenceImages}
+          onAdd={handlePickEvidence}
+          onPreview={handlePreviewEvidence}
+          onRemove={handleRemoveEvidence}
+        />
 
-          <View className="rescue-expense-page__upload-row">
-            <View className="rescue-expense-page__upload-trigger" onTap={handlePickEvidence}>
-              <Image
-                className="rescue-expense-page__upload-trigger-icon"
-                mode="aspectFit"
-                src={addPhotoIcon}
-              />
-              <Text className="rescue-expense-page__upload-trigger-text">添加照片</Text>
-            </View>
-
-            <ScrollView
-              className="rescue-expense-page__upload-scroll"
-              scrollX
-              enhanced
-              showScrollbar={false}
-            >
-              <View className="rescue-expense-page__upload-grid">
-                {publicEvidenceImages.map((image, index) => (
-                  <View
-                    key={`${image}-${index}`}
-                    className="rescue-expense-page__upload-item"
-                    onTap={() => handlePreviewEvidence(image)}
-                  >
-                    <Image
-                      className="rescue-expense-page__upload-image"
-                      mode="aspectFill"
-                      src={image}
-                    />
-                    <View
-                      className="rescue-expense-page__upload-remove"
-                      onTap={(event) => {
-                        event.stopPropagation();
-                        handleRemoveEvidence(index);
-                      }}
-                    >
-                      <Image
-                        className="rescue-expense-page__upload-remove-icon"
-                        mode="aspectFit"
-                        src={uploadDeleteIcon}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
-
-          <View className="rescue-expense-page__note">
-            <Image className="rescue-expense-page__note-icon" mode="aspectFit" src={noteInfoIcon} />
-            <Text className="rescue-expense-page__note-copy">
-              一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
-            </Text>
-          </View>
-        </View>
-
-        <View className="rescue-expense-page__details">
-          <View className="rescue-expense-page__details-head">
-            <Text className="rescue-expense-page__details-title">支出明细</Text>
-            <View className="rescue-expense-page__total">
-              <Text className="rescue-expense-page__total-label">本次合计支出</Text>
-              <View className="rescue-expense-page__total-value-wrap">
-                <Text className="rescue-expense-page__total-currency">¥</Text>
-                <Text className="rescue-expense-page__total-value">{displayedTotalLabel}</Text>
-              </View>
-            </View>
-          </View>
-
-          <View className="rescue-expense-page__line-list">
-            <View className="rescue-expense-page__add-line" onTap={handleAddLine}>
-              <Image
-                className="rescue-expense-page__add-line-icon"
-                mode="aspectFit"
-                src={addLineIcon}
-              />
-              <Text className="rescue-expense-page__add-line-text">新增一条明细</Text>
-            </View>
-
-            {expenseLines.map((line, index) => (
-              <View key={line.id} className="rescue-expense-page__line theme-card">
-                <View className="rescue-expense-page__line-head">
-                  <Text className="rescue-expense-page__line-index">
-                    支出 {String(expenseLines.length - index).padStart(2, "0")}
-                  </Text>
-                  <View
-                    className="rescue-expense-page__line-delete"
-                    onTap={() => handleRemoveLine(line.id)}
-                  >
-                    <Image
-                      className="rescue-expense-page__line-delete-icon"
-                      mode="aspectFit"
-                      src={lineDeleteIcon}
-                    />
-                  </View>
-                </View>
-
-                <View className="rescue-expense-page__field">
-                  <Text className="rescue-expense-page__label">项目描述</Text>
-                  <Input
-                    className="rescue-expense-page__input"
-                    placeholder="例如：猫粮 5kg / 绝育费"
-                    value={line.description}
-                    onInput={(event) =>
-                      handleLineChange(line.id, "description", event.detail.value)
-                    }
-                  />
-                </View>
-
-                <View className="rescue-expense-page__field">
-                  <Text className="rescue-expense-page__label">金额 (¥)</Text>
-                  <Input
-                    className="rescue-expense-page__input"
-                    type="digit"
-                    placeholder="0.00"
-                    value={line.amount}
-                    onInput={(event) => handleLineChange(line.id, "amount", event.detail.value)}
-                  />
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
+        <ExpenseDetailsSection
+          amountLabel={displayedTotalLabel}
+          lines={expenseLines}
+          onAdd={handleAddLine}
+          onLineChange={handleLineChange}
+          onRemove={handleRemoveLine}
+        />
       </View>
 
-      <View className="rescue-expense-page__bottom">
-        <View className="theme-button-primary rescue-expense-page__submit" onTap={handleSubmit}>
-          <Text>确认并挂载至账本</Text>
-          <Image
-            className="rescue-expense-page__submit-arrow"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
-    </View>
+      <BottomActionBar className="rescue-expense-page__bottom">
+        <AppButton
+          className="rescue-expense-page__submit"
+          iconName="arrowRight"
+          onTap={handleSubmit}
+        >
+          确认并挂载至账本
+        </AppButton>
+      </BottomActionBar>
+    </PageShell>
   );
 }

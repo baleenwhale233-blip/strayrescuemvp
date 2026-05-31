@@ -1,4 +1,4 @@
-import type { RescueOwnerTimelineItem } from "../../../components/RescueOwnerShared";
+import type { RescueOwnerTimelineItem } from "../../../components/rescue";
 import guestHeroCat from "../../../assets/detail/guest-hero-cat.png";
 import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";

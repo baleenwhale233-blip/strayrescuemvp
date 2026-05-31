@@ -1,6 +1,8 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
+import { Avatar, SurfaceCard } from "../../../../../components/ui";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getRescuerAvatar } from "../../detailViewModels";
+import "./GuestRescuerCard.scss";
 
 export function GuestRescuerCard({
   detail,
@@ -10,8 +12,8 @@ export function GuestRescuerCard({
   onOpenHomepage: () => void;
 }) {
   return (
-    <View className="rescuer-card theme-card">
-      <Image className="rescuer-card__avatar" mode="aspectFill" src={getRescuerAvatar(detail)} />
+    <SurfaceCard className="rescuer-card">
+      <Avatar className="rescuer-card__avatar" src={getRescuerAvatar(detail)} variant="raised" />
       <View className="rescuer-card__body">
         <Text className="rescuer-card__name">{detail.rescuer.name}</Text>
         <Text className="rescuer-card__meta">
@@ -24,6 +26,6 @@ export function GuestRescuerCard({
           <Text>查看主页</Text>
         </View>
       ) : null}
-    </View>
+    </SurfaceCard>
   );
 }

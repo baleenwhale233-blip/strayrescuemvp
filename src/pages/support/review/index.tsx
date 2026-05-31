@@ -1,10 +1,9 @@
-import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import { PageShell, SegmentedTabs } from "../../../components/ui";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
-import submitArrowIcon from "../../../assets/support-claim/submit-arrow-19.svg";
 import {
   createRemoteManualSupportEntryByCaseId,
   draftIdToCaseId,
@@ -15,18 +14,12 @@ import {
   type RescueCreateDraft,
 } from "../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
+import { ManualSupportEntryForm } from "./components/ManualSupportEntryForm";
+import { PendingSupportEntryList } from "./components/PendingSupportEntryList";
+import type { PendingSupportEntryCard } from "./types";
 import "./index.scss";
 
 type ReviewTab = "pending" | "manual";
-
-type PendingEntryCard = {
-  id: string;
-  supporterName: string;
-  latestEntryAtLabel: string;
-  amountLabel: string;
-  note?: string;
-  proofUrl?: string;
-};
 
 function formatCurrencyLabel(amount: number) {
   return `¥${amount.toLocaleString("zh-CN", {
@@ -35,7 +28,7 @@ function formatCurrencyLabel(amount: number) {
   })}`;
 }
 
-function getDraftPendingEntries(draft?: RescueCreateDraft): PendingEntryCard[] {
+function getDraftPendingEntries(draft?: RescueCreateDraft): PendingSupportEntryCard[] {
   if (!draft) {
     return [];
   }
@@ -192,141 +185,38 @@ export default function SupportReviewPage() {
     detail?.supportSummary.pendingSupportEntryCount || fallbackPendingEntries.length;
 
   return (
-    <View key={reloadSeed} className="page-shell support-review-page">
+    <PageShell key={reloadSeed} className="support-review-page">
       <NavBar showBack title="处理登记" />
 
-      <View className="support-review-page__tabs">
-        <View
-          className={`support-review-page__tab ${
-            activeTab === "pending" ? "support-review-page__tab--active" : ""
-          }`}
-          onTap={() => setActiveTab("pending")}
-        >
-          <Text>待处理登记</Text>
-          {activeTab === "pending" ? (
-            <View className="support-review-page__badge">
-              <Text>{pendingBadgeCount}</Text>
-            </View>
-          ) : null}
-        </View>
-        <View
-          className={`support-review-page__tab ${
-            activeTab === "manual" ? "support-review-page__tab--active" : ""
-          }`}
-          onTap={() => setActiveTab("manual")}
-        >
-          <Text>手动登记</Text>
-        </View>
-      </View>
+      <SegmentedTabs
+        className="support-review-page__tabs"
+        value={activeTab}
+        items={[
+          {
+            label: "待处理登记",
+            value: "pending",
+            badge: activeTab === "pending" ? `${pendingBadgeCount}` : undefined,
+          },
+          { label: "手动登记", value: "manual" },
+        ]}
+        onChange={(value) => setActiveTab(value as ReviewTab)}
+      />
 
       {activeTab === "pending" ? (
-        <View className="support-review-page__list">
-          {displayedPendingEntries.map((entry) => (
-            <View key={entry.id} className="support-review-page__card theme-card">
-              <View className="support-review-page__card-top">
-                {entry.proofUrl ? (
-                  <View className="support-review-page__proof">
-                    <Image
-                      className="support-review-page__proof-image"
-                      mode="aspectFill"
-                      src={entry.proofUrl}
-                    />
-                  </View>
-                ) : (
-                  <View className="support-review-page__proof support-review-page__proof--empty">
-                    <Text className="support-review-page__proof-empty-text">未附凭证</Text>
-                  </View>
-                )}
-
-                <View className="support-review-page__card-copy">
-                  <View className="support-review-page__card-head">
-                    <Text className="support-review-page__card-name">{entry.supporterName}</Text>
-                    <Text className="support-review-page__card-time">
-                      {entry.latestEntryAtLabel}
-                    </Text>
-                  </View>
-                  <Text className="support-review-page__card-amount">{entry.amountLabel}</Text>
-                  <Text className="support-review-page__card-note">
-                    “{entry.note || "待处理登记记录"}”
-                  </Text>
-                </View>
-              </View>
-
-              <View className="support-review-page__actions">
-                <View
-                  className="support-review-page__button support-review-page__button--ghost"
-                  onTap={() => handleUnmatched(entry.id, "duplicate_submission")}
-                >
-                  <Text>标记重复</Text>
-                </View>
-                <View className="support-review-page__actions-right">
-                  <View
-                    className="support-review-page__button support-review-page__button--ghost"
-                    onTap={() => handleUnmatched(entry.id, "other")}
-                  >
-                    <Text>暂未匹配</Text>
-                  </View>
-                  <View
-                    className="support-review-page__button support-review-page__button--primary"
-                    onTap={() => handleConfirm(entry.id)}
-                  >
-                    <Text>确认记录</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          ))}
-
-          {!displayedPendingEntries.length ? (
-            <View className="support-review-page__empty theme-card">
-              <Text className="support-review-page__empty-title">暂时没有待处理登记</Text>
-              <Text className="support-review-page__empty-copy">
-                新的登记提交后，会先出现在这里等待处理。
-              </Text>
-            </View>
-          ) : null}
-        </View>
+        <PendingSupportEntryList
+          entries={displayedPendingEntries}
+          onConfirm={handleConfirm}
+          onUnmatched={handleUnmatched}
+        />
       ) : (
-        <View className="support-review-page__manual">
-          <View className="support-review-page__field">
-            <Text className="support-review-page__label">登记金额</Text>
-            <View className="support-review-page__amount-wrap">
-              <Text className="support-review-page__currency">¥</Text>
-              <Input
-                className="support-review-page__input support-review-page__input--amount"
-                type="digit"
-                placeholder="0.00"
-                value={manualAmount}
-                onInput={(event) => setManualAmount(event.detail.value)}
-              />
-            </View>
-          </View>
-
-          <View className="support-review-page__field">
-            <Text className="support-review-page__label">登记人称呼</Text>
-            <Input
-              className="support-review-page__input"
-              placeholder="微信 ID / 昵称等"
-              value={manualSupporter}
-              onInput={(event) => setManualSupporter(event.detail.value)}
-            />
-          </View>
-
-          <View className="support-review-page__manual-bottom">
-            <View
-              className="support-review-page__submit theme-button-primary"
-              onTap={handleSubmitManual}
-            >
-              <Text>提交登记</Text>
-              <Image
-                className="support-review-page__submit-arrow"
-                mode="aspectFit"
-                src={submitArrowIcon}
-              />
-            </View>
-          </View>
-        </View>
+        <ManualSupportEntryForm
+          amount={manualAmount}
+          supporter={manualSupporter}
+          onAmountChange={setManualAmount}
+          onSubmit={handleSubmitManual}
+          onSupporterChange={setManualSupporter}
+        />
       )}
-    </View>
+    </PageShell>
   );
 }

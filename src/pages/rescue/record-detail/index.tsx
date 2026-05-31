@@ -1,15 +1,15 @@
-import { Image, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import {
-  getStoredReadonlyRecordDetail,
-  type RescueReadonlyRecordDetail,
-} from "../../../components/RescueTimelineShared";
+import { type RescueReadonlyRecordDetail } from "../../../components/rescue";
+import { EmptyState, PageShell } from "../../../components/ui";
 import {
   loadCaseRecordDetail,
   type CaseRecordDetailVM,
 } from "../../../domain/canonical/repository";
+import { RecordDetailCard } from "./components/RecordDetailCard";
+import { RecordDetailNotice } from "./components/RecordDetailNotice";
+import { getStoredReadonlyRecordDetail } from "./readonlyRecordDetail";
 import "./index.scss";
 
 function getPageTitle(kind?: RescueReadonlyRecordDetail["kind"]) {
@@ -144,107 +144,28 @@ export default function RescueReadonlyRecordDetailPage() {
 
   if (!record) {
     return (
-      <View className="page-shell record-detail-page">
+      <PageShell className="record-detail-page">
         <NavBar showBack title="记录详情" />
-        <View className="record-detail-page__empty">
-          <Text className="record-detail-page__empty-title">暂未找到记录</Text>
-          <Text className="record-detail-page__empty-copy">请返回记录明细后重新打开。</Text>
-        </View>
-      </View>
+        <EmptyState
+          className="record-detail-page__empty"
+          description="请返回记录明细后重新打开。"
+          iconName="fileText"
+          title="暂未找到记录"
+        />
+      </PageShell>
     );
   }
 
   return (
-    <View className="page-shell record-detail-page">
+    <PageShell className="record-detail-page">
       <NavBar showBack title={getPageTitle(record.kind)} />
 
-      <View className="record-detail-page__notice">
-        <Text className="record-detail-page__notice-title">透明账本记录</Text>
-        <Text className="record-detail-page__notice-copy">{getImmutableCopy(record.kind)}</Text>
-      </View>
-
-      <View className="record-detail-page__card">
-        <View className="record-detail-page__header">
-          <View className={`record-detail-page__badge record-detail-page__badge--${record.kind}`}>
-            <Text>{record.badgeLabel}</Text>
-          </View>
-          {record.statusLabel ? (
-            <View className="record-detail-page__badge record-detail-page__badge--case">
-              <Text>{record.statusLabel}</Text>
-            </View>
-          ) : null}
-          <Text className="record-detail-page__time">{record.timestamp}</Text>
-        </View>
-
-        <Text className="record-detail-page__title">{record.title}</Text>
-
-        {record.description ? (
-          <Text className="record-detail-page__description">{record.description}</Text>
-        ) : null}
-
-        {record.kind === "expense" ? (
-          <View className="record-detail-page__expense-lines">
-            {getExpenseItems(record).map((item, index) => (
-              <View
-                key={`${typeof item === "string" ? item : item.description}-${index}`}
-                className="record-detail-page__expense-line"
-              >
-                <Text className="record-detail-page__expense-index">
-                  支出 {String(index + 1).padStart(2, "0")}
-                </Text>
-                <Text className="record-detail-page__expense-title">
-                  {typeof item === "string" ? item : item.description}
-                </Text>
-                {typeof item !== "string" && item.amountLabel ? (
-                  <Text className="record-detail-page__expense-index">{item.amountLabel}</Text>
-                ) : null}
-              </View>
-            ))}
-          </View>
-        ) : null}
-
-        {record.amountLabel ? (
-          <View className="record-detail-page__row">
-            <Text className="record-detail-page__label">金额</Text>
-            <Text className="record-detail-page__amount">{record.amountLabel}</Text>
-          </View>
-        ) : null}
-
-        {record.budgetPreviousLabel && record.budgetCurrentLabel ? (
-          <View className="record-detail-page__budget">
-            <View className="record-detail-page__budget-column">
-              <Text className="record-detail-page__label">原预算总计</Text>
-              <Text className="record-detail-page__budget-old">{record.budgetPreviousLabel}</Text>
-            </View>
-            <View className="record-detail-page__budget-column">
-              <Text className="record-detail-page__label">现预算总计</Text>
-              <Text className="record-detail-page__budget-new">{record.budgetCurrentLabel}</Text>
-            </View>
-          </View>
-        ) : null}
-
-        {record.images?.length ? (
-          <View
-            className={`record-detail-page__images ${
-              record.images.length === 1 ? "record-detail-page__images--single" : ""
-            }`}
-          >
-            {record.images.map((src, index) => (
-              <View
-                key={`${src}-${index}`}
-                className="record-detail-page__image-wrap"
-                onTap={() => handlePreviewImage(src)}
-              >
-                <Image className="record-detail-page__image" mode="aspectFill" src={src} />
-                <Text className="record-detail-page__image-count">
-                  {index + 1}/{record.images?.length || 1}
-                </Text>
-                <Text className="record-detail-page__watermark">透明账本·严禁盗用</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-      </View>
-    </View>
+      <RecordDetailNotice description={getImmutableCopy(record.kind)} />
+      <RecordDetailCard
+        expenseItems={getExpenseItems(record)}
+        record={record}
+        onImageTap={handlePreviewImage}
+      />
+    </PageShell>
   );
 }

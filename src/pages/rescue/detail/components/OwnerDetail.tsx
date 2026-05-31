@@ -1,7 +1,7 @@
 import { View } from "@tarojs/components";
-import Taro from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
+import { RescueOwnerFinishBar } from "../../../../components/rescue";
 import type { OwnerDetailVM } from "../../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import {
@@ -9,15 +9,16 @@ import {
   reduceOwnerFinishBarMode,
   type OwnerFinishBarMode,
 } from "../../../../utils/ownerFinishBarState";
+import { openReadonlyRecordDetail } from "../../record-detail/readonlyRecordDetail";
 import { getOwnerOverviewProps, toOwnerTimelineItems } from "../detailViewModels";
 import type { DetailTab } from "../types";
 import { OwnerActionSection } from "./owner/OwnerActionSection";
 import { OwnerDetailSection } from "./owner/OwnerDetailSection";
-import { OwnerFinishSection } from "./owner/OwnerFinishSection";
 import { OwnerHeroSection } from "./owner/OwnerHeroSection";
 import { OwnerOverviewSection } from "./owner/OwnerOverviewSection";
 import { OwnerTabs } from "./owner/OwnerTabs";
 import { RenameSheet } from "./RenameSheet";
+import "./OwnerDetail.scss";
 
 export function OwnerDetail({
   ownerDetail,
@@ -25,12 +26,24 @@ export function OwnerDetail({
   initialTab,
   onRenameTitle,
   onChangeCover,
+  onBudget,
+  onCopyPublicCaseId,
+  onExpense,
+  onFinishRecord,
+  onIncome,
+  onStatus,
 }: {
   ownerDetail: OwnerDetailVM;
   publicDetail: PublicDetailVM;
   initialTab: DetailTab;
   onRenameTitle: (value: string) => void;
   onChangeCover: () => void;
+  onBudget: () => void;
+  onCopyPublicCaseId: () => void;
+  onExpense: () => void;
+  onFinishRecord: () => Promise<void>;
+  onIncome: () => void;
+  onStatus: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<DetailTab>(initialTab);
   const [editingTitle, setEditingTitle] = useState(false);
@@ -44,30 +57,6 @@ export function OwnerDetail({
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
-
-  const goToManage = () => {
-    Taro.navigateTo({
-      url: `/pages/support/review/index?id=${ownerDetail.caseId}`,
-    });
-  };
-
-  const goToBudget = () => {
-    Taro.navigateTo({
-      url: `/pages/rescue/budget-update/index?caseId=${ownerDetail.caseId}`,
-    });
-  };
-
-  const goToExpense = () => {
-    Taro.navigateTo({
-      url: `/pages/rescue/expense/index?caseId=${ownerDetail.caseId}`,
-    });
-  };
-
-  const goToStatus = () => {
-    Taro.navigateTo({
-      url: `/pages/rescue/progress-update/index?caseId=${ownerDetail.caseId}`,
-    });
-  };
 
   const resetFinishSlider = () => {
     setFinishDragging(false);
@@ -105,24 +94,9 @@ export function OwnerDetail({
       return;
     }
 
-    const result = await Taro.showModal({
-      title: "结束记录？",
-      content: "请确认这条记录已经完成、已结案，或确实需要关闭。",
-      confirmText: "确认结束",
-      cancelText: "再等等",
-    });
-
     resetFinishSlider();
     setFinishMode("idle");
-
-    if (!result.confirm) {
-      return;
-    }
-
-    Taro.showToast({
-      title: "结束记录链路待接入",
-      icon: "none",
-    });
+    await onFinishRecord();
   };
   const finishBar = getOwnerFinishBarViewModel(finishMode);
   const ownerOverview = getOwnerOverviewProps(publicDetail);
@@ -135,18 +109,16 @@ export function OwnerDetail({
       <OwnerHeroSection
         ownerDetail={ownerDetail}
         publicDetail={publicDetail}
-        onCopy={() => {
-          Taro.setClipboardData({ data: ownerDetail.publicCaseId });
-        }}
+        onCopy={onCopyPublicCaseId}
         onEditCover={onChangeCover}
         onEditTitle={() => setEditingTitle(true)}
       />
 
       <OwnerActionSection
-        onBudget={goToBudget}
-        onExpense={goToExpense}
-        onIncome={goToManage}
-        onStatus={goToStatus}
+        onBudget={onBudget}
+        onExpense={onExpense}
+        onIncome={onIncome}
+        onStatus={onStatus}
       />
 
       <OwnerTabs activeTab={activeTab} onChange={setActiveTab} />
@@ -154,10 +126,13 @@ export function OwnerDetail({
       {activeTab === "overview" ? (
         <OwnerOverviewSection overview={ownerOverview} />
       ) : (
-        <OwnerDetailSection items={ownerTimelineItems} />
+        <OwnerDetailSection
+          items={ownerTimelineItems}
+          onReadonlyRecordTap={openReadonlyRecordDetail}
+        />
       )}
 
-      <OwnerFinishSection
+      <RescueOwnerFinishBar
         finishBar={finishBar}
         finishDragX={finishDragX}
         finishMode={finishMode}

@@ -1,4 +1,4 @@
-import { RescueOwnerQuickActions } from "../../../../../components/RescueOwnerShared";
+import { RescueOwnerQuickActions } from "../../../../../components/rescue";
 
 export function OwnerActionSection({
   onBudget,

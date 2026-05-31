@@ -102,7 +102,7 @@
 - 客态详情页当前仍可能在本地 fallback 场景叠加展示覆盖：已发布主态的 `title / heroImageUrl` 可由 `updateCaseProfile` 远端正式回写，正式远端成功回包不再吃本机 overlay；本地 draft / local overlay 只作为兜底。状态文案也只在本地 fallback 场景下继续叠加本地状态更新记录里的最新状态
 - 资金区还在消费旧 `verifiedGapAmount` 语义，后续可进一步抽成更白话的 view-model
 - 主按钮当前是“我要支持”
-- 关键图标已优先切到 Figma exact 资产；状态 badge 左侧维持 Figma 节点中的 emoji 表达
+- 产品内 SVG 图标已统一切到语义化 `AppIcon` + lucide 本地资产；状态 badge 和更新进展阶段选择不再使用 Figma exact SVG 或 emoji 图标
 
 ---
 

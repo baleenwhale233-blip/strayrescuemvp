@@ -1,7 +1,8 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useState } from "react";
-import { DiscoverCaseCard } from "../../../components/DiscoverCaseCard";
+import { DiscoverCaseCard } from "../../../components/rescue";
+import { Avatar, EmptyState, PageShell, SurfaceCard } from "../../../components/ui";
 import { NavBar } from "../../../components/NavBar";
 import rescuerAvatarFallback from "../../../assets/detail/rescuer-avatar.png";
 import {
@@ -33,22 +34,27 @@ export default function RescuerHomePage() {
 
   if (!vm) {
     return (
-      <View className="page-shell rescuer-home-page">
+      <PageShell className="rescuer-home-page">
         <NavBar showBack title="记录主页" />
-        <Text className="rescuer-home-page__empty">暂未找到记录维护者信息</Text>
-      </View>
+        <EmptyState
+          className="rescuer-home-page__empty-card"
+          description="可能是链接失效，或记录维护者资料暂时不可见。"
+          title="暂未找到记录维护者信息"
+        />
+      </PageShell>
     );
   }
 
   return (
-    <View className="page-shell rescuer-home-page">
+    <PageShell className="rescuer-home-page">
       <NavBar showBack title="记录主页" />
 
-      <View className="rescuer-home-page__profile">
-        <Image
+      <SurfaceCard className="rescuer-home-page__profile">
+        <Avatar
           className="rescuer-home-page__avatar"
-          mode="aspectFill"
-          src={vm.rescuer.avatarUrl || rescuerAvatarFallback}
+          fallbackSrc={rescuerAvatarFallback}
+          src={vm.rescuer.avatarUrl}
+          variant="raised"
         />
         <View className="rescuer-home-page__profile-copy">
           <Text className="rescuer-home-page__name">{vm.rescuer.name}</Text>
@@ -57,7 +63,7 @@ export default function RescuerHomePage() {
             {vm.rescuer.stats.verifiedReceiptCount} 张真实凭证
           </Text>
         </View>
-      </View>
+      </SurfaceCard>
 
       <View className="rescuer-home-page__list">
         {vm.cards.length ? (
@@ -69,9 +75,13 @@ export default function RescuerHomePage() {
             />
           ))
         ) : (
-          <Text className="rescuer-home-page__empty">还没有公开记录档案</Text>
+          <EmptyState
+            className="rescuer-home-page__empty-card"
+            description="公开后的救助记录会显示在这里，方便支持者连续查看。"
+            title="还没有公开记录档案"
+          />
         )}
       </View>
-    </View>
+    </PageShell>
   );
 }

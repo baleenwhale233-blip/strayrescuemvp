@@ -1,4 +1,4 @@
-import { RescueOwnerSummaryCard } from "../../../../../components/RescueOwnerShared";
+import { RescueOwnerSummaryCard } from "../../../../../components/rescue";
 import type { OwnerDetailVM } from "../../../../../domain/canonical/repository";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getFundingCompareMetrics, getOwnerAnimalImage } from "../../detailViewModels";

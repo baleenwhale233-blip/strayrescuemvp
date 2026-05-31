@@ -1,40 +1,36 @@
-import { Button, Image, Input, Text, View } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useRef, useState } from "react";
 import { NavBar } from "../../components/NavBar";
+import { PageShell } from "../../components/ui";
 import { createSubmissionGuard } from "../../utils/submissionGuard";
-import supportHistoryIcon from "../../assets/profile/support-history.svg";
-import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
-import guideBookIcon from "../../assets/profile/guide-book.svg";
-import chevronIcon from "../../assets/rescue-detail/owner/action-chevron.svg";
 import { loadMyProfile, updateRemoteMyProfile } from "../../domain/canonical/repository";
 import { uploadProfileAssetImage } from "../../domain/canonical/repository/cloudbaseClient";
+import { ProfileFooter } from "./components/ProfileFooter";
+import { ProfileMenuList } from "./components/ProfileMenuList";
+import { ProfileUserEditor } from "./components/ProfileUserEditor";
+import type { ProfileMenuItem, ProfileUser } from "./types";
 import "./index.scss";
-
-type ProfileUser = {
-  avatarUrl: string;
-  nickName: string;
-};
 
 const PROFILE_USER_KEY = "profile-user:v1";
 
-const MENU_ITEMS = [
+const MENU_ITEMS: ProfileMenuItem[] = [
   {
     key: "support-history",
     label: "我的登记记录",
-    icon: supportHistoryIcon,
+    iconName: "history",
   },
   {
     key: "contact-settings",
     label: "联系信息设置",
-    icon: contactSettingsIcon,
+    iconName: "contactBook",
   },
   {
     key: "guide",
     label: "使用说明",
-    icon: guideBookIcon,
+    iconName: "bookOpen",
   },
-] as const;
+];
 
 function isTemporaryCloudAvatarUrl(avatarUrl: string) {
   if (!avatarUrl.startsWith("http://") && !avatarUrl.startsWith("https://")) {
@@ -276,12 +272,12 @@ export default function ProfilePage() {
       }
     });
 
-  const handleMenuTap = (key: (typeof MENU_ITEMS)[number]["key"]) => {
+  const handleMenuTap = (key: ProfileMenuItem["key"]) => {
     if (menuNavigationLockRef.current) {
       return;
     }
 
-    const urlMap: Record<(typeof MENU_ITEMS)[number]["key"], string> = {
+    const urlMap: Record<ProfileMenuItem["key"], string> = {
       "support-history": "/pages/profile/support-history/index",
       "contact-settings": "/pages/profile/contact-settings/index",
       guide: "/pages/profile/guide/index",
@@ -304,81 +300,28 @@ export default function ProfilePage() {
   };
 
   return (
-    <View className="page-shell profile-page">
+    <PageShell className="profile-page">
       <NavBar title="我的" />
 
       <View className="profile-page__body">
-        <View className="profile-page__user">
-          <Button
-            className="profile-page__avatar-button"
-            openType="chooseAvatar"
-            onChooseAvatar={handleChooseAvatar}
-          >
-            <View className="profile-page__avatar-wrap">
-              {profileUser.avatarUrl ? (
-                <Image
-                  className="profile-page__avatar"
-                  mode="aspectFill"
-                  src={profileUser.avatarUrl}
-                />
-              ) : (
-                <View className="profile-page__avatar-placeholder">
-                  <View className="profile-page__avatar-head" />
-                  <View className="profile-page__avatar-body" />
-                </View>
-              )}
-            </View>
-          </Button>
-          <Input
-            className="profile-page__name-input"
-            type="nickname"
-            maxlength={24}
-            placeholder="填写你的昵称"
-            placeholderStyle="color:#98A2B3;"
-            value={profileUser.nickName}
-            onInput={(event) =>
-              setProfileUser((current) => {
-                const nextUser = mergeProfileUser(current, {
-                  nickName: event.detail.value,
-                });
-                saveProfileUser(nextUser);
-                return nextUser;
-              })
-            }
-          />
-          <View
-            className={`theme-button-primary profile-page__save-button ${
-              savingProfile ? "profile-page__save-button--disabled" : ""
-            }`}
-            onTap={handleSaveProfile}
-          >
-            <Text>{savingProfile ? "保存中" : "保存头像昵称"}</Text>
-          </View>
-        </View>
+        <ProfileUserEditor
+          saving={savingProfile}
+          user={profileUser}
+          onChooseAvatar={handleChooseAvatar}
+          onNickNameChange={(nickName) =>
+            setProfileUser((current) => {
+              const nextUser = mergeProfileUser(current, { nickName });
+              saveProfileUser(nextUser);
+              return nextUser;
+            })
+          }
+          onSave={handleSaveProfile}
+        />
 
-        <View className="profile-page__menu">
-          {MENU_ITEMS.map((item) => (
-            <View
-              key={item.key}
-              className="profile-page__menu-item"
-              onTap={() => handleMenuTap(item.key)}
-            >
-              <View className="profile-page__menu-main">
-                <View className="profile-page__menu-icon-wrap">
-                  <Image className="profile-page__menu-icon" mode="aspectFit" src={item.icon} />
-                </View>
-                <Text className="profile-page__menu-label">{item.label}</Text>
-              </View>
-              <Image className="profile-page__chevron" mode="aspectFit" src={chevronIcon} />
-            </View>
-          ))}
-        </View>
+        <ProfileMenuList items={MENU_ITEMS} onItemTap={handleMenuTap} />
       </View>
 
-      <View className="profile-page__footer">
-        <Text className="profile-page__powered">Powered by</Text>
-        <Text className="profile-page__brand">God/1000 Lab · Druid Project</Text>
-      </View>
-    </View>
+      <ProfileFooter />
+    </PageShell>
   );
 }

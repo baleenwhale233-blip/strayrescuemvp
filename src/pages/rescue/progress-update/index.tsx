@@ -1,8 +1,9 @@
-import { Image, ScrollView, Text, View } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
+import { RescueCaseSummaryCard } from "../../../components/rescue";
+import { type ChoiceChipOption, PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -10,12 +11,6 @@ import {
   clearCaseContentWriteLocalFallback,
   recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
-import addPhotoIcon from "../../../assets/rescue-update/add-photo-icon.svg";
-import imageSectionIcon from "../../../assets/rescue-update/image-section-icon.svg";
-import imageNoticeIcon from "../../../assets/rescue-update/image-notice-icon.svg";
-import stageIcon from "../../../assets/rescue-update/stage-icon.svg";
-import submitArrowIcon from "../../../assets/rescue-update/footer-submit-arrow.svg";
-import uploadDeleteIcon from "../../../assets/rescue-expense/upload-delete-24.svg";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   createRemoteProgressUpdateByCaseId,
@@ -29,22 +24,20 @@ import {
 } from "../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import type { CaseCurrentStatus, PublicDetailVM } from "../../../domain/canonical/types";
+import { ProgressDescriptionField } from "./components/ProgressDescriptionField";
+import { ProgressImageCard } from "./components/ProgressImageCard";
+import { ProgressStageSection } from "./components/ProgressStageSection";
+import { ProgressUpdateFooter } from "./components/ProgressUpdateFooter";
 import "./index.scss";
-
-type StatusOption = {
-  key: CaseCurrentStatus;
-  emoji: string;
-  label: string;
-};
 
 type UpdateLoadStatus = "loading" | "ready" | "error";
 
-const STATUS_OPTIONS: StatusOption[] = [
-  { key: "newly_found", emoji: "🚨", label: "紧急送医" },
-  { key: "medical", emoji: "🏥", label: "医疗处理中" },
-  { key: "recovery", emoji: "🏡", label: "康复观察" },
-  { key: "rehoming", emoji: "💖", label: "寻找领养" },
-  { key: "closed", emoji: "🌈", label: "遗憾离世" },
+const STATUS_OPTIONS: Array<ChoiceChipOption<CaseCurrentStatus>> = [
+  { value: "newly_found", leadingIconName: "siren", label: "紧急送医" },
+  { value: "medical", leadingIconName: "stethoscope", label: "医疗处理中" },
+  { value: "recovery", leadingIconName: "home", label: "康复观察" },
+  { value: "rehoming", leadingIconName: "heartHandshake", label: "寻找领养" },
+  { value: "closed", leadingIconName: "rainbow", label: "遗憾离世" },
 ];
 
 function formatTimelineTimestamp(date = new Date()) {
@@ -54,11 +47,11 @@ function formatTimelineTimestamp(date = new Date()) {
 }
 
 function getDefaultStatusKey(label?: string) {
-  return STATUS_OPTIONS.find((option) => option.label === label)?.key || "medical";
+  return STATUS_OPTIONS.find((option) => option.label === label)?.value || "medical";
 }
 
 function getStatusLabelByKey(key: CaseCurrentStatus) {
-  return STATUS_OPTIONS.find((option) => option.key === key)?.label || "医疗处理中";
+  return STATUS_OPTIONS.find((option) => option.value === key)?.label || "医疗处理中";
 }
 
 function buildDraftStatusEntry(input: {
@@ -311,168 +304,52 @@ export default function RescueStatusUpdatePage() {
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
-      <View
-        className="page-shell rescue-update-page"
+      <PageShell
+        className="rescue-update-page"
         style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="更新进展" />
-      </View>
+      </PageShell>
     );
   }
 
   return (
-    <View
-      className="page-shell rescue-update-page"
+    <PageShell
+      className="rescue-update-page"
       style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="更新进展" />
 
       <View className="rescue-update-page__body">
-        <View className="rescue-update-page__animal-card theme-card">
-          <Image
-            className="rescue-update-page__animal-cover"
-            mode="aspectFill"
-            src={contextCard.coverImage}
-          />
-          <View className="rescue-update-page__animal-copy">
-            <View className="rescue-update-page__animal-title-row">
-              <Text className="rescue-update-page__animal-title">{contextCard.title}</Text>
-              <Text className="rescue-update-page__animal-status">{contextCard.statusLabel}</Text>
-            </View>
-            <Text className="rescue-update-page__animal-meta">ID: {contextCard.publicCaseId}</Text>
-            <Text className="rescue-update-page__animal-meta rescue-update-page__animal-meta--muted">
-              {contextCard.rescueStartedAtLabel}
-            </Text>
-          </View>
-        </View>
+        <RescueCaseSummaryCard
+          coverSrc={contextCard.coverImage}
+          publicCaseId={contextCard.publicCaseId}
+          rescueStartedAtLabel={contextCard.rescueStartedAtLabel}
+          statusLabel={contextCard.statusLabel}
+          title={contextCard.title}
+        />
 
-        <View className="rescue-update-page__section">
-          <View className="rescue-update-page__section-head">
-            <Image
-              className="rescue-update-page__section-icon-image"
-              mode="aspectFit"
-              src={stageIcon}
-            />
-            <Text className="rescue-update-page__section-title">当前阶段</Text>
-          </View>
-          <View className="rescue-update-page__chip-group">
-            {STATUS_OPTIONS.map((option) => (
-              <View
-                key={option.key}
-                className={`rescue-update-page__stage-chip ${
-                  selectedStatus === option.key ? "rescue-update-page__stage-chip--active" : ""
-                }`}
-                onTap={() => setSelectedStatus(option.key)}
-              >
-                <Text className="rescue-update-page__stage-chip-emoji">{option.emoji}</Text>
-                <Text className="rescue-update-page__stage-chip-text">{option.label}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
+        <ProgressStageSection
+          options={STATUS_OPTIONS}
+          value={selectedStatus}
+          onChange={setSelectedStatus}
+        />
 
-        <View className="rescue-update-page__field">
-          <Text className="rescue-update-page__label">进展详情描述</Text>
-          <TextareaWithOverlayPlaceholder
-            wrapperClassName="rescue-update-page__textarea-wrap"
-            textareaClassName="rescue-update-page__textarea"
-            placeholderClassName="rescue-update-page__textarea-placeholder"
-            placeholder="请详细描述这条记录的最新进展"
-            cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
-            maxlength={800}
-            value={description}
-            onInput={(event) => setDescription(event.detail.value)}
-          />
-        </View>
+        <ProgressDescriptionField
+          cursorSpacing={Math.max(180, keyboardBottomInset + 140)}
+          value={description}
+          onChange={setDescription}
+        />
 
-        <View className="rescue-update-page__image-card theme-card">
-          <View className="rescue-update-page__image-head">
-            <View className="rescue-update-page__image-title-wrap">
-              <Image
-                className="rescue-update-page__image-icon"
-                mode="aspectFit"
-                src={imageSectionIcon}
-              />
-              <Text className="rescue-update-page__image-title">近况影像记录</Text>
-            </View>
-            <Text className="rescue-update-page__image-limit">最多 9 张</Text>
-          </View>
-
-          <View className="rescue-update-page__image-row">
-            <View className="rescue-update-page__image-trigger" onTap={handlePickImage}>
-              <Image
-                className="rescue-update-page__image-trigger-icon"
-                mode="aspectFit"
-                src={addPhotoIcon}
-              />
-              <Text className="rescue-update-page__image-trigger-text">添加照片</Text>
-            </View>
-
-            <ScrollView
-              className="rescue-update-page__image-scroll"
-              scrollX
-              enhanced
-              showScrollbar={false}
-            >
-              <View className="rescue-update-page__image-grid">
-                {imageUrls.map((image, index) => (
-                  <View
-                    key={`${image}-${index}`}
-                    className="rescue-update-page__image-item"
-                    onTap={() => handlePreviewImage(image)}
-                  >
-                    <Image className="rescue-update-page__image" mode="aspectFill" src={image} />
-                    <View
-                      className="rescue-update-page__image-remove"
-                      onTap={(event) => {
-                        event.stopPropagation();
-                        handleRemoveImage(index);
-                      }}
-                    >
-                      <Image
-                        className="rescue-update-page__image-remove-icon"
-                        mode="aspectFit"
-                        src={uploadDeleteIcon}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
-
-          <View className="rescue-update-page__notice">
-            <Image
-              className="rescue-update-page__notice-icon"
-              mode="aspectFit"
-              src={imageNoticeIcon}
-            />
-            <Text className="rescue-update-page__notice-text">
-              请至少上传一张照片，以确保护助信息真实性
-            </Text>
-          </View>
-        </View>
+        <ProgressImageCard
+          images={imageUrls}
+          onAdd={handlePickImage}
+          onPreview={handlePreviewImage}
+          onRemove={handleRemoveImage}
+        />
       </View>
 
-      <View className="rescue-update-page__bottom">
-        <View
-          className="theme-button-secondary rescue-update-page__bottom-cancel"
-          onTap={handleCancel}
-        >
-          <Text>取消</Text>
-        </View>
-        <View
-          className="theme-button-primary rescue-update-page__bottom-submit"
-          onTap={handleSubmit}
-        >
-          <Text>发布进展</Text>
-          <Image
-            className="rescue-update-page__bottom-submit-icon"
-            mode="aspectFit"
-            src={submitArrowIcon}
-          />
-        </View>
-      </View>
-    </View>
+      <ProgressUpdateFooter onCancel={handleCancel} onSubmit={handleSubmit} />
+    </PageShell>
   );
 }
