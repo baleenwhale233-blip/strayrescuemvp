@@ -1,7 +1,4 @@
 import { NoticeBanner, SectionHeader, SurfaceCard, UploadStrip } from "../../../../components/ui";
-import addPhotoIcon from "../../../../assets/rescue-expense/add-photo-22.svg";
-import noteInfoIcon from "../../../../assets/rescue-expense/note-info-16.svg";
-import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
 import "./ExpenseEvidenceCard.scss";
 
 export function ExpenseEvidenceCard({
@@ -24,17 +21,17 @@ export function ExpenseEvidenceCard({
       />
 
       <UploadStrip
-        addIconSrc={addPhotoIcon}
+        addIconName="imagePlus"
         addLabel="添加照片"
         className="rescue-expense-page__upload-strip"
         images={images}
-        removeIconSrc={uploadDeleteIcon}
+        removeIconName="trash"
         onAdd={onAdd}
         onPreview={onPreview}
         onRemove={onRemove}
       />
 
-      <NoticeBanner className="rescue-expense-page__note" iconSrc={noteInfoIcon}>
+      <NoticeBanner className="rescue-expense-page__note" iconName="info">
         一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
       </NoticeBanner>
     </SurfaceCard>

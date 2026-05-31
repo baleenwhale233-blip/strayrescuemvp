@@ -1,6 +1,5 @@
 import { View } from "@tarojs/components";
 import { ChoiceChipGroup, SectionHeader, type ChoiceChipOption } from "../../../../components/ui";
-import stageIcon from "../../../../assets/rescue-update/stage-icon.svg";
 import type { CaseCurrentStatus } from "../../../../domain/canonical/types";
 import "./ProgressStageSection.scss";
 
@@ -17,7 +16,7 @@ export function ProgressStageSection({
     <View className="rescue-update-page__section">
       <SectionHeader
         className="rescue-update-page__section-head"
-        iconSrc={stageIcon}
+        iconName="clipboardList"
         title="当前阶段"
       />
       <ChoiceChipGroup

@@ -13,7 +13,6 @@ import {
 } from "../../../domain/canonical/repository";
 import qaCatImage from "../../../assets/rescue-expense/qa-cat.png";
 import qaReceiptImage from "../../../assets/rescue-expense/qa-receipt.png";
-import submitArrowIcon from "../../../assets/rescue-expense/submit-arrow-16.svg";
 import {
   createRemoteExpenseRecordByCaseId,
   formatTimelineTimestamp,
@@ -510,7 +509,7 @@ export default function RescueExpensePage() {
       <BottomActionBar className="rescue-expense-page__bottom">
         <AppButton
           className="rescue-expense-page__submit"
-          iconSrc={submitArrowIcon}
+          iconName="arrowRight"
           onTap={handleSubmit}
         >
           确认并挂载至账本

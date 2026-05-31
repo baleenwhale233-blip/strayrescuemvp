@@ -1,6 +1,4 @@
 import { Input } from "@tarojs/components";
-import addPhotoIcon from "../../../../assets/support-claim/add-photo-22.svg";
-import submitArrowIcon from "../../../../assets/support-claim/submit-arrow-19.svg";
 import { RescueCaseSummaryCard } from "../../../../components/rescue";
 import {
   FormField,
@@ -80,7 +78,7 @@ export function SupportClaimForm({
         label="相关截图/凭证"
       >
         <UploadStrip
-          addIconSrc={addPhotoIcon}
+          addIconName="imagePlus"
           addLabel="添加照片"
           className="support-claim__upload-strip"
           images={imagePath ? [imagePath] : []}
@@ -102,7 +100,7 @@ export function SupportClaimForm({
         />
       </FormField>
 
-      <SubmitActionBar iconSrc={submitArrowIcon} onTap={onSubmit}>
+      <SubmitActionBar iconName="send" onTap={onSubmit}>
         提交登记
       </SubmitActionBar>
     </>

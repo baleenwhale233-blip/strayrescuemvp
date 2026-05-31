@@ -1,4 +1,5 @@
 import { Image, Text, View } from "@tarojs/components";
+import { AppIcon } from "../AppIcon";
 import { SegmentedTabs, StatusBadge, SurfaceCard } from "../ui";
 import { RescueLedgerSummary } from "./RescueLedgerSummary";
 import { RescueEvidenceGrid, RescueRecordHeader } from "./RescueRecordShared";
@@ -7,16 +8,6 @@ import {
   type RescueReadonlyRecordDetail,
   type RescueTimelineSharedItem,
 } from "./RescueTimelineShared";
-import ownerActionBudgetIcon from "../../assets/rescue-detail/owner/action-budget.svg";
-import ownerActionChevronIcon from "../../assets/rescue-detail/owner/action-chevron.svg";
-import ownerActionChevronPrimaryIcon from "../../assets/rescue-detail/owner/action-chevron-primary.svg";
-import ownerActionExpenseIcon from "../../assets/rescue-detail/owner/action-expense.svg";
-import ownerActionIncomeIcon from "../../assets/rescue-detail/owner/action-income.svg";
-import ownerActionUpdateIcon from "../../assets/rescue-detail/owner/action-update.svg";
-import ownerCopyIcon from "../../assets/rescue-detail/owner/copy-muted.svg";
-import ownerEditIcon from "../../assets/rescue-detail/owner/edit-muted.svg";
-import summaryExpenseIcon from "../../assets/rescue-detail/summary-expense-18.svg";
-import summaryIncomeIcon from "../../assets/rescue-detail/summary-income-17.svg";
 import "./RescueOwnerShared.scss";
 
 export type RescueOwnerTab = "overview" | "detail";
@@ -95,10 +86,11 @@ export function RescueOwnerSummaryCard({
             <Text className="rescue-owner-card__title">{title}</Text>
             {onEditTitle ? (
               <View className="rescue-owner-card__icon-button" onTap={onEditTitle}>
-                <Image
+                <AppIcon
                   className="rescue-owner-card__copy-icon"
-                  mode="aspectFit"
-                  src={ownerEditIcon}
+                  name="pencil"
+                  size={12}
+                  variant="muted"
                 />
               </View>
             ) : null}
@@ -109,10 +101,11 @@ export function RescueOwnerSummaryCard({
           <View className="rescue-owner-card__id-row">
             <Text>ID: {publicCaseId}</Text>
             <View className="rescue-owner-card__icon-button" onTap={onCopy}>
-              <Image
+              <AppIcon
                 className="rescue-owner-card__copy-icon"
-                mode="aspectFit"
-                src={ownerCopyIcon}
+                name="copy"
+                size={12}
+                variant="muted"
               />
             </View>
           </View>
@@ -162,26 +155,29 @@ export function RescueOwnerQuickActions({
     <View className="rescue-owner-actions">
       <View className="rescue-owner-actions__primary" onTap={onExpense}>
         <View className="rescue-owner-actions__primary-main">
-          <Image
+          <AppIcon
             className="rescue-owner-actions__icon--primary"
-            mode="aspectFit"
-            src={ownerActionExpenseIcon}
+            name="receiptText"
+            size={32}
+            variant="inverse"
           />
           <Text className="rescue-owner-actions__primary-label">记录票据</Text>
         </View>
-        <Image
+        <AppIcon
           className="rescue-owner-actions__chevron-primary"
-          mode="aspectFit"
-          src={ownerActionChevronPrimaryIcon}
+          name="chevronRight"
+          size={20}
+          variant="inverse"
         />
       </View>
 
       <View className="rescue-owner-actions__grid">
         <SurfaceCard className="rescue-owner-actions__card" onTap={onStatus}>
-          <Image
+          <AppIcon
             className="rescue-owner-actions__icon"
-            mode="aspectFit"
-            src={ownerActionUpdateIcon}
+            name="trendingUp"
+            size={32}
+            variant="info"
           />
           <Text className="rescue-owner-actions__card-title">更新进展</Text>
           <Text className="rescue-owner-actions__card-subtitle">添加照片和阶段信息</Text>
@@ -191,10 +187,11 @@ export function RescueOwnerQuickActions({
           className="rescue-owner-actions__card rescue-owner-actions__card--purple"
           onTap={onIncome}
         >
-          <Image
+          <AppIcon
             className="rescue-owner-actions__icon"
-            mode="aspectFit"
-            src={ownerActionIncomeIcon}
+            name="handHeart"
+            size={32}
+            variant="info"
           />
           <Text className="rescue-owner-actions__card-title">处理登记</Text>
           <Text className="rescue-owner-actions__card-subtitle">处理线下转账或外部登记</Text>
@@ -203,18 +200,20 @@ export function RescueOwnerQuickActions({
         <SurfaceCard className="rescue-owner-actions__wide" onTap={onBudget}>
           <View className="rescue-owner-actions__wide-main">
             <View className="rescue-owner-actions__budget-wrap">
-              <Image
+              <AppIcon
                 className="rescue-owner-actions__budget-icon"
-                mode="aspectFit"
-                src={ownerActionBudgetIcon}
+                name="walletCards"
+                size={20}
+                variant="warning"
               />
             </View>
             <Text className="rescue-owner-actions__card-title">追加预算</Text>
           </View>
-          <Image
+          <AppIcon
             className="rescue-owner-actions__chevron"
-            mode="aspectFit"
-            src={ownerActionChevronIcon}
+            name="chevronRight"
+            size={12}
+            variant="muted"
           />
         </SurfaceCard>
       </View>
@@ -262,10 +261,11 @@ export function RescueOwnerOverview({
       <View className="rescue-owner-overview__metrics">
         <SurfaceCard className="rescue-owner-overview__metric">
           <View className="rescue-owner-overview__metric-icon rescue-owner-overview__metric-icon--expense">
-            <Image
+            <AppIcon
               className="rescue-owner-overview__metric-icon-image"
-              mode="aspectFit"
-              src={summaryExpenseIcon}
+              name="receiptText"
+              size={16}
+              variant="danger"
             />
           </View>
           <Text className="rescue-owner-overview__metric-label">总支出</Text>
@@ -276,10 +276,11 @@ export function RescueOwnerOverview({
 
         <SurfaceCard className="rescue-owner-overview__metric">
           <View className="rescue-owner-overview__metric-icon rescue-owner-overview__metric-icon--income">
-            <Image
+            <AppIcon
               className="rescue-owner-overview__metric-icon-image"
-              mode="aspectFit"
-              src={summaryIncomeIcon}
+              name="handHeart"
+              size={16}
+              variant="success"
             />
           </View>
           <Text className="rescue-owner-overview__metric-label">总收入</Text>

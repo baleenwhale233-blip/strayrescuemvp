@@ -1,7 +1,6 @@
-import { Image, Text, View } from "@tarojs/components";
-import summaryExpenseIcon from "../../../../assets/rescue-detail/summary-expense-18.svg";
+import { Text, View } from "@tarojs/components";
+import { AppIcon } from "../../../../components/AppIcon";
 import { SurfaceCard } from "../../../../components/ui";
-import summaryIncomeIcon from "../../../../assets/rescue-detail/summary-income-17.svg";
 import { RescueEvidenceGrid, RescueRecordHeader } from "../../../../components/rescue";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import {
@@ -33,10 +32,11 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
       <View className="guest-overview-metrics">
         <SurfaceCard className="guest-metric-card">
           <View className="guest-metric-card__icon guest-metric-card__icon--expense">
-            <Image
+            <AppIcon
               className="guest-metric-card__icon-image"
-              mode="aspectFit"
-              src={summaryExpenseIcon}
+              name="receiptText"
+              size={16}
+              variant="danger"
             />
           </View>
           <Text className="guest-metric-card__label">总支出</Text>
@@ -47,10 +47,11 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
 
         <SurfaceCard className="guest-metric-card">
           <View className="guest-metric-card__icon guest-metric-card__icon--income">
-            <Image
+            <AppIcon
               className="guest-metric-card__icon-image"
-              mode="aspectFit"
-              src={summaryIncomeIcon}
+              name="handHeart"
+              size={16}
+              variant="success"
             />
           </View>
           <Text className="guest-metric-card__label">总收入</Text>

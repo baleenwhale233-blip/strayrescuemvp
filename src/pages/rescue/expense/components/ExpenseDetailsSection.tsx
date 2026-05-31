@@ -1,6 +1,5 @@
-import { Image, Input, Text, View } from "@tarojs/components";
-import addLineIcon from "../../../../assets/rescue-expense/add-line-20.svg";
-import lineDeleteIcon from "../../../../assets/rescue-expense/line-delete-12.svg";
+import { Input, Text, View } from "@tarojs/components";
+import { AppIcon } from "../../../../components/AppIcon";
 import { FormField, SectionHeader, SurfaceCard } from "../../../../components/ui";
 import type { ExpenseLine } from "../types";
 import "./ExpenseDetailsSection.scss";
@@ -40,10 +39,11 @@ export function ExpenseDetailsSection({
 
       <View className="rescue-expense-page__line-list">
         <View className="rescue-expense-page__add-line" onTap={onAdd}>
-          <Image
+          <AppIcon
             className="rescue-expense-page__add-line-icon"
-            mode="aspectFit"
-            src={addLineIcon}
+            name="circlePlus"
+            size={20}
+            variant="muted"
           />
           <Text className="rescue-expense-page__add-line-text">新增一条明细</Text>
         </View>
@@ -55,10 +55,11 @@ export function ExpenseDetailsSection({
                 支出 {String(lines.length - index).padStart(2, "0")}
               </Text>
               <View className="rescue-expense-page__line-delete" onTap={() => onRemove(line.id)}>
-                <Image
+                <AppIcon
                   className="rescue-expense-page__line-delete-icon"
-                  mode="aspectFit"
-                  src={lineDeleteIcon}
+                  name="trash"
+                  size={12}
+                  variant="muted"
                 />
               </View>
             </View>

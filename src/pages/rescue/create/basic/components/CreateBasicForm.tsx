@@ -1,7 +1,5 @@
 import { Input, Text, View } from "@tarojs/components";
 import { AppIcon } from "../../../../../components/AppIcon";
-import nextArrowIcon from "../../../../../assets/rescue-create/step1-next-arrow.svg";
-import uploadDeleteIcon from "../../../../../assets/rescue-expense/upload-delete-24.svg";
 import {
   HintActionFooter,
   StepIndicator,
@@ -37,11 +35,11 @@ export function CreateBasicForm({
 
       <View className="rescue-create-page__upload-card">
         <UploadStrip
-          addIcon={<AppIcon name="camera" size={24} variant="default" />}
+          addIcon={<AppIcon name="camera" size={24} variant="inverse" />}
           addLabel="拍摄正脸清晰图作为档案封面"
           images={coverPath ? [coverPath] : []}
           maxImages={1}
-          removeIconSrc={uploadDeleteIcon}
+          removeIconName="trash"
           variant="cover"
           onAdd={onCoverPick}
           onRemove={onCoverDelete}
@@ -76,7 +74,7 @@ export function CreateBasicForm({
 
       <HintActionFooter
         hint="所有内容都会保存在这条记录里，后续可继续补充明细和进展"
-        iconSrc={nextArrowIcon}
+        iconName="arrowRight"
         onTap={onNext}
       >
         下一步：设定目标

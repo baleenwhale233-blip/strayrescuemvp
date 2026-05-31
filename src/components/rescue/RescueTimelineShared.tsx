@@ -1,5 +1,5 @@
-import { Image, Text, View } from "@tarojs/components";
-import linkArrowOrangeIcon from "../../assets/rescue-detail/link-arrow-orange-8.svg";
+import { Text, View } from "@tarojs/components";
+import { AppIcon } from "../AppIcon";
 import { EmptyState, SurfaceCard } from "../ui";
 import {
   RescueBudgetComparison,
@@ -126,10 +126,11 @@ export function RescueTimelineList({
                 {item.kind === "expense" ? (
                   <View className="rescue-timeline__link-wrap">
                     <Text className="rescue-timeline__link">查看详情</Text>
-                    <Image
+                    <AppIcon
                       className="rescue-timeline__link-icon"
-                      mode="aspectFit"
-                      src={linkArrowOrangeIcon}
+                      name="chevronRight"
+                      size={12}
+                      variant="brand"
                     />
                   </View>
                 ) : null}
@@ -146,10 +147,11 @@ export function RescueTimelineList({
             {item.kind === "status" ? (
               <View className="rescue-timeline__readonly-link">
                 <Text className="rescue-timeline__link">查看更新</Text>
-                <Image
+                <AppIcon
                   className="rescue-timeline__link-icon"
-                  mode="aspectFit"
-                  src={linkArrowOrangeIcon}
+                  name="chevronRight"
+                  size={12}
+                  variant="brand"
                 />
               </View>
             ) : null}

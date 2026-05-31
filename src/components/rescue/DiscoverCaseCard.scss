@@ -31,10 +31,9 @@
   border-radius: var(--radius-lg);
 }
 
-.discover-card__status-emoji {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--size-icon-sm);
+.discover-card__status-icon {
+  width: var(--font-size-body-sm);
+  height: var(--font-size-body-sm);
 }
 
 .discover-card__status-text {

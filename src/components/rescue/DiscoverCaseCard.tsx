@@ -1,28 +1,28 @@
 import { Image, Text, View } from "@tarojs/components";
-import evidenceCompleteIcon from "../../assets/icons/evidence-complete-14.svg";
+import { AppIcon, type IconName } from "../AppIcon";
 import { SurfaceCard } from "../ui";
 import type { HomepageCaseCardVM } from "../../domain/canonical/repository";
 import { RescueLedgerSummary, type RescueLedgerStatusTone } from "./RescueLedgerSummary";
 import "./DiscoverCaseCard.scss";
 
-function getStatusEmoji(statusLabel: string) {
+function getStatusIconName(statusLabel: string): IconName {
   if (statusLabel.includes("紧急")) {
-    return "🚨";
+    return "siren";
   }
 
   if (statusLabel.includes("康复") || statusLabel.includes("恢复")) {
-    return "🏡";
+    return "home";
   }
 
   if (statusLabel.includes("领养") || statusLabel.includes("安置")) {
-    return "💖";
+    return "heartHandshake";
   }
 
   if (statusLabel.includes("遗憾离世")) {
-    return "🌈";
+    return "rainbow";
   }
 
-  return "🏥";
+  return "stethoscope";
 }
 
 function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }) {
@@ -35,10 +35,11 @@ function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }
   return (
     <View className="discover-card__evidence">
       {level === "complete" ? (
-        <Image
+        <AppIcon
           className="discover-card__evidence-icon"
-          mode="aspectFit"
-          src={evidenceCompleteIcon}
+          name="badgeCheck"
+          size={14}
+          variant="brand"
         />
       ) : (
         <View className="discover-card__evidence-dot" />
@@ -78,7 +79,12 @@ export function DiscoverCaseCard({
           />
         ) : null}
         <View className="discover-card__status">
-          <Text className="discover-card__status-emoji">{getStatusEmoji(item.statusLabel)}</Text>
+          <AppIcon
+            className="discover-card__status-icon"
+            name={getStatusIconName(item.statusLabel)}
+            size={14}
+            variant="inverse"
+          />
           <Text className="discover-card__status-text">{item.statusLabel}</Text>
         </View>
       </View>

@@ -1,5 +1,4 @@
 import { Image, Text, View } from "@tarojs/components";
-import enterRescueIcon from "../../../../../assets/rescue-create/step2-enter-icon.svg";
 import coverFallback from "../../../../../assets/detail/guest-hero-cat.png";
 import {
   HintActionFooter,
@@ -76,7 +75,7 @@ export function CreateBudgetForm({
       <HintActionFooter
         className="rescue-budget-page__footer"
         hint="稍后您可以在“我的记录”里随时调整此预估金额"
-        iconSrc={enterRescueIcon}
+        iconName="arrowRight"
         onTap={onNext}
       >
         进入记录页

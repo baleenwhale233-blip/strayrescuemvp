@@ -37,17 +37,8 @@
 }
 
 .guest-hero__status-icon {
-  display: inline-flex;
   width: var(--font-size-body-sm);
   height: var(--font-size-body-sm);
-  align-items: center;
-  justify-content: center;
-}
-
-.guest-hero__status-emoji {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-sm);
-  line-height: var(--size-icon-sm);
 }
 
 .guest-hero__status-text {

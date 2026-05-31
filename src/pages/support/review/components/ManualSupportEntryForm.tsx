@@ -1,5 +1,4 @@
 import { Input, View } from "@tarojs/components";
-import submitArrowIcon from "../../../../assets/support-claim/submit-arrow-19.svg";
 import { FormField, MoneyInput, SubmitActionBar } from "../../../../components/ui";
 import "./ManualSupportEntryForm.scss";
 
@@ -31,7 +30,7 @@ export function ManualSupportEntryForm({
         />
       </FormField>
 
-      <SubmitActionBar iconSrc={submitArrowIcon} onTap={onSubmit}>
+      <SubmitActionBar iconName="send" onTap={onSubmit}>
         提交登记
       </SubmitActionBar>
     </View>

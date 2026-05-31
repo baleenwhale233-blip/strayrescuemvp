@@ -14,7 +14,6 @@ import {
   type RescueOwnerTimelineItem,
 } from "../../../../components/rescue";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
-import ownerFooterArrowIcon from "../../../../assets/rescue-detail/owner/footer-publish-arrow.svg";
 import ownerAnimalFallback from "../../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   calculateDraftLedger,
@@ -738,7 +737,7 @@ export default function RescueCreatePreviewPage() {
       </View>
 
       <DualActionFooter
-        primaryIconSrc={ownerFooterArrowIcon}
+        primaryIconName="arrowRight"
         primaryLabel="发布记录"
         secondaryLabel="保存草稿"
         onPrimary={handlePublish}

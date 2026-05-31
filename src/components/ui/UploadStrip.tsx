@@ -1,10 +1,13 @@
 import { Image, ScrollView, Text, View } from "@tarojs/components";
 import type { ReactNode } from "react";
+import { AppIcon, type IconName, type IconVariant } from "../AppIcon";
 import { cx } from "./classNames";
 import "./ui.scss";
 
 type UploadStripProps = {
   addIcon?: ReactNode;
+  addIconName?: IconName;
+  addIconVariant?: IconVariant;
   addLabel?: string;
   addIconSrc?: string;
   className?: string;
@@ -13,12 +16,16 @@ type UploadStripProps = {
   onAdd: () => void;
   onPreview?: (src: string, index: number) => void;
   onRemove?: (index: number) => void;
+  removeIconName?: IconName;
   removeIconSrc?: string;
+  removeIconVariant?: IconVariant;
   variant?: "strip" | "cover";
 };
 
 export function UploadStrip({
   addIcon,
+  addIconName,
+  addIconVariant = "muted",
   addLabel = "添加图片",
   addIconSrc,
   className,
@@ -27,7 +34,9 @@ export function UploadStrip({
   onAdd,
   onPreview,
   onRemove,
+  removeIconName,
   removeIconSrc,
+  removeIconVariant = "inverse",
   variant = "strip",
 }: UploadStripProps) {
   const canAdd = maxImages === undefined || images.length < maxImages;
@@ -37,11 +46,31 @@ export function UploadStrip({
       return <View className={classNameValue}>{addIcon}</View>;
     }
 
+    if (addIconName) {
+      return (
+        <AppIcon className={classNameValue} name={addIconName} size={22} variant={addIconVariant} />
+      );
+    }
+
     if (addIconSrc) {
       return <Image className={classNameValue} mode="aspectFit" src={addIconSrc} />;
     }
 
     return null;
+  };
+
+  const renderRemoveIcon = () => {
+    if (removeIconName) {
+      return <AppIcon name={removeIconName} size={14} variant={removeIconVariant} />;
+    }
+
+    if (removeIconSrc) {
+      return (
+        <Image className="ui-upload-strip__remove-icon" mode="aspectFit" src={removeIconSrc} />
+      );
+    }
+
+    return <Text>×</Text>;
   };
 
   if (variant === "cover") {
@@ -61,15 +90,7 @@ export function UploadStrip({
                   onRemove(0);
                 }}
               >
-                {removeIconSrc ? (
-                  <Image
-                    className="ui-upload-strip__remove-icon"
-                    mode="aspectFit"
-                    src={removeIconSrc}
-                  />
-                ) : (
-                  <Text>×</Text>
-                )}
+                {renderRemoveIcon()}
               </View>
             ) : null}
           </View>
@@ -110,15 +131,7 @@ export function UploadStrip({
                     onRemove(index);
                   }}
                 >
-                  {removeIconSrc ? (
-                    <Image
-                      className="ui-upload-strip__remove-icon"
-                      mode="aspectFit"
-                      src={removeIconSrc}
-                    />
-                  ) : (
-                    <Text>×</Text>
-                  )}
+                  {renderRemoveIcon()}
                 </View>
               ) : null}
             </View>

@@ -1,6 +1,7 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
+import { AppIcon } from "../../../components/AppIcon";
 import { NavBar } from "../../../components/NavBar";
 import {
   Avatar,
@@ -11,7 +12,6 @@ import {
   SurfaceCard,
 } from "../../../components/ui";
 import fallbackCoverImage from "../../../assets/detail/guest-hero-cat.png";
-import chevronIcon from "../../../assets/rescue-detail/owner/action-chevron.svg";
 import { loadMySupportHistory } from "../../../domain/canonical/repository";
 import "./index.scss";
 
@@ -87,10 +87,11 @@ export default function SupportHistoryPage() {
               subtitle={`登记 ${item.amountLabel}`}
               title={item.title}
               trailing={
-                <Image
+                <AppIcon
                   className="support-history-page__chevron"
-                  mode="aspectFit"
-                  src={chevronIcon}
+                  name="chevronRight"
+                  size={12}
+                  variant="muted"
                 />
               }
             />

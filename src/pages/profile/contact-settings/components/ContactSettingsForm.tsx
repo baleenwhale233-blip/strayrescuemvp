@@ -1,6 +1,4 @@
 import { Input, View } from "@tarojs/components";
-import addPhotoIcon from "../../../../assets/rescue-expense/add-photo-22.svg";
-import submitArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
 import {
   FormField,
   SubmitActionBar,
@@ -46,7 +44,7 @@ export function ContactSettingsForm({
 
         <FormField label="微信二维码（二选一即可）">
           <UploadStrip
-            addIconSrc={addPhotoIcon}
+            addIconName="imagePlus"
             addLabel="添加照片"
             className="contact-settings-page__qr-upload"
             images={qrImagePath ? [qrImagePath] : []}
@@ -70,7 +68,7 @@ export function ContactSettingsForm({
 
       <SubmitActionBar
         className="contact-settings-page__bottom"
-        iconSrc={submitArrowIcon}
+        iconName="arrowRight"
         onTap={onSubmit}
       >
         保存

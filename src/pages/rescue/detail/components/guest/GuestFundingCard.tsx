@@ -1,5 +1,5 @@
-import { Image, Text, View } from "@tarojs/components";
-import infoMutedIcon from "../../../../../assets/rescue-detail/info-muted-13.svg";
+import { Text, View } from "@tarojs/components";
+import { AppIcon } from "../../../../../components/AppIcon";
 import { RescueLedgerSummary } from "../../../../../components/rescue";
 import { SurfaceCard } from "../../../../../components/ui";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
@@ -11,7 +11,7 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
     <SurfaceCard className="detail-card">
       <View className="detail-card__head">
         <Text className="detail-card__title">记录资金状态</Text>
-        <Image className="detail-card__info-icon" mode="aspectFit" src={infoMutedIcon} />
+        <AppIcon className="detail-card__info-icon" name="info" size={14} variant="muted" />
       </View>
 
       <RescueLedgerSummary

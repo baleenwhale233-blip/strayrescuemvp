@@ -1,6 +1,4 @@
 import { Text, View } from "@tarojs/components";
-import submitArrowIcon from "../../../../assets/rescue-budget-update/footer-submit-arrow.svg";
-import noteInfoIcon from "../../../../assets/rescue-budget-update/notice-icon.svg";
 import { RescueCaseSummaryCard } from "../../../../components/rescue";
 import {
   FormField,
@@ -72,14 +70,14 @@ export function BudgetUpdateForm({
           />
         </FormField>
 
-        <NoticeBanner className="rescue-budget-update-page__notice" iconSrc={noteInfoIcon}>
+        <NoticeBanner className="rescue-budget-update-page__notice" iconName="info">
           预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
         </NoticeBanner>
       </View>
 
       <SubmitActionBar
         className="rescue-budget-update-page__bottom"
-        iconSrc={submitArrowIcon}
+        iconName="send"
         onTap={onSubmit}
       >
         确认追加并更新时间线

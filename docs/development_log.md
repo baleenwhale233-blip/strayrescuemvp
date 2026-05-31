@@ -2808,3 +2808,13 @@
 - 影响范围：仅影响联系弹层的动作边界；不改弹层视觉、文案、关闭逻辑、联系方式 VM、repository、storage 或 CloudBase。
 - 验证结果：`format:check`、`lint`、`typecheck`、`test:ui`、`report:style-tokens` 与 `preflight:alpha` 均通过；preflight 覆盖 57 个 domain tests 与 `build:weapp`，build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：保留 `NavBar` 和键盘 inset 这类平台 UI 组件对 Taro 的直接使用；继续避免业务组件新增平台副作用。
+
+## 2026-06-01 | Icon 系统 | 全量切换 lucide 语义图标
+
+- 日期：2026-06-01
+- 改动主题：将产品内零散 SVG / PNG 图标统一收口到 `AppIcon` 语义名和 lucide 本地 SVG 资产。
+- 为什么改：旧 Figma exact SVG 与早期 PNG 图标风格不统一，且页面直接 import 资产会让后续视觉治理继续分叉。
+- 改了什么：新增 lucide 图标资产目录，扩展 `AppIcon` 图标名 / 变体；替换发现、详情、工作台、建档、记账、进展、登记、我的页等图标入口，并移除旧图标资产；补 UI 测试禁止产品代码直接 import 零散 SVG 图标。
+- 影响范围：仅影响图标展示、状态 chip 的左侧图标表达、UI 组件图标 props、组件系统文档和总控说明；不改页面数据、提交链路、导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format:check`、`lint`、`typecheck`、`test:ui`、`report:style-tokens`、`build:weapp` 与 `git diff --check` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续用真机 / 微信开发者工具看图标尺寸与对齐；tabbar 仍按小程序配置保留 PNG，不纳入本次产品内 SVG 替换。

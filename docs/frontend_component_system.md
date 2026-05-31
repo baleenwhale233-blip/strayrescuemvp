@@ -1,6 +1,6 @@
 # 前端 Token 与组件系统
 
-最后更新：2026-05-31
+最后更新：2026-06-01
 
 用途：
 
@@ -73,6 +73,7 @@
 
 当前清单：
 
+- `AppIcon`：语义化 lucide 图标注册入口，页面和业务组件不再直接 import 零散 SVG 图标资产
 - `PageShell`
 - `SurfaceCard`
 - `Avatar`

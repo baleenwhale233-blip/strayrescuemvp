@@ -1,10 +1,10 @@
-import { Image, Input, View } from "@tarojs/components";
+import { Input, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
+import { AppIcon } from "../../components/AppIcon";
 import { DiscoverCaseCard } from "../../components/rescue";
 import { NavBar } from "../../components/NavBar";
 import { EmptyState, PageShell } from "../../components/ui";
-import searchIcon from "../../assets/icons/search-muted-18.svg";
 import {
   loadHomepageCaseCardVMs,
   searchCaseByPublicIdExact,
@@ -70,7 +70,12 @@ export default function DiscoverPage() {
 
       <View className="discover-page__search">
         <View className="discover-page__search-icon" onTap={handleSearch}>
-          <Image className="discover-page__search-icon-image" mode="aspectFit" src={searchIcon} />
+          <AppIcon
+            className="discover-page__search-icon-image"
+            name="search"
+            size={18}
+            variant="muted"
+          />
         </View>
         <Input
           className="discover-page__search-input"

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Image, Text, View } from "@tarojs/components";
+import { AppIcon, type IconName, type IconVariant } from "../AppIcon";
 import { cx } from "./classNames";
 import "./ui.scss";
 
@@ -8,7 +9,9 @@ type SectionHeaderProps = {
   badge?: ReactNode;
   className?: string;
   description?: ReactNode;
+  iconName?: IconName;
   iconSrc?: string;
+  iconVariant?: IconVariant;
   title: ReactNode;
 };
 
@@ -17,7 +20,9 @@ export function SectionHeader({
   badge,
   className,
   description,
+  iconName,
   iconSrc,
+  iconVariant = "brand",
   title,
 }: SectionHeaderProps) {
   const trailing =
@@ -27,7 +32,14 @@ export function SectionHeader({
     <View className={cx("ui-section-header", className)}>
       <View className="ui-section-header__main">
         <View className="ui-section-header__title-row">
-          {iconSrc ? (
+          {iconName ? (
+            <AppIcon
+              className="ui-section-header__icon"
+              name={iconName}
+              size={16}
+              variant={iconVariant}
+            />
+          ) : iconSrc ? (
             <Image className="ui-section-header__icon" mode="aspectFit" src={iconSrc} />
           ) : null}
           <Text className="ui-section-header__title">{title}</Text>

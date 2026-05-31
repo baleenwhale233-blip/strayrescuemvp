@@ -362,6 +362,12 @@
   line-height: var(--choice-chip-leading-line-height);
 }
 
+.ui-choice-chip__leading-icon {
+  width: var(--font-size-body-sm);
+  height: var(--font-size-body-sm);
+  flex-shrink: 0;
+}
+
 .ui-choice-chip--active .ui-choice-chip__leading {
   color: var(--choice-chip-active-leading-color);
 }
@@ -1122,6 +1128,8 @@
   width: var(--size-icon-lg);
   height: var(--size-icon-lg);
   color: var(--color-brand-on-primary);
+  background: var(--color-overlay-strong);
+  border-bottom-left-radius: var(--radius-sm);
   font-size: var(--font-size-caption);
   line-height: var(--line-height-caption);
 }

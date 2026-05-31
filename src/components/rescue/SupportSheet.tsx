@@ -1,6 +1,6 @@
 import { Image, ScrollView, Text, View } from "@tarojs/components";
 import type { SupportSheetData } from "../../domain/canonical/types";
-import infoIcon from "../../assets/support-sheet/info.svg";
+import { AppIcon } from "../AppIcon";
 import { AppButton, SectionHeader } from "../ui";
 import "./SupportSheet.scss";
 
@@ -68,7 +68,7 @@ export function SupportSheet({
         <ScrollView className="support-sheet__scroll" scrollY showScrollbar={false}>
           <View className="support-sheet__content">
             <View className="support-sheet__tip">
-              <Image className="support-sheet__tip-icon" mode="aspectFit" src={infoIcon} />
+              <AppIcon className="support-sheet__tip-icon" name="info" size={16} variant="brand" />
               <Text className="support-sheet__tip-text">{support.contactTip}</Text>
             </View>
 

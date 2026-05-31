@@ -33,11 +33,11 @@ import "./index.scss";
 type UpdateLoadStatus = "loading" | "ready" | "error";
 
 const STATUS_OPTIONS: Array<ChoiceChipOption<CaseCurrentStatus>> = [
-  { value: "newly_found", leading: "🚨", label: "紧急送医" },
-  { value: "medical", leading: "🏥", label: "医疗处理中" },
-  { value: "recovery", leading: "🏡", label: "康复观察" },
-  { value: "rehoming", leading: "💖", label: "寻找领养" },
-  { value: "closed", leading: "🌈", label: "遗憾离世" },
+  { value: "newly_found", leadingIconName: "siren", label: "紧急送医" },
+  { value: "medical", leadingIconName: "stethoscope", label: "医疗处理中" },
+  { value: "recovery", leadingIconName: "home", label: "康复观察" },
+  { value: "rehoming", leadingIconName: "heartHandshake", label: "寻找领养" },
+  { value: "closed", leadingIconName: "rainbow", label: "遗憾离世" },
 ];
 
 function formatTimelineTimestamp(date = new Date()) {

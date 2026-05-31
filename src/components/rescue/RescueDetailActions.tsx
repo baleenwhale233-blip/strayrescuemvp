@@ -1,6 +1,6 @@
-import { Button, Image, Text, View } from "@tarojs/components";
-import shareMutedIcon from "../../assets/rescue-detail/share-muted-18.svg";
+import { Button, Text, View } from "@tarojs/components";
 import type { OwnerFinishBarMode, OwnerFinishBarViewModel } from "../../utils/ownerFinishBarState";
+import { AppIcon } from "../AppIcon";
 import { AppButton, BottomActionBar } from "../ui";
 import "./RescueDetailActions.scss";
 
@@ -13,10 +13,11 @@ export function RescueGuestActionBar({ onClaim, onSupport }: RescueGuestActionBa
   return (
     <BottomActionBar className="rescue-guest-action-bar">
       <Button className="rescue-guest-action-bar__share" openType="share">
-        <Image
+        <AppIcon
           className="rescue-guest-action-bar__share-icon-image"
-          mode="aspectFit"
-          src={shareMutedIcon}
+          name="share"
+          size={18}
+          variant="muted"
         />
         <Text className="rescue-guest-action-bar__share-text">分享</Text>
       </Button>
@@ -66,10 +67,11 @@ export function RescueOwnerFinishBar({
         </Button>
         {finishBar.primaryAction === "share" ? (
           <Button className="rescue-owner-finish-bar__primary" openType="share">
-            <Image
+            <AppIcon
               className="rescue-owner-finish-bar__primary-icon"
-              mode="aspectFit"
-              src={shareMutedIcon}
+              name="share"
+              size={18}
+              variant="inverse"
             />
             <Text className="rescue-owner-finish-bar__primary-text">{finishBar.primaryLabel}</Text>
           </Button>

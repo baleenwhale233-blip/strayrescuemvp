@@ -4,9 +4,6 @@ import { useRef, useState } from "react";
 import { NavBar } from "../../components/NavBar";
 import { PageShell } from "../../components/ui";
 import { createSubmissionGuard } from "../../utils/submissionGuard";
-import supportHistoryIcon from "../../assets/profile/support-history.svg";
-import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
-import guideBookIcon from "../../assets/profile/guide-book.svg";
 import { loadMyProfile, updateRemoteMyProfile } from "../../domain/canonical/repository";
 import { uploadProfileAssetImage } from "../../domain/canonical/repository/cloudbaseClient";
 import { ProfileFooter } from "./components/ProfileFooter";
@@ -21,17 +18,17 @@ const MENU_ITEMS: ProfileMenuItem[] = [
   {
     key: "support-history",
     label: "我的登记记录",
-    icon: supportHistoryIcon,
+    iconName: "history",
   },
   {
     key: "contact-settings",
     label: "联系信息设置",
-    icon: contactSettingsIcon,
+    iconName: "contactBook",
   },
   {
     key: "guide",
     label: "使用说明",
-    icon: guideBookIcon,
+    iconName: "bookOpen",
   },
 ];
 
