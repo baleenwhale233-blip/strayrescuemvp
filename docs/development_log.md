@@ -2428,3 +2428,23 @@
 - 影响范围：仅影响样式 token 与 placeholder 颜色表达；不改发现搜索、联系方式保存、草稿预览发布、建档表单、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 为裸色 `0`、尺寸 `1323`。
 - 下一步 / 遗留问题：下一轮从重复尺寸和组件晋升入手，优先看 `rescue/detail/index.scss`、`RescueOwnerShared.scss` 和生产页表单尺寸；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-30 | 业务组件 | Owner 与时间线尺寸 token 化
+
+- 日期：2026-05-30
+- 改动主题：`RescueOwnerShared` 与 `RescueTimelineShared` 首轮尺寸 token 化。
+- 为什么改：颜色清零后，共享业务组件仍保留大量硬编码间距、圆角、字号和图标尺寸，复用时会继续把页面贴稿习惯带入组件层。
+- 改了什么：将 owner 动物卡、快捷动作、摘要指标、最新进展、共享时间线卡、badge、图片格和空态的常规尺寸迁到现有 `space / radius / font / size` CSS variables；保留素材小数、Figma 特殊高度和极小水印值。
+- 影响范围：仅影响两个 `components/rescue` 业务组件样式与组件系统文档；不改组件 props、时间线数据映射、主客态详情、草稿预览、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `1323` 降到 `1187`。
+- 下一步 / 遗留问题：继续治理 `rescue/detail/index.scss` 与生产页表单的重复尺寸，并评估动物摘要、资金摘要、动作区是否能进一步晋升为更细业务组件；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-30 | 详情页 | 常规尺寸 token 化
+
+- 日期：2026-05-30
+- 改动主题：详情页 `index.scss` 首轮常规尺寸 token 化。
+- 为什么改：共享业务组件尺寸收口后，详情页页面 SCSS 仍是最大尺寸热点，包含大量可由现有 spacing、radius、font 和 size token 承接的布局值。
+- 改了什么：将 rename sheet、客态 hero 局部、资金卡、救助人卡、摘要卡、metric 卡、tab、客态底栏和主态结束栏的常规尺寸迁到 CSS variables；保留页面宽度、hero 高度、素材裁切、小数图标和水印特例。
+- 影响范围：仅影响详情页样式和组件系统文档；不改客态 / 主态组件结构、分享、联系方式、登记支持、结束记录状态机、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `1187` 降到 `1036`，详情页自身尺寸从 `218` 降到 `67`。
+- 下一步 / 遗留问题：继续治理生产页与支持闭环页的表单 / 底栏重复尺寸，并评估把资金摘要与动作区进一步沉到业务组件；本轮未改数据层，未跑 `test:domain`。

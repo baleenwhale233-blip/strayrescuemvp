@@ -260,10 +260,12 @@
 - 生产页、支持闭环页、详情页、身份页和记录主页已开始迁移到 `SurfaceCard` / `AppButton` / `FormField` / `UploadStrip` / `EmptyState` / `SegmentedTabs` / `ProgressBar` / `BottomActionBar`
 - `src/pages` 与 `src/components` 当前已清掉直接 `theme-card` / `theme-button-primary` / `theme-button-secondary` 引用；后续新增页面优先从 `src/components/ui` 组合，不再直接依赖旧全局主题类
 - `RescueOwnerShared`、`RescueTimelineShared`、`SupportSheet` 已完成首轮颜色 token 化，业务共享组件不再新增裸色值
+- `RescueOwnerShared` 与 `RescueTimelineShared` 已开始首轮尺寸 token 化，常规间距、圆角、字号、图标和上传格尺寸优先使用现有 `space / radius / font / size` CSS variables
 - 记录详情页已接入 `SurfaceCard` / `StatusBadge` / `EmptyState`，并与记账 / 更新进展 / 追加预算一起完成首轮页面颜色 token 化
 - 支持登记页已用 `StatusBadge` 和单图 `UploadStrip` 收口状态与凭证上传；处理登记页待处理操作按钮已迁到 `AppButton`
 - 建档基础信息页和预算页已完成首轮颜色 token 化，页面 / 导航 / 步骤条 / 上传 / 表单 / 底栏 / 金额输入等颜色统一使用 CSS variables
 - 详情页 `index.scss` 已完成首轮颜色 token 化，客态 hero、资金卡、救助人卡、底部操作栏和主态结束栏不再保留页面级裸色值
+- 详情页 `index.scss` 已开始首轮尺寸 token 化，rename sheet、客态卡片 / tab / 底栏、主态结束栏等常规尺寸优先迁到现有 CSS variables
 - `src/components` 与 `src/pages` 的首轮裸色值扫描已清零，后续颜色新增必须优先走 CSS variables
 - `UploadStrip` 已支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖联系方式单图二维码与生产页多图凭证场景
 - 新增非阻断扫描入口 `npm run report:style-tokens`，用于报告 `src/components` 与 `src/pages` 中剩余裸色值和重复 `px/rpx` 尺寸
@@ -273,7 +275,7 @@
 - 继续减少页面级 SCSS 中的重复尺寸和一次性卡片结构，避免颜色清零后继续积累布局噪音
 - 将已在详情 / 草稿预览反复出现的动物摘要、资金摘要、动作区和时间线结构逐步晋升到 `src/components/rescue`
 - 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
-- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `1323`；下一轮重点观察高频重复尺寸是否能按语义迁入 spacing / radius / size token 或 UI 组件样式
+- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `1036`；下一轮重点继续观察高频重复尺寸是否能按语义迁入 spacing / radius / size token 或 UI 组件样式
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
 
 2026-05-30 已完成的首轮页面迁移：
