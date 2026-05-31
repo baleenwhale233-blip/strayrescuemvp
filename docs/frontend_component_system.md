@@ -39,7 +39,7 @@
 - 间距：4px 递进的常用 spacing
 - 圆角：卡片、按钮、胶囊、圆形
 - 阴影：卡片、CTA、底部操作栏、弹层
-- 尺寸：图标、头像、按钮、输入框、上传格、列表行、联系二维码、资金状态宽度
+- 尺寸：图标、头像、按钮、输入框、上传格、封面上传、列表行、联系二维码、资金状态宽度
 - 边框：默认描边、强调描边
 - 布局：页面最大宽度、正文内容最大宽度、导航与底部栏避让
 
@@ -244,7 +244,7 @@
 9. 底部固定操作用 `BottomActionBar + AppButton`
 10. 无数据用 `EmptyState`
 11. 轻提示 / 规则说明用 `NoticeBanner`
-12. 上传列表优先用 `UploadStrip`
+12. 上传列表优先用 `UploadStrip`，单图封面用 `UploadStrip variant="cover"`
 13. 页面 SCSS 只写布局差异和单页特有细节
 
 ---
@@ -315,7 +315,7 @@
 - 新增列表大行高、动物大头像和资金状态最大宽度 token，并复用已有描边 / 富文本行高 / sheet 把手 / textarea / 底部避让 token，继续压缩页面与业务组件里的常规裸尺寸
 - 页面入口已从旧全局 `page-shell` 类迁移到 `PageShell` 组件；`src/app.scss` 不再维护页面壳样式，后续新页面默认使用 `PageShell + NavBar`
 - `src/components` 与 `src/pages` 的首轮裸色值扫描已清零，后续颜色新增必须优先走 CSS variables
-- `UploadStrip` 已支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖联系方式单图二维码与生产页多图凭证场景
+- `UploadStrip` 已支持横向凭证条和 `cover` 封面模式，并支持 `maxImages`、自定义添加 / 删除图标和预览回调，可覆盖建档封面、联系方式单图二维码与生产页多图凭证场景
 - 新增非阻断扫描入口 `npm run report:style-tokens`，用于报告 `src/components` 与 `src/pages` 中剩余裸色值和重复 `px/rpx` 尺寸
 
 下一阶段重点：
@@ -323,14 +323,14 @@
 - 继续复核详情页、生产页和基础 UI 样式中的剩余裸尺寸，区分可 token 化值与真正的素材 / 容器特例
 - 继续将已在详情 / 草稿预览反复出现的资金摘要、支持处理卡和身份列表结构逐步晋升到 `src/components/rescue` 或 `src/components/ui`
 - 观察 `report:style-tokens` 的噪音情况，规则稳定后再考虑接入 lint / preflight
-- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `24`；剩余主要是 exact 图标尺寸、媒体查询断点和建档封面上传区高度等视觉特例，避免为单点 Figma 尺寸过度造 token
+- 当前 `report:style-tokens` 基线：裸色值 `0`、`px/rpx` 尺寸 `21`；剩余主要是 exact 图标尺寸和媒体查询断点等视觉特例，避免为单点 Figma 尺寸过度造 token
 - 将 `ProgressBar` 百分比钳制规则纳入 `test:ui`
 
 2026-05-30 起已完成的首轮页面迁移：
 
 - 生产页：记账 / 更新进展 / 追加预算已接入 `FormField`、`UploadStrip`、`BottomActionBar`、`AppButton`、`SurfaceCard`、`MoneyInput`、`NoticeBanner`，并完成首轮常规尺寸 token 化；更新进展 / 追加预算的动物摘要卡已迁到 `RescueCaseSummaryCard`
 - 支持闭环页：登记一笔 / 处理登记已接入 `FormField`、`MoneyInput`、`SegmentedTabs`、`EmptyState`、`BottomActionBar`、`SurfaceCard`、`StatusBadge`、`UploadStrip`、`AppButton`，并完成首轮常规尺寸 token 化；登记一笔的案例摘要卡已迁到 `RescueCaseSummaryCard`
-- 建档页：基础信息 / 预算页完成首轮颜色与常规尺寸 token 化，草稿预览页完成首轮常规尺寸 token 化；预算页金额输入已迁到 `MoneyInput`，基础信息 / 预算页步骤点已迁到 `StepIndicator`，下一步再评估是否把动物摘要迁入共享组件
+- 建档页：基础信息 / 预算页完成首轮颜色与常规尺寸 token 化，草稿预览页完成首轮常规尺寸 token 化；基础信息页封面上传已迁到 `UploadStrip cover`，预算页金额输入已迁到 `MoneyInput`，基础信息 / 预算页步骤点已迁到 `StepIndicator`，下一步再评估是否把动物摘要迁入共享组件
 - 发现页：案例卡资金摘要已接入 `RescueLedgerSummary`，loading 态已接入 `EmptyState`，卡片样式所有权回收到 `DiscoverCaseCard`，发现卡片完成首轮常规尺寸 token 化
 - 发现 / 记录主页共用案例卡：`DiscoverCaseCard` 外壳已接入 `SurfaceCard`
 - 详情页：客态 / 主态 tab、客态资金摘要、主态动物卡资金区、badge、页面态、底部操作栏和卡片外壳已逐步接入共享组件，`index.scss` 已清掉页面级裸色值

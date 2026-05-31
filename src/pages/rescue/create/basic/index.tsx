@@ -1,4 +1,4 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
@@ -9,6 +9,7 @@ import {
   PageShell,
   StepIndicator,
   TextareaField,
+  UploadStrip,
 } from "../../../../components/ui";
 import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
 import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
@@ -163,40 +164,16 @@ export default function RescueCreateBasicPage() {
       <StepIndicator activeIndex={0} total={3} />
 
       <View className="rescue-create-page__upload-card">
-        <View className="rescue-create-page__upload-frame">
-          {coverPath ? (
-            <View className="rescue-create-page__upload-preview">
-              <Image
-                className="rescue-create-page__upload-image"
-                mode="aspectFill"
-                src={coverPath}
-              />
-              <View
-                className="rescue-create-page__upload-remove"
-                onTap={(event) => {
-                  event.stopPropagation();
-                  handleDeleteImage();
-                }}
-              >
-                <Image
-                  className="rescue-create-page__upload-remove-icon"
-                  mode="aspectFit"
-                  src={uploadDeleteIcon}
-                />
-              </View>
-            </View>
-          ) : null}
-
-          {!coverPath ? (
-            <>
-              <View className="rescue-create-page__capture-button" onTap={handleChooseImage}>
-                <AppIcon name="camera" size={24} variant="default" />
-              </View>
-
-              <Text className="rescue-create-page__upload-tip">拍摄正脸清晰图作为档案封面</Text>
-            </>
-          ) : null}
-        </View>
+        <UploadStrip
+          addIcon={<AppIcon name="camera" size={24} variant="default" />}
+          addLabel="拍摄正脸清晰图作为档案封面"
+          images={coverPath ? [coverPath] : []}
+          maxImages={1}
+          removeIconSrc={uploadDeleteIcon}
+          variant="cover"
+          onAdd={handleChooseImage}
+          onRemove={handleDeleteImage}
+        />
       </View>
 
       <View className="rescue-create-page__form-group">

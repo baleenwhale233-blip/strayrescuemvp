@@ -147,6 +147,7 @@ page {
   --size-upload-tile-lg: 120px;
   --size-upload-add-icon-width: 22px;
   --size-upload-add-icon-height: 20px;
+  --size-upload-cover-min-height: 262px;
   --size-contact-qr-card: 280px;
   --size-contact-qr-image: 246px;
   --size-list-entry-lg: 90px;

@@ -2698,3 +2698,13 @@
 - 影响范围：仅影响样式 token、基础 UI 样式、业务组件样式和页面 SCSS；不改数据读取、提交、上传、导航、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 52 降至 24；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：剩余 24 个尺寸主要是 exact 图标尺寸、媒体查询断点和建档封面上传区高度，下一轮继续区分资产特例和可组件化结构。
+
+## 2026-05-31 | UI 组件 | 建档封面上传接入 UploadStrip
+
+- 日期：2026-05-31
+- 改动主题：为 `UploadStrip` 增加 `cover` 封面模式，并迁移建档基础信息页封面上传区。
+- 为什么改：建档第一页仍保留页面私有上传框、删除按钮和封面高度样式，和联系方式 / 凭证上传的组件化方向不一致，也让裸尺寸报告继续留有封面上传特例。
+- 改了什么：`UploadStrip` 新增 `variant="cover"`、`addIcon` 和封面删除角标样式；建档基础页改为只传封面图、拍照图标、删除图标和选择 / 删除回调；新增封面上传高度 token 并同步 `theme.css` 与 `tokens.ts`。
+- 影响范围：仅影响建档基础信息页封面上传展示、基础上传组件和样式 token；不改草稿读取、封面路径保存、下一步校验、导航、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 24 降至 21；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续处理剩余 21 个尺寸，优先把进展页 / 记账页 exact 图标规格和媒体查询断点分类成可 token 化项或明确保留的视觉特例。

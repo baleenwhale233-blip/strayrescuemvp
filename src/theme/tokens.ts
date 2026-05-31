@@ -183,6 +183,9 @@ export const sizes = {
     width: 22,
     height: 20,
   },
+  uploadCover: {
+    minHeight: 262,
+  },
   contactQr: {
     card: 280,
     image: 246,
