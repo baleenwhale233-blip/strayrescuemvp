@@ -26,7 +26,7 @@
     "segmentSelectors": {
       "hero": ".detail-page--guest",
       "body": ".detail-page--guest .detail-page__body",
-      "bottom-bar": ".detail-page__bottom-bar"
+      "bottom-bar": ".rescue-guest-action-bar"
     },
     "manualFiles": [],
     "manualDirectory": ""

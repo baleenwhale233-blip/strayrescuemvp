@@ -153,6 +153,15 @@ export default function RescueDetailPage() {
           visible={supportOpen}
           support={supportData}
           onClose={() => setSupportOpen(false)}
+          onCopyWechat={(wechatId) => {
+            Taro.setClipboardData({ data: wechatId });
+          }}
+          onSaveQrHint={() => {
+            Taro.showToast({
+              title: "请长按二维码保存，稍后可在微信里联系",
+              icon: "none",
+            });
+          }}
         />
       ) : null}
     </PageShell>

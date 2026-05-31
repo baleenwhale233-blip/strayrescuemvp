@@ -95,7 +95,7 @@ export function WorkbenchProjectSections({
 
   return (
     <>
-      <View className="rescue-page__section">
+      <View className="rescue-page__section rescue-page__section--active">
         <SectionHeader
           className="rescue-page__section-header"
           title="我的档案"
@@ -121,7 +121,7 @@ export function WorkbenchProjectSections({
         </View>
       </View>
 
-      <View className="rescue-page__section">
+      <View className="rescue-page__section rescue-page__section--draft">
         <SectionHeader className="rescue-page__section-header" title="草稿箱" badge={draftBadge} />
         <View className="rescue-page__list">
           {draftCases.length ? (

@@ -2788,3 +2788,23 @@
 - 影响范围：仅影响详情页导航职责归属和组件系统文档；保留原有只读详情缓存 key、跳转 query、复制、owner 快捷动作和结束确认交互，不改 VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`preflight:alpha`、`test:ui`、`report:style-tokens` 与 `git diff --check` 均通过；preflight 覆盖 repo safety、`format:check`、`lint`、`typecheck`、57 个 domain tests、`build:weapp` 和 smoke manifest；UI tests 5/5 通过，裸色和裸 `px/rpx` 尺寸均为 0；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：运行完整验证和最终组件化审计；真机 / 微信开发者工具验收继续按 Alpha 回归计划执行。
+
+## 2026-05-31 | QA 场景 | 组件化后原生验收 selector 收口
+
+- 日期：2026-05-31
+- 改动主题：同步 Alpha smoke 原生截图场景到组件化后的稳定 class。
+- 为什么改：页面展示结构拆到局部组件后，部分 QA 场景仍引用旧 selector，导致截图验收出现 readySignal 或 segment warning，削弱组件化完成证据。
+- 改了什么：更新 `support-claim`、`rescue-update`、`rescue-detail-guest`、`support-review-manual` 和 `rescue-workbench` 场景 selector；工作台进行中 / 草稿区补稳定 section modifier，草稿箱改由 fullPage 证据确认。
+- 影响范围：仅影响 QA 场景和工作台区块可观测 class；不改页面数据加载、导航、提交、VM、selector、repository 或 CloudBase。
+- 验证结果：`format:check`、`lint`、`typecheck`、`test:ui`、`report:style-tokens` 和 `preflight:alpha` 均通过；微信开发者工具原生 final pipeline 已跑通 `discover`、客态详情、工作台、登记一笔、处理登记 pending / manual、记账、更新进展和我的页 9 个场景；除记账旧设计基线仍报 19.06% 像素差异外，其余 runtime-only 场景 findings 均为 0。
+- 下一步 / 遗留问题：记账页差异主要来自当前运行态与旧 Figma 基线 / fullPage 吸顶拼接差异，后续作为视觉精修项处理，不阻塞本轮组件边界收口。
+
+## 2026-05-31 | 组件边界 | 联系弹层 Taro 动作上提
+
+- 日期：2026-05-31
+- 改动主题：将 `SupportSheet` 内的复制微信号与二维码提示动作上提到详情页。
+- 为什么改：组件治理要求页面负责 Taro API，业务展示组件只接收语义 props 和交互回调；联系弹层仍直接调用剪贴板和 toast。
+- 改了什么：`SupportSheet` 移除 Taro 依赖，新增 `onCopyWechat` 与 `onSaveQrHint` 回调；详情页接管剪贴板写入和二维码保存提示。
+- 影响范围：仅影响联系弹层的动作边界；不改弹层视觉、文案、关闭逻辑、联系方式 VM、repository、storage 或 CloudBase。
+- 验证结果：`format:check`、`lint`、`typecheck`、`test:ui`、`report:style-tokens` 与 `preflight:alpha` 均通过；preflight 覆盖 57 个 domain tests 与 `build:weapp`，build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：保留 `NavBar` 和键盘 inset 这类平台 UI 组件对 Taro 的直接使用；继续避免业务组件新增平台副作用。

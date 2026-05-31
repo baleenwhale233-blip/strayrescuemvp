@@ -26,7 +26,7 @@
     "segmentSelectors": {
       "tab-switcher": ".support-review-page__tabs",
       "manual-form": ".support-review-page__manual",
-      "bottom-bar": ".support-review-page__manual-bottom"
+      "bottom-bar": ".support-review-page__manual .ui-submit-action-bar"
     },
     "manualFiles": [],
     "manualDirectory": ""

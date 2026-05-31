@@ -1,5 +1,4 @@
 import { Image, ScrollView, Text, View } from "@tarojs/components";
-import Taro from "@tarojs/taro";
 import type { SupportSheetData } from "../../domain/canonical/types";
 import infoIcon from "../../assets/support-sheet/info.svg";
 import { AppButton, SectionHeader } from "../ui";
@@ -9,9 +8,17 @@ type SupportSheetProps = {
   visible: boolean;
   support: SupportSheetData;
   onClose: () => void;
+  onCopyWechat: (wechatId: string) => void | Promise<void>;
+  onSaveQrHint: () => void;
 };
 
-export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
+export function SupportSheet({
+  visible,
+  support,
+  onClose,
+  onCopyWechat,
+  onSaveQrHint,
+}: SupportSheetProps) {
   if (!visible) {
     return null;
   }
@@ -24,17 +31,12 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
       return;
     }
 
-    await Taro.setClipboardData({
-      data: support.wechatId || "",
-    });
+    await onCopyWechat(support.wechatId || "");
   };
 
   const handlePrimaryAction = async () => {
     if (hasPaymentQr) {
-      Taro.showToast({
-        title: "请长按二维码保存，稍后可在微信里联系",
-        icon: "none",
-      });
+      onSaveQrHint();
       return;
     }
 
