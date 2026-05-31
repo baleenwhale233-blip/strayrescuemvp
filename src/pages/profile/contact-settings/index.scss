@@ -1,6 +1,6 @@
 .contact-settings-page {
   min-height: 100vh;
-  padding-bottom: 128px;
+  padding-bottom: calc(var(--layout-bottom-action-offset-md) + var(--space-2));
   background: var(--color-bg-page);
 }
 
@@ -51,14 +51,14 @@
 }
 
 .contact-settings-page__qr-upload .ui-upload-strip__add-icon {
-  width: 22px;
-  height: 20px;
+  width: var(--size-upload-add-icon-width);
+  height: var(--size-upload-add-icon-height);
 }
 
 .contact-settings-page__qr-upload .ui-upload-strip__add-copy {
   margin-top: var(--space-1);
-  font-size: 9px;
-  line-height: 14px;
+  font-size: var(--font-size-upload-add-copy);
+  line-height: var(--font-size-body-sm);
 }
 
 .contact-settings-page__textarea {

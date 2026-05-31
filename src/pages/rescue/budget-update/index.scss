@@ -1,8 +1,8 @@
 .rescue-budget-update-page {
   width: 100%;
-  max-width: 390px;
+  max-width: var(--layout-page-max-width);
   margin: 0 auto;
-  padding-bottom: 120px;
+  padding-bottom: var(--layout-bottom-action-offset-md);
 }
 
 .rescue-budget-update-page__body {
@@ -36,8 +36,8 @@
 
 .rescue-budget-update-page__amount-input {
   --money-input-control-line-height: var(--line-height-body-md);
-  --money-input-height: 58px;
-  --money-input-padding-left: 45px;
+  --money-input-height: var(--size-money-input-lg);
+  --money-input-padding-left: var(--form-money-input-padding-left-lg);
   --money-input-prefix-left: var(--space-4);
 }
 
@@ -48,28 +48,10 @@
 }
 
 .rescue-budget-update-page__notice {
-  display: flex;
-  gap: var(--space-3);
-  align-items: flex-start;
-  padding: var(--space-4);
-  background: var(--color-brand-primary-soft);
-  border: 1px solid var(--color-brand-primary-border);
-  border-radius: var(--radius-sm);
+  --notice-banner-icon-size: var(--size-icon-md);
   margin-top: var(--space-4);
 }
 
-.rescue-budget-update-page__notice-icon {
-  width: var(--size-icon-md);
-  height: var(--size-icon-md);
-  flex-shrink: 0;
-}
-
-.rescue-budget-update-page__notice-text {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-caption);
-  line-height: var(--line-height-body-sm);
-}
-
 .rescue-budget-update-page__bottom {
-  --submit-action-button-max-width: 358px;
+  --submit-action-button-max-width: var(--layout-page-content-max-width);
 }

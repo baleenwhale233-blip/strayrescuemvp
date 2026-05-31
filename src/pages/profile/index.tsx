@@ -2,7 +2,7 @@ import { Button, Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useRef, useState } from "react";
 import { NavBar } from "../../components/NavBar";
-import { AppButton, ListEntry, SurfaceCard } from "../../components/ui";
+import { AppButton, Avatar, ListEntry, PageShell, SurfaceCard } from "../../components/ui";
 import { createSubmissionGuard } from "../../utils/submissionGuard";
 import supportHistoryIcon from "../../assets/profile/support-history.svg";
 import contactSettingsIcon from "../../assets/profile/contact-settings.svg";
@@ -305,7 +305,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <View className="page-shell profile-page">
+    <PageShell className="profile-page">
       <NavBar title="我的" />
 
       <View className="profile-page__body">
@@ -315,20 +315,12 @@ export default function ProfilePage() {
             openType="chooseAvatar"
             onChooseAvatar={handleChooseAvatar}
           >
-            <View className="profile-page__avatar-wrap">
-              {profileUser.avatarUrl ? (
-                <Image
-                  className="profile-page__avatar"
-                  mode="aspectFill"
-                  src={profileUser.avatarUrl}
-                />
-              ) : (
-                <View className="profile-page__avatar-placeholder">
-                  <View className="profile-page__avatar-head" />
-                  <View className="profile-page__avatar-body" />
-                </View>
-              )}
-            </View>
+            <Avatar
+              className="profile-page__avatar"
+              size="lg"
+              src={profileUser.avatarUrl}
+              variant="framed"
+            />
           </Button>
           <SurfaceCard className="profile-page__name-card">
             <Input
@@ -383,6 +375,6 @@ export default function ProfilePage() {
         <Text className="profile-page__powered">Powered by</Text>
         <Text className="profile-page__brand">God/1000 Lab · Druid Project</Text>
       </View>
-    </View>
+    </PageShell>
   );
 }

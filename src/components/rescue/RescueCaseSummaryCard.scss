@@ -20,9 +20,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1px;
+  padding: var(--border-width-default);
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
+  border: var(--border-width-default) solid var(--color-border-light);
 }
 
 .rescue-case-summary-card__image {
@@ -36,7 +36,7 @@
   flex: 1;
   min-width: 0;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--border-width-strong);
 }
 
 .rescue-case-summary-card__head {
@@ -60,11 +60,11 @@
 
 .rescue-case-summary-card__status.ui-status-badge {
   flex-shrink: 0;
-  min-height: 19px;
-  padding: 2px var(--space-2);
+  min-height: calc(var(--line-height-badge-xs) + var(--space-1));
+  padding: var(--border-width-strong) var(--space-2);
   border-radius: var(--radius-md);
-  font-size: 10px;
-  line-height: 15px;
+  font-size: var(--font-size-badge-xs);
+  line-height: var(--line-height-badge-xs);
 }
 
 .rescue-case-summary-card__meta {
@@ -76,6 +76,6 @@
 
 .rescue-case-summary-card__meta--muted {
   color: var(--color-text-tertiary);
-  font-size: 10px;
-  line-height: 15px;
+  font-size: var(--font-size-badge-xs);
+  line-height: var(--line-height-badge-xs);
 }

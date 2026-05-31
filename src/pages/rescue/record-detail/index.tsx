@@ -9,7 +9,7 @@ import {
   RescueRecordHeader,
   type RescueReadonlyRecordDetail,
 } from "../../../components/rescue";
-import { EmptyState, SurfaceCard } from "../../../components/ui";
+import { EmptyState, PageShell, SectionHeader, SurfaceCard } from "../../../components/ui";
 import {
   loadCaseRecordDetail,
   type CaseRecordDetailVM,
@@ -148,7 +148,7 @@ export default function RescueReadonlyRecordDetailPage() {
 
   if (!record) {
     return (
-      <View className="page-shell record-detail-page">
+      <PageShell className="record-detail-page">
         <NavBar showBack title="记录详情" />
         <EmptyState
           className="record-detail-page__empty"
@@ -156,17 +156,20 @@ export default function RescueReadonlyRecordDetailPage() {
           iconName="fileText"
           title="暂未找到记录"
         />
-      </View>
+      </PageShell>
     );
   }
 
   return (
-    <View className="page-shell record-detail-page">
+    <PageShell className="record-detail-page">
       <NavBar showBack title={getPageTitle(record.kind)} />
 
       <SurfaceCard className="record-detail-page__notice" variant="subtle">
-        <Text className="record-detail-page__notice-title">透明账本记录</Text>
-        <Text className="record-detail-page__notice-copy">{getImmutableCopy(record.kind)}</Text>
+        <SectionHeader
+          className="record-detail-page__notice-head"
+          description={getImmutableCopy(record.kind)}
+          title="透明账本记录"
+        />
       </SurfaceCard>
 
       <SurfaceCard className="record-detail-page__card">
@@ -226,6 +229,6 @@ export default function RescueReadonlyRecordDetailPage() {
           />
         ) : null}
       </SurfaceCard>
-    </View>
+    </PageShell>
   );
 }

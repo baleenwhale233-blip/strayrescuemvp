@@ -2,7 +2,7 @@ import { Image, ScrollView, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import type { SupportSheetData } from "../../domain/canonical/types";
 import infoIcon from "../../assets/support-sheet/info.svg";
-import { AppButton } from "../ui";
+import { AppButton, SectionHeader } from "../ui";
 import "./SupportSheet.scss";
 
 type SupportSheetProps = {
@@ -72,7 +72,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
 
             {hasPaymentQr ? (
               <View className="support-sheet__section">
-                <Text className="support-sheet__section-title">联系二维码</Text>
+                <SectionHeader className="support-sheet__section-title" title="联系二维码" />
 
                 <View className="support-sheet__qr-card">
                   <Image
@@ -86,7 +86,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
               </View>
             ) : (
               <View className="support-sheet__section">
-                <Text className="support-sheet__section-title">联系二维码</Text>
+                <SectionHeader className="support-sheet__section-title" title="联系二维码" />
                 <View className="support-sheet__empty-card">
                   <Text className="support-sheet__empty-text">暂未提供二维码</Text>
                 </View>
@@ -96,7 +96,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
 
             {hasWechatId ? (
               <View className="support-sheet__section">
-                <Text className="support-sheet__section-title">联系微信号</Text>
+                <SectionHeader className="support-sheet__section-title" title="联系微信号" />
 
                 <View className="support-sheet__wechat-card">
                   <Text className="support-sheet__wechat-id">{support.wechatId}</Text>

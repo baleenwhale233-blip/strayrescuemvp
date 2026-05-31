@@ -1,7 +1,8 @@
-import { PageMeta, View } from "@tarojs/components";
+import { PageMeta } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useState } from "react";
 import { SupportSheet } from "../../../components/rescue";
+import { PageShell } from "../../../components/ui";
 import { DetailPageState } from "./components/DetailPageState";
 import { GuestDetail } from "./components/GuestDetail";
 import { OwnerDetail } from "./components/OwnerDetail";
@@ -46,31 +47,31 @@ export default function RescueDetailPage() {
 
   if (detailStatus === "loading") {
     return (
-      <View key={reloadSeed} className="page-shell detail-page-shell">
+      <PageShell key={reloadSeed} className="detail-page-shell">
         <DetailPageState
           loading
           title="正在加载记录明细"
           description="正在整理头图、资金状态和最新进展，请稍等片刻。"
         />
-      </View>
+      </PageShell>
     );
   }
 
   if (detailStatus === "error" || !publicDetail) {
     return (
-      <View key={reloadSeed} className="page-shell detail-page-shell">
+      <PageShell key={reloadSeed} className="detail-page-shell">
         <DetailPageState
           title="记录明细加载失败"
           description="当前没能拿到这条记录的明细，你可以稍后重试一次。"
           actionText="重新加载"
           onAction={loadDetailPage}
         />
-      </View>
+      </PageShell>
     );
   }
 
   return (
-    <View key={reloadSeed} className="page-shell detail-page-shell">
+    <PageShell key={reloadSeed} className="detail-page-shell">
       <PageMeta pageStyle={supportOpen ? "overflow: hidden;" : "overflow: visible;"} />
       {mode === "guest" ? (
         <GuestDetail
@@ -109,6 +110,6 @@ export default function RescueDetailPage() {
           onClose={() => setSupportOpen(false)}
         />
       ) : null}
-    </View>
+    </PageShell>
   );
 }

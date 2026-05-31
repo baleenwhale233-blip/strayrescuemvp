@@ -3,7 +3,7 @@
   box-sizing: border-box;
   padding: var(--space-4) var(--space-4) var(--space-6);
   background: var(--bottom-action-bg);
-  border-top: 1px solid var(--bottom-action-border);
+  border-top: var(--border-width-default) solid var(--bottom-action-border);
   box-shadow: none;
   backdrop-filter: blur(var(--space-3));
   -webkit-backdrop-filter: blur(var(--space-3));
@@ -43,8 +43,8 @@
 }
 
 .rescue-guest-action-bar__share-text {
-  font-size: 10px;
-  line-height: 15px;
+  font-size: var(--font-size-badge-xs);
+  line-height: var(--line-height-badge-xs);
 }
 
 .rescue-guest-action-bar__ghost,
@@ -65,7 +65,7 @@
   justify-content: center;
   color: var(--color-brand-primary);
   background: var(--color-brand-primary-soft);
-  border: 1px solid var(--color-brand-primary-border);
+  border: var(--border-width-default) solid var(--color-brand-primary-border);
 }
 
 .rescue-guest-action-bar__cta {
@@ -121,7 +121,7 @@
   flex-shrink: 0;
   color: var(--color-text-secondary);
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border-default);
+  border: var(--border-width-default) solid var(--color-border-default);
 }
 
 .rescue-owner-finish-bar__side--cancel {

@@ -1,8 +1,8 @@
 .support-claim {
   width: 100%;
-  max-width: 390px;
+  max-width: var(--layout-page-max-width);
   margin: 0 auto;
-  padding-bottom: 120px;
+  padding-bottom: var(--layout-bottom-action-offset-md);
 }
 
 .support-claim__state {
@@ -31,7 +31,7 @@
 
 .support-claim__text-input {
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
+  border: var(--border-width-default) solid var(--color-border-light);
   border-radius: var(--radius-xs);
   box-sizing: border-box;
 }
@@ -57,6 +57,10 @@
 }
 
 .support-claim__upload-strip {
+  --upload-add-copy-font-size: var(--font-size-upload-add-copy);
+  --upload-add-copy-line-height: var(--line-height-upload-add-copy);
+  --upload-add-icon-height: var(--size-upload-add-icon-height);
+  --upload-add-icon-width: var(--size-upload-add-icon-width);
   --upload-tile-radius: var(--radius-md);
   --upload-tile-size: var(--size-upload-tile-md);
   height: var(--size-upload-tile-md);
@@ -68,16 +72,6 @@
 
 .support-claim__upload-strip .ui-upload-strip__content {
   gap: var(--space-2);
-}
-
-.support-claim__upload-strip .ui-upload-strip__add-icon {
-  width: 22px;
-  height: 20px;
-}
-
-.support-claim__upload-strip .ui-upload-strip__add-copy {
-  font-size: 9px;
-  line-height: 13.5px;
 }
 
 .support-claim__upload-strip .ui-upload-strip__item {

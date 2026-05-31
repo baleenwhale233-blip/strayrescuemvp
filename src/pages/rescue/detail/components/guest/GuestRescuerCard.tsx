@@ -1,5 +1,5 @@
-import { Image, Text, View } from "@tarojs/components";
-import { SurfaceCard } from "../../../../../components/ui";
+import { Text, View } from "@tarojs/components";
+import { Avatar, SurfaceCard } from "../../../../../components/ui";
 import type { PublicDetailVM } from "../../../../../domain/canonical/types";
 import { getRescuerAvatar } from "../../detailViewModels";
 
@@ -12,7 +12,7 @@ export function GuestRescuerCard({
 }) {
   return (
     <SurfaceCard className="rescuer-card">
-      <Image className="rescuer-card__avatar" mode="aspectFill" src={getRescuerAvatar(detail)} />
+      <Avatar className="rescuer-card__avatar" src={getRescuerAvatar(detail)} variant="raised" />
       <View className="rescuer-card__body">
         <Text className="rescuer-card__name">{detail.rescuer.name}</Text>
         <Text className="rescuer-card__meta">

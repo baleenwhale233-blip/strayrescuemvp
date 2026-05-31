@@ -7,6 +7,7 @@ import {
   EmptyState,
   FormField,
   MoneyInput,
+  PageShell,
   SegmentedTabs,
   SubmitActionBar,
   SurfaceCard,
@@ -201,7 +202,7 @@ export default function SupportReviewPage() {
     detail?.supportSummary.pendingSupportEntryCount || fallbackPendingEntries.length;
 
   return (
-    <View key={reloadSeed} className="page-shell support-review-page">
+    <PageShell key={reloadSeed} className="support-review-page">
       <NavBar showBack title="处理登记" />
 
       <SegmentedTabs
@@ -311,6 +312,6 @@ export default function SupportReviewPage() {
           </SubmitActionBar>
         </View>
       )}
-    </View>
+    </PageShell>
   );
 }

@@ -6,6 +6,9 @@ import {
   AppButton,
   BottomActionBar,
   FormField,
+  NoticeBanner,
+  PageShell,
+  SectionHeader,
   SurfaceCard,
   UploadStrip,
 } from "../../../components/ui";
@@ -491,8 +494,8 @@ export default function RescueExpensePage() {
     });
 
   return (
-    <View
-      className={`page-shell rescue-expense-page${
+    <PageShell
+      className={`rescue-expense-page${
         qaPreset === "design" ? " rescue-expense-page--qa-design" : ""
       }`}
     >
@@ -520,12 +523,11 @@ export default function RescueExpensePage() {
 
       <View className="rescue-expense-page__body">
         <SurfaceCard className="rescue-expense-page__evidence">
-          <View className="rescue-expense-page__section-copy">
-            <Text className="rescue-expense-page__section-title">公共凭证</Text>
-            <Text className="rescue-expense-page__section-desc">
-              请上传当次支出的所有相关凭证（最多9张）
-            </Text>
-          </View>
+          <SectionHeader
+            className="rescue-expense-page__section-copy"
+            description="请上传当次支出的所有相关凭证（最多9张）"
+            title="公共凭证"
+          />
 
           <UploadStrip
             addIconSrc={addPhotoIcon}
@@ -538,25 +540,25 @@ export default function RescueExpensePage() {
             onRemove={handleRemoveEvidence}
           />
 
-          <View className="rescue-expense-page__note">
-            <Image className="rescue-expense-page__note-icon" mode="aspectFit" src={noteInfoIcon} />
-            <Text className="rescue-expense-page__note-copy">
-              一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
-            </Text>
-          </View>
+          <NoticeBanner className="rescue-expense-page__note" iconSrc={noteInfoIcon}>
+            一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
+          </NoticeBanner>
         </SurfaceCard>
 
         <View className="rescue-expense-page__details">
-          <View className="rescue-expense-page__details-head">
-            <Text className="rescue-expense-page__details-title">支出明细</Text>
-            <View className="rescue-expense-page__total">
-              <Text className="rescue-expense-page__total-label">本次合计支出</Text>
-              <View className="rescue-expense-page__total-value-wrap">
-                <Text className="rescue-expense-page__total-currency">¥</Text>
-                <Text className="rescue-expense-page__total-value">{displayedTotalLabel}</Text>
+          <SectionHeader
+            aside={
+              <View className="rescue-expense-page__total">
+                <Text className="rescue-expense-page__total-label">本次合计支出</Text>
+                <View className="rescue-expense-page__total-value-wrap">
+                  <Text className="rescue-expense-page__total-currency">¥</Text>
+                  <Text className="rescue-expense-page__total-value">{displayedTotalLabel}</Text>
+                </View>
               </View>
-            </View>
-          </View>
+            }
+            className="rescue-expense-page__details-head"
+            title="支出明细"
+          />
 
           <View className="rescue-expense-page__line-list">
             <View className="rescue-expense-page__add-line" onTap={handleAddLine}>
@@ -621,6 +623,6 @@ export default function RescueExpensePage() {
           确认并挂载至账本
         </AppButton>
       </BottomActionBar>
-    </View>
+    </PageShell>
   );
 }

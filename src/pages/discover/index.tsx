@@ -3,7 +3,7 @@ import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { DiscoverCaseCard } from "../../components/rescue";
 import { NavBar } from "../../components/NavBar";
-import { EmptyState } from "../../components/ui";
+import { EmptyState, PageShell } from "../../components/ui";
 import searchIcon from "../../assets/icons/search-muted-18.svg";
 import {
   loadHomepageCaseCardVMs,
@@ -65,7 +65,7 @@ export default function DiscoverPage() {
   };
 
   return (
-    <View className="page-shell discover-page">
+    <PageShell className="discover-page">
       <NavBar title="发现" />
 
       <View className="discover-page__search">
@@ -101,6 +101,6 @@ export default function DiscoverPage() {
           />
         ))}
       </View>
-    </View>
+    </PageShell>
   );
 }

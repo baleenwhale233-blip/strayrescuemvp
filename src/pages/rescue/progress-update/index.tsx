@@ -1,11 +1,16 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { RescueCaseSummaryCard } from "../../../components/rescue";
 import {
+  ChoiceChipGroup,
+  type ChoiceChipOption,
   DualActionFooter,
   FormField,
+  NoticeBanner,
+  PageShell,
+  SectionHeader,
   SurfaceCard,
   TextareaField,
   UploadStrip,
@@ -38,20 +43,14 @@ import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloud
 import type { CaseCurrentStatus, PublicDetailVM } from "../../../domain/canonical/types";
 import "./index.scss";
 
-type StatusOption = {
-  key: CaseCurrentStatus;
-  emoji: string;
-  label: string;
-};
-
 type UpdateLoadStatus = "loading" | "ready" | "error";
 
-const STATUS_OPTIONS: StatusOption[] = [
-  { key: "newly_found", emoji: "🚨", label: "紧急送医" },
-  { key: "medical", emoji: "🏥", label: "医疗处理中" },
-  { key: "recovery", emoji: "🏡", label: "康复观察" },
-  { key: "rehoming", emoji: "💖", label: "寻找领养" },
-  { key: "closed", emoji: "🌈", label: "遗憾离世" },
+const STATUS_OPTIONS: Array<ChoiceChipOption<CaseCurrentStatus>> = [
+  { value: "newly_found", leading: "🚨", label: "紧急送医" },
+  { value: "medical", leading: "🏥", label: "医疗处理中" },
+  { value: "recovery", leading: "🏡", label: "康复观察" },
+  { value: "rehoming", leading: "💖", label: "寻找领养" },
+  { value: "closed", leading: "🌈", label: "遗憾离世" },
 ];
 
 function formatTimelineTimestamp(date = new Date()) {
@@ -61,11 +60,11 @@ function formatTimelineTimestamp(date = new Date()) {
 }
 
 function getDefaultStatusKey(label?: string) {
-  return STATUS_OPTIONS.find((option) => option.label === label)?.key || "medical";
+  return STATUS_OPTIONS.find((option) => option.label === label)?.value || "medical";
 }
 
 function getStatusLabelByKey(key: CaseCurrentStatus) {
-  return STATUS_OPTIONS.find((option) => option.key === key)?.label || "医疗处理中";
+  return STATUS_OPTIONS.find((option) => option.value === key)?.label || "医疗处理中";
 }
 
 function buildDraftStatusEntry(input: {
@@ -318,18 +317,18 @@ export default function RescueStatusUpdatePage() {
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
-      <View
-        className="page-shell rescue-update-page"
+      <PageShell
+        className="rescue-update-page"
         style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="更新进展" />
-      </View>
+      </PageShell>
     );
   }
 
   return (
-    <View
-      className="page-shell rescue-update-page"
+    <PageShell
+      className="rescue-update-page"
       style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="更新进展" />
@@ -344,28 +343,17 @@ export default function RescueStatusUpdatePage() {
         />
 
         <View className="rescue-update-page__section">
-          <View className="rescue-update-page__section-head">
-            <Image
-              className="rescue-update-page__section-icon-image"
-              mode="aspectFit"
-              src={stageIcon}
-            />
-            <Text className="rescue-update-page__section-title">当前阶段</Text>
-          </View>
-          <View className="rescue-update-page__chip-group">
-            {STATUS_OPTIONS.map((option) => (
-              <View
-                key={option.key}
-                className={`rescue-update-page__stage-chip ${
-                  selectedStatus === option.key ? "rescue-update-page__stage-chip--active" : ""
-                }`}
-                onTap={() => setSelectedStatus(option.key)}
-              >
-                <Text className="rescue-update-page__stage-chip-emoji">{option.emoji}</Text>
-                <Text className="rescue-update-page__stage-chip-text">{option.label}</Text>
-              </View>
-            ))}
-          </View>
+          <SectionHeader
+            className="rescue-update-page__section-head"
+            iconSrc={stageIcon}
+            title="当前阶段"
+          />
+          <ChoiceChipGroup
+            className="rescue-update-page__stage-choices"
+            options={STATUS_OPTIONS}
+            value={selectedStatus}
+            onChange={setSelectedStatus}
+          />
         </View>
 
         <FormField className="rescue-update-page__field" label="进展详情描述">
@@ -380,17 +368,12 @@ export default function RescueStatusUpdatePage() {
         </FormField>
 
         <SurfaceCard className="rescue-update-page__image-card">
-          <View className="rescue-update-page__image-head">
-            <View className="rescue-update-page__image-title-wrap">
-              <Image
-                className="rescue-update-page__image-icon"
-                mode="aspectFit"
-                src={imageSectionIcon}
-              />
-              <Text className="rescue-update-page__image-title">近况影像记录</Text>
-            </View>
-            <Text className="rescue-update-page__image-limit">最多 9 张</Text>
-          </View>
+          <SectionHeader
+            aside={<Text className="rescue-update-page__image-limit">最多 9 张</Text>}
+            className="rescue-update-page__image-head"
+            iconSrc={imageSectionIcon}
+            title="近况影像记录"
+          />
 
           <UploadStrip
             addIconSrc={addPhotoIcon}
@@ -403,16 +386,9 @@ export default function RescueStatusUpdatePage() {
             onRemove={handleRemoveImage}
           />
 
-          <View className="rescue-update-page__notice">
-            <Image
-              className="rescue-update-page__notice-icon"
-              mode="aspectFit"
-              src={imageNoticeIcon}
-            />
-            <Text className="rescue-update-page__notice-text">
-              请至少上传一张照片，以确保护助信息真实性
-            </Text>
-          </View>
+          <NoticeBanner className="rescue-update-page__notice" iconSrc={imageNoticeIcon}>
+            请至少上传一张照片，以确保护助信息真实性
+          </NoticeBanner>
         </SurfaceCard>
       </View>
 
@@ -425,6 +401,6 @@ export default function RescueStatusUpdatePage() {
         onPrimary={handleSubmit}
         onSecondary={handleCancel}
       />
-    </View>
+    </PageShell>
   );
 }

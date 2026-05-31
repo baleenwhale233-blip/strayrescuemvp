@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { AppIcon } from "../../../../components/AppIcon";
 import { NavBar } from "../../../../components/NavBar";
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
-import { HintActionFooter, TextareaField } from "../../../../components/ui";
+import {
+  HintActionFooter,
+  PageShell,
+  StepIndicator,
+  TextareaField,
+} from "../../../../components/ui";
 import nextArrowIcon from "../../../../assets/rescue-create/step1-next-arrow.svg";
 import uploadDeleteIcon from "../../../../assets/rescue-expense/upload-delete-24.svg";
 import {
@@ -149,17 +154,13 @@ export default function RescueCreateBasicPage() {
   };
 
   return (
-    <View
-      className="page-shell rescue-create-page"
+    <PageShell
+      className="rescue-create-page"
       style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="新建记录" onBack={handleBack} />
 
-      <View className="rescue-create-page__steps">
-        <View className="rescue-create-page__step rescue-create-page__step--active" />
-        <View className="rescue-create-page__step" />
-        <View className="rescue-create-page__step" />
-      </View>
+      <StepIndicator activeIndex={0} total={3} />
 
       <View className="rescue-create-page__upload-card">
         <View className="rescue-create-page__upload-frame">
@@ -231,6 +232,6 @@ export default function RescueCreateBasicPage() {
       >
         下一步：设定目标
       </HintActionFooter>
-    </View>
+    </PageShell>
   );
 }

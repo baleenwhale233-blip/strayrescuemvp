@@ -2,7 +2,7 @@ import { Image, Input, Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
-import { AppButton, DualActionFooter, TextareaField } from "../../../../components/ui";
+import { AppButton, DualActionFooter, PageShell, TextareaField } from "../../../../components/ui";
 import { createSubmissionGuard } from "../../../../utils/submissionGuard";
 import { recordCaseProfileLocalFallback } from "../../../../domain/canonical/repository";
 import {
@@ -817,7 +817,7 @@ export default function RescueCreatePreviewPage() {
   };
 
   return (
-    <View className="page-shell rescue-preview-page">
+    <PageShell className="rescue-preview-page">
       <NavBar showBack title="记录管理" />
 
       <RescueOwnerSummaryCard
@@ -902,6 +902,6 @@ export default function RescueCreatePreviewPage() {
           onSave={handleSaveTitle}
         />
       ) : null}
-    </View>
+    </PageShell>
   );
 }

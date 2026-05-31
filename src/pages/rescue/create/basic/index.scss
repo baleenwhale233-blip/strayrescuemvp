@@ -1,6 +1,6 @@
 .rescue-create-page {
   min-height: 100vh;
-  padding-bottom: 164px;
+  padding-bottom: var(--layout-bottom-action-offset-create);
   background: var(--color-bg-page);
 }
 
@@ -17,26 +17,6 @@
   font-weight: 400;
 }
 
-.rescue-create-page__steps {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-4) 0;
-}
-
-.rescue-create-page__step {
-  width: var(--space-2);
-  height: var(--space-2);
-  background: var(--color-brand-primary-soft);
-  border-radius: var(--radius-pill);
-}
-
-.rescue-create-page__step--active {
-  width: var(--space-8);
-  background: var(--color-brand-primary);
-}
-
 .rescue-create-page__upload-card {
   padding: var(--space-2) 0 var(--space-6);
 }
@@ -50,7 +30,7 @@
   min-height: 262px;
   padding: var(--space-10) var(--space-4);
   overflow: hidden;
-  border: 2px dashed var(--color-brand-primary-border);
+  border: var(--border-width-strong) dashed var(--color-brand-primary-border);
   border-radius: var(--radius-sm);
   background: var(--color-bg-input);
 }
@@ -123,7 +103,7 @@
 .rescue-create-page__input-card {
   overflow: hidden;
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
+  border: var(--border-width-default) solid var(--color-border-light);
   border-radius: var(--radius-sm);
 }
 
@@ -137,7 +117,7 @@
 }
 
 .rescue-create-page__textarea {
-  --textarea-field-height: 106px;
-  --textarea-field-min-height: 106px;
+  --textarea-field-height: var(--size-textarea-sm);
+  --textarea-field-min-height: var(--size-textarea-sm);
   --textarea-field-font-size: var(--font-size-body-lg);
 }

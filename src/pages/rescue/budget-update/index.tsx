@@ -1,9 +1,16 @@
-import { Image, Text, View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { RescueCaseSummaryCard } from "../../../components/rescue";
-import { FormField, MoneyInput, SubmitActionBar, TextareaField } from "../../../components/ui";
+import {
+  FormField,
+  MoneyInput,
+  NoticeBanner,
+  PageShell,
+  SubmitActionBar,
+  TextareaField,
+} from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -252,18 +259,18 @@ export default function RescueBudgetUpdatePage() {
 
   if (loadStatus !== "ready" || !contextCard) {
     return (
-      <View
-        className="page-shell rescue-budget-update-page"
+      <PageShell
+        className="rescue-budget-update-page"
         style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="追加预算" />
-      </View>
+      </PageShell>
     );
   }
 
   return (
-    <View
-      className="page-shell rescue-budget-update-page"
+    <PageShell
+      className="rescue-budget-update-page"
       style={{ paddingBottom: `${140 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="追加预算" />
@@ -300,16 +307,9 @@ export default function RescueBudgetUpdatePage() {
           />
         </FormField>
 
-        <View className="rescue-budget-update-page__notice">
-          <Image
-            className="rescue-budget-update-page__notice-icon"
-            mode="aspectFit"
-            src={noteInfoIcon}
-          />
-          <Text className="rescue-budget-update-page__notice-text">
-            预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
-          </Text>
-        </View>
+        <NoticeBanner className="rescue-budget-update-page__notice" iconSrc={noteInfoIcon}>
+          预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
+        </NoticeBanner>
       </View>
 
       <SubmitActionBar
@@ -319,6 +319,6 @@ export default function RescueBudgetUpdatePage() {
       >
         确认追加并更新时间线
       </SubmitActionBar>
-    </View>
+    </PageShell>
   );
 }

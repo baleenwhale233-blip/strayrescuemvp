@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { View } from "@tarojs/components";
 import { cx } from "./classNames";
 import "./ui.scss";
@@ -8,9 +8,16 @@ type PageShellProps = {
   centered?: boolean;
   className?: string;
   safeBottom?: boolean;
+  style?: CSSProperties;
 };
 
-export function PageShell({ children, centered = false, className, safeBottom }: PageShellProps) {
+export function PageShell({
+  children,
+  centered = false,
+  className,
+  safeBottom,
+  style,
+}: PageShellProps) {
   return (
     <View
       className={cx(
@@ -19,6 +26,7 @@ export function PageShell({ children, centered = false, className, safeBottom }:
         safeBottom && "ui-page-shell--safe-bottom",
         className,
       )}
+      style={style}
     >
       {children}
     </View>

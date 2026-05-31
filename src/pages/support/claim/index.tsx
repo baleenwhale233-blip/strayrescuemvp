@@ -9,6 +9,7 @@ import {
   EmptyState,
   FormField,
   MoneyInput,
+  PageShell,
   SubmitActionBar,
   TextareaField,
   UploadStrip,
@@ -93,8 +94,8 @@ export default function SupportClaimPage() {
 
   if (loadStatus === "loading") {
     return (
-      <View
-        className="support-claim page-shell"
+      <PageShell
+        className="support-claim"
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="登记一笔" />
@@ -104,14 +105,14 @@ export default function SupportClaimPage() {
           title="正在加载档案信息"
           description="先把档案卡片和登记表单准备好，请稍等片刻。"
         />
-      </View>
+      </PageShell>
     );
   }
 
   if (loadStatus === "error" || !detail) {
     return (
-      <View
-        className="support-claim page-shell"
+      <PageShell
+        className="support-claim"
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
         <NavBar showBack title="登记一笔" />
@@ -121,7 +122,7 @@ export default function SupportClaimPage() {
           title="档案信息加载失败"
           description="当前没能拿到档案信息，你可以返回上一页后稍后再试。"
         />
-      </View>
+      </PageShell>
     );
   }
 
@@ -190,8 +191,8 @@ export default function SupportClaimPage() {
     });
 
   return (
-    <View
-      className="support-claim page-shell"
+    <PageShell
+      className="support-claim"
       style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="登记一笔" />
@@ -249,6 +250,6 @@ export default function SupportClaimPage() {
       <SubmitActionBar iconSrc={submitArrowIcon} onTap={handleSubmit}>
         提交登记
       </SubmitActionBar>
-    </View>
+    </PageShell>
   );
 }

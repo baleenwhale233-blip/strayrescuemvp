@@ -2608,3 +2608,83 @@
 - 影响范围：仅影响详情页底部动作栏展示结构、布局 token 和组件系统文档；不改分享、联系方式弹层、登记跳转、结束确认状态机、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 369 降至 346。
 - 下一步 / 遗留问题：继续治理详情页剩余 hero / 卡片尺寸与记账、处理登记页面热点；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | Token 治理 | 高频页面剩余尺寸收口
+
+- 日期：2026-05-31
+- 改动主题：扩展通用尺寸 / 描边 token，并继续压低详情、记账、更新进展和处理登记页的裸尺寸。
+- 为什么改：动作栏迁移后，剩余热点从详情页扩散到生产页与处理登记页；需要把重复的边框、badge 字号、富文本行高和底部避让先收成稳定 token。
+- 改了什么：新增 border width、badge、富文本行高、文字投影、轻 blur、hero 高度和底部操作避让 token，并替换多个页面里的常规宽度、描边、字号、行高、底部避让与轻量毛玻璃值。
+- 影响范围：仅影响样式 token、详情页、记账页、更新进展页、处理登记页和组件系统文档；不改页面结构、提交逻辑、分享、上传、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 346 降至 254。
+- 下一步 / 遗留问题：继续治理基础 UI、身份页和业务共享组件剩余尺寸；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | 页面壳组件 | PageShell 接入与尺寸尾项收口
+
+- 日期：2026-05-31
+- 改动主题：页面入口统一接入 `PageShell`，并继续收口上传、金额输入、textarea、chevron 和建档底部避让尺寸 token。
+- 为什么改：组件系统文档已经要求新页面从 `PageShell + NavBar` 搭建，但既有页面仍直接依赖全局 `page-shell` 类；同时剩余裸尺寸里仍有多页重复值。
+- 改了什么：将各页面根节点从旧 `page-shell` 类迁移到 `PageShell` 组件，移除 `src/app.scss` 里的旧页面壳样式；补充上传添加区、金额输入、textarea、chevron 和建档底部避让 token，并替换对应页面 / 组件样式。
+- 影响范围：仅影响页面展示壳、基础 UI 组件样式、样式 token 和组件系统文档；不改页面数据加载、提交、上传、导航目标、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 154 降至 82；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续把剩余 82 个尺寸按 profile 头像几何、exact 图标、二维码 / 素材比例和真正可复用 token 分类；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 建档步骤条晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `StepIndicator`，迁移建档基础信息页和建档预算页的三步进度点。
+- 为什么改：两页重复维护完全相同的步骤点结构和样式，已满足基础 UI 组件晋升规则，继续留在页面会让后续建档流程样式分叉。
+- 改了什么：在 `src/components/ui` 新增 `StepIndicator` 并导出，建档两页改为只传当前步骤和总步数，删除页面级 steps / step 样式；同步组件系统文档。
+- 影响范围：仅影响建档两页步骤点展示结构、基础 UI 样式和文档；不改草稿读取、建档校验、下一步导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸保持 82；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续评估建档动物摘要、profile 头像头部和支持处理卡是否需要晋升；本轮未改数据层，预计不跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 提示条组件晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `NoticeBanner`，迁移记账、更新进展和追加预算页的轻提示条。
+- 为什么改：三处生产高频页重复维护 `提示图标 + 说明文案 + 软底色` 结构，已满足基础 UI 组件晋升规则，继续留在页面会让规则说明条样式分叉。
+- 改了什么：在 `src/components/ui` 新增 `NoticeBanner` 并导出，三页改为只传图标与文案；页面 SCSS 仅保留图标尺寸、居中方式和间距差异变量，同步组件系统文档与扫描基线。
+- 影响范围：仅影响三页提示条展示结构、基础 UI 样式和文档；不改记账、进展发布、预算提交、上传、草稿、本地 fallback、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 82 降至 80；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续治理剩余 80 个裸尺寸，优先看 profile 头像几何、进展页 exact 图标和草稿预览 / 弹层特例；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 头像组件晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `Avatar`，迁移我的页、记录主页、支持足迹、工作台和详情维护者头像 / 圆形封面。
+- 为什么改：多页重复维护圆形图片、边框、fallback 和头像占位几何，且 `profile/index.scss` 是剩余裸尺寸最大热点；抽成基础组件能统一身份页和列表卡片的头像规则。
+- 改了什么：在 `src/components/ui` 新增 `Avatar`，支持 `plain / framed / raised` 三种展示和尺寸变量；五处页面改为只传图片、fallback 与 variant，删除页面级头像容器、占位几何和边框样式，并同步组件系统文档。
+- 影响范围：仅影响头像 / 圆形封面的展示结构与样式；不改个人资料保存、头像上传、记录主页读取、支持足迹读取、工作台 VM、详情维护者卡数据、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 80 降至 64；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续治理剩余 64 个裸尺寸，优先评估进展页阶段 chip / exact 图标、草稿预览弹层和二维码 / 固定素材比例；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 选项 chip 组件晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `ChoiceChipGroup`，迁移更新进展页的阶段选择 chip。
+- 为什么改：更新进展页仍维护一组页面私有 chip DOM 和样式，属于可复用的松散选项组控件；抽成基础组件能让后续状态 / 类型选择不再复制 chip 结构。
+- 改了什么：在 `src/components/ui` 新增 `ChoiceChipGroup` 与 `ChoiceChipOption` 类型，补充 `--size-choice-chip-sm` token；更新进展页改为只传阶段选项、当前状态和 `setSelectedStatus`，删除页面级 chip group / active / label 样式，并同步组件系统文档。
+- 影响范围：仅影响更新进展页阶段选择展示结构、基础 UI 样式和 token 文档；不改阶段枚举、提交内容、图片上传、草稿、本地 fallback、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 64 降至 63；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续治理剩余 63 个裸尺寸，优先分类进展页 exact 图标、草稿预览弹层、二维码和固定素材比例；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 区块标题组件晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `SectionHeader`，收口区块标题、说明和右侧 badge / aside 结构。
+- 为什么改：工作台、生产页、支持足迹、使用说明、联系弹层和资金摘要都在重复维护标题行与说明文本；晋升后新页面可直接用基础组件搭区块头。
+- 改了什么：将旧 `src/components/SectionHeader.tsx` 迁入 `src/components/ui`，并迁移工作台区块、记账 / 更新进展标题、支持足迹标题、guide 章节、记录详情提示、SupportSheet 标题和 `RescueLedgerSummary` 头部。
+- 影响范围：仅影响展示结构、基础 UI 样式、业务组件样式和组件系统文档；不改数据读取、提交、上传、导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 63 降至 62；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续分类剩余 62 个裸尺寸，优先进展页 exact 图标、草稿预览弹层、二维码 / 固定素材比例和详情页残余大 SCSS；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | Token 治理 | 联系二维码尺寸收口
+
+- 日期：2026-05-31
+- 改动主题：新增联系二维码尺寸 token，并收口联系方式设置页与联系弹层的二维码 / 上传图标规格。
+- 为什么改：二维码卡片、二维码图片和上传添加文案尺寸在联系方式相关页面重复出现，属于稳定语义规格，继续散落会让联系信息体验分叉。
+- 改了什么：在 `theme.css` 与 `tokens.ts` 补 `contactQr` 尺寸；`SupportSheet` 使用二维码 token，联系方式设置页复用上传添加图标与文案 token，并用底部避让 token 表达页面 padding。
+- 影响范围：仅影响联系信息相关样式 token、SCSS 与组件系统文档；不改联系方式保存、二维码上传、复制微信号、弹层操作、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`report:style-tokens` 与 `git diff --check` 均通过；裸色 0，裸尺寸从 62 降至 52；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：继续分类剩余 52 个裸尺寸，优先进展页 exact 图标、草稿预览弹层和详情页残余大 SCSS。

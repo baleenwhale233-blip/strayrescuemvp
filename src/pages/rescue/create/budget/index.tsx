@@ -6,6 +6,8 @@ import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottom
 import {
   HintActionFooter,
   MoneyInput,
+  PageShell,
+  StepIndicator,
   SurfaceCard,
   TextareaField,
 } from "../../../../components/ui";
@@ -67,17 +69,13 @@ export default function RescueCreateBudgetPage() {
   };
 
   return (
-    <View
-      className="page-shell rescue-budget-page"
+    <PageShell
+      className="rescue-budget-page"
       style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="新建记录" onBack={handleBack} />
 
-      <View className="rescue-budget-page__steps">
-        <View className="rescue-budget-page__step" />
-        <View className="rescue-budget-page__step rescue-budget-page__step--active" />
-        <View className="rescue-budget-page__step" />
-      </View>
+      <StepIndicator activeIndex={1} total={3} />
 
       <View className="rescue-budget-page__profile">
         <View className="rescue-budget-page__avatar-wrap">
@@ -127,6 +125,6 @@ export default function RescueCreateBudgetPage() {
       >
         进入记录页
       </HintActionFooter>
-    </View>
+    </PageShell>
   );
 }

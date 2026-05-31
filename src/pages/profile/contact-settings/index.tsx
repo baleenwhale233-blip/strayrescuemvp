@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import {
   FormField,
+  PageShell,
   SubmitActionBar,
   SurfaceCard,
   TextareaField,
@@ -222,8 +223,8 @@ export default function ContactSettingsPage() {
     });
 
   return (
-    <View
-      className="page-shell contact-settings-page"
+    <PageShell
+      className="contact-settings-page"
       style={{ paddingBottom: `${128 + keyboardBottomInset}px` }}
     >
       <NavBar showBack title="联系信息" />
@@ -272,6 +273,6 @@ export default function ContactSettingsPage() {
       >
         保存
       </SubmitActionBar>
-    </View>
+    </PageShell>
   );
 }

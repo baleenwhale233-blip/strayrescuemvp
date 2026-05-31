@@ -2,7 +2,14 @@ import { Image, Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../components/NavBar";
-import { EmptyState, ListEntry, SurfaceCard } from "../../../components/ui";
+import {
+  Avatar,
+  EmptyState,
+  ListEntry,
+  PageShell,
+  SectionHeader,
+  SurfaceCard,
+} from "../../../components/ui";
 import fallbackCoverImage from "../../../assets/detail/guest-hero-cat.png";
 import chevronIcon from "../../../assets/rescue-detail/owner/action-chevron.svg";
 import { loadMySupportHistory } from "../../../domain/canonical/repository";
@@ -50,7 +57,7 @@ export default function SupportHistoryPage() {
   };
 
   return (
-    <View className="page-shell support-history-page">
+    <PageShell className="support-history-page">
       <NavBar showBack title="我的登记记录" />
 
       <SurfaceCard className="support-history-page__summary">
@@ -58,7 +65,10 @@ export default function SupportHistoryPage() {
         <Text className="support-history-page__summary-value">{formatCurrency(totalAmount)}</Text>
       </SurfaceCard>
 
-      <Text className="support-history-page__section-title">登记记录（{items.length}）</Text>
+      <SectionHeader
+        className="support-history-page__section-title"
+        title={`登记记录（${items.length}）`}
+      />
 
       <View className="support-history-page__list">
         {items.length ? (
@@ -67,9 +77,9 @@ export default function SupportHistoryPage() {
               key={item.caseId}
               className="support-history-page__item"
               leading={
-                <Image
+                <Avatar
                   className="support-history-page__avatar"
-                  mode="aspectFill"
+                  fallbackSrc={fallbackCoverImage}
                   src={item.coverImageUrl}
                 />
               }
@@ -93,6 +103,6 @@ export default function SupportHistoryPage() {
           />
         )}
       </View>
-    </View>
+    </PageShell>
   );
 }

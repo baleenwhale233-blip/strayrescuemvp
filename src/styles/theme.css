@@ -77,6 +77,14 @@ page {
   --line-height-body-md: 22px;
   --line-height-body-sm: 20px;
   --line-height-caption: 18px;
+  --line-height-body-rich: 22.75px;
+  --line-height-badge-xs: 15px;
+  --line-height-upload-add-copy: 13.5px;
+  --font-size-badge-xs: 10px;
+  --font-size-upload-add-copy: 9px;
+
+  --border-width-default: 1px;
+  --border-width-strong: 2px;
 
   --space-0: 0;
   --space-1: 4px;
@@ -105,12 +113,16 @@ page {
   --shadow-card-strong: 0 6px 18px rgba(16, 24, 40, 0.08);
   --shadow-cta: 0 8px 20px rgba(247, 104, 8, 0.22);
   --shadow-bottom-bar: 0 -2px 12px rgba(16, 24, 40, 0.06);
+  --shadow-text-overlay: 0 1px 2px var(--color-overlay-strong);
+  --blur-sm: 6px;
 
   --size-icon-xs: 12px;
   --size-icon-sm: 16px;
   --size-icon-md: 20px;
   --size-icon-lg: 24px;
   --size-icon-xl: 28px;
+  --size-chevron-sm-width: 7.4px;
+  --size-chevron-sm-height: 12px;
 
   --size-avatar-sm: 40px;
   --size-avatar-md: 56px;
@@ -120,22 +132,36 @@ page {
   --size-button-md: 44px;
   --size-button-lg: 56px;
   --size-button-xl: 60px;
+  --size-choice-chip-sm: 30px;
 
   --size-input-md: 48px;
   --size-input-lg: 56px;
   --size-input-xl: 64px;
+  --size-money-input-lg: 58px;
+  --size-textarea-sm: 106px;
+  --size-textarea-md: 120px;
+  --size-textarea-lg: 160px;
 
   --size-upload-tile-sm: 80px;
   --size-upload-tile-md: 96px;
   --size-upload-tile-lg: 120px;
+  --size-upload-add-icon-width: 22px;
+  --size-upload-add-icon-height: 20px;
+  --size-contact-qr-card: 280px;
+  --size-contact-qr-image: 246px;
 
   --size-tabbar: 65px;
   --size-navbar: 98px;
+  --size-hero-lg: 320px;
 
   --layout-page-padding-x: 16px;
   --layout-page-padding-top: 8px;
   --layout-page-max-width: 390px;
   --layout-page-content-max-width: 358px;
+  --layout-bottom-action-offset-md: 120px;
+  --layout-bottom-action-offset-lg: 140px;
+  --layout-bottom-action-offset-xl: 144px;
+  --layout-bottom-action-offset-create: 164px;
   --layout-section-gap: 16px;
   --layout-card-gap: 16px;
   --layout-form-gap: 24px;
@@ -144,6 +170,8 @@ page {
   --form-control-min-height: 48px;
   --form-control-radius: 12px;
   --form-control-padding-x: 16px;
+  --form-money-input-padding-left-lg: 45px;
+  --form-textarea-padding: 18px;
   --form-control-bg: var(--color-bg-input);
   --form-control-border: var(--color-border-default);
 

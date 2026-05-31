@@ -1,5 +1,5 @@
 import { Text, View } from "@tarojs/components";
-import { ProgressBar } from "../ui";
+import { ProgressBar, SectionHeader } from "../ui";
 import { cx } from "../ui/classNames";
 import "./RescueLedgerSummary.scss";
 
@@ -58,19 +58,22 @@ export function RescueLedgerSummary({
         className,
       )}
     >
-      <View className="rescue-ledger-summary__head">
-        <Text className="rescue-ledger-summary__budget">总预算 {targetAmountLabel}</Text>
-        {statusLabel ? (
-          <Text
-            className={cx(
-              "rescue-ledger-summary__status",
-              toneClass("rescue-ledger-summary__status", statusTone),
-            )}
-          >
-            {statusLabel}
-          </Text>
-        ) : null}
-      </View>
+      <SectionHeader
+        aside={
+          statusLabel ? (
+            <Text
+              className={cx(
+                "rescue-ledger-summary__status",
+                toneClass("rescue-ledger-summary__status", statusTone),
+              )}
+            >
+              {statusLabel}
+            </Text>
+          ) : null
+        }
+        className="rescue-ledger-summary__head"
+        title={`总预算 ${targetAmountLabel}`}
+      />
 
       <ProgressBar
         className="rescue-ledger-summary__progress"

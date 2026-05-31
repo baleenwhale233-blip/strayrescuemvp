@@ -1,6 +1,6 @@
 .rescue-budget-page {
   min-height: 100vh;
-  padding-bottom: 164px;
+  padding-bottom: var(--layout-bottom-action-offset-create);
   background: var(--color-bg-page);
 }
 
@@ -15,26 +15,6 @@
 
 .rescue-budget-page .page-nav__title {
   font-weight: 400;
-}
-
-.rescue-budget-page__steps {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-4) 0;
-}
-
-.rescue-budget-page__step {
-  width: var(--space-2);
-  height: var(--space-2);
-  background: var(--color-brand-primary-soft);
-  border-radius: var(--radius-pill);
-}
-
-.rescue-budget-page__step--active {
-  width: var(--space-8);
-  background: var(--color-brand-primary);
 }
 
 .rescue-budget-page__profile {
@@ -86,7 +66,7 @@
   margin-top: var(--space-2);
   color: var(--color-text-secondary);
   font-size: var(--font-size-body-sm);
-  line-height: 22.75px;
+  line-height: var(--line-height-body-rich);
 }
 
 .rescue-budget-page__field {
@@ -107,18 +87,18 @@
   --money-input-control-font-size: var(--font-size-heading-lg);
   --money-input-control-line-height: var(--line-height-heading-md);
   --money-input-height: var(--size-input-xl);
-  --money-input-padding-left: 45px;
+  --money-input-padding-left: var(--form-money-input-padding-left-lg);
   --money-input-prefix-font-size: var(--font-size-heading-md);
   --money-input-prefix-left: var(--space-4);
   --money-input-prefix-line-height: var(--line-height-heading-md);
-  --money-input-shadow: 0 0 0 1px var(--color-brand-primary);
+  --money-input-shadow: 0 0 0 var(--border-width-default) var(--color-brand-primary);
   --money-input-radius: var(--radius-sm);
 }
 
 .rescue-budget-page__textarea {
   --textarea-field-bg: var(--color-bg-input);
-  --textarea-field-height: 120px;
-  --textarea-field-min-height: 120px;
+  --textarea-field-height: var(--size-textarea-md);
+  --textarea-field-min-height: var(--size-textarea-md);
   --textarea-field-font-size: var(--font-size-body-lg);
 }
 

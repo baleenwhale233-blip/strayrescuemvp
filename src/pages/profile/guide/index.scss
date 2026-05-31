@@ -21,30 +21,30 @@
 .profile-guide-page__hero {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(var(--space-2) + var(--border-width-strong));
   margin: 0 var(--space-4);
   padding: var(--space-7) 0 var(--space-5);
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: var(--border-width-default) solid var(--color-border-light);
 }
 
 .profile-guide-page__eyebrow {
   color: var(--color-brand-primary);
-  font-size: 13px;
+  font-size: calc(var(--font-size-caption) + var(--border-width-default));
   font-weight: var(--font-weight-semibold);
-  line-height: 20px;
+  line-height: var(--line-height-body-sm);
 }
 
 .profile-guide-page__title {
   color: var(--color-text-primary);
-  font-size: 22px;
+  font-size: var(--line-height-body-md);
   font-weight: var(--font-weight-bold);
-  line-height: 30px;
+  line-height: calc(var(--line-height-heading-md) + var(--border-width-strong));
 }
 
 .profile-guide-page__lead {
   color: var(--color-text-secondary);
-  font-size: 15px;
-  line-height: 25px;
+  font-size: var(--font-size-body-md);
+  line-height: calc(var(--line-height-body-lg) + var(--border-width-default));
 }
 
 .profile-guide-page__content {
@@ -54,8 +54,8 @@
 }
 
 .profile-guide-page__section {
-  padding: 22px 0;
-  border-bottom: 1px solid var(--color-border-light);
+  padding: var(--line-height-body-md) 0;
+  border-bottom: var(--border-width-default) solid var(--color-border-light);
 }
 
 .profile-guide-page__section:last-child {
@@ -63,16 +63,13 @@
 }
 
 .profile-guide-page__section-title {
-  display: block;
-  color: var(--color-text-primary);
-  font-size: 17px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 26px;
+  --section-header-title-font-size: calc(var(--font-size-body-lg) + var(--border-width-default));
+  --section-header-title-line-height: var(--line-height-heading-sm);
 }
 
 .profile-guide-page__paragraph {
   display: block;
-  margin-top: 10px;
+  margin-top: calc(var(--space-2) + var(--border-width-strong));
   color: var(--color-text-secondary);
   font-size: var(--font-size-body-sm);
   line-height: var(--line-height-body-lg);
@@ -88,23 +85,23 @@
 .profile-guide-page__list-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: calc(var(--space-2) + var(--border-width-strong));
 }
 
 .profile-guide-page__list-index {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: var(--line-height-body-md);
+  height: var(--line-height-body-md);
   flex-shrink: 0;
   color: var(--color-brand-primary);
   background: transparent;
-  border: 1px solid var(--color-brand-primary-border);
+  border: var(--border-width-default) solid var(--color-brand-primary-border);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-semibold);
-  line-height: 22px;
+  line-height: var(--line-height-body-md);
 }
 
 .profile-guide-page__list-text {

@@ -1,10 +1,16 @@
-import { Image, View, Text } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import { NavBar } from "../../components/NavBar";
-import { SectionHeader } from "../../components/SectionHeader";
-import { AppButton, EmptyState, ListEntry } from "../../components/ui";
+import {
+  AppButton,
+  Avatar,
+  EmptyState,
+  ListEntry,
+  PageShell,
+  SectionHeader,
+} from "../../components/ui";
 import { hasCompleteRescuerContactProfile } from "../../data/rescuerContactProfile";
 import {
   caseIdToDraftId,
@@ -76,13 +82,11 @@ function ProjectListItem({
     <ListEntry
       className={`project-list-item${notice ? " project-list-item--with-notice" : ""}`}
       leading={
-        <View className="project-list-item__avatar">
-          <Image
-            className="project-list-item__avatar-image"
-            mode="aspectFill"
-            src={project.coverImageUrl || fallbackCoverImage}
-          />
-        </View>
+        <Avatar
+          className="project-list-item__avatar"
+          fallbackSrc={fallbackCoverImage}
+          src={project.coverImageUrl}
+        />
       }
       notice={notice}
       onTap={() => onTap(project)}
@@ -164,7 +168,7 @@ export default function RescuePage() {
   const draftBadge = `${draftCases.length} 草稿`;
 
   return (
-    <View className="page-shell rescue-page">
+    <PageShell className="rescue-page">
       <NavBar title="我的记录" />
 
       <AppButton className="rescue-page__primary-action" onTap={handleCreate}>
@@ -175,7 +179,11 @@ export default function RescuePage() {
       </AppButton>
 
       <View className="rescue-page__section">
-        <SectionHeader title="我的档案" badge={activeBadge} />
+        <SectionHeader
+          className="rescue-page__section-header"
+          title="我的档案"
+          badge={activeBadge}
+        />
 
         <View className="rescue-page__list">
           {activeCases.length ? (
@@ -197,7 +205,7 @@ export default function RescuePage() {
       </View>
 
       <View className="rescue-page__section">
-        <SectionHeader title="草稿箱" badge={draftBadge} />
+        <SectionHeader className="rescue-page__section-header" title="草稿箱" badge={draftBadge} />
         <View className="rescue-page__list">
           {draftCases.length ? (
             draftCases.map((project) => (
@@ -217,6 +225,6 @@ export default function RescuePage() {
           )}
         </View>
       </View>
-    </View>
+    </PageShell>
   );
 }
