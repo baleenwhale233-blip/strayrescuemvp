@@ -119,6 +119,7 @@
 - `RescueLedgerSummary`
 - `RescueOwnerShared`
 - `RescueRecordShared`
+- `RescueStatusUpdateCard`
 - `RescueTimelineShared`
 - `SupportSheet`
 
@@ -126,6 +127,7 @@
 
 - 动物摘要卡
 - 资金摘要卡
+- 进展 / 状态更新卡
 - 支持登记卡
 - 记录详情卡
 - 联系方式展示模块

@@ -4,5 +4,6 @@ export * from "./RescueDetailActions";
 export * from "./RescueLedgerSummary";
 export * from "./RescueOwnerShared";
 export * from "./RescueRecordShared";
+export * from "./RescueStatusUpdateCard";
 export * from "./RescueTimelineShared";
 export * from "./SupportSheet";

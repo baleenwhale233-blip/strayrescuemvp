@@ -7,6 +7,7 @@ import {
   RescueRecordHeader,
   type RescueRecordKind,
 } from "./RescueRecordShared";
+import { RescueStatusUpdateCard } from "./RescueStatusUpdateCard";
 import "./RescueTimelineShared.scss";
 
 export type RescueTimelineSharedKind = RescueRecordKind;
@@ -69,95 +70,101 @@ export function RescueTimelineList({
 
   return (
     <View className="rescue-timeline">
-      {items.map((item) => (
-        <View key={item.id} className="rescue-timeline__item">
-          <View className={getDotClass(item.kind)} />
-          <SurfaceCard
-            className={`rescue-timeline__card ${
-              onReadonlyRecordTap && canOpenReadonlyDetail(item)
-                ? "rescue-timeline__card--clickable"
-                : ""
-            }`}
-            onTap={() => {
-              if (onReadonlyRecordTap && canOpenReadonlyDetail(item)) {
-                onReadonlyRecordTap(item);
-              }
-            }}
-          >
-            <RescueRecordHeader
-              badgeLabel={item.badgeLabel}
-              kind={item.kind}
-              statusLabel={item.kind === "status" ? item.statusLabel : undefined}
-              timestamp={item.timestamp}
-            />
+      {items.map((item) => {
+        const readonlyOpenable = Boolean(onReadonlyRecordTap && canOpenReadonlyDetail(item));
+        const cardClassName = `rescue-timeline__card ${
+          readonlyOpenable ? "rescue-timeline__card--clickable" : ""
+        }`;
+        const handleReadonlyTap = () => {
+          if (readonlyOpenable && onReadonlyRecordTap) {
+            onReadonlyRecordTap(item);
+          }
+        };
 
-            {item.kind !== "support" ? (
-              <Text className="rescue-timeline__title">{item.title}</Text>
-            ) : null}
-
-            {item.description && item.kind !== "support" && item.kind !== "expense" ? (
-              <Text className="rescue-timeline__description">{item.description}</Text>
-            ) : null}
-
-            {item.kind === "support" ? (
-              <View className="rescue-timeline__support-row">
-                <View className="rescue-timeline__support-copy">
-                  <Text className="rescue-timeline__support-title">{item.title}</Text>
-                  {item.description ? (
-                    <Text className="rescue-timeline__support-note">{item.description}</Text>
-                  ) : null}
-                </View>
-                {item.amountLabel ? (
-                  <Text className="rescue-timeline__support-amount">{item.amountLabel}</Text>
-                ) : null}
-              </View>
-            ) : null}
-
-            {item.budgetPreviousLabel && item.budgetCurrentLabel ? (
-              <RescueBudgetComparison
-                currentLabel={item.budgetCurrentLabel}
-                previousLabel={item.budgetPreviousLabel}
+        return (
+          <View key={item.id} className="rescue-timeline__item">
+            <View className={getDotClass(item.kind)} />
+            {item.kind === "status" ? (
+              <RescueStatusUpdateCard
+                actionLabel="查看更新"
+                badgeLabel={item.badgeLabel}
+                className={cardClassName}
+                description={item.description}
+                images={item.images}
+                imageVariant="timeline"
+                onTap={readonlyOpenable ? handleReadonlyTap : undefined}
+                statusLabel={item.statusLabel}
+                timestamp={item.timestamp}
+                title={item.title}
               />
-            ) : null}
+            ) : (
+              <SurfaceCard
+                className={cardClassName}
+                onTap={readonlyOpenable ? handleReadonlyTap : undefined}
+              >
+                <RescueRecordHeader
+                  badgeLabel={item.badgeLabel}
+                  kind={item.kind}
+                  timestamp={item.timestamp}
+                />
 
-            {item.amountLabel && item.kind !== "support" ? (
-              <View className="rescue-timeline__amount-row">
-                <Text className="rescue-timeline__amount">{item.amountLabel}</Text>
-                {item.kind === "expense" ? (
-                  <View className="rescue-timeline__link-wrap">
-                    <Text className="rescue-timeline__link">查看详情</Text>
-                    <AppIcon
-                      className="rescue-timeline__link-icon"
-                      name="chevronRight"
-                      size={12}
-                      variant="brand"
-                    />
+                {item.kind !== "support" ? (
+                  <Text className="rescue-timeline__title">{item.title}</Text>
+                ) : null}
+
+                {item.description && item.kind !== "support" && item.kind !== "expense" ? (
+                  <Text className="rescue-timeline__description">{item.description}</Text>
+                ) : null}
+
+                {item.kind === "support" ? (
+                  <View className="rescue-timeline__support-row">
+                    <View className="rescue-timeline__support-copy">
+                      <Text className="rescue-timeline__support-title">{item.title}</Text>
+                      {item.description ? (
+                        <Text className="rescue-timeline__support-note">{item.description}</Text>
+                      ) : null}
+                    </View>
+                    {item.amountLabel ? (
+                      <Text className="rescue-timeline__support-amount">{item.amountLabel}</Text>
+                    ) : null}
                   </View>
                 ) : null}
-              </View>
-            ) : null}
 
-            {item.images?.length ? (
-              <RescueEvidenceGrid
-                images={item.images}
-                variant={item.kind === "expense" ? "timeline-expense" : "timeline"}
-              />
-            ) : null}
+                {item.budgetPreviousLabel && item.budgetCurrentLabel ? (
+                  <RescueBudgetComparison
+                    currentLabel={item.budgetCurrentLabel}
+                    previousLabel={item.budgetPreviousLabel}
+                  />
+                ) : null}
 
-            {item.kind === "status" ? (
-              <View className="rescue-timeline__readonly-link">
-                <Text className="rescue-timeline__link">查看更新</Text>
-                <AppIcon
-                  className="rescue-timeline__link-icon"
-                  name="chevronRight"
-                  size={12}
-                  variant="brand"
-                />
-              </View>
-            ) : null}
-          </SurfaceCard>
-        </View>
-      ))}
+                {item.amountLabel && item.kind !== "support" ? (
+                  <View className="rescue-timeline__amount-row">
+                    <Text className="rescue-timeline__amount">{item.amountLabel}</Text>
+                    {item.kind === "expense" ? (
+                      <View className="rescue-timeline__link-wrap">
+                        <Text className="rescue-timeline__link">查看详情</Text>
+                        <AppIcon
+                          className="rescue-timeline__link-icon"
+                          name="chevronRight"
+                          size={12}
+                          variant="brand"
+                        />
+                      </View>
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {item.images?.length ? (
+                  <RescueEvidenceGrid
+                    images={item.images}
+                    variant={item.kind === "expense" ? "timeline-expense" : "timeline"}
+                  />
+                ) : null}
+              </SurfaceCard>
+            )}
+          </View>
+        );
+      })}
     </View>
   );
 }

@@ -2,7 +2,7 @@ import { Image, Text, View } from "@tarojs/components";
 import { AppIcon } from "../AppIcon";
 import { SegmentedTabs, StatusBadge, SurfaceCard } from "../ui";
 import { RescueLedgerSummary } from "./RescueLedgerSummary";
-import { RescueEvidenceGrid, RescueRecordHeader } from "./RescueRecordShared";
+import { RescueStatusUpdateCard } from "./RescueStatusUpdateCard";
 import {
   RescueTimelineList,
   type RescueReadonlyRecordDetail,
@@ -291,18 +291,15 @@ export function RescueOwnerOverview({
       </View>
 
       {latestStatus ? (
-        <SurfaceCard className="rescue-owner-overview__latest">
-          <RescueRecordHeader
-            badgeLabel="最新进展"
-            badgeTone="info"
-            statusLabel={latestStatus.statusLabel}
-            timestamp={latestStatus.timestamp}
-          />
-          <Text className="rescue-owner-overview__paragraph">{latestStatus.text}</Text>
-          {latestStatus.imageUrl ? (
-            <RescueEvidenceGrid images={[latestStatus.imageUrl]} variant="overview" />
-          ) : null}
-        </SurfaceCard>
+        <RescueStatusUpdateCard
+          badgeLabel="最新进展"
+          className="rescue-owner-overview__latest"
+          description={latestStatus.text}
+          images={latestStatus.imageUrl ? [latestStatus.imageUrl] : undefined}
+          imageVariant="overview"
+          statusLabel={latestStatus.statusLabel}
+          timestamp={latestStatus.timestamp}
+        />
       ) : null}
     </View>
   );

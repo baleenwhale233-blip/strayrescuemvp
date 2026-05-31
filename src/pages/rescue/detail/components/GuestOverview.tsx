@@ -1,7 +1,7 @@
 import { Text, View } from "@tarojs/components";
 import { AppIcon } from "../../../../components/AppIcon";
 import { SurfaceCard } from "../../../../components/ui";
-import { RescueEvidenceGrid, RescueRecordHeader } from "../../../../components/rescue";
+import { RescueStatusUpdateCard } from "../../../../components/rescue";
 import type { PublicDetailVM } from "../../../../domain/canonical/types";
 import {
   formatSignedAmount,
@@ -62,22 +62,16 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
       </View>
 
       {latestItem ? (
-        <SurfaceCard className="guest-section-card">
-          <RescueRecordHeader
-            badgeLabel="最新状态"
-            badgeTone="info"
-            statusLabel={detail.statusLabel}
-            timestamp={latestItem.timestampLabel}
-          />
-
-          <Text className="guest-section-card__paragraph">
-            {latestItem.description || latestItem.title}
-          </Text>
-
-          {overviewImage ? (
-            <RescueEvidenceGrid images={[overviewImage]} variant="overview" watermarkTone="scrim" />
-          ) : null}
-        </SurfaceCard>
+        <RescueStatusUpdateCard
+          badgeLabel="最新状态"
+          className="guest-section-card"
+          description={latestItem.description || latestItem.title}
+          images={overviewImage ? [overviewImage] : undefined}
+          imageVariant="overview"
+          statusLabel={detail.statusLabel}
+          timestamp={latestItem.timestampLabel}
+          watermarkTone="scrim"
+        />
       ) : null}
     </View>
   );

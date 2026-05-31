@@ -2818,3 +2818,13 @@
 - 影响范围：仅影响图标展示、状态 chip 的左侧图标表达、UI 组件图标 props、组件系统文档和总控说明；不改页面数据、提交链路、导航、VM、selector、repository 或 CloudBase。
 - 验证结果：`format:check`、`lint`、`typecheck`、`test:ui`、`report:style-tokens`、`build:weapp` 与 `git diff --check` 均通过；build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：继续用真机 / 微信开发者工具看图标尺寸与对齐；tabbar 仍按小程序配置保留 PNG，不纳入本次产品内 SVG 替换。
+
+## 2026-06-01 | 详情页组件 | 晋升状态更新卡片
+
+- 日期：2026-06-01
+- 改动主题：新增 `RescueStatusUpdateCard`，统一记录摘要和记录详情里的状态更新卡片内容层。
+- 为什么改：客态摘要、主态摘要和详情时间线都在展示同一类进展状态记录，只是外层宽度、时间线圆点和入口行为不同，继续复制会让后续视觉和交互规则分叉。
+- 改了什么：把状态 badge、阶段标签、时间、正文、图片证据和可选“查看更新”入口收口到 `src/components/rescue`；摘要页保留原卡片布局，时间线继续只负责圆点 / 竖线 / 点击打开只读详情。
+- 影响范围：仅影响详情页摘要 / 主态摘要 / 时间线的状态更新展示组件组织和组件系统文档；不改 tab、记录详情跳转、VM、selector、repository、storage 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`report:style-tokens`、`build:weapp` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0，build 仍仅有既有 punycode、大图体积和 no async chunks warning。
+- 下一步 / 遗留问题：后续真机验详情页时重点看摘要卡和时间线卡的图片间距、长文换行和“查看更新”触达；若预算 / 支出卡也出现第三个复用场景，再继续拆更细的记录卡内容组件。
