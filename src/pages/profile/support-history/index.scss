@@ -1,6 +1,6 @@
 .support-history-page {
   min-height: 100vh;
-  padding-bottom: 32px;
+  padding-bottom: var(--space-8);
   background: var(--color-bg-page);
 }
 
@@ -23,54 +23,54 @@
   align-items: center;
   justify-content: space-between;
   min-height: 62px;
-  margin-top: 24px;
-  padding: 17px;
+  margin-top: var(--space-6);
+  padding: var(--space-4);
   border-radius: var(--radius-xs);
   box-shadow: var(--shadow-none);
 }
 
 .support-history-page__summary-label {
   color: var(--color-text-secondary);
-  font-size: 14px;
+  font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
-  line-height: 24px;
+  line-height: var(--line-height-body-lg);
 }
 
 .support-history-page__summary-value {
   color: var(--color-brand-primary);
-  font-size: 18px;
+  font-size: var(--font-size-heading-sm);
   font-weight: var(--font-weight-bold);
-  line-height: 28px;
+  line-height: var(--line-height-heading-md);
 }
 
 .support-history-page__section-title {
   display: block;
-  margin-top: 16px;
+  margin-top: var(--space-4);
   color: var(--color-text-primary);
-  font-size: 18px;
+  font-size: var(--font-size-heading-sm);
   font-weight: var(--font-weight-semibold);
-  line-height: 28px;
+  line-height: var(--line-height-heading-md);
 }
 
 .support-history-page__list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
+  gap: var(--layout-card-gap);
+  margin-top: var(--space-4);
 }
 
 .support-history-page__item {
   display: flex;
   align-items: center;
   min-height: 91px;
-  padding: 17px;
+  padding: var(--space-4);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-none);
 }
 
 .support-history-page__avatar {
-  width: 56px;
-  height: 56px;
+  width: var(--size-avatar-md);
+  height: var(--size-avatar-md);
   flex-shrink: 0;
   background: var(--color-bg-muted);
   border: 1px solid var(--color-border-light);
@@ -82,29 +82,29 @@
   flex: 1;
   min-width: 0;
   flex-direction: column;
-  margin-left: 16px;
+  margin-left: var(--space-4);
 }
 
 .support-history-page__item-title {
   color: var(--color-text-primary);
-  font-size: 16px;
+  font-size: var(--font-size-body-lg);
   font-weight: var(--font-weight-semibold);
-  line-height: 24px;
+  line-height: var(--line-height-body-lg);
 }
 
 .support-history-page__item-meta {
   color: var(--color-text-secondary);
-  font-size: 14px;
-  line-height: 20px;
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body-sm);
 }
 
 .support-history-page__chevron {
   width: 7.4px;
-  height: 12px;
+  height: var(--font-size-caption);
   flex-shrink: 0;
-  margin-left: 16px;
+  margin-left: var(--space-4);
 }
 
 .support-history-page__empty {
-  padding: 28px 20px;
+  padding: var(--space-7) var(--space-5);
 }

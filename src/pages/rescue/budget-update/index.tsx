@@ -1,9 +1,10 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { Image, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import { RescueCaseSummaryCard } from "../../../components/rescue";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
-import { AppButton, BottomActionBar, FormField, SurfaceCard } from "../../../components/ui";
+import { AppButton, BottomActionBar, FormField, MoneyInput } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
 import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
@@ -269,39 +270,21 @@ export default function RescueBudgetUpdatePage() {
       <NavBar showBack title="追加预算" />
 
       <View className="rescue-budget-update-page__body">
-        <SurfaceCard className="rescue-budget-update-page__animal-card">
-          <Image
-            className="rescue-budget-update-page__animal-cover"
-            mode="aspectFill"
-            src={contextCard.coverImage}
-          />
-          <View className="rescue-budget-update-page__animal-copy">
-            <View className="rescue-budget-update-page__animal-title-row">
-              <Text className="rescue-budget-update-page__animal-title">{contextCard.title}</Text>
-              <Text className="rescue-budget-update-page__animal-status">
-                {contextCard.statusLabel}
-              </Text>
-            </View>
-            <Text className="rescue-budget-update-page__animal-meta">
-              ID: {contextCard.publicCaseId}
-            </Text>
-            <Text className="rescue-budget-update-page__animal-meta rescue-budget-update-page__animal-meta--muted">
-              {contextCard.rescueStartedAtLabel}
-            </Text>
-          </View>
-        </SurfaceCard>
+        <RescueCaseSummaryCard
+          className="rescue-budget-update-page__case-summary"
+          coverSrc={contextCard.coverImage}
+          publicCaseId={contextCard.publicCaseId}
+          rescueStartedAtLabel={contextCard.rescueStartedAtLabel}
+          statusLabel={contextCard.statusLabel}
+          title={contextCard.title}
+        />
 
         <FormField className="rescue-budget-update-page__field" label="新预估总金额">
-          <View className="rescue-budget-update-page__amount-input">
-            <Text className="rescue-budget-update-page__amount-prefix">¥</Text>
-            <Input
-              className="rescue-budget-update-page__amount-control"
-              type="digit"
-              placeholder="0.00"
-              value={budget}
-              onInput={(event) => setBudget(event.detail.value)}
-            />
-          </View>
+          <MoneyInput
+            className="rescue-budget-update-page__amount-input"
+            value={budget}
+            onValueChange={setBudget}
+          />
           <Text className="rescue-budget-update-page__hint">
             当前已登记：{contextCard.supportedAmountLabel}
           </Text>

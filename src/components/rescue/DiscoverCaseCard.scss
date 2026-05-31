@@ -19,21 +19,21 @@
 
 .discover-card__status {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: var(--space-3);
+  left: var(--space-3);
   display: inline-flex;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
   padding: 5px 7px 5px 11px;
   background: var(--color-brand-primary);
   border: 1px solid var(--color-brand-primary);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
 }
 
 .discover-card__status-emoji {
   color: var(--color-text-primary);
-  font-size: 14px;
-  line-height: 16px;
+  font-size: var(--font-size-body-sm);
+  line-height: var(--size-icon-sm);
 }
 
 .discover-card__status-text {
@@ -46,14 +46,14 @@
 .discover-card__body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 16px 24px;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
 .discover-card__copy-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .discover-card__title-row,
@@ -61,7 +61,7 @@
 .discover-card__footer,
 .discover-card__ledger-meta {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
   justify-content: space-between;
 }
@@ -70,9 +70,9 @@
   flex: 1;
   min-width: 0;
   color: var(--color-text-primary);
-  font-size: 18px;
+  font-size: var(--font-size-heading-sm);
   font-weight: 600;
-  line-height: 28px;
+  line-height: var(--line-height-heading-md);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -81,21 +81,21 @@
 .discover-card__id {
   flex-shrink: 0;
   color: var(--color-text-tertiary);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: var(--font-size-caption);
+  line-height: var(--size-icon-sm);
 }
 
 .discover-card__updated {
   color: var(--color-text-secondary);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: var(--font-size-caption);
+  line-height: var(--size-icon-sm);
 }
 
 .discover-card__line {
   display: block;
   color: var(--color-text-primary);
-  font-size: 14px;
-  line-height: 24px;
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body-lg);
   word-break: break-word;
 }
 
@@ -110,9 +110,9 @@
 .discover-card__budget,
 .discover-card__funding {
   color: var(--color-text-secondary);
-  font-size: 14px;
+  font-size: var(--font-size-body-sm);
   font-weight: 600;
-  line-height: 16px;
+  line-height: var(--size-icon-sm);
 }
 
 .discover-card__funding {
@@ -134,7 +134,7 @@
 }
 
 .discover-card__progress {
-  height: 12px;
+  height: var(--space-3);
   background: var(--color-ledger-track);
 }
 
@@ -148,13 +148,13 @@
 
 .discover-card__ledger-meta {
   color: var(--color-text-secondary);
-  font-size: 14px;
+  font-size: var(--font-size-body-sm);
   line-height: 14px;
 }
 
 .discover-card__ledger-meta-item {
   display: inline-flex;
-  gap: 4px;
+  gap: var(--space-1);
   align-items: center;
   min-width: 0;
   flex: 1;
@@ -167,14 +167,14 @@
 .discover-card__ledger-meta-label,
 .discover-card__ledger-meta-value {
   color: var(--color-text-secondary);
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   line-height: 14px;
   white-space: nowrap;
 }
 
 .discover-card__ledger-meta-dot {
-  width: 8px;
-  height: 8px;
+  width: var(--space-2);
+  height: var(--space-2);
   border-radius: var(--radius-circle);
 }
 
@@ -193,12 +193,12 @@
 
 .discover-card__evidence {
   display: inline-flex;
-  gap: 4px;
+  gap: var(--space-1);
   align-items: center;
   color: var(--color-brand-primary-hover);
-  font-size: 14px;
+  font-size: var(--font-size-body-sm);
   font-weight: 500;
-  line-height: 20px;
+  line-height: var(--line-height-body-sm);
 }
 
 .discover-card__evidence-icon {
@@ -207,8 +207,8 @@
 }
 
 .discover-card__evidence-dot {
-  width: 8px;
-  height: 8px;
+  width: var(--space-2);
+  height: var(--space-2);
   background: var(--color-brand-primary-hover);
   border-radius: var(--radius-circle);
 }

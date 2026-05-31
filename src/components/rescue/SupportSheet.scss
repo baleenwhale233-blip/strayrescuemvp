@@ -13,21 +13,21 @@
   display: flex;
   flex-direction: column;
   background: var(--sheet-bg);
-  border-radius: 28px 28px 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: var(--sheet-shadow);
 }
 
 .support-sheet__handle {
   display: flex;
   justify-content: center;
-  padding: 16px 16px 8px;
+  padding: var(--space-4) var(--space-4) var(--space-2);
 }
 
 .support-sheet__handle-bar {
-  width: 48px;
+  width: var(--size-input-md);
   height: 6px;
   background: var(--color-border-default);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .support-sheet__scroll {
@@ -36,44 +36,44 @@
 }
 
 .support-sheet__content {
-  padding: 0 16px 16px;
+  padding: 0 var(--space-4) var(--space-4);
 }
 
 .support-sheet__tip {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
   min-height: 47px;
-  margin-bottom: 16px;
-  padding: 13px 16px;
+  margin-bottom: var(--space-4);
+  padding: 13px var(--space-4);
   background: var(--color-bg-input);
   border-radius: 14px;
 }
 
 .support-sheet__tip-icon {
-  width: 16px;
-  height: 16px;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
 }
 
 .support-sheet__tip-text,
 .support-sheet__hint,
 .support-sheet__wechat-copy-text {
   color: var(--color-text-secondary);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-body-sm);
 }
 
 .support-sheet__section {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .support-sheet__section-title {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   color: var(--color-text-primary);
-  font-size: 16px;
+  font-size: var(--font-size-body-lg);
   font-weight: var(--font-weight-semibold);
-  line-height: 20px;
+  line-height: var(--line-height-body-sm);
 }
 
 .support-sheet__qr-card {
@@ -85,7 +85,7 @@
   margin: 0 auto 12px;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border-light);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
 }
 
 .support-sheet__qr-image {
@@ -98,16 +98,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px 16px;
+  padding: var(--space-5) var(--space-4);
   background: var(--color-bg-input);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
 }
 
 .support-sheet__empty-text,
 .support-sheet__note-text {
   color: var(--color-text-tertiary);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
   text-align: center;
 }
 
@@ -120,27 +120,27 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 13px 16px;
+  gap: var(--space-3);
+  padding: 13px var(--space-4);
   background: var(--color-bg-card);
   border: 1px solid var(--color-border-light);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
 }
 
 .support-sheet__wechat-id {
   color: var(--color-text-primary);
-  font-size: 16px;
-  line-height: 20px;
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-body-sm);
 }
 
 .support-sheet__wechat-copy {
   padding: 7px 13px;
   background: var(--color-brand-primary-soft);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .support-sheet__footer {
-  padding: 12px 16px 24px;
+  padding: var(--space-3) var(--space-4) var(--space-6);
   background: var(--bottom-action-bg);
   border-top: 1px solid var(--bottom-action-border);
 }

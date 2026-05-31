@@ -2,6 +2,7 @@ import { Image, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "../../../components/NavBar";
+import { RescueCaseSummaryCard } from "../../../components/rescue";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import {
   AppButton,
@@ -335,23 +336,13 @@ export default function RescueStatusUpdatePage() {
       <NavBar showBack title="更新进展" />
 
       <View className="rescue-update-page__body">
-        <SurfaceCard className="rescue-update-page__animal-card">
-          <Image
-            className="rescue-update-page__animal-cover"
-            mode="aspectFill"
-            src={contextCard.coverImage}
-          />
-          <View className="rescue-update-page__animal-copy">
-            <View className="rescue-update-page__animal-title-row">
-              <Text className="rescue-update-page__animal-title">{contextCard.title}</Text>
-              <Text className="rescue-update-page__animal-status">{contextCard.statusLabel}</Text>
-            </View>
-            <Text className="rescue-update-page__animal-meta">ID: {contextCard.publicCaseId}</Text>
-            <Text className="rescue-update-page__animal-meta rescue-update-page__animal-meta--muted">
-              {contextCard.rescueStartedAtLabel}
-            </Text>
-          </View>
-        </SurfaceCard>
+        <RescueCaseSummaryCard
+          coverSrc={contextCard.coverImage}
+          publicCaseId={contextCard.publicCaseId}
+          rescueStartedAtLabel={contextCard.rescueStartedAtLabel}
+          statusLabel={contextCard.statusLabel}
+          title={contextCard.title}
+        />
 
         <View className="rescue-update-page__section">
           <View className="rescue-update-page__section-head">

@@ -2448,3 +2448,73 @@
 - 影响范围：仅影响详情页样式和组件系统文档；不改客态 / 主态组件结构、分享、联系方式、登记支持、结束记录状态机、VM、selector、repository 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `1187` 降到 `1036`，详情页自身尺寸从 `218` 降到 `67`。
 - 下一步 / 遗留问题：继续治理生产页与支持闭环页的表单 / 底栏重复尺寸，并评估把资金摘要与动作区进一步沉到业务组件；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | 生产页 | 高频表单尺寸 token 化
+
+- 日期：2026-05-31
+- 改动主题：记账 / 更新进展 / 追加预算页常规尺寸 token 化。
+- 为什么改：详情页和共享组件尺寸收口后，P0-B 高频生产页仍是尺寸热点，表单、上传、提示和底栏重复硬编码会继续拖慢组件化。
+- 改了什么：将三页常规间距、字号、圆角、上传格、按钮高度、底栏和卡片布局迁到现有 CSS variables；保留页面宽度、底部避让、小数图标和视觉特例。
+- 影响范围：仅影响三个生产页 SCSS 与组件系统文档；不改提交、上传、草稿、缓存、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `1036` 降到 `876`。
+- 下一步 / 遗留问题：下一批优先治理支持登记 / 处理登记与记录详情页的重复尺寸，并评估资金摘要、动物摘要和动作区是否继续晋升到 `src/components/rescue`；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | 支持闭环 | 登记与处理页尺寸 token 化
+
+- 日期：2026-05-31
+- 改动主题：支持登记 / 处理登记页首轮常规尺寸 token 化。
+- 为什么改：生产页尺寸收口后，支持闭环页成为 `report:style-tokens` 前两位热点，且包含 case 卡、凭证、金额输入、tab 和底部提交栏等可复用结构。
+- 改了什么：将两页的常规间距、字号、圆角、输入高度、凭证尺寸、上传格、按钮和底栏尺寸迁到现有 CSS variables；保留 390 页面宽、底部避让、badge 微型字号和凭证内图特例。
+- 影响范围：仅影响支持登记 / 处理登记页 SCSS 与组件系统文档；不改登记提交、确认 / 未匹配、手动登记、凭证上传、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `876` 降到 `792`。
+- 下一步 / 遗留问题：下一批优先治理记录详情、建档页和身份页剩余重复尺寸，并继续观察是否需要把 case 摘要卡晋升为 rescue 业务组件；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | 记录与建档 | 记录详情和建档页尺寸 token 化
+
+- 日期：2026-05-31
+- 改动主题：记录详情、建档基础信息和建档预算页首轮常规尺寸 token 化。
+- 为什么改：支持闭环页收口后，记录详情与建档页仍在尺寸热点前列，且记录卡、图片网格、步骤条、上传区、金额输入和固定底栏都属于后续模板化会复用的结构。
+- 改了什么：将三页的常规间距、字号、圆角、输入高度、图片网格、步骤条、上传拍照区、金额输入、按钮和底栏尺寸迁到现有 CSS variables；保留拍照框高度、底部避让、头像大图、角标 / 水印和部分特殊行高。
+- 影响范围：仅影响记录详情与建档两页 SCSS、组件系统文档；不改建档草稿、预算校验、记录读取、图片预览、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `792` 降到 `680`。
+- 下一步 / 遗留问题：下一批优先治理我的页、草稿预览和 `SupportSheet` / `DiscoverCaseCard` 的剩余尺寸，并继续评估是否抽出 case 摘要卡；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | 共享组件与身份页 | 弹层、发现卡和我的页尺寸 token 化
+
+- 日期：2026-05-31
+- 改动主题：`SupportSheet`、`DiscoverCaseCard` 和我的页首轮常规尺寸 token 化。
+- 为什么改：记录与建档页收口后，业务共享组件和身份页仍是尺寸热点；先治理共享组件可以避免后续页面复用时继续带出硬编码尺寸。
+- 改了什么：将联系弹层、发现卡片、头像昵称、身份入口、按钮、输入框、菜单和底部文案的常规间距、字号、圆角、图标和控件尺寸迁到现有 CSS variables；保留二维码、封面图、头像占位几何和素材特例。
+- 影响范围：仅影响两个 rescue 业务组件、我的页样式与组件系统文档；不改联系方式展示、发现卡 VM、个人资料保存、导航、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `680` 降到 `579`。
+- 下一步 / 遗留问题：下一批优先治理草稿预览、联系方式设置、支持足迹和剩余旧页面尺寸，并开始评估 case 摘要卡 / 身份页列表项是否需要晋升组件；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | 身份与入口页 | 草稿预览、联系方式和列表页尺寸 token 化
+
+- 日期：2026-05-31
+- 改动主题：草稿预览、联系方式设置、支持足迹、guide 和工作台入口页首轮常规尺寸 token 化。
+- 为什么改：共享组件与我的页收口后，剩余热点集中在身份 / 入口模板页，适合继续消化弹层表单、二维码上传、列表卡和说明正文里的重复尺寸。
+- 改了什么：将五个页面的常规间距、字号、圆角、输入高度、上传格、按钮、底栏、列表卡和空态尺寸迁到现有 CSS variables；保留固定避让、编辑型特殊行高、素材图标和少量容器规格。
+- 影响范围：仅影响页面 SCSS 与组件系统文档；不改草稿发布、联系方式保存、支持足迹读取、工作台导航、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `579` 降到 `474`。
+- 下一步 / 遗留问题：继续复核详情页和生产页剩余尺寸，区分可 token 化常规值与素材 / 容器特例；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | 业务组件 | 案例摘要卡晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `RescueCaseSummaryCard` 并迁移重复动物 / 案例摘要卡。
+- 为什么改：更新进展、追加预算和支持登记页都维护了相同的封面、状态、案例 ID 和记录开始时间结构，已满足“两个以上页面出现即晋升组件”的规则。
+- 改了什么：在 `src/components/rescue` 新增 `RescueCaseSummaryCard`，复用 `SurfaceCard` / `StatusBadge`，并让三页改为只传展示 props；删除对应页面级重复 card / avatar / meta SCSS。
+- 影响范围：仅影响三个页面的摘要卡展示组件和组件系统文档；不改加载、提交、上传、草稿、本地兜底、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `474` 降到 `458`。
+- 下一步 / 遗留问题：继续评估资金摘要、底部动作区和身份列表项是否晋升组件；本轮未改数据层，未跑 `test:domain`。
+
+## 2026-05-31 | UI 组件 | 金额输入组件晋升
+
+- 日期：2026-05-31
+- 改动主题：新增 `MoneyInput` 并迁移支持登记、处理登记手动登记、追加预算和建档预算金额输入。
+- 为什么改：金额前缀 + `digit` 输入跨多页重复，属于基础表单结构，继续留在页面级 SCSS 会拖慢组件化和后续页面搭建。
+- 改了什么：在 `src/components/ui` 新增 `MoneyInput`，用组件 CSS variables 承接金额输入外壳、前缀和输入控件；四个页面改为只保留金额状态、校验和提交逻辑，并删除页面级金额 wrapper / prefix / amount input 样式。
+- 影响范围：仅影响金额输入展示结构与样式、组件系统文档；不改金额校验、提交、草稿、VM、selector、repository 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`build:weapp`、`git diff --check` 均通过；`report:style-tokens` 保持裸色 `0`，尺寸从 `458` 降到 `457`。
+- 下一步 / 遗留问题：继续评估资金摘要、底部动作区、身份列表项和支持记录卡是否晋升组件；本轮未改数据层，未跑 `test:domain`。

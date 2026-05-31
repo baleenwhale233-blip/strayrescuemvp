@@ -7,6 +7,7 @@ import {
   BottomActionBar,
   EmptyState,
   FormField,
+  MoneyInput,
   SegmentedTabs,
   SurfaceCard,
 } from "../../../components/ui";
@@ -293,16 +294,7 @@ export default function SupportReviewPage() {
       ) : (
         <View className="support-review-page__manual">
           <FormField className="support-review-page__field" label="登记金额">
-            <View className="support-review-page__amount-wrap">
-              <Text className="support-review-page__currency">¥</Text>
-              <Input
-                className="support-review-page__input support-review-page__input--amount"
-                type="digit"
-                placeholder="0.00"
-                value={manualAmount}
-                onInput={(event) => setManualAmount(event.detail.value)}
-              />
-            </View>
+            <MoneyInput value={manualAmount} onValueChange={setManualAmount} />
           </FormField>
 
           <FormField className="support-review-page__field" label="登记人称呼">

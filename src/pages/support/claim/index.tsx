@@ -1,17 +1,17 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { Input, Text, View } from "@tarojs/components";
 import Taro, { useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import addPhotoIcon from "../../../assets/support-claim/add-photo-22.svg";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
+import { RescueCaseSummaryCard } from "../../../components/rescue";
 import { TextareaWithOverlayPlaceholder } from "../../../components/TextareaWithOverlayPlaceholder";
 import {
   AppButton,
   BottomActionBar,
   EmptyState,
   FormField,
-  StatusBadge,
-  SurfaceCard,
+  MoneyInput,
   UploadStrip,
 } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
@@ -197,40 +197,19 @@ export default function SupportClaimPage() {
     >
       <NavBar showBack title="登记一笔" />
 
-      <SurfaceCard className="support-claim__case-card">
-        <View className="support-claim__case-avatar-wrap">
-          <Image
-            className="support-claim__case-avatar"
-            mode="aspectFill"
-            src={caseCoverSrc}
-            onError={() => setCaseCoverSrc(animalProfileExact)}
-          />
-        </View>
-        <View className="support-claim__case-copy">
-          <View className="support-claim__case-head">
-            <Text className="support-claim__case-title">{detail.title}</Text>
-            <StatusBadge className="support-claim__case-status" tone="brand">
-              {detail.statusLabel}
-            </StatusBadge>
-          </View>
-          <Text className="support-claim__case-meta">ID: {detail.publicCaseId}</Text>
-          <Text className="support-claim__case-meta">
-            记录开始时间: {getRescueStartedAtLabel(detail)}
-          </Text>
-        </View>
-      </SurfaceCard>
+      <RescueCaseSummaryCard
+        className="support-claim__case-summary"
+        coverSrc={caseCoverSrc}
+        mediaVariant="framed"
+        publicCaseId={detail.publicCaseId}
+        rescueStartedAtLabel={`记录开始时间: ${getRescueStartedAtLabel(detail)}`}
+        statusLabel={detail.statusLabel}
+        title={detail.title}
+        onCoverError={() => setCaseCoverSrc(animalProfileExact)}
+      />
 
       <FormField className="support-claim__field" label="登记金额">
-        <View className="support-claim__single-input support-claim__single-input--amount">
-          <Text className="support-claim__currency">¥</Text>
-          <Input
-            className="support-claim__text-input support-claim__text-input--amount"
-            type="digit"
-            placeholder="0.00"
-            value={amount}
-            onInput={(event) => setAmount(event.detail.value)}
-          />
-        </View>
+        <MoneyInput value={amount} onValueChange={setAmount} />
       </FormField>
 
       <FormField className="support-claim__field" label="您的称呼">

@@ -1,10 +1,10 @@
-import { Image, Input, Text, View } from "@tarojs/components";
+import { Image, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { NavBar } from "../../../../components/NavBar";
 import { TextareaWithOverlayPlaceholder } from "../../../../components/TextareaWithOverlayPlaceholder";
 import { useKeyboardBottomInset } from "../../../../components/useKeyboardBottomInset";
-import { AppButton, SurfaceCard } from "../../../../components/ui";
+import { AppButton, MoneyInput, SurfaceCard } from "../../../../components/ui";
 import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
 import enterRescueIcon from "../../../../assets/rescue-create/step2-enter-icon.svg";
 import { getCurrentDraft, updateCurrentDraft } from "../../../../domain/canonical/repository";
@@ -94,17 +94,12 @@ export default function RescueCreateBudgetPage() {
 
         <View className="rescue-budget-page__field">
           <Text className="rescue-budget-page__label">预估费用 (元)</Text>
-          <View className="rescue-budget-page__money-input">
-            <Text className="rescue-budget-page__money-prefix">¥</Text>
-            <Input
-              className="rescue-budget-page__money-control"
-              type="digit"
-              placeholder="0.00"
-              placeholderStyle="color:var(--color-text-tertiary);"
-              value={budget}
-              onInput={(event) => setBudget(event.detail.value)}
-            />
-          </View>
+          <MoneyInput
+            className="rescue-budget-page__money-input"
+            placeholderStyle="color:var(--color-text-tertiary);"
+            value={budget}
+            onValueChange={setBudget}
+          />
         </View>
 
         <View className="rescue-budget-page__field">

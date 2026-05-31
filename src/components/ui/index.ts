@@ -3,6 +3,7 @@ export * from "./BottomActionBar";
 export * from "./EmptyState";
 export * from "./FormField";
 export * from "./IconButton";
+export * from "./MoneyInput";
 export * from "./PageShell";
 export * from "./ProgressBar";
 export * from "./SegmentedTabs";
