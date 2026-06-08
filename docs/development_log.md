@@ -2888,3 +2888,13 @@
 - 影响范围：仅影响 CloudBase `rescueApi` 运行时代码；repo 源码结构不变，云端 runtime 仍为 `Nodejs16.13`。
 - 验证结果：部署结果 `rescueApi success=true filesCount=3 packSize=36.3KB`；`cloud functions info` 显示 `rescueApi` 状态 `Active`。
 - 下一步 / 遗留问题：需要在小程序里重试 owner 修改支出，确认保存后详情金额和修改历史刷新；后续若继续用 CLI 部署，优先走单文件临时包规避 `EISDIR`。
+
+## 2026-06-08 | 支出详情 | 修改记录卡片回归支出卡样式
+
+- 日期：2026-06-08
+- 改动主题：修改记录区去掉灰色外层与白色内层嵌套，回归支出详情同款白卡视觉。
+- 为什么改：修改记录本质是支出详情的留痕信息，应延续支出记录卡片样式，不应自由新增“灰底套白卡”的视觉层级。
+- 改了什么：`RecordDetailRevisionHistory` 移除 `SurfaceCard subtle` 和 `SectionHeader`，改用普通白色卡片；修改金额行改为支出明细同口径浅灰信息行。
+- 影响范围：仅影响支出详情修改记录区样式；不改修改记录数据、保存逻辑、云函数或其他记录类型。
+- 验证结果：`format:check`、`lint`、`typecheck`、`build:weapp`、`report:style-tokens` 通过；build 仍仅有既有图片体积与 no async chunks warning。
+- 下一步 / 遗留问题：需要在微信开发者工具里用真实修改记录截图复核整体间距；全量 `test:ui` 仍有旧根目录 SVG import 基线问题。

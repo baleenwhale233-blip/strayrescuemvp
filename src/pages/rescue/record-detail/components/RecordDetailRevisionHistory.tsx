@@ -1,5 +1,5 @@
 import { Text, View } from "@tarojs/components";
-import { SectionHeader, SurfaceCard } from "../../../../components/ui";
+import { SurfaceCard } from "../../../../components/ui";
 import type { CaseRecordDetailVM } from "../../../../domain/canonical/repository";
 import "./RecordDetailRevisionHistory.scss";
 
@@ -11,12 +11,11 @@ export function RecordDetailRevisionHistory({ revisions }: { revisions?: Expense
   }
 
   return (
-    <SurfaceCard className="record-detail-page__revision-card" variant="subtle">
-      <SectionHeader
-        className="record-detail-page__revision-head"
-        description="每次修改都会保留原值与新值，方便之后查档。"
-        title="修改记录"
-      />
+    <SurfaceCard className="record-detail-page__revision-card">
+      <Text className="record-detail-page__revision-heading">修改记录</Text>
+      <Text className="record-detail-page__revision-description">
+        每次修改都会保留原值与新值，方便之后查档。
+      </Text>
 
       <View className="record-detail-page__revision-list">
         {revisions.map((revision, index) => (

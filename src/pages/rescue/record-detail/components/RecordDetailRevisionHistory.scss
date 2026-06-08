@@ -6,6 +6,19 @@
   padding: var(--space-4);
 }
 
+.record-detail-page__revision-heading {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading-md);
+}
+
+.record-detail-page__revision-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+  line-height: calc(var(--line-height-body-lg) - var(--border-width-default));
+}
+
 .record-detail-page__revision-list {
   display: flex;
   flex-direction: column;
@@ -16,10 +29,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-3);
-  background: var(--color-bg-card);
-  border: var(--border-width-default) solid var(--color-border-subtle);
-  border-radius: var(--radius-sm);
 }
 
 .record-detail-page__revision-meta,
@@ -47,6 +56,10 @@
 }
 
 .record-detail-page__revision-amounts {
+  min-height: var(--size-button-md);
+  padding: 0 var(--space-3);
+  background: var(--color-bg-input);
+  border-radius: calc(var(--radius-xs) + var(--border-width-strong));
   justify-content: flex-start;
 }
 
