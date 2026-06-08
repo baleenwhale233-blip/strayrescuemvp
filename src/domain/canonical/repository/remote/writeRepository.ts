@@ -18,6 +18,7 @@ import type {
   MyProfileVM,
   ReviewSupportEntryInput,
   UpdateCaseProfileInput,
+  UpdateExpenseRecordInput,
   UpdateMyProfileInput,
 } from "./types";
 import { buildLocalManualSupportEntryInput, toRemoteDraftPayload } from "./writeHelpers";
@@ -155,6 +156,18 @@ export async function createRemoteExpenseRecordByCaseId(
 ) {
   return writeRemoteOrFallback(async () => {
     await callRescueApi<BundlePayload>("createExpenseRecord", {
+      caseId,
+      ...input,
+    });
+  }, getRemoteFallbackOptions());
+}
+
+export async function updateRemoteExpenseRecordByCaseId(
+  caseId: string | undefined,
+  input: UpdateExpenseRecordInput,
+) {
+  return writeRemoteOrFallback(async () => {
+    await callRescueApi<BundlePayload>("updateExpenseRecord", {
       caseId,
       ...input,
     });

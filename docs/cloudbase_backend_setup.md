@@ -178,6 +178,14 @@
 - 写入凭证图对应的 `evidence_assets`
 - 更新 `rescue_cases.updatedAt`
 
+`updateExpenseRecord` 当前会：
+
+- 校验当前 OPENID 是案例救助人
+- 查询原 `expense_records`，按输入更新金额、日期、摘要、明细和凭证
+- 把修改前 / 修改后的金额、说明、明细和凭证快照追加到 `expense_records.revisionHistory[]`
+- 同步更新对应公开 `case_events(type=expense)`，避免详情时间线仍展示旧金额
+- 更新 `rescue_cases.updatedAt`
+
 `createBudgetAdjustment` 当前会：
 
 - 校验当前 OPENID 是案例救助人
@@ -197,18 +205,18 @@
 - 正式远端成功写入后，以 CloudBase 真值为准
 - 本地 overlay 只保留给未同步成功的离线 / 降级场景
 
-### 只读记录详情
+### 记录详情
 
 `getCaseRecordDetail` 当前会：
 
 - 通过 `caseId + recordType + recordId` 查询单条记录
 - 支持 `expense / progress_update / budget_adjustment / support`
 - 公开记录可公开读；私有记录需要案例 owner 权限
-- 支出详情返回结构化 `expenseItems[]`，不向详情 VM 输出 `merchantName`
+- 支出详情返回结构化 `expenseItems[]`、`editable` 与 `revisionHistory[]`，不向详情 VM 输出 `merchantName`
 - 图片从 `evidence_assets` / record evidence / event assetIds 回读，最多返回 9 张，并按 fileID/url 去重
-- 返回 `immutable: true`；后端不提供修改原支出或原进展的 action
+- 支出详情 owner 态返回 `editable: true` / `immutable: false`；进展、预算和支持记录仍按只读详情处理
 
-记录纠错应通过新增记录完成，例如新增 `expense / progress_update / budget_adjustment`，而不是覆盖原记录。
+支出纠错通过 `updateExpenseRecord` 完成并保留 `revisionHistory[]`；进展或预算后续变化仍应通过新增 `progress_update / budget_adjustment` 保留轨迹。
 
 真实上传回归已经覆盖：
 

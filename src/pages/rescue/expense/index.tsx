@@ -16,12 +16,20 @@ import qaReceiptImage from "../../../assets/rescue-expense/qa-receipt.png";
 import {
   createRemoteExpenseRecordByCaseId,
   formatTimelineTimestamp,
+  loadCaseRecordDetail,
   getCurrentDraft,
   getDraftById,
   replaceDraft,
   syncCurrentDraft,
+  updateRemoteExpenseRecordByCaseId,
+  type CaseRecordDetailVM,
 } from "../../../domain/canonical/repository";
 import { uploadCaseAssetImage } from "../../../domain/canonical/repository/cloudbaseClient";
+import {
+  clearExpenseEditSource,
+  getExpenseEditSource,
+  type ExpenseEditSource,
+} from "./expenseEditSource";
 import { ExpenseCompactTotal } from "./components/ExpenseCompactTotal";
 import { ExpenseDetailsSection } from "./components/ExpenseDetailsSection";
 import { ExpenseEvidenceCard } from "./components/ExpenseEvidenceCard";
@@ -134,6 +142,54 @@ function hydrateExpenseLines(lines?: ExpenseLine[]) {
   }));
 }
 
+function getExpenseLinesFromEditSource(source?: ExpenseEditSource) {
+  if (!source?.expenseItems.length) {
+    return createInitialExpenseLines();
+  }
+
+  return source.expenseItems.map((item, index) => ({
+    ...createExpenseLine(index + 1),
+    order: index + 1,
+    description: item.description,
+    amount:
+      typeof item.amount === "number" && Number.isFinite(item.amount) ? String(item.amount) : "",
+  }));
+}
+
+function getEvidenceFileIdMap(source?: ExpenseEditSource) {
+  return Object.fromEntries(
+    (source?.evidenceImages || [])
+      .filter((image) => image.url && image.fileID)
+      .map((image) => [image.url, image.fileID as string]),
+  );
+}
+
+function mapRecordToExpenseEditSource(record: CaseRecordDetailVM): ExpenseEditSource {
+  return {
+    caseId: record.caseId,
+    evidenceImages: record.images
+      .map((image) => ({
+        fileID: image.fileID,
+        url: image.url,
+      }))
+      .filter((image) => image.url),
+    expenseItems: record.expenseItems?.length
+      ? record.expenseItems
+      : [
+          {
+            amount: record.amount,
+            description: record.title,
+          },
+        ],
+    recordId: record.id,
+    spentAt: record.occurredAt,
+  };
+}
+
+function isCloudFileID(value: string) {
+  return value.startsWith("cloud://");
+}
+
 function mapExpenseError(error: unknown) {
   const code = error instanceof Error ? error.message : "";
 
@@ -149,6 +205,26 @@ function mapExpenseError(error: unknown) {
     return "凭证上传失败，请重试";
   }
 
+  if (code === "EXPENSE_EDIT_REQUIRES_REMOTE" || code === "CLOUDBASE_NOT_CONFIGURED") {
+    return "当前网络下暂不能修改，请稍后重试";
+  }
+
+  if (code === "UNKNOWN_ACTION") {
+    return "请先部署新版云函数";
+  }
+
+  if (code === "EXPENSE_EDIT_EVIDENCE_RESELECT_REQUIRED") {
+    return "请重新选择凭证图片后再保存";
+  }
+
+  if (code === "RECORD_NOT_FOUND") {
+    return "原支出记录不存在";
+  }
+
+  if (code === "FORBIDDEN") {
+    return "只有记录维护者可以修改";
+  }
+
   return "记账保存失败";
 }
 
@@ -156,10 +232,13 @@ export default function RescueExpensePage() {
   const router = useRouter();
   const caseId = router.params?.caseId || router.params?.id;
   const draftId = router.params?.draftId;
+  const editRecordId = router.params?.editRecordId;
+  const isEditMode = Boolean(caseId && editRecordId);
   const expenseContextId = draftId || caseId;
   const qaPreset = getQaPreset(router.params?.qaPreset);
   const cacheKey = getExpenseDraftCacheKey(expenseContextId);
   const hasHandledRestoreRef = useRef(false);
+  const existingEvidenceFileIdsRef = useRef<Record<string, string>>({});
   const submitGuardRef = useRef(createSubmissionGuard());
   const latestScrollTopRef = useRef(0);
   const compactTotalThresholdRef = useRef(Number.POSITIVE_INFINITY);
@@ -167,6 +246,7 @@ export default function RescueExpensePage() {
   const [expenseLines, setExpenseLines] = useState<ExpenseLine[]>(() =>
     hydrateExpenseLines(createInitialExpenseLines()),
   );
+  const [editSource, setEditSource] = useState<ExpenseEditSource | undefined>();
   const [showCompactTotal, setShowCompactTotal] = useState(false);
 
   const totalAmount = useMemo(
@@ -220,6 +300,10 @@ export default function RescueExpensePage() {
   });
 
   const persistDraftSilently = () => {
+    if (isEditMode) {
+      return;
+    }
+
     const nextCache: ExpenseDraftCache = {
       publicEvidenceImages,
       expenseLines,
@@ -234,12 +318,46 @@ export default function RescueExpensePage() {
     Taro.removeStorageSync(cacheKey);
   };
 
+  const applyEditSource = (source: ExpenseEditSource) => {
+    existingEvidenceFileIdsRef.current = getEvidenceFileIdMap(source);
+    setEditSource(source);
+    setPublicEvidenceImages(source.evidenceImages.map((image) => image.url).filter(Boolean));
+    setExpenseLines(hydrateExpenseLines(getExpenseLinesFromEditSource(source)));
+  };
+
+  const hydrateEditSource = async () => {
+    if (!caseId || !editRecordId) {
+      return;
+    }
+
+    const storedSource = getExpenseEditSource();
+    if (storedSource?.caseId === caseId && storedSource.recordId === editRecordId) {
+      applyEditSource(storedSource);
+      return;
+    }
+
+    const remoteRecord = await loadCaseRecordDetail({
+      caseId,
+      recordId: editRecordId,
+      recordType: "expense",
+    });
+
+    if (remoteRecord?.recordType === "expense") {
+      applyEditSource(mapRecordToExpenseEditSource(remoteRecord));
+    }
+  };
+
   useDidShow(() => {
     if (hasHandledRestoreRef.current) {
       return;
     }
 
     hasHandledRestoreRef.current = true;
+    if (isEditMode) {
+      void hydrateEditSource();
+      return;
+    }
+
     if (qaPreset === "design") {
       setPublicEvidenceImages([qaReceiptImage, qaCatImage, qaCatImage]);
       setExpenseLines(buildDesignPresetLines());
@@ -363,6 +481,35 @@ export default function RescueExpensePage() {
     });
   };
 
+  const resolveEditEvidenceFileIds = async () =>
+    Promise.all(
+      publicEvidenceImages.map(async (imageUrl) => {
+        const existingFileID = existingEvidenceFileIdsRef.current[imageUrl];
+        if (existingFileID) {
+          return existingFileID;
+        }
+
+        if (isCloudFileID(imageUrl)) {
+          return imageUrl;
+        }
+
+        if (/^https?:\/\//.test(imageUrl)) {
+          throw new Error("EXPENSE_EDIT_EVIDENCE_RESELECT_REQUIRED");
+        }
+
+        if (!caseId) {
+          throw new Error("INVALID_EXPENSE_RECORD");
+        }
+
+        const uploadedAsset = await uploadCaseAssetImage(caseId, imageUrl, "expense-proofs");
+        if (uploadedAsset.isLocalFallback) {
+          throw new Error("EXPENSE_EDIT_REQUIRES_REMOTE");
+        }
+
+        return uploadedAsset.fileID;
+      }),
+    );
+
   const handleSubmit = async () =>
     submitGuardRef.current.run(async () => {
       const validLines = expenseLines.filter(
@@ -387,7 +534,9 @@ export default function RescueExpensePage() {
 
       const total = validLines.reduce((sum, line) => sum + parseAmount(line.amount), 0);
       const title = getExpenseSubmissionTitle(validLines);
-      const spentAt = new Date().toISOString();
+      const spentAt = isEditMode
+        ? editSource?.spentAt || new Date().toISOString()
+        : new Date().toISOString();
       const evidenceItems = buildExpenseEvidenceItems(publicEvidenceImages);
 
       try {
@@ -415,6 +564,27 @@ export default function RescueExpensePage() {
 
           replaceDraft(nextDraft);
           syncCurrentDraft(nextDraft);
+        } else if (caseId && isEditMode && editRecordId) {
+          const evidenceFileIds = await resolveEditEvidenceFileIds();
+          const didSyncRemote = await updateRemoteExpenseRecordByCaseId(caseId, {
+            amount: total,
+            editReason: "记录维护者修改支出",
+            evidenceFileIds,
+            expenseItems: validLines.map((line) => ({
+              description: line.description.trim(),
+              amount: parseAmount(line.amount),
+            })),
+            recordId: editRecordId,
+            spentAt,
+            summary: title,
+            category: "medical",
+          });
+
+          if (!didSyncRemote) {
+            throw new Error("EXPENSE_EDIT_REQUIRES_REMOTE");
+          }
+
+          clearExpenseEditSource();
         } else if (caseId) {
           const uploadedAssets = await Promise.all(
             publicEvidenceImages.map((imageUrl) =>
@@ -461,11 +631,16 @@ export default function RescueExpensePage() {
           return;
         }
 
-        Taro.removeStorageSync(cacheKey);
+        if (!isEditMode) {
+          Taro.removeStorageSync(cacheKey);
+        }
         Taro.hideLoading();
         await showSuccessFeedback({
-          title: "支出已记入账本",
+          title: isEditMode ? "支出修改已保存" : "支出已记入账本",
         });
+        if (isEditMode) {
+          Taro.navigateBack();
+        }
       } catch (error) {
         Taro.hideLoading();
         Taro.showToast({
@@ -483,7 +658,7 @@ export default function RescueExpensePage() {
     >
       <View className="rescue-expense-page__sticky-head">
         <View className="rescue-expense-page__sticky-nav">
-          <NavBar showBack title="记录支出" />
+          <NavBar showBack title={isEditMode ? "修改支出" : "记录支出"} />
         </View>
 
         <ExpenseCompactTotal amountLabel={displayedTotalLabel} visible={showCompactTotal} />
@@ -512,7 +687,7 @@ export default function RescueExpensePage() {
           iconName="arrowRight"
           onTap={handleSubmit}
         >
-          确认并挂载至账本
+          {isEditMode ? "保存修改" : "确认并挂载至账本"}
         </AppButton>
       </BottomActionBar>
     </PageShell>

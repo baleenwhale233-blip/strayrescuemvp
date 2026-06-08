@@ -82,7 +82,7 @@ function toRecordType(value) {
 function toRecordDetailPayload(input) {
   return {
     ...input,
-    immutable: true,
+    immutable: input.immutable ?? true,
     images: uniqueImages(input.images || []),
   };
 }
@@ -109,6 +109,34 @@ function getExpenseItemsFromRecord(record, amount) {
         },
       ]
     : [];
+}
+
+function toExpenseRevisionSide(input, formatCurrencyLabel) {
+  const amount = Number(input?.amount || 0);
+
+  return {
+    summary: input?.summary || "",
+    amount,
+    amountLabel: formatCurrencyLabel(amount),
+    expenseItems: getExpenseItemsFromRecord(input || {}, amount),
+  };
+}
+
+function toExpenseRevisionHistory(revisionHistory = [], formatCurrencyLabel, formatDateLabel) {
+  if (!Array.isArray(revisionHistory)) {
+    return [];
+  }
+
+  return revisionHistory
+    .map((revision) => ({
+      revisionId: revision.revisionId || revision.id || revision._id,
+      editedAt: revision.editedAt,
+      editedAtLabel: formatDateLabel(revision.editedAt),
+      reason: revision.reason,
+      previous: toExpenseRevisionSide(revision.previous, formatCurrencyLabel),
+      next: toExpenseRevisionSide(revision.next, formatCurrencyLabel),
+    }))
+    .filter((revision) => revision.revisionId && revision.editedAt);
 }
 
 function createRecordDetailsService({
@@ -172,6 +200,7 @@ function createRecordDetailsService({
           .map((asset) => asset && toRecordImageFromAsset(asset, getAssetFileID)),
       ];
       const amount = Number(expense.amount || 0);
+      const isOwner = bundle.case.rescuerId === openid;
 
       return ok({
         record: toRecordDetailPayload({
@@ -185,8 +214,15 @@ function createRecordDetailsService({
           ),
           amount,
           amountLabel: `- ${formatCurrencyLabel(amount)}`,
+          editable: isOwner,
+          immutable: !isOwner,
           expenseItems: getExpenseItemsFromRecord(record || event, amount),
           images,
+          revisionHistory: toExpenseRevisionHistory(
+            record?.revisionHistory,
+            formatCurrencyLabel,
+            formatDateLabel,
+          ),
         }),
       });
     }
@@ -332,6 +368,7 @@ function createRecordDetailsService({
 module.exports = {
   createRecordDetailsService,
   getExpenseItemsFromRecord,
+  toExpenseRevisionHistory,
   toRecordDetailPayload,
   toRecordImageFromAsset,
   toRecordType,

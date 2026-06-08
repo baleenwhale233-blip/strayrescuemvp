@@ -18,6 +18,7 @@ import copyInverse from "../assets/lucide/copy-inverse.svg";
 import copyMuted from "../assets/lucide/copy-muted.svg";
 import fileTextDefault from "../assets/lucide/fileText-default.svg";
 import handCoinsDefault from "../assets/lucide/handCoins-default.svg";
+import handCoinsInfo from "../assets/lucide/handCoins-info.svg";
 import handHeartInfo from "../assets/lucide/handHeart-info.svg";
 import handHeartSuccess from "../assets/lucide/handHeart-success.svg";
 import heartHandshakeBrand from "../assets/lucide/heartHandshake-brand.svg";
@@ -155,6 +156,7 @@ const iconMap: Record<IconName, Partial<Record<IconVariant, string>>> = {
   },
   handCoins: {
     default: handCoinsDefault,
+    info: handCoinsInfo,
   },
   handHeart: {
     info: handHeartInfo,

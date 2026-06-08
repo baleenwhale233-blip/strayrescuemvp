@@ -10,7 +10,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,scss,css,json}\" \"cloudfunctions/rescueApi/**/*.{js,json}\" \"scripts/**/*.mjs\" \"docs/**/*.json\" \"qa/**/*.json\" \"config/**/*.ts\" \"types/**/*.ts\" \"*.{js,json}\" README.md AGENTS.md",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"config/**/*.ts\" \"types/**/*.ts\" \"scripts/**/*.mjs\" \"cloudfunctions/rescueApi/{index,mockSeed}.js\" \"cloudfunctions/rescueApi/src/**/*.js\" \"*.config.js\" --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "test:ui": "rm -rf .tmp/ui-tests && tsc -p tsconfig.ui-tests.json && node --experimental-specifier-resolution=node --test .tmp/ui-tests/src/pages/rescue/expense/*.test.js .tmp/ui-tests/src/components/ui/*.test.js",
+    "test:ui": "rm -rf .tmp/ui-tests && tsc -p tsconfig.ui-tests.json && node --experimental-specifier-resolution=node --test .tmp/ui-tests/src/pages/rescue/detail/*.test.js .tmp/ui-tests/src/pages/rescue/expense/*.test.js .tmp/ui-tests/src/components/ui/*.test.js",
     "test:domain": "rm -rf .tmp/domain-tests && tsc -p tsconfig.domain-tests.json && node --experimental-specifier-resolution=node --test .tmp/domain-tests/src/domain/canonical/selectors/*.test.js .tmp/domain-tests/src/domain/canonical/repository/*.test.js",
     "report:style-tokens": "node scripts/report-style-tokens.mjs",
     "seed:alpha": "node scripts/seed-alpha-cloudbase.mjs",

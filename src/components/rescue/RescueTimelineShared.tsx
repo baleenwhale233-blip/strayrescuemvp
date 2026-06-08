@@ -15,6 +15,7 @@ export type RescueTimelineSharedKind = RescueRecordKind;
 export type RescueTimelineSharedItem = {
   id: string;
   caseId?: string;
+  editable?: boolean;
   recordType?: "expense" | "progress_update" | "budget_adjustment" | "support";
   recordId?: string;
   kind: RescueTimelineSharedKind;

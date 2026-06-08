@@ -42,6 +42,7 @@ export {
   createRemoteManualSupportEntryByCaseId,
   createRemoteProgressUpdateByCaseId,
   createRemoteExpenseRecordByCaseId,
+  updateRemoteExpenseRecordByCaseId,
   createRemoteBudgetAdjustmentByCaseId,
   saveRemoteDraftCase,
 } from "./remoteRepository";
@@ -61,6 +62,7 @@ export type {
   ReviewSupportEntryInput,
   SupportHistoryItemVM,
   UpdateCaseProfileInput,
+  UpdateExpenseRecordInput,
   UpdateMyProfileInput,
 } from "./remoteRepository";
 

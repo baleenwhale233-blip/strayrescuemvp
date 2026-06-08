@@ -2828,3 +2828,33 @@
 - 影响范围：仅影响详情页摘要 / 主态摘要 / 时间线的状态更新展示组件组织和组件系统文档；不改 tab、记录详情跳转、VM、selector、repository、storage 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:ui`、`report:style-tokens`、`build:weapp` 与 `git diff --check` 均通过；裸色和裸 `px/rpx` 尺寸均为 0，build 仍仅有既有 punycode、大图体积和 no async chunks warning。
 - 下一步 / 遗留问题：后续真机验详情页时重点看摘要卡和时间线卡的图片间距、长文换行和“查看更新”触达；若预算 / 支出卡也出现第三个复用场景，再继续拆更细的记录卡内容组件。
+
+## 2026-06-08 | 支出记录 | 支持修改并保留修改历史
+
+- 日期：2026-06-08
+- 改动主题：支出详情 owner 态新增“修改支出”，记账页支持 `editRecordId` 编辑模式，后端新增 `updateExpenseRecord` 留痕写链。
+- 为什么改：实际记账可能出现漏项、金额或用途写错；只允许新增记录会让透明账本变得难读，但直接覆盖又会破坏查档信任。
+- 改了什么：`expense_records` 更新时追加 `revisionHistory[]`，同步更新投影 `case_events(type=expense)`；`getCaseRecordDetail` 返回 `editable / revisionHistory`；详情页展示修改记录，记账页复用原表单保存修改。
+- 影响范围：涉及 CloudBase records service、remote repository、支出详情 VM、记账页交互和支出 / 记录详情文档；现有创建支出、草稿支出、进展更新仍保持兼容，未新增 richer mock。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`test:domain`、`node --test cloudfunctions/rescueApi/src/services/records.test.js`、`build:weapp`、`git diff --check` 均通过；`test:ui` 未通过，失败点是旧根目录组件仍直接 import SVG，非本轮改动新增。
+- 下一步 / 遗留问题：需要真机回归 owner 修改支出、凭证复用 / 重选、修改后详情与时间线金额刷新；如要让草稿支出也可编辑，需要另做本地 draft 编辑规则。
+
+## 2026-06-08 | 支出记录 | 修正 owner 详情修改入口显示
+
+- 日期：2026-06-08
+- 改动主题：owner 时间线支出记录显式标记 `editable`，支出详情页按钮同时识别 owner 入口标记和远端 `editable`。
+- 为什么改：前端文案已经提示可修改，但当云函数详情 VM 暂未返回 `editable` 或使用本地详情兜底时，owner 页面仍看不到“修改支出”按钮。
+- 改了什么：新增 `isOwnerEditableTimelineRecord` helper 与测试；`toOwnerTimelineItems` 对 expense 设置 `editable: true`；记录详情页按钮条件改为 `remoteRecord.editable || record.editable`，并把 `test:ui` 纳入 detail 测试。
+- 影响范围：仅影响 owner 态支出详情入口显示与编辑跳转条件；客态时间线不设置 editable，草稿支出和后端写链不变。
+- 验证结果：`format`、`lint`、`typecheck`、`./node_modules/.bin/tsc -p tsconfig.ui-tests.json` 和 targeted detail test 通过。
+- 下一步 / 遗留问题：仍需部署新版云函数后验证“保存修改”；`test:ui` 全量仍受旧根目录组件 SVG import 基线问题影响。
+
+## 2026-06-08 | 主态详情 | 快捷动作区回贴 Figma
+
+- 日期：2026-06-08
+- 改动主题：按 Figma `421:2378 / 423:2641` 修正主态详情快捷动作区视觉与文案。
+- 为什么改：组件化后快捷动作区把“记一笔支出 / 写进展更新 / 记场外收入”的设计稿文案、色块、图标容器和浅黄预算卡改偏，导致主态详情首屏与 Figma 不一致。
+- 改了什么：快捷动作区恢复 Figma 文案、橙色主按钮柔光、蓝 / 紫小卡、浅黄追加预算卡、32px 图标容器和 owner tab / nav 文案；新增 owner action 颜色、阴影和高度 token，并补 `handCoins-info` 语义图标资产。
+- 影响范围：仅影响主态详情和草稿预览复用的 `RescueOwnerQuickActions` 展示、owner tab / nav 文案、图标注册和组件系统文档；不改提交、导航目标、VM、repository、storage 或 CloudBase。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、`report:style-tokens`、`build:weapp` 与 `git diff --check` 已跑；`test:ui` 仍因既有旧根目录组件直接 import SVG 失败，失败文件未由本轮新增。
+- 下一步 / 遗留问题：需要用微信开发者工具对 owner 详情首屏截图复核与 Figma 的像素差；旧根目录 `src/components/*.tsx` 的 SVG import 和裸 token 报告应作为下一轮遗留治理。

@@ -2,13 +2,15 @@ import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useState } from "react";
 import { NavBar } from "../../../components/NavBar";
 import { type RescueReadonlyRecordDetail } from "../../../components/rescue";
-import { EmptyState, PageShell } from "../../../components/ui";
+import { AppButton, EmptyState, PageShell } from "../../../components/ui";
 import {
   loadCaseRecordDetail,
   type CaseRecordDetailVM,
 } from "../../../domain/canonical/repository";
+import { saveExpenseEditSource } from "../expense/expenseEditSource";
 import { RecordDetailCard } from "./components/RecordDetailCard";
 import { RecordDetailNotice } from "./components/RecordDetailNotice";
+import { RecordDetailRevisionHistory } from "./components/RecordDetailRevisionHistory";
 import { getStoredReadonlyRecordDetail } from "./readonlyRecordDetail";
 import "./index.scss";
 
@@ -30,7 +32,7 @@ function getPageTitle(kind?: RescueReadonlyRecordDetail["kind"]) {
 
 function getImmutableCopy(kind?: RescueReadonlyRecordDetail["kind"]) {
   if (kind === "expense") {
-    return "支出记录提交后不可修改，避免账目对不上。若后续金额或用途发生变化，请新增一条更正记录。";
+    return "支出记录可以由记录维护者修改；每次修改都会保留原值和新值，方便之后查档。";
   }
 
   if (kind === "status") {
@@ -78,6 +80,7 @@ function mapRemoteRecordToReadonly(record: CaseRecordDetailVM): RescueReadonlyRe
       .map((image) => image.url)
       .filter(Boolean)
       .slice(0, 9),
+    editable: record.editable,
     budgetPreviousLabel: record.budgetPreviousLabel,
     budgetCurrentLabel: record.budgetCurrentLabel,
   };
@@ -103,6 +106,7 @@ function getExpenseItems(record: RescueReadonlyRecordDetail) {
 export default function RescueReadonlyRecordDetailPage() {
   const router = useRouter();
   const [record, setRecord] = useState<RescueReadonlyRecordDetail | undefined>();
+  const [remoteRecord, setRemoteRecord] = useState<CaseRecordDetailVM | undefined>();
 
   useDidShow(() => {
     const { caseId, recordType, id } = router.params;
@@ -115,9 +119,11 @@ export default function RescueReadonlyRecordDetailPage() {
         recordId: id,
       })
         .then((remoteRecord) => {
+          setRemoteRecord(remoteRecord);
           setRecord(remoteRecord ? mapRemoteRecordToReadonly(remoteRecord) : stored);
         })
         .catch((error) => {
+          setRemoteRecord(undefined);
           if (error instanceof Error && error.message === "FORBIDDEN") {
             setRecord(undefined);
             return;
@@ -128,6 +134,7 @@ export default function RescueReadonlyRecordDetailPage() {
       return;
     }
 
+    setRemoteRecord(undefined);
     setRecord(stored);
   });
 
@@ -139,6 +146,41 @@ export default function RescueReadonlyRecordDetailPage() {
     Taro.previewImage({
       current,
       urls: record.images,
+    });
+  };
+  const handleEditExpense = () => {
+    if (
+      !remoteRecord ||
+      remoteRecord.recordType !== "expense" ||
+      (!remoteRecord.editable && !record?.editable)
+    ) {
+      return;
+    }
+
+    saveExpenseEditSource({
+      caseId: remoteRecord.caseId,
+      evidenceImages: remoteRecord.images
+        .map((image) => ({
+          fileID: image.fileID,
+          url: image.url,
+        }))
+        .filter((image) => image.url),
+      expenseItems: remoteRecord.expenseItems?.length
+        ? remoteRecord.expenseItems
+        : [
+            {
+              amount: remoteRecord.amount,
+              description: remoteRecord.title,
+            },
+          ],
+      recordId: remoteRecord.id,
+      spentAt: remoteRecord.occurredAt,
+    });
+
+    Taro.navigateTo({
+      url: `/pages/rescue/expense/index?caseId=${encodeURIComponent(
+        remoteRecord.caseId,
+      )}&editRecordId=${encodeURIComponent(remoteRecord.id)}`,
     });
   };
 
@@ -156,6 +198,10 @@ export default function RescueReadonlyRecordDetailPage() {
     );
   }
 
+  const canEditExpense =
+    record.kind === "expense" &&
+    Boolean(remoteRecord && (remoteRecord.editable || record.editable));
+
   return (
     <PageShell className="record-detail-page">
       <NavBar showBack title={getPageTitle(record.kind)} />
@@ -166,6 +212,18 @@ export default function RescueReadonlyRecordDetailPage() {
         record={record}
         onImageTap={handlePreviewImage}
       />
+      {canEditExpense ? (
+        <AppButton
+          className="record-detail-page__edit-action"
+          iconName="pencil"
+          iconVariant="muted"
+          onTap={handleEditExpense}
+          variant="secondary"
+        >
+          修改支出
+        </AppButton>
+      ) : null}
+      <RecordDetailRevisionHistory revisions={remoteRecord?.revisionHistory} />
     </PageShell>
   );
 }

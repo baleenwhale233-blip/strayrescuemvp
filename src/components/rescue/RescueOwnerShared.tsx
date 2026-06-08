@@ -46,6 +46,7 @@ export type RescueOwnerOverviewProps = {
 
 export type RescueOwnerTimelineItem = {
   id: string;
+  editable?: boolean;
   kind: RescueOwnerTimelineKind;
   badgeLabel: string;
   statusLabel?: string;
@@ -155,13 +156,15 @@ export function RescueOwnerQuickActions({
     <View className="rescue-owner-actions">
       <View className="rescue-owner-actions__primary" onTap={onExpense}>
         <View className="rescue-owner-actions__primary-main">
-          <AppIcon
-            className="rescue-owner-actions__icon--primary"
-            name="receiptText"
-            size={32}
-            variant="inverse"
-          />
-          <Text className="rescue-owner-actions__primary-label">记录票据</Text>
+          <View className="rescue-owner-actions__primary-icon-wrap">
+            <AppIcon
+              className="rescue-owner-actions__primary-icon"
+              name="camera"
+              size={16}
+              variant="inverse"
+            />
+          </View>
+          <Text className="rescue-owner-actions__primary-label">记一笔支出</Text>
         </View>
         <AppIcon
           className="rescue-owner-actions__chevron-primary"
@@ -172,29 +175,40 @@ export function RescueOwnerQuickActions({
       </View>
 
       <View className="rescue-owner-actions__grid">
-        <SurfaceCard className="rescue-owner-actions__card" onTap={onStatus}>
-          <AppIcon
-            className="rescue-owner-actions__icon"
-            name="trendingUp"
-            size={32}
-            variant="info"
-          />
-          <Text className="rescue-owner-actions__card-title">更新进展</Text>
-          <Text className="rescue-owner-actions__card-subtitle">添加照片和阶段信息</Text>
+        <SurfaceCard
+          className="rescue-owner-actions__card rescue-owner-actions__card--status"
+          onTap={onStatus}
+        >
+          <View className="rescue-owner-actions__icon-wrap rescue-owner-actions__icon-wrap--status">
+            <AppIcon
+              className="rescue-owner-actions__icon"
+              name="trendingUp"
+              size={16}
+              variant="info"
+            />
+          </View>
+          <View className="rescue-owner-actions__card-copy">
+            <Text className="rescue-owner-actions__card-title">写进展更新</Text>
+            <Text className="rescue-owner-actions__card-subtitle">添加照片及阶段状态</Text>
+          </View>
         </SurfaceCard>
 
         <SurfaceCard
-          className="rescue-owner-actions__card rescue-owner-actions__card--purple"
+          className="rescue-owner-actions__card rescue-owner-actions__card--income"
           onTap={onIncome}
         >
-          <AppIcon
-            className="rescue-owner-actions__icon"
-            name="handHeart"
-            size={32}
-            variant="info"
-          />
-          <Text className="rescue-owner-actions__card-title">处理登记</Text>
-          <Text className="rescue-owner-actions__card-subtitle">处理线下转账或外部登记</Text>
+          <View className="rescue-owner-actions__icon-wrap rescue-owner-actions__icon-wrap--income">
+            <AppIcon
+              className="rescue-owner-actions__icon"
+              name="handCoins"
+              size={16}
+              variant="info"
+            />
+          </View>
+          <View className="rescue-owner-actions__card-copy">
+            <Text className="rescue-owner-actions__card-title">记场外收入</Text>
+            <Text className="rescue-owner-actions__card-subtitle">审核支持者私下转账</Text>
+          </View>
         </SurfaceCard>
 
         <SurfaceCard className="rescue-owner-actions__wide" onTap={onBudget}>
@@ -233,8 +247,8 @@ export function RescueOwnerTabs({
       className="rescue-owner-tabs"
       value={activeTab}
       items={[
-        { label: "记录摘要", value: "overview" },
-        { label: "记录详情", value: "detail" },
+        { label: "救助摘要", value: "overview" },
+        { label: "救助详情", value: "detail" },
       ]}
       onChange={(value) => onChange(value as RescueOwnerTab)}
     />

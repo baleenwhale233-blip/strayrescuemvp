@@ -55,6 +55,7 @@
 - bottomActionBar
 - sheet
 - upload
+- ownerAction
 
 后续新增 token 的原则：
 
@@ -347,7 +348,7 @@
 - 建档页：基础信息 / 预算页完成首轮颜色与常规尺寸 token 化，草稿预览页完成首轮常规尺寸 token 化；基础信息页封面上传已迁到 `UploadStrip cover`，预算页金额输入已迁到 `MoneyInput`，基础信息 / 预算页步骤点已迁到 `StepIndicator`，建档两步表单均已收口为页面内组件；暂不把动物摘要晋升共享组件，等第二个真实消费者出现
 - 发现页：案例卡资金摘要已接入 `RescueLedgerSummary`，loading 态已接入 `EmptyState`，卡片样式所有权回收到 `DiscoverCaseCard`，发现卡片完成首轮常规尺寸 token 化
 - 发现 / 记录主页共用案例卡：`DiscoverCaseCard` 外壳已接入 `SurfaceCard`
-- 详情页：客态 / 主态 tab、客态资金摘要、主态动物卡资金区、badge、页面态、底部操作栏和卡片外壳已逐步接入共享组件；入口 `index.scss` 已从 449 行缩小到只保留 15 行页面布局，局部样式改由对应组件持有；只读记录详情跳转、复制案例 ID、记录主页跳转和结束记录确认由页面入口统一持有
+- 详情页：客态 / 主态 tab、客态资金摘要、主态动物卡资金区、badge、页面态、底部操作栏和卡片外壳已逐步接入共享组件；入口 `index.scss` 已从 449 行缩小到只保留 15 行页面布局，局部样式改由对应组件持有；记录详情跳转、复制案例 ID、记录主页跳转和结束记录确认由页面入口统一持有
 - 草稿预览页：quick action 写入记录和改代号弹层已拆为页面内 sheet 组件，并共用 `PreviewSheetFrame`；入口继续负责草稿读取、预览 VM、封面替换、发布和保存
 - 工作台：列表卡片已接入 `ListEntry`，列表封面接入 `Avatar`，新建记录按钮接入 `AppButton`，档案 / 草稿空态接入 `EmptyState`，新建 CTA 与档案 / 草稿列表已收为页面内组件
 - 我的页：头像接入 `Avatar`，昵称输入外壳接入 `SurfaceCard`，功能入口行接入 `ListEntry`，头像昵称保存接入 `AppButton`，并完成首轮常规尺寸 token 化

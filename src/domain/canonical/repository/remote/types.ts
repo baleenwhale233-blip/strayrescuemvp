@@ -45,10 +45,35 @@ export type CaseRecordDetailVM = {
   occurredAtLabel: string;
   amount?: number;
   amountLabel?: string;
-  immutable: true;
+  editable?: boolean;
+  immutable: boolean;
   expenseItems?: Array<{
     description: string;
     amount?: number;
+  }>;
+  revisionHistory?: Array<{
+    revisionId: string;
+    editedAt: string;
+    editedAtLabel: string;
+    reason?: string;
+    previous: {
+      summary: string;
+      amount?: number;
+      amountLabel?: string;
+      expenseItems?: Array<{
+        description: string;
+        amount?: number;
+      }>;
+    };
+    next: {
+      summary: string;
+      amount?: number;
+      amountLabel?: string;
+      expenseItems?: Array<{
+        description: string;
+        amount?: number;
+      }>;
+    };
   }>;
   images: Array<{
     assetId?: string;
@@ -124,6 +149,11 @@ export type CreateExpenseRecordInput = {
     description: string;
     amount: number;
   }>;
+};
+
+export type UpdateExpenseRecordInput = CreateExpenseRecordInput & {
+  editReason?: string;
+  recordId: string;
 };
 
 export type CreateBudgetAdjustmentInput = {

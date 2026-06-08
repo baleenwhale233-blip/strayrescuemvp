@@ -223,7 +223,7 @@
   VM 字段：timeline `title`
 - 支出备注
   云端字段：`expense_records.note`
-  VM 字段：只读记录详情 `description`
+  VM 字段：记录详情 `description`
 - 支出凭证
   云端字段：`assets.kind=receipt` + `expense_records.evidenceItems`
   VM 字段：timeline `assetUrls` / record detail `images`

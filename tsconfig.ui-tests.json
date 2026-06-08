@@ -9,8 +9,11 @@
   "include": [
     "src/pages/rescue/expense/stickyTotal.ts",
     "src/pages/rescue/expense/stickyTotal.test.ts",
+    "src/pages/rescue/detail/detailViewModels.ts",
+    "src/pages/rescue/detail/detailViewModels.test.ts",
     "src/components/ui/appIconImports.test.ts",
     "src/components/ui/progressBarUtils.ts",
-    "src/components/ui/progressBar.test.ts"
+    "src/components/ui/progressBar.test.ts",
+    "types/assets.d.ts"
   ]
 }

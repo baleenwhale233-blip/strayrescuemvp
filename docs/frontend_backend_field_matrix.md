@@ -149,7 +149,7 @@
 - 主态详情页这轮已改成：**首次进入必加载；从子页面返回只有真实写入成功后才刷新**，不再因为进入记账页后无提交返回而整页重载
 - 客态详情里的“查看主页”当前已接 `/pages/rescuer/home/index?rescuerId=...`，并由 `PublicDetailVM.rescuer.profileEntryEnabled` 控制显隐
 - 主态详情底部默认优先展示“分享档案”，点击小“结束”后才显示“右滑结束记录”确认态；滑动和二次确认已有，确认后仍未调用后端关闭案例 action
-- 主客态详情的时间线支出记录 / 状态更新已接只读记录详情页，优先用 `getCaseRecordDetail` 回读正式详情 VM，storage 仅作旧兜底；记录提交后不可修改
+- 主客态详情的时间线支出记录 / 状态更新已接记录详情页，优先用 `getCaseRecordDetail` 回读正式详情 VM，storage 仅作旧兜底；支出可由 owner 修改并留痕，状态更新仍提交后不可修改
 
 ## 3.1 救助人主页
 
@@ -178,7 +178,7 @@
 
 ---
 
-## 3.2 只读记录详情页
+## 3.2 记录详情页
 
 ### 页面文件
 
@@ -188,12 +188,13 @@
 
 - 主态 / 客态 / 草稿详情时间线中的支出记录“查看详情”
 - 主态 / 客态 / 草稿详情时间线中的状态更新“查看更新”
+- owner 支出详情页中的“修改支出”进入 `/pages/rescue/expense/index?caseId=...&editRecordId=...`
 
 ### 当前注意事项
 
-- 记录详情页是只读页，不提供修改入口
-- 支出记录和状态更新提交后不可编辑，后续变化应通过新增记录体现，避免账目和救助过程对不上
-- 当前主态 / 客态只读记录详情优先通过 `getCaseRecordDetail(caseId + recordType + recordId)` 回读正式远端详情 VM；本地临时 storage 仅作为草稿或降级兜底，不再是正式详情链路的主机制
+- 支出记录详情对 owner 提供修改入口；修改会更新当前支出与投影事件，并在 `expense_records.revisionHistory[]` 保留原值 / 新值
+- 状态更新仍提交后不可编辑，后续变化应通过新增记录体现，避免救助过程对不上
+- 当前主态 / 客态记录详情优先通过 `getCaseRecordDetail(caseId + recordType + recordId)` 回读正式远端详情 VM；本地临时 storage 仅作为草稿或降级兜底，不再是正式详情链路的主机制
 
 ---
 
@@ -299,15 +300,18 @@
 | 本次合计 | `displayedTotalAmount` | 页面层 derived | 已有 | 由本地明细金额汇总；QA 设计态允许页面层覆盖 |
 | 页面缓存 | `rescue-expense-draft:*` | 本地 storage | 已有 | 仅用于“继续上次录入 / 新的录入” |
 | 主态远端提交 | `createExpenseRecord` | remote repository / CloudBase `rescueApi` | 已可试跑 | 写入 `expense_records` 与公开 `case_events(type=expense)`，并更新 `rescue_cases.updatedAt` |
+| 主态远端修改 | `updateExpenseRecord` | remote repository / CloudBase `rescueApi` | 已可试跑 | 更新 `expense_records` 与公开 `case_events(type=expense)`，并追加 `revisionHistory[]` |
+| 编辑上下文 | `rescue-expense-edit-source` | 本地 storage | 已有 | 仅用于从支出详情页把当前支出快照传给记账页编辑模式 |
 | 提交后主态联动 | `case-expense-submissions:*` | 本地 storage | 降级兜底 | 仅在 CloudBase 不可用或基础设施失败时作为 owner detail tab local overlay；远端成功后会清理 |
 
 ### 当前注意事项
 
 - 记账页主态 `caseId` 路径已经接真实后端写入；草稿 `draftId` 路径仍走本地 draft
+- 记账页 `editRecordId` 路径只服务已发布主态支出修改，不支持草稿支出编辑；修改必须远端成功，不走 local overlay 兜底
 - `draftId` 是页面级上下文，不是 canonical 草稿字段扩张
 - QA 场景下的 `qaPreset=design` 只用于原生验收，不属于生产态字段
 - 支出卡当前只保留基于项目描述拼接的标题，并限制为最多两行；不再展示 `merchantName` 一行
-- 只读支出详情通过 `getCaseRecordDetail` 返回结构化 `expenseItems[]`，不再依赖标题拆分；详情 VM 不输出 `merchantName`
+- 支出详情通过 `getCaseRecordDetail` 返回结构化 `expenseItems[]`、`editable` 与 `revisionHistory[]`，不再依赖标题拆分；详情 VM 不输出 `merchantName`
 - 草稿预览页当前对支出卡只从 `draft.expenseRecords[]` 生成，避免和 `draft.timeline[]` 的兼容投影重复渲染
 - 记账页没有新增多行文本字段；项目里统一的覆盖层 placeholder 只是前端输入实现口径
 

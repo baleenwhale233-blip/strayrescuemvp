@@ -48,6 +48,23 @@ export const colors = {
     pending: "#D9DFE7",
     track: "#ECEFF3",
   },
+  ownerAction: {
+    primaryStart: "#EC5B13",
+    primaryEnd: "#FB923C",
+    primaryGlowStrong: "rgba(255, 255, 255, 0.1)",
+    primaryGlowSoft: "rgba(255, 255, 255, 0.05)",
+    primaryIconBg: "rgba(255, 255, 255, 0.16)",
+    primaryIconBorder: "rgba(255, 255, 255, 0.32)",
+    statusBg: "#EFF6FF",
+    statusBorder: "rgba(219, 234, 254, 0.5)",
+    statusIconBg: "#DBEAFE",
+    incomeBg: "#FAF5FF",
+    incomeBorder: "rgba(243, 232, 255, 0.5)",
+    incomeIconBg: "#F3E8FF",
+    budgetBg: "#FFFBEB",
+    budgetBorder: "rgba(254, 243, 199, 0.5)",
+    budgetIconBg: "#FEF3C7",
+  },
 } as const;
 
 export const typography = {
@@ -125,6 +142,9 @@ export const shadows = {
   card: "0 2px 8px rgba(16, 24, 40, 0.06)",
   cardStrong: "0 6px 18px rgba(16, 24, 40, 0.08)",
   cta: "0 8px 20px rgba(247, 104, 8, 0.22)",
+  ownerActionPrimary:
+    "0 10px 15px -3px rgba(236, 91, 19, 0.2), 0 4px 6px -4px rgba(236, 91, 19, 0.2)",
+  ownerActionCard: "0 1px 1px rgba(0, 0, 0, 0.05)",
   bottomBar: "0 -2px 12px rgba(16, 24, 40, 0.06)",
   textOverlay: "0 1px 2px var(--color-overlay-strong)",
 } as const;
@@ -181,6 +201,11 @@ export const sizes = {
     md: 44,
     lg: 56,
     xl: 60,
+  },
+  ownerAction: {
+    primaryHeight: 72,
+    cardHeight: 101,
+    wideHeight: 74,
   },
   choiceChip: {
     sm: 30,

@@ -51,6 +51,22 @@ page {
   --color-ledger-pending: #d9dfe7;
   --color-ledger-track: #eceff3;
 
+  --color-owner-action-primary-start: #ec5b13;
+  --color-owner-action-primary-end: #fb923c;
+  --color-owner-action-primary-glow-strong: rgba(255, 255, 255, 0.1);
+  --color-owner-action-primary-glow-soft: rgba(255, 255, 255, 0.05);
+  --color-owner-action-primary-icon-bg: rgba(255, 255, 255, 0.16);
+  --color-owner-action-primary-icon-border: rgba(255, 255, 255, 0.32);
+  --color-owner-action-status-bg: #eff6ff;
+  --color-owner-action-status-border: rgba(219, 234, 254, 0.5);
+  --color-owner-action-status-icon-bg: #dbeafe;
+  --color-owner-action-income-bg: #faf5ff;
+  --color-owner-action-income-border: rgba(243, 232, 255, 0.5);
+  --color-owner-action-income-icon-bg: #f3e8ff;
+  --color-owner-action-budget-bg: #fffbeb;
+  --color-owner-action-budget-border: rgba(254, 243, 199, 0.5);
+  --color-owner-action-budget-icon-bg: #fef3c7;
+
   --font-family-base: "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-family-numeric: "SF Pro Display", "PingFang SC", sans-serif;
 
@@ -112,6 +128,9 @@ page {
   --shadow-card: 0 2px 8px rgba(16, 24, 40, 0.06);
   --shadow-card-strong: 0 6px 18px rgba(16, 24, 40, 0.08);
   --shadow-cta: 0 8px 20px rgba(247, 104, 8, 0.22);
+  --shadow-owner-action-primary:
+    0 10px 15px -3px rgba(236, 91, 19, 0.2), 0 4px 6px -4px rgba(236, 91, 19, 0.2);
+  --shadow-owner-action-card: 0 1px 1px rgba(0, 0, 0, 0.05);
   --shadow-bottom-bar: 0 -2px 12px rgba(16, 24, 40, 0.06);
   --shadow-text-overlay: 0 1px 2px var(--color-overlay-strong);
   --blur-sm: 6px;
@@ -144,6 +163,9 @@ page {
   --size-button-md: 44px;
   --size-button-lg: 56px;
   --size-button-xl: 60px;
+  --size-owner-action-primary-height: 72px;
+  --size-owner-action-card-height: 101px;
+  --size-owner-action-wide-height: 74px;
   --size-choice-chip-sm: 30px;
 
   --size-input-md: 48px;

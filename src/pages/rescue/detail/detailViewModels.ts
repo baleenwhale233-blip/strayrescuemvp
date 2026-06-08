@@ -3,6 +3,7 @@ import guestHeroCat from "../../../assets/detail/guest-hero-cat.png";
 import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import type { PublicDetailVM, PublicTimelineItemVM } from "../../../domain/canonical/types";
+import { isOwnerEditableTimelineRecord } from "./ownerTimelineEditability";
 
 export function getFundingStatusText(detail: PublicDetailVM) {
   const confirmedExpenseAmount = detail.ledger.confirmedExpenseAmount;
@@ -165,6 +166,7 @@ export function toOwnerTimelineItems(detail: PublicDetailVM): RescueOwnerTimelin
     return {
       id: item.id,
       caseId: detail.caseId,
+      editable: isOwnerEditableTimelineRecord(item.type),
       recordType: item.type === "case_created" ? undefined : item.type,
       recordId: item.id,
       kind,

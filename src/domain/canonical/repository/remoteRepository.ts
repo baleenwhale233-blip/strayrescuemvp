@@ -20,6 +20,7 @@ export {
   reviewRemoteSupportEntryByCaseId,
   saveRemoteDraftCase,
   updateRemoteCaseProfileByCaseId,
+  updateRemoteExpenseRecordByCaseId,
   updateRemoteMyProfile,
 } from "./remote/writeRepository";
 
@@ -36,5 +37,6 @@ export type {
   ReviewSupportEntryInput,
   SupportHistoryItemVM,
   UpdateCaseProfileInput,
+  UpdateExpenseRecordInput,
   UpdateMyProfileInput,
 } from "./remote/types";

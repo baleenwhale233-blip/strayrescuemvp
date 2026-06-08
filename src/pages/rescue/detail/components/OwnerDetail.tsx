@@ -104,7 +104,7 @@ export function OwnerDetail({
 
   return (
     <View className="detail-page detail-page--owner">
-      <NavBar showBack title="记录管理" />
+      <NavBar showBack title="救助记录管理" />
 
       <OwnerHeroSection
         ownerDetail={ownerDetail}

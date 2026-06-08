@@ -1,6 +1,6 @@
 # 项目总控中心
 
-最后更新：2026-06-01
+最后更新：2026-06-08
 
 用途：
 
@@ -144,7 +144,7 @@
   - 写进展更新页已新建统一入口页面 `src/pages/rescue/progress-update/index.tsx`，主态与草稿箱都走同一路由
   - 写进展更新页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成状态卡并更新状态标签；草稿箱提交后会在简介页出现当前状态卡片；主态远端写成功后会清理 `case-status-submissions:{caseId}`
   - 状态更新页的添加照片模块已对齐到记账页同款交互：左侧固定添加按钮，右侧横向滑动图片列表
-  - 个案详情时间线里的支出记录和状态更新已补只读详情页入口，并已接 `getCaseRecordDetail` 正式后端详情 VM；提交后的账目 / 进展不可修改，只能通过新增记录保留轨迹
+  - 个案详情时间线里的支出记录和状态更新已补记录详情页入口，并已接 `getCaseRecordDetail` 正式后端详情 VM；支出记录当前允许 owner 从详情页进入编辑模式，每次修改会保留 `revisionHistory`，进展更新仍保持提交后不可修改
   - 追加预算页已新建统一入口页面 `src/pages/rescue/budget-update/index.tsx`，主态与草稿箱都走同一路由
   - 追加预算页已补前端提交闭环：主态详情提交后会在 owner detail tab 落成预算调整卡并更新总预算；草稿箱提交后会更新草稿预算并在 detail tab 生成预算调整卡；主态远端写成功后会清理 `case-budget-adjustments:{caseId}`
   - 个案详情页现在只会在首次进入或子页面真实写入成功后刷新；从记账页无提交返回时不再整页重载
@@ -202,7 +202,7 @@
 | Profile / 支持足迹链路 | `已可试跑` | `getMyProfile / updateMyProfile / getMySupportHistory` 已接 CloudBase；头像现已走 `avatarAssetId` 资产链，二维码 asset 上传、真实 OPENID 支持足迹聚合、新建救助前置远端校验均已接通 | 继续补更多真机账号回归 |
 | 记录主页链路 | `已可试跑` | `getRescuerHomepage` 已接 CloudBase，可按 `rescuerId` 或 `caseId` 输出记录维护者公开资料和 published 案例列表 | 继续补统计口径精修和更多公开主页视觉细节 |
 | 案例档案编辑链路 | `已可试跑` | `updateCaseProfile` 已接 CloudBase，主态 `caseId` 可远端更新 `animalName / coverFileID`，并写入 `case_cover` asset；本地展示覆盖降级为兜底，远端成功后会清理 `caseId + draftId` 的 title / cover 覆盖 | 继续补草稿远端编辑增强 |
-| 只读记录详情链路 | `已可试跑` | `getCaseRecordDetail` 已接 CloudBase，可按 `caseId + recordType + recordId` 回读支出 / 进展 / 预算 / 支持详情；支出明细结构化返回，图片最多 9 张，私有记录按 owner 权限控制 | 继续补前端从 storage 兜底逐步过渡到纯远端详情 |
+| 记录详情链路 | `已可试跑` | `getCaseRecordDetail` 已接 CloudBase，可按 `caseId + recordType + recordId` 回读支出 / 进展 / 预算 / 支持详情；支出明细结构化返回，图片最多 9 张，私有记录按 owner 权限控制；支出详情会返回 owner 编辑权限与修改历史 | 继续补前端从 storage 兜底逐步过渡到纯远端详情，并做真机编辑回归 |
 | Alpha 测试环境 | `已可试跑` | `npm run seed:alpha` 已可上传 `docs/alpha_seed_assets` 图片并调用 `seedMockCases` 播种，且会重置 8 个集合里的非 Alpha Seed 文档；当前开发环境已完成一次播种和 smoke 验证 | 体验版上传前先执行 `npm run preflight:alpha`；数据漂移时改跑 `npm run preflight:alpha:seed`，再按 `docs/alpha_test_plan.md` 的 Round 0-4 执行 |
 
 ---
