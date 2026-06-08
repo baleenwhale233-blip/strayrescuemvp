@@ -74,3 +74,18 @@ test("remote write fallback returns false only for fallback-worthy failures", as
     /FORBIDDEN/,
   );
 });
+
+test("remote write fallback surfaces unsupported API actions", async () => {
+  await assert.rejects(
+    writeRemoteOrFallback(
+      async () => {
+        throw new Error("UNKNOWN_ACTION");
+      },
+      {
+        canUseCloudBase: true,
+      },
+    ),
+    /UNKNOWN_ACTION/,
+  );
+  assert.equal(shouldFallbackToLocal(new Error("UNKNOWN_ACTION")), false);
+});

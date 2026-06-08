@@ -18,6 +18,7 @@ const DOMAIN_ERROR_CODES = new Set([
   "DUPLICATE_SUPPORT_SCREENSHOT",
   "SUPPORT_ENTRY_RATE_LIMIT_10_MIN",
   "SUPPORT_ENTRY_RATE_LIMIT_24_HOUR",
+  "UNKNOWN_ACTION",
 ]);
 
 export function isDomainErrorCode(code: unknown) {

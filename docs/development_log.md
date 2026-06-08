@@ -2858,3 +2858,33 @@
 - 影响范围：仅影响主态详情和草稿预览复用的 `RescueOwnerQuickActions` 展示、owner tab / nav 文案、图标注册和组件系统文档；不改提交、导航目标、VM、repository、storage 或 CloudBase。
 - 验证结果：`format`、`format:check`、`lint`、`typecheck`、`report:style-tokens`、`build:weapp` 与 `git diff --check` 已跑；`test:ui` 仍因既有旧根目录组件直接 import SVG 失败，失败文件未由本轮新增。
 - 下一步 / 遗留问题：需要用微信开发者工具对 owner 详情首屏截图复核与 Figma 的像素差；旧根目录 `src/components/*.tsx` 的 SVG import 和裸 token 报告应作为下一轮遗留治理。
+
+## 2026-06-08 | 支出记录 | 修正远端详情覆盖修改入口
+
+- 日期：2026-06-08
+- 改动主题：支出详情映射远端记录时保留 owner 时间线带入的 `editable` 兜底。
+- 为什么改：owner 页面点进支出详情后，旧云函数详情 VM 可能没有 `editable`，导致本地 owner 入口标记被覆盖，“修改支出”按钮仍不可见。
+- 改了什么：记录详情页合并远端 / 本地 editable 判断，编辑跳转支持本地记录兜底；新增 `recordDetailEditability` 测试，并把 record-detail 测试目录纳入 `test:ui`。
+- 影响范围：仅影响 owner 态支出详情按钮显示与编辑跳转预填；客态不显示修改入口，后端修改留痕写链和其他记录类型不变。
+- 验证结果：`format`、`format:check`、`lint`、`typecheck`、targeted detail / record-detail tests、`build:weapp` 已通过；`test:ui` 新增测试通过，但全量仍受旧 SVG import 基线失败影响。
+- 下一步 / 遗留问题：部署新版云函数后继续验证保存修改与修改历史展示；旧根目录组件 SVG import 失败需作为独立治理项处理。
+
+## 2026-06-08 | 远端写入 | 旧云函数错误不再被网络兜底吞掉
+
+- 日期：2026-06-08
+- 改动主题：将 `UNKNOWN_ACTION` 归入远端写入不可兜底错误，保存修改时能提示部署新版云函数。
+- 为什么改：旧云函数不支持 `updateExpenseRecord` 时返回 `UNKNOWN_ACTION`，此前被 remote fallback 当作网络失败吞掉，导致页面误提示“当前网络下暂不能修改”。
+- 改了什么：扩展 domain error code 列表，并补 `remoteFallback` 测试确认 `UNKNOWN_ACTION` 会抛给页面错误映射。
+- 影响范围：影响 remote repository 写入错误处理；现有页面兼容保持，未新增 richer VM / richer mock，保存修改后端 owner 校验和留痕写链不变。
+- 验证结果：先观察到新增测试失败，再修复转绿；`format:check`、`lint`、`typecheck`、`test:domain` 通过。
+- 下一步 / 遗留问题：线上仍需部署包含 `updateExpenseRecord` 的新版 `rescueApi`；若部署后仍提示网络不可用，再查 CloudBase 初始化 / 环境配置。
+
+## 2026-06-08 | CloudBase | 部署新版 rescueApi
+
+- 日期：2026-06-08
+- 改动主题：将包含 `updateExpenseRecord` 的新版 `rescueApi` 部署到 `cloud1-9gl5sric0e5b386b`。
+- 为什么改：线上保存修改仍命中旧云函数，导致支出修改不能落库。
+- 改了什么：普通 CLI 完整部署因开发者工具打包器 `EISDIR` 失败，改用 `esbuild` 生成单文件临时包后通过 `cli cloud functions deploy` 成功部署。
+- 影响范围：仅影响 CloudBase `rescueApi` 运行时代码；repo 源码结构不变，云端 runtime 仍为 `Nodejs16.13`。
+- 验证结果：部署结果 `rescueApi success=true filesCount=3 packSize=36.3KB`；`cloud functions info` 显示 `rescueApi` 状态 `Active`。
+- 下一步 / 遗留问题：需要在小程序里重试 owner 修改支出，确认保存后详情金额和修改历史刷新；后续若继续用 CLI 部署，优先走单文件临时包规避 `EISDIR`。

@@ -11,6 +11,7 @@ import { saveExpenseEditSource } from "../expense/expenseEditSource";
 import { RecordDetailCard } from "./components/RecordDetailCard";
 import { RecordDetailNotice } from "./components/RecordDetailNotice";
 import { RecordDetailRevisionHistory } from "./components/RecordDetailRevisionHistory";
+import { canEditExpenseRecord } from "./recordDetailEditability";
 import { getStoredReadonlyRecordDetail } from "./readonlyRecordDetail";
 import "./index.scss";
 
@@ -46,7 +47,10 @@ function formatItemAmount(amount?: number) {
   return typeof amount === "number" ? `¥${amount.toLocaleString("zh-CN")}` : undefined;
 }
 
-function mapRemoteRecordToReadonly(record: CaseRecordDetailVM): RescueReadonlyRecordDetail {
+function mapRemoteRecordToReadonly(
+  record: CaseRecordDetailVM,
+  fallback?: RescueReadonlyRecordDetail,
+): RescueReadonlyRecordDetail {
   const kindMap = {
     expense: "expense",
     progress_update: "status",
@@ -80,10 +84,26 @@ function mapRemoteRecordToReadonly(record: CaseRecordDetailVM): RescueReadonlyRe
       .map((image) => image.url)
       .filter(Boolean)
       .slice(0, 9),
-    editable: record.editable,
+    editable: record.editable || fallback?.editable,
     budgetPreviousLabel: record.budgetPreviousLabel,
     budgetCurrentLabel: record.budgetCurrentLabel,
   };
+}
+
+function getEditableEvidenceImages(
+  remoteRecord?: CaseRecordDetailVM,
+  fallback?: RescueReadonlyRecordDetail,
+) {
+  if (remoteRecord?.images.length) {
+    return remoteRecord.images
+      .map((image) => ({
+        fileID: image.fileID,
+        url: image.url,
+      }))
+      .filter((image) => image.url);
+  }
+
+  return (fallback?.images || []).map((url) => ({ url })).filter((image) => image.url);
 }
 
 function getExpenseItems(record: RescueReadonlyRecordDetail) {
@@ -120,7 +140,7 @@ export default function RescueReadonlyRecordDetailPage() {
       })
         .then((remoteRecord) => {
           setRemoteRecord(remoteRecord);
-          setRecord(remoteRecord ? mapRemoteRecordToReadonly(remoteRecord) : stored);
+          setRecord(remoteRecord ? mapRemoteRecordToReadonly(remoteRecord, stored) : stored);
         })
         .catch((error) => {
           setRemoteRecord(undefined);
@@ -149,38 +169,35 @@ export default function RescueReadonlyRecordDetailPage() {
     });
   };
   const handleEditExpense = () => {
-    if (
-      !remoteRecord ||
-      remoteRecord.recordType !== "expense" ||
-      (!remoteRecord.editable && !record?.editable)
-    ) {
+    if (!canEditExpenseRecord(record, remoteRecord)) {
+      return;
+    }
+
+    const editCaseId = remoteRecord?.caseId || record?.caseId;
+    const editRecordId = remoteRecord?.id || record?.recordId || record?.id;
+    if (!editCaseId || !editRecordId) {
       return;
     }
 
     saveExpenseEditSource({
-      caseId: remoteRecord.caseId,
-      evidenceImages: remoteRecord.images
-        .map((image) => ({
-          fileID: image.fileID,
-          url: image.url,
-        }))
-        .filter((image) => image.url),
-      expenseItems: remoteRecord.expenseItems?.length
+      caseId: editCaseId,
+      evidenceImages: getEditableEvidenceImages(remoteRecord, record),
+      expenseItems: remoteRecord?.expenseItems?.length
         ? remoteRecord.expenseItems
         : [
             {
-              amount: remoteRecord.amount,
-              description: remoteRecord.title,
+              amount: remoteRecord?.amount,
+              description: remoteRecord?.title || record?.title || "支出记录",
             },
           ],
-      recordId: remoteRecord.id,
-      spentAt: remoteRecord.occurredAt,
+      recordId: editRecordId,
+      spentAt: remoteRecord?.occurredAt || new Date().toISOString(),
     });
 
     Taro.navigateTo({
       url: `/pages/rescue/expense/index?caseId=${encodeURIComponent(
-        remoteRecord.caseId,
-      )}&editRecordId=${encodeURIComponent(remoteRecord.id)}`,
+        editCaseId,
+      )}&editRecordId=${encodeURIComponent(editRecordId)}`,
     });
   };
 
@@ -198,9 +215,7 @@ export default function RescueReadonlyRecordDetailPage() {
     );
   }
 
-  const canEditExpense =
-    record.kind === "expense" &&
-    Boolean(remoteRecord && (remoteRecord.editable || record.editable));
+  const canEditExpense = canEditExpenseRecord(record, remoteRecord);
 
   return (
     <PageShell className="record-detail-page">
