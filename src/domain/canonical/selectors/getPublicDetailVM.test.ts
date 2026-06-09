@@ -15,6 +15,7 @@ test("getPublicDetailVM only counts confirmed support into supportedAmount", () 
   assert.equal(vm.ledger.supportedAmount, 100);
   assert.equal(vm.ledger.pendingSupportAmount, 60);
   assert.equal(vm.ledger.targetAmount, 4200);
+  assert.equal(vm.ledger.remainingTargetAmount, 4100);
   assert.equal(vm.statusLabel, "医疗处理中");
 });
 

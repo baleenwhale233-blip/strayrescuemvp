@@ -60,11 +60,11 @@ function formatCurrency(value: number) {
   return `¥${value.toLocaleString("zh-CN")}`;
 }
 
-function getFundingCompareMetrics(input: { expenseAmount: number; supportAmount: number }) {
-  const diff = input.expenseAmount - input.supportAmount;
+function getFundingCompareMetrics(input: { supportAmount: number; targetAmount: number }) {
+  const diff = input.targetAmount - input.supportAmount;
 
   return {
-    thirdLabel: diff > 0 ? "缺口" : "结余",
+    thirdLabel: diff > 0 ? "当前差额" : "预算结余",
     thirdValue: formatCurrency(Math.abs(diff)),
     thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),
   };
@@ -441,8 +441,8 @@ export default function RescueCreatePreviewPage() {
 
   const budget = draft.budget || 0;
   const fundingCompare = getFundingCompareMetrics({
-    expenseAmount: ledger.expense,
     supportAmount: ledger.income,
+    targetAmount: budget,
   });
   const supportBudgetProgressPercent = getBudgetProgressPercent({
     supportAmount: ledger.income,

@@ -50,7 +50,7 @@ function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }
 }
 
 function getFundingTone(fundingStatusSummary: string): RescueLedgerStatusTone {
-  if (fundingStatusSummary === "当前垫付已覆盖") {
+  if (fundingStatusSummary === "已达总预算" || fundingStatusSummary === "预算待确认") {
     return "neutral";
   }
 

@@ -89,12 +89,14 @@
 
 #### 当前状态提示规则
 
-- 如果 `confirmed_support_amount >= confirmed_expense_amount`
-  - 显示：`当前垫付已覆盖`
-- 如果 `0 < confirmed_expense_amount - confirmed_support_amount <= 2000`
+- 如果 `target_amount <= 0`
+  - 显示：`预算待确认`
+- 如果 `confirmed_support_amount >= target_amount`
+  - 显示：`已达总预算`
+- 如果 `0 < target_amount - confirmed_support_amount <= 300`
   - 显示：`即将筹满`
-- 如果 `confirmed_expense_amount - confirmed_support_amount > 2000`
-  - 显示：`‼️ 救助人垫付较多`
+- 其他情况
+  - 显示：`距离预算还差较多`
 
 并补一句辅助说明：
 
@@ -105,7 +107,8 @@
 详情页资金条总长度直接代表 `target_amount / 总预算`。
 
 - 已确认支持是唯一填充段
-- 已确认支出、当前垫付和当前差额只在数字指标 / 状态提示里表达
+- 当前差额 = `max(target_amount - confirmed_support_amount, 0)`
+- 已确认支出 / 当前垫付只在数字指标里表达，不参与筹满状态判断
 - 不再把救助人已垫付的钱画进进度条
 
 ### 模块 D：救助人信用信息
@@ -289,7 +292,7 @@
 ### 由系统计算
 
 - 资金状态
-- 当前缺口
+- 当前预算差额
 - 记录凭证情况
 - 推荐理由
 

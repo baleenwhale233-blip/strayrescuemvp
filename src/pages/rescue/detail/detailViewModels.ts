@@ -6,18 +6,19 @@ import type { PublicDetailVM, PublicTimelineItemVM } from "../../../domain/canon
 import { isOwnerEditableTimelineRecord } from "./ownerTimelineEditability";
 
 export function getFundingStatusText(detail: PublicDetailVM) {
-  const confirmedExpenseAmount = detail.ledger.confirmedExpenseAmount;
-  const confirmedSupportAmount = detail.ledger.supportedAmount;
-
-  if (confirmedSupportAmount >= confirmedExpenseAmount) {
-    return "当前垫付已覆盖";
+  if (detail.ledger.targetAmount <= 0) {
+    return "预算待确认";
   }
 
-  if (confirmedExpenseAmount - confirmedSupportAmount <= 2000) {
+  if (detail.ledger.remainingTargetAmount <= 0) {
+    return "已达总预算";
+  }
+
+  if (detail.ledger.remainingTargetAmount <= 300) {
     return "即将筹满";
   }
 
-  return "‼️ 当前垫付较多";
+  return "距离预算还差较多";
 }
 
 export function formatSignedAmount(amountLabel: string, sign: "+" | "-") {
@@ -110,11 +111,11 @@ export function getTimelineAssetUrls(item: PublicTimelineItemVM) {
   return [];
 }
 
-export function getFundingCompareMetrics(input: { expenseAmount: number; supportAmount: number }) {
-  const diff = input.expenseAmount - input.supportAmount;
+export function getFundingCompareMetrics(input: { supportAmount: number; targetAmount: number }) {
+  const diff = input.targetAmount - input.supportAmount;
 
   return {
-    thirdLabel: diff > 0 ? "缺口" : "结余",
+    thirdLabel: diff > 0 ? "当前差额" : "预算结余",
     thirdValue: `¥${Math.abs(diff).toLocaleString("zh-CN")}`,
     thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),
   };

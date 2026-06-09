@@ -106,7 +106,7 @@
 
 | 字段 | 所属层 | 文字标注 | 当前状态 | 后续动作 |
 |---|---|---|---|---|
-| `ledger.verifiedGapAmountLabel` | VM | 当前缺口展示值，但语义偏技术口径 | 已有 | 后续如页面要更白话，可在 VM 再包一层，不直接废弃原字段 |
+| `ledger.remainingTargetAmountLabel` | VM | 当前差额展示值，语义为总预算 - 已确认支持 | 已有并已接资金卡 | 继续保留 `verifiedGapAmountLabel` 作为垫付差额兼容字段，不直接废弃 |
 | `supportSummary.threads` | VM | 支持记录轻展开数据，不是完整账单后台 | 已有，前台仍偏轻 | 如果详情页要加展开区，优先复用，不要直接读原始 `support_entries` |
 | `latestTimelineSummary` | selector / VM | 最近一次公开进展摘要 | 已有，页面摘要卡已部分消费 | 后续若要让摘要卡完全不依赖 timeline 首项回退，可直接稳定读这里 |
 | `summary` | canonical / VM | 建档时对救助对象的介绍，不应混入预算句子 | 已有，页面已拆成“介绍 + 当前总预算”两段 | 后续如果 seed / 远端文案仍混入预算说明，继续在数据清洗层收口，而不是改页面拼法 |

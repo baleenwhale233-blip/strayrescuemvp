@@ -147,10 +147,7 @@ export function buildLedgerSnapshotFromEvents(
     .filter(isPendingSupportEvent)
     .reduce((sum, event) => sum + event.amount, 0);
   const verifiedGapAmount = Math.max(confirmedExpenseAmount - supportedAmount, 0);
-  const remainingTargetAmount = Math.max(
-    targetAmount - Math.max(confirmedExpenseAmount, supportedAmount),
-    0,
-  );
+  const remainingTargetAmount = Math.max(targetAmount - supportedAmount, 0);
   const progressPercent =
     targetAmount > 0 ? Math.min(Math.round((supportedAmount / targetAmount) * 100), 100) : 0;
 

@@ -17,8 +17,8 @@ export function OwnerHeroSection({
   onEditTitle: () => void;
 }) {
   const fundingCompare = getFundingCompareMetrics({
-    expenseAmount: ownerDetail.ledger.confirmedExpenseAmount,
     supportAmount: ownerDetail.ledger.supportedAmount,
+    targetAmount: ownerDetail.ledger.targetAmount,
   });
 
   return (

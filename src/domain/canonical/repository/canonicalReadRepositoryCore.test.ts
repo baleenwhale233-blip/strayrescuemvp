@@ -84,7 +84,7 @@ test("owner detail ledger semantics remain explicit and stable", () => {
   assert.equal(ownerVm?.ledger.supportedAmount, 100);
   assert.equal(ownerVm?.ledger.confirmedExpenseAmount, 280);
   assert.equal(ownerVm?.ledger.verifiedGapAmount, 180);
-  assert.equal(ownerVm?.ledger.remainingTargetAmount, 3920);
+  assert.equal(ownerVm?.ledger.remainingTargetAmount, 4100);
 });
 
 test("seed and local bundles expose explicit sourceKind", () => {
@@ -163,39 +163,45 @@ test("homepage richer card vm exposes funding status and eligibility", () => {
   assert.ok(firstCard);
   assert.equal(firstCard.publicCaseId, "JM482731");
   assert.equal(firstCard.homepageEligibilityStatus, "eligible");
-  assert.equal(firstCard.fundingStatusSummary, "即将筹满");
+  assert.equal(firstCard.fundingStatusSummary, "距离预算还差较多");
   assert.equal(firstCard.aboutSummary, "发现时流口水严重，疑似口炎，精神差");
 });
 
-test("homepage funding status is covered when confirmed support meets confirmed expense", () => {
+test("homepage funding status is complete when confirmed support reaches total budget", () => {
   const coveredBundle: CanonicalCaseBundle = {
     ...publishedBundle,
     supportEntries: [
       {
         ...publishedBundle.supportEntries?.[0]!,
-        amount: 280,
+        amount: 4200,
       },
     ],
     supportThreads: [
       {
         ...publishedBundle.supportThreads?.[0]!,
-        totalConfirmedAmount: 280,
+        totalConfirmedAmount: 4200,
       },
     ],
   };
 
   const [card] = getHomepageCaseCardVMsFromBundles([coveredBundle]);
 
-  assert.equal(card?.fundingStatusSummary, "当前垫付已覆盖");
+  assert.equal(card?.fundingStatusSummary, "已达总预算");
 });
 
-test("homepage funding status treats a 2000 gap as almost complete", () => {
+test("homepage funding status is almost complete when budget gap is within 300", () => {
   const almostBundle: CanonicalCaseBundle = {
     ...publishedBundle,
-    expenseRecords: [
+    supportEntries: [
       {
-        ...publishedBundle.expenseRecords?.[0]!,
-        amount: 2100,
+        ...publishedBundle.supportEntries?.[0]!,
+        amount: 3900,
+      },
+    ],
+    supportThreads: [
+      {
+        ...publishedBundle.supportThreads?.[0]!,
+        totalConfirmedAmount: 3900,
       },
     ],
   };
@@ -205,20 +211,42 @@ test("homepage funding status treats a 2000 gap as almost complete", () => {
   assert.equal(card?.fundingStatusSummary, "即将筹满");
 });
 
-test("homepage funding status becomes high pressure when gap exceeds 2000", () => {
+test("homepage funding status stays far from budget when budget gap exceeds 300", () => {
+  const belowThresholdBundle: CanonicalCaseBundle = {
+    ...publishedBundle,
+    supportEntries: [
+      {
+        ...publishedBundle.supportEntries?.[0]!,
+        amount: 3899,
+      },
+    ],
+    supportThreads: [
+      {
+        ...publishedBundle.supportThreads?.[0]!,
+        totalConfirmedAmount: 3899,
+      },
+    ],
+  };
+
+  const [card] = getHomepageCaseCardVMsFromBundles([belowThresholdBundle]);
+
+  assert.equal(card?.fundingStatusSummary, "距离预算还差较多");
+});
+
+test("homepage funding status stays far from budget when confirmed support is low", () => {
   const highPressureBundle: CanonicalCaseBundle = {
     ...publishedBundle,
-    expenseRecords: [
+    supportEntries: [
       {
-        ...publishedBundle.expenseRecords?.[0]!,
-        amount: 2501,
+        ...publishedBundle.supportEntries?.[0]!,
+        amount: 300,
       },
     ],
   };
 
   const [card] = getHomepageCaseCardVMsFromBundles([highPressureBundle]);
 
-  assert.equal(card?.fundingStatusSummary, "‼️ 当前垫付较多");
+  assert.equal(card?.fundingStatusSummary, "距离预算还差较多");
 });
 
 test("support entries are grouped into threads", () => {

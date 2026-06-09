@@ -369,10 +369,7 @@ export function buildLedgerSnapshotFromStructured(
     .filter((entry) => entry.status === "pending")
     .reduce((sum, entry) => sum + entry.amount, 0);
   const verifiedGapAmount = Math.max(confirmedExpenseAmount - supportedAmount, 0);
-  const remainingTargetAmount = Math.max(
-    caseRecord.targetAmount - Math.max(confirmedExpenseAmount, supportedAmount),
-    0,
-  );
+  const remainingTargetAmount = Math.max(caseRecord.targetAmount - supportedAmount, 0);
   const progressPercent =
     caseRecord.targetAmount > 0
       ? Math.min(Math.round((supportedAmount / caseRecord.targetAmount) * 100), 100)
@@ -482,15 +479,19 @@ export function getFundingStatusSummary(bundle: CanonicalCaseBundle) {
     supportEntries: getStructuredSupportEntries(bundle),
   });
 
-  if (ledger.supportedAmount >= ledger.confirmedExpenseAmount) {
-    return "当前垫付已覆盖";
+  if (ledger.targetAmount <= 0) {
+    return "预算待确认";
   }
 
-  if (ledger.verifiedGapAmount > 0 && ledger.verifiedGapAmount <= 2000) {
+  if (ledger.remainingTargetAmount <= 0) {
+    return "已达总预算";
+  }
+
+  if (ledger.remainingTargetAmount <= 300) {
     return "即将筹满";
   }
 
-  return "‼️ 当前垫付较多";
+  return "距离预算还差较多";
 }
 
 export function getRecommendationReason(bundle: CanonicalCaseBundle) {
@@ -509,16 +510,16 @@ export function getRecommendationReason(bundle: CanonicalCaseBundle) {
   if (
     Number.isFinite(lastPublicActivityAt) &&
     now - lastPublicActivityAt <= RECOMMENDATION_WINDOW_MS &&
-    ledger.verifiedGapAmount > 0
+    ledger.remainingTargetAmount > 0
   ) {
-    return `刚更新病情，当前仍缺 ${formatCurrency(ledger.verifiedGapAmount)}`;
+    return `刚更新病情，当前仍缺 ${formatCurrency(ledger.remainingTargetAmount)}`;
   }
 
-  if (ledger.verifiedGapAmount > 0 && ledger.verifiedGapAmount <= 300) {
-    return `接近完成，只差最后 ${formatCurrency(ledger.verifiedGapAmount)}`;
+  if (ledger.remainingTargetAmount > 0 && ledger.remainingTargetAmount <= 300) {
+    return `接近完成，只差最后 ${formatCurrency(ledger.remainingTargetAmount)}`;
   }
 
-  if (evidenceLevel === "complete" && ledger.verifiedGapAmount > 0) {
+  if (evidenceLevel === "complete" && ledger.remainingTargetAmount > 0) {
     return "记录和凭证较齐，仍有缺口";
   }
 

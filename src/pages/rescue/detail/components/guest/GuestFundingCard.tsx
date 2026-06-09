@@ -31,7 +31,7 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
           {
             label: "当前差额",
             tone: "danger",
-            value: detail.ledger.verifiedGapAmountLabel,
+            value: detail.ledger.remainingTargetAmountLabel,
             valueTone: "danger",
           },
         ]}

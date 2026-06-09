@@ -47,7 +47,7 @@ function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }
 }
 
 function getFundingToneClass(fundingStatusSummary: string) {
-  if (fundingStatusSummary === "当前垫付已覆盖") {
+  if (fundingStatusSummary === "已达总预算" || fundingStatusSummary === "预算待确认") {
     return "discover-card__funding--covered";
   }
 
