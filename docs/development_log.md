@@ -3073,3 +3073,13 @@
 - 影响范围：仅影响使用说明页和对应用户文案文档；不改页面结构、路由、VM、selector、repository、CloudBase 或 fixtures。
 - 验证结果：`typecheck`、`format:check`、`build:weapp` 通过；构建仍只有既有图片体积和 no async chunks warning。
 - 下一步 / 遗留问题：需要在微信开发者工具里重新编译后确认首屏和说明段落显示新文案。
+
+## 2026-06-09 | 联系方式 | 联系备注进入查看弹层
+
+- 日期：2026-06-09
+- 改动主题：联系方式半弹层展示联系备注，并隐藏缺失的联系渠道。
+- 为什么改：联系方式设置页可填写备注，但查看联系方式时没有体现；单渠道场景还会显示空二维码卡，浪费弹层首屏空间。
+- 改了什么：`CanonicalRescuer / PublicDetailVM / SupportSheetData` 透传 `contactNote`，联系弹层有备注才展示 `联系备注`，有二维码 / 微信号才展示对应渠道；同步详情 IA、主 IA 和字段矩阵。
+- 影响范围：现有页面兼容保持；新增 `SupportSheetData.contactNote` richer VM 字段并补 sample fixture / domain test，repository 写链和 CloudBase 存储结构不变。
+- 验证结果：`typecheck`、`test:domain`、`lint`、局部 Prettier、`build:weapp`、`git diff --check` 通过；全量 `format:check` 仍被既有 `src/pages/support/claim/index.tsx` 格式问题拦住。
+- 下一步 / 遗留问题：需要在微信开发者工具里看仅微信号、仅二维码和带备注三种联系弹层，确认内容高度更紧凑。

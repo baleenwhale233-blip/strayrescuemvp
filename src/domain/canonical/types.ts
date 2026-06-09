@@ -82,6 +82,7 @@ export type CanonicalRescuer = {
   verifiedLevel: RescuerVerifiedLevel;
   joinedAt: IsoDateTimeString;
   wechatId?: string;
+  contactNote?: string;
   alipayAccount?: string;
   paymentQrAssetId?: Id;
   stats: CanonicalRescuerStats;
@@ -317,6 +318,7 @@ export type PublicDetailVM = {
     joinedAtLabel: string;
     stats: CanonicalRescuerStats;
     wechatId?: string;
+    contactNote?: string;
     paymentQrUrl?: string;
     profileEntryEnabled: boolean;
   };
@@ -412,6 +414,7 @@ export type WorkbenchVM = {
 
 export type SupportSheetData = {
   wechatId?: string;
+  contactNote?: string;
   contactHint: string;
   directHint: string;
   contactTip: string;

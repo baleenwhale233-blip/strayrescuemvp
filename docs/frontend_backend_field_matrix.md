@@ -448,7 +448,7 @@
 |---|---|---|---|---|
 | 微信号 | `user_profiles.wechatId` / `rescuer-contact-profile:v1.wechatId` | `getMyProfile()` / 本地兜底 | 远端已接 | 当前不自动获取微信号，placeholder 为“请填写微信号” |
 | 微信二维码图片 | `user_profiles.paymentQrAssetId` / `paymentQrUrl` | CloudBase asset / 本地兜底 | 远端已接 | 提交时上传为 `cloud://` fileID 并写入 `evidence_assets(kind=payment_qr)` |
-| 备注 | `user_profiles.contactNote` / `rescuer-contact-profile:v1.note` | `getMyProfile()` / 本地兜底 | 远端已接 | 选填 |
+| 备注 | `user_profiles.contactNote` / `rescuer-contact-profile:v1.note` | `getMyProfile()` / 详情 `SupportSheetData.contactNote` / 本地兜底 | 远端已接 | 选填；联系方式半弹层有值才展示 |
 
 当前注意事项：
 

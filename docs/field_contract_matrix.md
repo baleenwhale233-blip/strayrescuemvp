@@ -150,7 +150,7 @@
   VM 字段：`SupportSheetData.wechatId` / `profile.wechatId`
 - 联系备注
   云端字段：`contactNote`
-  VM 字段：`profile.contactNote`
+  VM 字段：`profile.contactNote` / `PublicDetailVM.rescuer.contactNote` / `SupportSheetData.contactNote`
 - 微信二维码
   云端字段：`paymentQrAssetId` + `assets.kind=payment_qr`
   VM 字段：`paymentQrUrl`

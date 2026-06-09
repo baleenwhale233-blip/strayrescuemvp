@@ -93,8 +93,8 @@
   height: 246px;
 }
 
-.support-sheet__empty-card,
-.support-sheet__note-card {
+.support-sheet__note-card,
+.support-sheet__contact-note-card {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,12 +103,22 @@
   border-radius: 16px;
 }
 
-.support-sheet__empty-text,
-.support-sheet__note-text {
+.support-sheet__note-text,
+.support-sheet__contact-note-text {
   color: #94a3b8;
   font-size: 12px;
   line-height: 18px;
   text-align: center;
+}
+
+.support-sheet__contact-note-card {
+  justify-content: flex-start;
+  padding: 16px;
+}
+
+.support-sheet__contact-note-text {
+  color: #64748b;
+  text-align: left;
 }
 
 .support-sheet__hint {

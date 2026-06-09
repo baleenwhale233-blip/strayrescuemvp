@@ -296,6 +296,7 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
       joinedAtLabel: formatDateLabel(bundle.rescuer.joinedAt),
       stats: bundle.rescuer.stats,
       wechatId: bundle.rescuer.wechatId,
+      contactNote: bundle.rescuer.contactNote,
       paymentQrUrl: getAssetUrl(assetMap, bundle.rescuer.paymentQrAssetId),
       profileEntryEnabled: Boolean(bundle.rescuer.id),
     },

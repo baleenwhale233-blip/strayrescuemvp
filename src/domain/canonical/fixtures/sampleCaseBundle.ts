@@ -10,6 +10,7 @@ export const sampleCaseBundle: CanonicalCaseBundle = {
     verifiedLevel: "realname",
     joinedAt: "2026-03-01T10:00:00Z",
     wechatId: "aqing_rescue",
+    contactNote: "添加时请备注案例 ID，晚上回复会慢一点。",
     alipayAccount: "",
     paymentQrAssetId: "asset_qr_001",
     stats: {

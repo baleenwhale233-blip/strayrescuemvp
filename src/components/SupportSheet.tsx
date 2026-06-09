@@ -17,6 +17,8 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
 
   const hasWechatId = Boolean(support.wechatId?.trim());
   const hasPaymentQr = Boolean(support.paymentQrUrl?.trim());
+  const contactNote = support.contactNote?.trim();
+  const hasContactNote = Boolean(contactNote);
 
   const handleCopyWechat = async () => {
     if (!hasWechatId) {
@@ -83,15 +85,7 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
 
                 <Text className="support-sheet__hint">{support.directHint}</Text>
               </View>
-            ) : (
-              <View className="support-sheet__section">
-                <Text className="support-sheet__section-title">联系二维码</Text>
-                <View className="support-sheet__empty-card">
-                  <Text className="support-sheet__empty-text">暂未提供二维码</Text>
-                </View>
-                <Text className="support-sheet__hint">{support.directHint}</Text>
-              </View>
-            )}
+            ) : null}
 
             {hasWechatId ? (
               <View className="support-sheet__section">
@@ -105,6 +99,15 @@ export function SupportSheet({ visible, support, onClose }: SupportSheetProps) {
                 </View>
 
                 <Text className="support-sheet__hint">{support.contactHint}</Text>
+              </View>
+            ) : null}
+
+            {hasContactNote ? (
+              <View className="support-sheet__section">
+                <Text className="support-sheet__section-title">联系备注</Text>
+                <View className="support-sheet__contact-note-card">
+                  <Text className="support-sheet__contact-note-text">{contactNote}</Text>
+                </View>
               </View>
             ) : null}
 

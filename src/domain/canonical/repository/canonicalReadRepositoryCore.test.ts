@@ -112,6 +112,7 @@ test("support sheet data comes from public detail output", () => {
 
   assert.ok(support);
   assert.equal(support?.wechatId, "aqing_rescue");
+  assert.equal(support?.contactNote, "添加时请备注案例 ID，晚上回复会慢一点。");
   assert.equal(support?.paymentQrUrl, "https://example.com/assets/payment-qr.png");
 });
 

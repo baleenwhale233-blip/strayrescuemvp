@@ -150,6 +150,7 @@ export function getSupportSheetDataByCaseIdFromBundles(
 
   return {
     wechatId: detail.rescuer.wechatId,
+    contactNote: detail.rescuer.contactNote,
     paymentQrUrl: detail.rescuer.paymentQrUrl,
     ...copy,
   };
