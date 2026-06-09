@@ -127,7 +127,7 @@ export function RescueOwnerSummaryCard({
           <View className="rescue-owner-card__metric">
             <View className="rescue-owner-card__metric-label">
               <View className="rescue-owner-card__dot rescue-owner-card__dot--support" />
-              <Text>已确认登记</Text>
+              <Text>已确认支持</Text>
             </View>
             <Text>{supportLabel}</Text>
           </View>
@@ -199,8 +199,8 @@ export function RescueOwnerQuickActions({
             mode="aspectFit"
             src={ownerActionIncomeIcon}
           />
-          <Text className="rescue-owner-actions__card-title">处理登记</Text>
-          <Text className="rescue-owner-actions__card-subtitle">处理线下转账或外部登记</Text>
+          <Text className="rescue-owner-actions__card-title">处理支持登记</Text>
+          <Text className="rescue-owner-actions__card-subtitle">核对线下转账或外部支持</Text>
         </View>
 
         <View className="rescue-owner-actions__wide theme-card" onTap={onBudget}>

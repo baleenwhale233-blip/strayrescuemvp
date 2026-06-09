@@ -124,7 +124,7 @@ export const legacyRescueProjectDetails: LegacyRescueProjectDetail[] = [
       contactHint: "长按图片保存到相册，打开微信扫一扫添加好友",
       directHint: "长按图片保存到相册，打开微信/支付宝扫码转账",
       contactTip: "添加救助人后，可通过微信直接沟通救助细节。",
-      directTip: "支持完成后，请回到页面点击“我已支持，去认领”以更新透明账本。",
+      directTip: "支持完成后，请回到页面点击“登记支持”以更新透明账本。",
     },
   },
   {
@@ -187,7 +187,7 @@ export const legacyRescueProjectDetails: LegacyRescueProjectDetail[] = [
       contactHint: "长按图片保存到相册，打开微信扫一扫添加好友",
       directHint: "长按图片保存到相册，打开微信/支付宝扫码转账",
       contactTip: "添加救助人后，可直接沟通住院进度和后续安排。",
-      directTip: "支持完成后，请回到页面点击“我已支持，去认领”以更新透明账本。",
+      directTip: "支持完成后，请回到页面点击“登记支持”以更新透明账本。",
     },
   },
   {
@@ -249,7 +249,7 @@ export const legacyRescueProjectDetails: LegacyRescueProjectDetail[] = [
       contactHint: "长按图片保存到相册，打开微信扫一扫添加好友",
       directHint: "长按图片保存到相册，打开微信/支付宝扫码转账",
       contactTip: "添加救助人后，可直接沟通康复节奏和后续领养计划。",
-      directTip: "支持完成后，请回到页面点击“我已支持，去认领”以更新透明账本。",
+      directTip: "支持完成后，请回到页面点击“登记支持”以更新透明账本。",
     },
   },
 ];

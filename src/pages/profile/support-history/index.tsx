@@ -58,16 +58,16 @@ export default function SupportHistoryPage() {
 
   return (
     <PageShell className="support-history-page">
-      <NavBar showBack title="我的登记记录" />
+      <NavBar showBack title="我的支持登记" />
 
       <SurfaceCard className="support-history-page__summary">
-        <Text className="support-history-page__summary-label">总计登记</Text>
+        <Text className="support-history-page__summary-label">总计支持</Text>
         <Text className="support-history-page__summary-value">{formatCurrency(totalAmount)}</Text>
       </SurfaceCard>
 
       <SectionHeader
         className="support-history-page__section-title"
-        title={`登记记录（${items.length}）`}
+        title={`支持登记（${items.length}）`}
       />
 
       <View className="support-history-page__list">
@@ -84,7 +84,7 @@ export default function SupportHistoryPage() {
                 />
               }
               onTap={() => handleOpenCase(item.caseId)}
-              subtitle={`登记 ${item.amountLabel}`}
+              subtitle={`支持 ${item.amountLabel}`}
               title={item.title}
               trailing={
                 <AppIcon
@@ -99,8 +99,8 @@ export default function SupportHistoryPage() {
         ) : (
           <EmptyState
             className="support-history-page__empty"
-            title="还没有已确认登记"
-            description="提交登记后，等待记录维护者处理，就会出现在这里。"
+            title="还没有已确认支持"
+            description="提交登记支持后，等待记录维护者处理，就会出现在这里。"
           />
         )}
       </View>

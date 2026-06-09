@@ -32,7 +32,7 @@ export function buildSupportSheetCopy(input: {
       contactHint: "复制微信号或保存二维码后，可在微信里联系记录维护者",
       directHint: "长按图片保存到相册，打开微信扫一扫查看联系信息",
       contactTip: "联系上记录维护者后，可继续沟通这条记录的情况。",
-      directTip: "如已完成线下转账或其他方式记录，可回到页面登记一笔。",
+      directTip: "如已完成线下转账或其他方式记录，可回到页面登记支持。",
     };
   }
 
@@ -41,7 +41,7 @@ export function buildSupportSheetCopy(input: {
       contactHint: "复制微信号后，可在微信里联系记录维护者",
       directHint: "当前未提供二维码，可先通过微信联系记录维护者确认方式。",
       contactTip: "联系上记录维护者后，可继续沟通这条记录的情况。",
-      directTip: "沟通完成后，如已有线下转账或其他记录，可回到页面登记一笔。",
+      directTip: "沟通完成后，如已有线下转账或其他记录，可回到页面登记支持。",
     };
   }
 
@@ -50,7 +50,7 @@ export function buildSupportSheetCopy(input: {
       contactHint: "当前未提供微信号，可先保存二维码后用微信扫一扫查看联系信息",
       directHint: "长按图片保存到相册，打开微信扫一扫查看联系信息",
       contactTip: "若需了解更多细节，可先扫码联系记录维护者。",
-      directTip: "如已完成线下转账或其他方式记录，可回到页面登记一笔。",
+      directTip: "如已完成线下转账或其他方式记录，可回到页面登记支持。",
     };
   }
 
@@ -58,6 +58,6 @@ export function buildSupportSheetCopy(input: {
     contactHint: "当前暂未提供联系信息，请稍后再试",
     directHint: "当前暂未提供二维码，可稍后再看",
     contactTip: "如果页面稍后刷新出联系信息，可再回来查看。",
-    directTip: "完成记录后，可再回来登记一笔。",
+    directTip: "完成记录后，可再回来登记支持。",
   };
 }

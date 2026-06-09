@@ -17,11 +17,11 @@ export function ManualSupportEntryForm({
 }) {
   return (
     <View className="support-review-page__manual">
-      <FormField className="support-review-page__field" label="登记金额">
+      <FormField className="support-review-page__field" label="支持金额">
         <MoneyInput value={amount} onValueChange={onAmountChange} />
       </FormField>
 
-      <FormField className="support-review-page__field" label="登记人称呼">
+      <FormField className="support-review-page__field" label="支持人称呼">
         <Input
           className="support-review-page__input"
           placeholder="微信 ID / 昵称等"
@@ -31,7 +31,7 @@ export function ManualSupportEntryForm({
       </FormField>
 
       <SubmitActionBar iconName="send" onTap={onSubmit}>
-        提交登记
+        提交登记支持
       </SubmitActionBar>
     </View>
   );

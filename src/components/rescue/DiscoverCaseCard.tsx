@@ -112,7 +112,7 @@ export function DiscoverCaseCard({
           metricLayout="inline"
           metrics={[
             {
-              label: "已确认登记",
+              label: "已确认支持",
               tone: "brand",
               value: item.supportedAmountLabel,
             },

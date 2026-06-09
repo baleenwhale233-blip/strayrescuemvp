@@ -35,8 +35,8 @@
 - 我的记录工作台
 - 主客态详情
 - 建档三步
-- 登记一笔
-- 处理登记
+- 登记支持
+- 处理支持登记
 - 我的页正式版
 - 我的支持足迹
 - 联系方式设置
@@ -49,7 +49,7 @@
 但整体完成度还不能更高，原因已经从“缺整页”变成：
 
 - 多数页面仍需要真机截图级视觉精修
-- 处理登记、手动登记、追加预算等页面还需要多账号回归
+- 处理支持登记、手动登记支持、追加预算等页面还需要多账号回归
 - 主态详情的正式结束记录后端 action 还未接入
 - 工作台提醒、记录主页统计口径和若干边界状态还需要收口
 
@@ -68,9 +68,9 @@
 | 我的记录页（摘要版） | `423:2689`（`446:7511` 内） | [`src/pages/rescue/detail/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/detail/index.tsx) | 已可试跑 | 82% - 89% | 动物资金卡、动作区、摘要/详情 tab、owner 共享组件和底部“分享档案优先 + 二段结束确认”交互已在；时间线卡已开始统一到客态共享真值，剩余主要是结束记录后端链路、footer 细节和局部像素精修 |
 | 我的记录页（时间线更长版） | `421:2378`（`446:7511` 内） | [`src/pages/rescue/detail/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/detail/index.tsx) | 已可试跑 | 84% - 90% | 时间线四类卡片、tab 切换、二段结束确认和 owner 共享组件已在；支出/状态卡已可进入只读详情，当前主要剩余是结束记录后端 action、主态 timeline 轴线与局部卡片细节真机精修 |
 | 记录主页 | `442:6758`（`446:7511` 内） | [`src/pages/rescuer/home/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescuer/home/index.tsx) | 已可试跑 | 78% - 86% | 已新建顶部记录维护者信息区和公开案例列表，详情页“查看主页”已接入；当前已接 `getRescuerHomepage` 远端 VM，头像优先读取 `avatarAssetId` 资产链，下方案例列表复用首页卡片组件，剩余主要是统计口径和局部视觉精修 |
-| 登记一笔 | `322:2005`（`446:7512` 内） | [`src/pages/support/claim/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/claim/index.tsx) | 部分完成 | 86% - 92% | 结构、字段顺序、底部提交栏、主要 exact 图标、原生截图验图和案例卡 `记录开始时间` 已接稳定 `rescueStartedAtLabel` VM；`createSupportEntry` 远端写入已验通，剩余主要是细节视觉精修 |
-| 处理登记-待处理 | `319:1382`（`446:7512` 内） | [`src/pages/support/review/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/review/index.tsx) | 部分完成 | 78% - 84% | 双 tab 结构和 pending 卡片列表已在，且原生截图已跑通；`reviewSupportEntry` 的 `confirmed / unmatched` 远端状态流转和非 owner 权限回归已验通，剩余主要是卡片视觉精修 |
-| 处理登记-手动登记 | `441:4498`（`446:7512` 内） | [`src/pages/support/review/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/review/index.tsx) | 部分完成 | 58% - 66% | 已有 tab 内结构页壳并跑通 manual 原生截图场景；`createManualSupportEntry` 远端写入已接通，提交后回主态详情可形成场外收入卡片，剩余主要是视觉精修 |
+| 登记支持 | `322:2005`（`446:7512` 内） | [`src/pages/support/claim/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/claim/index.tsx) | 部分完成 | 86% - 92% | 结构、字段顺序、底部提交栏、主要 exact 图标、原生截图验图和案例卡 `记录开始时间` 已接稳定 `rescueStartedAtLabel` VM；`createSupportEntry` 远端写入已验通，剩余主要是细节视觉精修 |
+| 处理支持登记-待处理 | `319:1382`（`446:7512` 内） | [`src/pages/support/review/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/review/index.tsx) | 部分完成 | 78% - 84% | 双 tab 结构和 pending 卡片列表已在，且原生截图已跑通；`reviewSupportEntry` 的 `confirmed / unmatched` 远端状态流转和非 owner 权限回归已验通，剩余主要是卡片视觉精修 |
+| 处理支持登记-手动登记支持 | `441:4498`（`446:7512` 内） | [`src/pages/support/review/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/review/index.tsx) | 部分完成 | 58% - 66% | 已有 tab 内结构页壳并跑通 manual 原生截图场景；`createManualSupportEntry` 远端写入已接通，提交后回主态详情可形成场外收入卡片，剩余主要是视觉精修 |
 | 追加预算 | `6:999`（`446:7512` 内） | [`src/pages/rescue/budget-update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/budget-update/index.tsx) | 已可试跑 | 66% - 74% | 已完成 `动物卡 / 新预估总金额 / 当前已登记 / 追加原因 / 提示卡 / 固定底部主按钮` 的结构与主态/草稿统一入口；主态 `caseId` 已接 `createBudgetAdjustment` 远端写入，剩余主要是成功态反馈与节点级细节精修 |
 | 记录票据 | `441:4714`（`446:7512` 内） | [`src/pages/rescue/expense/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/expense/index.tsx) | 已可试跑 | 71% - 79% | 已完成 `公共凭证 / 合计 / 新增明细 / 倒序明细 / 固定底部主按钮` 的结构与多轮精修；主态 `caseId` 已接 `createExpenseRecord` 远端写入，真实凭证上传回归已跑通，剩余主要是成功态反馈和局部视觉细修 |
 | 更新进展 | `294:699`（`446:7512` 内） | [`src/pages/rescue/progress-update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/progress-update/index.tsx) | 已可试跑 | 71% - 79% | 已完成 `动物卡 / 阶段 chip / 详情 textarea / 图片记录 / 底部取消+发布` 的结构与主态/草稿统一入口；主态 `caseId` 已接 `createProgressUpdate` 远端写入，真实图片上传回归已跑通，剩余主要是成功态反馈与节点级视觉精修 |
@@ -132,7 +132,7 @@
 
 1. Alpha Round 0-4 暴露出的 P0 / P1 问题
 2. 工作台轻提醒与 badge 信息密度
-3. 发现页 / 客态详情 / 登记一笔 / 处理登记的真机视觉精修
+3. 发现页 / 客态详情 / 登记支持 / 处理支持登记的真机视觉精修
 4. 记账 / 写进展更新 / 追加预算的真机视觉精修
 5. 我的页 / 支持足迹 / 联系方式设置 / 记录主页的视觉精修
 

@@ -22,7 +22,7 @@ export function RescueGuestActionBar({ onClaim, onSupport }: RescueGuestActionBa
         <Text className="rescue-guest-action-bar__share-text">分享</Text>
       </Button>
       <AppButton className="rescue-guest-action-bar__ghost" onTap={onClaim} variant="ghost">
-        登记一笔
+        登记支持
       </AppButton>
       <AppButton className="rescue-guest-action-bar__cta" onTap={onSupport}>
         查看联系方式

@@ -61,7 +61,7 @@ export function SupportClaimForm({
         onCoverError={onCoverError}
       />
 
-      <FormField className="support-claim__field" label="登记金额">
+      <FormField className="support-claim__field" label="支持金额">
         <MoneyInput value={amount} onValueChange={onAmountChange} />
       </FormField>
 
@@ -75,7 +75,7 @@ export function SupportClaimForm({
 
       <FormField
         className="support-claim__field support-claim__field--upload"
-        label="相关截图/凭证"
+        label="支持截图/凭证"
       >
         <UploadStrip
           addIconName="imagePlus"
@@ -101,7 +101,7 @@ export function SupportClaimForm({
       </FormField>
 
       <SubmitActionBar iconName="send" onTap={onSubmit}>
-        提交登记
+        提交登记支持
       </SubmitActionBar>
     </>
   );

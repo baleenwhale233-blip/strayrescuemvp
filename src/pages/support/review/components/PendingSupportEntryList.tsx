@@ -40,7 +40,7 @@ export function PendingSupportEntryList({
               </View>
               <Text className="support-review-page__card-amount">{entry.amountLabel}</Text>
               <Text className="support-review-page__card-note">
-                “{entry.note || "待处理登记记录"}”
+                “{entry.note || "待处理支持登记"}”
               </Text>
             </View>
           </View>
@@ -80,8 +80,8 @@ export function PendingSupportEntryList({
         <EmptyState
           className="support-review-page__empty"
           iconName="handCoins"
-          title="暂时没有待处理登记"
-          description="新的登记提交后，会先出现在这里等待处理。"
+          title="暂时没有待处理支持"
+          description="新的支持登记提交后，会先出现在这里等待处理。"
         />
       ) : null}
     </View>

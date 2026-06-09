@@ -23,7 +23,7 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
             value: detail.ledger.confirmedExpenseAmountLabel,
           },
           {
-            label: "已确认登记",
+            label: "已确认支持",
             tone: "brand",
             value: detail.ledger.supportedAmountLabel,
             valueTone: "brand",

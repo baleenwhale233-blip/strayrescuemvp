@@ -139,9 +139,11 @@ function eventToTimelineItemVM(
     case "support":
       return {
         ...shared,
-        label: "场外登记",
+        label: "支持登记",
         tone: event.verificationStatus === "confirmed" ? "progress" : "draft",
-        title: event.supporterNameMasked ? `${event.supporterNameMasked} 的登记` : "新的登记记录",
+        title: event.supporterNameMasked
+          ? `${event.supporterNameMasked} 的支持登记`
+          : "新的支持登记",
         description: event.message,
         amountLabel: `+ ${formatCurrency(event.amount)}`,
         verificationStatus: event.verificationStatus,

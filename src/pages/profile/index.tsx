@@ -17,7 +17,7 @@ const PROFILE_USER_KEY = "profile-user:v1";
 const MENU_ITEMS: ProfileMenuItem[] = [
   {
     key: "support-history",
-    label: "我的登记记录",
+    label: "我的支持登记",
     iconName: "history",
   },
   {

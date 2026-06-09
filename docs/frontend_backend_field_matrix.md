@@ -455,7 +455,7 @@
 - 如果微信号和二维码都缺，会先引导到联系方式设置页，保存后再进入建档第一步
 - 当前已接正式后端 profile settings；新建救助前置校验已改为远端 `getMyProfile.hasContactProfile` 优先、本地兜底，口径为“微信号 / 二维码任一即可”
 
-### 6.4 “我已支持”登记页（support/claim）
+### 6.4 登记支持页（support/claim）
 
 当前页已经有 UI 和基本逻辑，实际消费字段如下：
 
@@ -485,7 +485,7 @@
 
 ### 当前注意事项
 
-- `support/claim` 页面标题和文案仍有旧口径（如“认领支持”），后续要继续对齐到“登记我的支持”
+- `support/claim` 页面标题和文案已对齐到“登记支持”
 - `support/claim` 当前已不再显示“待补充”；救助开始时间已收敛成稳定 `detail.rescueStartedAtLabel`
 - `support/claim` 当前会优先显示本地展示覆盖后的 `title / heroImageUrl / statusLabel`，这样建档后修改过的动物头像和最新状态能保持一致
 - `support/claim` 这轮已移除 Figma 中不存在的 `支持时间` 可编辑字段，保持结构与节点一致

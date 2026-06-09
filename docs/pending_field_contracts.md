@@ -119,7 +119,7 @@
 | `judgementCard.primaryNeed` | VM | 当前最需要解决的问题，不是长文病情描述 | 未做 | selector 派生 |
 | `judgementCard.nextMilestoneHint` | VM | 下一关键节点提示，例如“明天复查” | 未做 | 先允许缺省，后续从 timeline / event 衍生 |
 | `rescuer.profileEntryEnabled` | VM | 是否展示“查看主页”为可点击入口 | 已接 | 当前规则为有 `rescuer.id` 即可展示；后续如需隐藏主页可扩 profile 字段 |
-| `rescueStartedAt` / `rescueStartedAtLabel` | selector / VM | 救助开始时间，用于认领支持页案例卡和后续详情摘要，不等于最近更新时间 | 已接 | `PublicDetailVM` 统一输出，优先级为 `case.foundAt -> case_created.occurredAt -> case.createdAt` |
+| `rescueStartedAt` / `rescueStartedAtLabel` | selector / VM | 救助开始时间，用于登记支持页案例卡和后续详情摘要，不等于最近更新时间 | 已接 | `PublicDetailVM` 统一输出，优先级为 `case.foundAt -> case_created.occurredAt -> case.createdAt` |
 
 ### 当前不建议新增的字段
 

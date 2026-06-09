@@ -2948,3 +2948,13 @@
 - 影响范围：涉及 canonical modeling、PublicDetailVM、首页卡 VM 和相关 domain tests；现有页面兼容保持，未新增 richer VM / richer mock，CloudBase / repository 写链不变。
 - 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`git diff --check` 通过；domain tests 覆盖预算调整后旧预算不误报“即将筹满”。
 - 下一步 / 遗留问题：需要真机刷新当前案例，确认预算调整后的差额大于 300 时显示“距离预算还差较多”。
+
+## 2026-06-09 | 支持登记 | 文案统一为登记支持
+
+- 日期：2026-06-09
+- 改动主题：把客态入口、支持登记表单、处理页、工作台提醒和支持足迹文案统一到“登记支持 / 支持登记 / 已确认支持”。
+- 为什么改：原有“登记一笔 / 处理登记 / 已确认登记”过于隐晦，用户不容易立刻理解是在登记已经发生的支持。
+- 改了什么：更新详情底栏、联系半弹层提示、登记支持页、处理支持登记页、我的支持登记页、owner 快捷入口、selector / fixture 展示文案，并同步总控、主 IA、页面 IA、测试计划和字段说明。
+- 影响范围：仅影响展示文案和文档命名；现有页面兼容保持，未新增 richer VM / richer mock，CloudBase / repository 写链和数据结构不变。
+- 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`git diff --check` 通过。
+- 下一步 / 遗留问题：需要真机确认长文案在详情底栏、处理页 tab 和 owner 快捷卡上不拥挤。

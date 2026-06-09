@@ -37,11 +37,11 @@ function getProjectNotice(project: WorkbenchCaseCardVM) {
   }
 
   if (project.pendingSupportEntryCount) {
-    return `${project.pendingSupportEntryCount} 条登记待处理`;
+    return `${project.pendingSupportEntryCount} 条支持登记待处理`;
   }
 
   if (project.unmatchedSupportEntryCount) {
-    return `${project.unmatchedSupportEntryCount} 条登记待核对`;
+    return `${project.unmatchedSupportEntryCount} 条支持登记待核对`;
   }
 
   if (project.homepageEligibilityStatus && project.homepageEligibilityStatus !== "eligible") {

@@ -120,7 +120,7 @@ export function RescueOwnerSummaryCard({
             value: expenseLabel,
           },
           {
-            label: "已确认登记",
+            label: "已确认支持",
             tone: "brand",
             value: supportLabel,
           },

@@ -238,7 +238,7 @@ function migrateSupportEntriesFromTimeline(
         supportThreadId: buildSupportThreadId(caseId, supporterUserId),
         caseId,
         supporterUserId,
-        supporterNameMasked: entry.title || "已登记记录",
+        supporterNameMasked: entry.title || "已登记支持",
         amount: Math.max(entry.amount ?? 0, 0),
         currency: "CNY" as CurrencyCode,
         supportedAt: draft.updatedAt,
@@ -276,10 +276,10 @@ function projectSupportEntryToTimelineEntry(
 ): RescueCreateTimelineEntry {
   const statusLabel =
     entry.status === "confirmed"
-      ? "已确认登记"
+      ? "已确认支持"
       : entry.status === "pending"
-        ? "待处理登记"
-        : "未匹配登记";
+        ? "待处理支持"
+        : "未匹配支持";
 
   return {
     id: `timeline-${entry.id}`,

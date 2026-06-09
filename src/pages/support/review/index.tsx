@@ -84,7 +84,7 @@ export default function SupportReviewPage() {
     setReloadSeed((value) => value + 1);
     reloadDetail().catch(() => {
       Taro.showToast({
-        title: "待处理登记加载失败",
+        title: "支持登记加载失败",
         icon: "none",
       });
     });
@@ -143,7 +143,7 @@ export default function SupportReviewPage() {
       const numericAmount = Number(manualAmount);
 
       if (!numericAmount || Number.isNaN(numericAmount) || numericAmount <= 0) {
-        Taro.showToast({ title: "请填写登记金额", icon: "none" });
+        Taro.showToast({ title: "请填写支持金额", icon: "none" });
         return;
       }
 
@@ -153,17 +153,17 @@ export default function SupportReviewPage() {
           supporterNameMasked: manualSupporter.trim() || "线下记录",
           amount: numericAmount,
           supportedAt: new Date().toISOString(),
-          note: "记录维护者手动登记一笔",
+          note: "记录维护者手动登记支持",
         });
         Taro.hideLoading();
         setManualAmount("");
         setManualSupporter("");
         await showSuccessFeedback({
-          title: "已登记入账",
+          title: "支持已登记入账",
         });
       } catch {
         Taro.hideLoading();
-        Taro.showToast({ title: "登记失败，请稍后重试", icon: "none" });
+        Taro.showToast({ title: "登记支持失败，请稍后重试", icon: "none" });
       }
     });
 
@@ -186,18 +186,18 @@ export default function SupportReviewPage() {
 
   return (
     <PageShell key={reloadSeed} className="support-review-page">
-      <NavBar showBack title="处理登记" />
+      <NavBar showBack title="处理支持登记" />
 
       <SegmentedTabs
         className="support-review-page__tabs"
         value={activeTab}
         items={[
           {
-            label: "待处理登记",
+            label: "待处理支持",
             value: "pending",
             badge: activeTab === "pending" ? `${pendingBadgeCount}` : undefined,
           },
-          { label: "手动登记", value: "manual" },
+          { label: "手动登记支持", value: "manual" },
         ]}
         onChange={(value) => setActiveTab(value as ReviewTab)}
       />

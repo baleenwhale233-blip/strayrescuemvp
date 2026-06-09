@@ -188,7 +188,7 @@ function buildPreviewTimelineEntries(draft: RescueCreateDraft): PreviewTimelineE
       id: `support-${entry.id}`,
       tone: "income" as const,
       label: "场外收入",
-      title: `${entry.supporterNameMasked || "登记用户"} 的登记`,
+      title: `${entry.supporterNameMasked || "支持者"} 的支持登记`,
       description: entry.note ? `备注：${entry.note}` : undefined,
       timestamp: formatTimelineTimestamp(new Date(entry.supportedAt)),
       amount: entry.amount,
@@ -737,7 +737,7 @@ export default function RescueCreatePreviewPage() {
           <RescueOwnerTimeline
             emptyState={{
               title: "还没有第一条记录",
-              description: "可以先记录一笔支出、更新进展，或者补上一笔场外登记。",
+              description: "可以先记录一笔支出、更新进展，或者补上一笔支持登记。",
             }}
             items={toPreviewTimelineItems(draft)}
           />

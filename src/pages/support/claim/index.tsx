@@ -40,7 +40,7 @@ function mapSupportError(error: unknown) {
     return "24 小时内最多登记 3 次";
   }
 
-  return "登记失败，请稍后重试";
+  return "登记支持失败，请稍后重试";
 }
 
 function getSupportClaimCover(detail: PublicDetailVM) {
@@ -87,12 +87,12 @@ export default function SupportClaimPage() {
         className="support-claim"
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
-        <NavBar showBack title="登记一笔" />
+        <NavBar showBack title="登记支持" />
         <EmptyState
           className="support-claim__state"
           iconName="handCoins"
           title="正在加载档案信息"
-          description="先把档案卡片和登记表单准备好，请稍等片刻。"
+          description="先把档案卡片和登记支持表单准备好，请稍等片刻。"
         />
       </PageShell>
     );
@@ -104,7 +104,7 @@ export default function SupportClaimPage() {
         className="support-claim"
         style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
       >
-        <NavBar showBack title="登记一笔" />
+        <NavBar showBack title="登记支持" />
         <EmptyState
           className="support-claim__state"
           iconName="fileText"
@@ -141,7 +141,7 @@ export default function SupportClaimPage() {
 
       if (!numericAmount || Number.isNaN(numericAmount)) {
         Taro.showToast({
-          title: "请填写登记金额",
+          title: "请填写支持金额",
           icon: "none",
         });
         return;
@@ -167,7 +167,7 @@ export default function SupportClaimPage() {
         Taro.hideLoading();
 
         await showSuccessFeedback({
-          title: "已登记，待处理",
+          title: "支持已登记，待处理",
           delay: 900,
         });
       } catch (error) {
@@ -184,7 +184,7 @@ export default function SupportClaimPage() {
       className="support-claim"
       style={{ paddingBottom: `${120 + keyboardBottomInset}px` }}
     >
-      <NavBar showBack title="登记一笔" />
+      <NavBar showBack title="登记支持" />
 
       <SupportClaimForm
         amount={amount}
