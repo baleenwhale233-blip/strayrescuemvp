@@ -3037,3 +3037,23 @@
 - 影响范围：仅影响主态详情和草稿预览复用快捷动作区的视觉对齐；不改页面结构、交互、VM、数据模型、repository 或 CloudBase。
 - 验证结果：`format:check`、`build:weapp`、`git diff --check` 通过；构建仍只有既有图片体积和 no async chunks warning。
 - 下一步 / 遗留问题：需要在微信开发者工具里看 owner 详情和草稿预览首屏，确认按钮与上下组件边线一致。
+
+## 2026-06-09 | 我的页 | 使用说明文案人话化
+
+- 日期：2026-06-09
+- 改动主题：按 `humanizer-zh` 重写端内使用说明页文案。
+- 为什么改：原文偏 GPT 式说明书，句子长、口号感重，首屏也不够像产品里的用户说明。
+- 改了什么：使用说明页 hero、分区标题、记录维护者步骤、查看者步骤和边界提醒改成更短、更直接的 UX 文案；同步 `docs/rescue_ledger_usage_guide.md`。
+- 影响范围：仅影响使用说明页和对应用户文案文档；不改页面结构、路由、VM、selector、repository、CloudBase 或 fixtures。
+- 验证结果：`typecheck`、`format:check`、`build:weapp`、`git diff --check` 通过；构建仍只有既有图片体积和 no async chunks warning。
+- 下一步 / 遗留问题：需要在微信开发者工具里看使用说明首屏和列表段落，确认长句不挤。
+
+## 2026-06-09 | 我的页 | 使用说明改成救助语境
+
+- 日期：2026-06-09
+- 改动主题：把使用说明里动物相关的“处理”改成“救助 / 跟进”。
+- 为什么改：`处理动物` 听起来像处置，不够温和，也不符合救助产品的语境。
+- 改了什么：端内使用说明和 `docs/rescue_ledger_usage_guide.md` 中动物相关的三处表达改为 `正在救助这只动物`、`动物的救助过程`、`后续跟进`；支持登记里的业务“处理”保持不变。
+- 影响范围：仅影响使用说明页和对应用户文案文档；不改页面结构、路由、VM、selector、repository、CloudBase 或 fixtures。
+- 验证结果：`typecheck`、`format:check`、`build:weapp` 通过；构建仍只有既有图片体积和 no async chunks warning。
+- 下一步 / 遗留问题：需要在微信开发者工具里重新编译后确认首屏和说明段落显示新文案。
