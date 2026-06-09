@@ -64,7 +64,7 @@ export default function RescueCreateBudgetPage() {
       className="rescue-budget-page"
       style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
     >
-      <NavBar showBack title="新建记录" onBack={handleBack} />
+      <NavBar showBack title="新建档案" onBack={handleBack} />
 
       <CreateBudgetForm
         budget={budget}

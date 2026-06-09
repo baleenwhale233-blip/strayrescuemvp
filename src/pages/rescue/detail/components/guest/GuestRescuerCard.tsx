@@ -17,7 +17,7 @@ export function GuestRescuerCard({
       <View className="rescuer-card__body">
         <Text className="rescuer-card__name">{detail.rescuer.name}</Text>
         <Text className="rescuer-card__meta">
-          已建立 {detail.rescuer.stats.publishedCaseCount} 份记录档案 ·{" "}
+          已建立 {detail.rescuer.stats.publishedCaseCount} 份救助档案 ·{" "}
           {detail.rescuer.stats.verifiedReceiptCount} 张已上传凭证
         </Text>
       </View>

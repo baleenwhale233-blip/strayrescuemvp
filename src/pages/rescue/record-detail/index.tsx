@@ -33,7 +33,7 @@ function getPageTitle(kind?: RescueReadonlyRecordDetail["kind"]) {
 
 function getImmutableCopy(kind?: RescueReadonlyRecordDetail["kind"]) {
   if (kind === "expense") {
-    return "支出记录可以由记录维护者修改；每次修改都会保留原值和新值，方便之后查档。";
+    return "支出记录可以由档案维护者修改；每次修改都会保留原值和新值，方便之后查档。";
   }
 
   if (kind === "status") {
@@ -207,7 +207,7 @@ export default function RescueReadonlyRecordDetailPage() {
         <NavBar showBack title="记录详情" />
         <EmptyState
           className="record-detail-page__empty"
-          description="请返回记录明细后重新打开。"
+          description="请返回档案详情后重新打开。"
           iconName="fileText"
           title="暂未找到记录"
         />

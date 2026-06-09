@@ -90,7 +90,7 @@
       "currency": "CNY",
       "supportSource": "donor_claim",
       "supporterNameMasked": "李**",
-      "message": "先登记一下，等记录维护者处理",
+      "message": "先登记一下，等档案维护者处理",
       "verificationStatus": "pending",
       "assetIds": ["asset_support_002"],
       "visibility": "private"

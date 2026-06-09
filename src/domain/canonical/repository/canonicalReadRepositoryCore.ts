@@ -184,7 +184,7 @@ export function getOwnerDetailVMByCaseIdFromBundles(
     sourceKind: bundle.sourceKind,
     draftId: bundle.sourceKind === "local" ? caseIdToDraftId(bundle.case.id) : undefined,
     title: publicDetail.title,
-    navTitle: "记录管理",
+    navTitle: "档案管理",
     state: publicDetail.statusLabel,
     coverImage: publicDetail.heroImageUrl,
     statusLabel: publicDetail.statusLabel,

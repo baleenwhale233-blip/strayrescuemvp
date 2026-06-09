@@ -31,8 +31,8 @@ export function getOwnerFinishBarViewModel(mode: OwnerFinishBarMode): OwnerFinis
       sideAction: "cancel",
       sideLabel: "取消",
       primaryAction: "slider",
-      primaryLabel: "右滑结束记录",
-      hint: "确认这条记录已完成或已结案时，请滑动结束项目",
+      primaryLabel: "右滑结束档案",
+      hint: "确认这份档案已完成或已结案时，请滑动结束项目",
     };
   }
 

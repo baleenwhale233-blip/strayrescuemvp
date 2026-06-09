@@ -10,7 +10,7 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
   return (
     <SurfaceCard className="detail-card">
       <View className="detail-card__head">
-        <Text className="detail-card__title">记录资金状态</Text>
+        <Text className="detail-card__title">档案资金状态</Text>
         <AppIcon className="detail-card__info-icon" name="info" size={14} variant="muted" />
       </View>
 

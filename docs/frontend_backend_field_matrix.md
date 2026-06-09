@@ -124,7 +124,7 @@
 | 内部案例 id | `caseId` | `OwnerDetailVM` | 已有 | 详情页主键，主客态身份不再由路由参数指定 |
 | 案例号 | `publicCaseId` | `OwnerDetailVM` | 已有 | 已接到页面 |
 | 标题 | `title` | `OwnerDetailVM` | 已有 | 动物名 |
-| 导航标题 | `navTitle` | `OwnerDetailVM` | 已有 | 当前固定“救助记录管理” |
+| 导航标题 | `navTitle` | `OwnerDetailVM` | 已有 | 当前固定“救助档案管理” |
 | 当前阶段 | `statusLabel` | `OwnerDetailVM` | 已有 | 顶部卡片 |
 | 当前状态色 | `statusTone` | `OwnerDetailVM` | 已有 | 视觉状态 |
 | 目标金额 | `ledger.targetAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
@@ -149,7 +149,7 @@
 - 已发布详情入口统一只携带 `id`；详情页自动尝试读取 owner VM，成功展示主态，失败展示客态
 - 主态详情页这轮已改成：**首次进入必加载；从子页面返回只有真实写入成功后才刷新**，不再因为进入记账页后无提交返回而整页重载
 - 客态详情里的“查看主页”当前已接 `/pages/rescuer/home/index?rescuerId=...`，并由 `PublicDetailVM.rescuer.profileEntryEnabled` 控制显隐
-- 主态详情底部默认优先展示“分享档案”，点击小“结束”后才显示“右滑结束记录”确认态；滑动和二次确认已有，确认后仍未调用后端关闭案例 action
+- 主态详情底部默认优先展示“分享档案”，点击小“结束”后才显示“右滑结束档案”确认态；滑动和二次确认已有，确认后仍未调用后端关闭案例 action
 - 主客态详情的时间线支出记录 / 状态更新已接记录详情页，优先用 `getCaseRecordDetail` 回读正式详情 VM，storage 仅作旧兜底；支出可由 owner 修改并留痕，状态更新仍提交后不可修改
 
 ## 3.1 救助人主页

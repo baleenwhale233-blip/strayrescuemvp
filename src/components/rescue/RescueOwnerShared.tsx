@@ -261,7 +261,7 @@ export function RescueOwnerOverview({
   return (
     <View className="rescue-owner-overview">
       <SurfaceCard className="rescue-owner-overview__about">
-        <Text className="rescue-owner-overview__title">关于这条记录</Text>
+        <Text className="rescue-owner-overview__title">关于这份档案</Text>
         {paragraphs.map((paragraph) => (
           <Text key={paragraph} className="rescue-owner-overview__paragraph">
             {paragraph}

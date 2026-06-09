@@ -114,8 +114,8 @@ export function WorkbenchProjectSections({
           ) : (
             <EmptyState
               className="rescue-page__empty"
-              title="你还没有进行中的记录"
-              description="新建公开记录后，会显示在这里继续维护。"
+              title="你还没有进行中的档案"
+              description="新建公开档案后，会显示在这里继续维护。"
             />
           )}
         </View>
@@ -137,7 +137,7 @@ export function WorkbenchProjectSections({
             <EmptyState
               className="rescue-page__empty"
               title="当前没有草稿"
-              description="未发布的记录会先保存在草稿箱。"
+              description="未发布的档案会先保存在草稿箱。"
             />
           )}
         </View>

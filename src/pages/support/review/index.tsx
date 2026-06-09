@@ -153,7 +153,7 @@ export default function SupportReviewPage() {
           supporterNameMasked: manualSupporter.trim() || "线下记录",
           amount: numericAmount,
           supportedAt: new Date().toISOString(),
-          note: "记录维护者手动登记支持",
+          note: "档案维护者手动登记支持",
         });
         Taro.hideLoading();
         setManualAmount("");

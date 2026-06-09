@@ -150,7 +150,7 @@
 | 字段 | 所属层 | 文字标注 | 当前状态 | 后续动作 |
 |---|---|---|---|---|
 | `rescuer.name` | canonical / VM | 救助人昵称 | 已有，页面已接 | 后续接真实 user profile |
-| `rescuer.avatarUrl` | canonical / VM | 救助人头像 | 已有，页面已接 | 记录主页 VM 会优先按 `avatarAssetId` 从 bundle assets 解析头像 URL，再回退到直接 `avatarUrl` |
+| `rescuer.avatarUrl` | canonical / VM | 救助人头像 | 已有，页面已接 | 档案主页 VM 会优先按 `avatarAssetId` 从 bundle assets 解析头像 URL，再回退到直接 `avatarUrl` |
 | `rescuer.stats.publishedCaseCount` | canonical / VM | 已建立救助档案数 | 已有，页面已接 | 后续确认统计口径 |
 | `rescuer.stats.verifiedReceiptCount` | canonical / VM | 已上传凭证数 | 已有，页面已接 | 后续确认是否含共享凭证；端内不使用“真实凭证”作为背书式展示 |
 | `rescuerCases[]` | 远端 VM | 该救助人的公开案例卡列表 | 远端已接 | `getRescuerHomepage.bundles` -> `HomepageCaseCardVM[]` |
@@ -199,7 +199,7 @@
 
 - 主态详情页这轮没有新增后端字段
 - 详情页“返回后是否刷新”现在由前端页面级 refresh signal 控制，不是新的 canonical / selector 字段
-- “结束记录”当前只是前端二段确认保护：默认先展示“分享档案”，点击小“结束”后才显示右滑确认；确认后仍提示待接入，不会真的修改 case 状态
+- “结束档案”当前只是前端二段确认保护：默认先展示“分享档案”，点击小“结束”后才显示右滑确认；确认后仍提示待接入，不会真的修改 case 状态
 - 支出记录 / 状态更新的只读详情页是前端展示收口；记录不可修改是产品规则，后端后续也应按追加记录而非修改原记录的方式设计
 
 ---
@@ -397,7 +397,7 @@
 - 记账页当前提交闭环分两路：`caseId` 优先走 CloudBase `createExpenseRecord`，基础设施不可用时才回落 owner detail 的前端页面层 local overlay；`draftId` 走本地 draft 的 `expenseRecords`
 - 主态详情里“提交后可看到支出卡”在远端成功时来自正式 `expense_records + case_events(type=expense)` 回读，不再依赖 local overlay；local overlay 只作为降级兜底，且远端成功后会清理 `case-expense-submissions:{caseId}`
 - 支出卡标题当前直接由记账页项目描述拼接生成，不再依赖 `merchantName`
-- 支出记录提交后允许记录维护者修改；当前详情页提供“查看详情 / 修改支出”，并已接 `getCaseRecordDetail`
+- 支出记录提交后允许档案维护者修改；当前详情页提供“查看详情 / 修改支出”，并已接 `getCaseRecordDetail`
 - `getCaseRecordDetail` 会返回结构化 `expenseItems[]`、`editable` 与 `revisionHistory[]`，不依赖前端从“支付：A + B + C”标题里拆分，也不向详情页输出医院 / 商户字段
 - 更正金额或用途时调用 `updateExpenseRecord`，必须在 `expense_records.revisionHistory[]` 保留原值和新值，不能静默覆盖
 - 草稿 detail tab 当前对 `expense / income` 只走结构化记录渲染，不再重复消费 `draft.timeline` 里的兼容投影

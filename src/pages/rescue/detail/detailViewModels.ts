@@ -36,7 +36,7 @@ export function getSummaryParagraphs(detail: PublicDetailVM) {
     .map((sentence) => sentence.trim())
     .filter(Boolean)
     .filter((sentence) => !sentence.includes("预算"));
-  const introParagraph = introSentences.join("").trim() || "这条记录的情况介绍待补充。";
+  const introParagraph = introSentences.join("").trim() || "这份档案的情况介绍待补充。";
 
   return [introParagraph, `当前总预算为${detail.ledger.targetAmountLabel}。`];
 }
@@ -124,10 +124,10 @@ export function getFundingCompareMetrics(input: { supportAmount: number; targetA
 
 export function getShareTitle(detail?: PublicDetailVM) {
   if (!detail) {
-    return "救助透明记录档案";
+    return "救助透明档案";
   }
 
-  return `${detail.title}当前${detail.statusLabel}，查看这份透明记录档案`;
+  return `${detail.title}当前${detail.statusLabel}，查看这份透明档案`;
 }
 
 export function getOwnerOverviewProps(detail: PublicDetailVM) {

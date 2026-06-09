@@ -43,13 +43,13 @@
 - 已发布案例的 `title / cover` 在远端编辑成功后会清理对应 `caseId + draftId` 覆盖；主态 `budget / status / expense` 在远端写成功后也会清理对应 overlay key，避免旧本机结果再次压过远端真值；页面层现在只调用 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback`，不再直接操作 raw overlay storage API
 - `localPresentation` 已拆成 storage / resolver / core：storage 读写本地 key，resolver 组装 `LocalPresentationSnapshot`，overlay 合成集中到 `localPresentationCore` 纯函数，避免测试路径和生产路径越走越远
 - 联系方式完整性已改成“微信号 / 二维码任一即可”，且联系方式半弹层运行时文案已收口到“联系信息 / 查看联系方式 / 登记支持”；还需要一轮真机回归确认单渠道场景下都顺畅
-- 首页 / 详情 / 记录主页主图已统一 fallback 到“封面 -> face -> 最新公开进展图”，但仍要用真实远端数据再确认一次新建后发布案例的封面回读
+- 首页 / 详情 / 档案主页主图已统一 fallback 到“封面 -> face -> 最新公开进展图”，但仍要用真实远端数据再确认一次新建后发布案例的封面回读
 - 新记账已改成强制至少 1 张图片，历史无图记录按纯文本兼容；记账页已补顶部吸顶合计反馈，还需要真机确认图片上传、吸顶反馈和无图历史卡片展示
 - P0-B 三条写链路和 `support/review` 手动登记收入已完成开发环境自动化验证；基础成功提示已统一，更多真机账号回归仍未做
 - 支持登记写链路与核实链路已完成 CloudBase 开发环境远端闭环验证，包含 `pending -> confirmed / unmatched`
-- 主态详情底部已改为默认“分享档案”优先、小“结束”进入二段右滑确认；正式结束记录后端关闭 action 仍待接入
+- 主态详情底部已改为默认“分享档案”优先、小“结束”进入二段右滑确认；正式结束档案后端关闭 action 仍待接入
 - 分享直达详情页时，默认返回按钮已补无页面栈 fallback 到 `发现` tab；仍需真机从微信分享卡片冷启动验证
-- Alpha Seed Pack 已准备并播种到 `cloud1-9gl5sric0e5b386b`，包含演示记录维护者、公开案例、草稿案例、支持登记记录和 28 张 Alpha 测试图片；`npm run seed:alpha` 现在会重置旧 demo / probe / 验收残留数据
+- Alpha Seed Pack 已准备并播种到 `cloud1-9gl5sric0e5b386b`，包含演示档案维护者、公开案例、草稿案例、支持登记记录和 28 张 Alpha 测试图片；`npm run seed:alpha` 现在会重置旧 demo / probe / 验收残留数据
 - Alpha 人测与 agent 补测流程已收口到 `docs/alpha_test_plan.md` 与 `npm run preflight:alpha`；当前 preflight 覆盖 repo safety、format check、lint、typecheck、domain tests、weapp build 和 smoke manifest route validation；发包前先跑 Round 0，再进入人测
 - owner 权限链路已完成非 owner `FORBIDDEN` 回归；换测试账号或重 seed 时需要重新确认 owner 绑定
 
@@ -75,7 +75,7 @@
 | 登记支持页面 | `已可试跑` | `322:2005` | `figma_progress_map` / `pending_field_contracts` | 已完成结构版、输入区运行态修正和原生截图验图；`createSupportEntry` 已在 CloudBase 开发环境验通，案例卡已改用稳定 `rescueStartedAtLabel` |
 | 处理支持登记页面 | `已可试跑` | `319:1382` | `figma_progress_map` / `pending_field_contracts` | 已完成双 tab 结构版并跑通原生截图；确认 / 未匹配链路已远端验通，继续做卡片精修和多账号回归 |
 
-### P0-B：记录维护者高频生产页
+### P0-B：档案维护者高频生产页
 
 | 页面 | 当前状态 | Figma 节点 | 依赖文档 | 下一步 |
 |---|---|---|---|---|
@@ -86,11 +86,11 @@
 
 | 页面 | 当前状态 | Figma 节点 | 依赖文档 | 下一步 |
 |---|---|---|---|---|
-| 我的记录 / 工作台 | `设计部分还原` | `1:2` | `figma_progress_map` / `frontend_backend_field_matrix` | 结构、列表与本地展示覆盖兜底已在；正式远端成功回包不再吃本机 overlay；`primaryNoticeLabel / lastUpdateAgeHint` 已补 selector VM，继续补 badge 信息密度和细节贴稿 |
+| 我的档案 / 工作台 | `设计部分还原` | `1:2` | `figma_progress_map` / `frontend_backend_field_matrix` | 结构、列表与本地展示覆盖兜底已在；正式远端成功回包不再吃本机 overlay；`primaryNoticeLabel / lastUpdateAgeHint` 已补 selector VM，继续补 badge 信息密度和细节贴稿 |
 | 我的页正式版 | `设计部分还原` | `444:7259` | `figma_progress_map` / `pending_field_contracts` | 已从占位页升级成正式入口页；头像昵称现已改成 `chooseAvatar + nickname + 保存` 的轻编辑链路，支持足迹 / 联系方式设置 / 使用说明入口均已接真实页面 |
 | 我的支持登记 | `页面骨架已在` | `446:7625` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并优先读取 `getMySupportHistory` 远端 VM，按真实 OPENID 聚合 confirmed 支持；继续做视觉精修 |
-| 联系信息设置 | `页面骨架已在` | `446:7828` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getMyProfile / updateMyProfile`；微信二维码会上传为 CloudBase fileID 并落到 `user_profiles.paymentQrAssetId`；新建记录前置校验已改为远端 `hasContactProfile` 优先、本地兜底，且口径为“微信号 / 二维码任一即可” |
-| 记录主页 | `已可试跑` | `442:6758` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getRescuerHomepage` 远端 VM；顶部记录维护者信息和公开案例列表由 CloudBase 输出，案例点击沿用详情自动 owner 识别；继续做细节贴稿 |
+| 联系信息设置 | `页面骨架已在` | `446:7828` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getMyProfile / updateMyProfile`；微信二维码会上传为 CloudBase fileID 并落到 `user_profiles.paymentQrAssetId`；新建档案前置校验已改为远端 `hasContactProfile` 优先、本地兜底，且口径为“微信号 / 二维码任一即可” |
+| 档案主页 | `已可试跑` | `442:6758` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getRescuerHomepage` 远端 VM；顶部档案维护者信息和公开案例列表由 CloudBase 输出，案例点击沿用详情自动 owner 识别；继续做细节贴稿 |
 | 手动登记 | `已可试跑` | `441:4498` | `figma_progress_map` / `pending_field_contracts` | 已在 `support/review` manual tab 接 `createManualSupportEntry` 远端写入，提交后回主态详情可显示已确认支持卡片；继续补细节视觉和多账号回归 |
 
 ### P2：流程增强页
@@ -125,14 +125,14 @@
   - 草稿预览页与主态详情页的头卡现在继续共用同一套组件，标题和动物头像都可直接在头卡编辑
   - 代号 / 动物头像当前已补前端本地持久化，并会在草稿预览、主态详情、工作台和支持登记页间保持一致；主态 `caseId` 的代号 / 头像已接 `updateCaseProfile` 远端写入，本地覆盖层降级为兜底，远端成功后会清理对应 `caseId + draftId` 的 title / cover 覆盖
   - 工作台与主态详情当前会优先显示正式远端头像 / 代号；远端不可用时仍可吃建档第一步上传的本地头像，以及状态更新页里最近一次选中的状态文案
-  - 工作台、首页、详情和记录主页的状态文案当前都已按 `currentStatus` 枚举收口到状态更新页标签池；历史自由文案不再直接外露
+  - 工作台、首页、详情和档案主页的状态文案当前都已按 `currentStatus` 枚举收口到状态更新页标签池；历史自由文案不再直接外露
   - 客态详情页当前也已接入同一层本地展示覆盖，但仅在本地 fallback 场景下才会继续吃这些值；正式远端成功回包时不再注入本机 `title / heroImageUrl / statusLabel` overlay
   - 主态详情页与草稿预览页已抽出共享 owner-style 组件，统一复用 `动物卡 / 动作卡 / tab / 摘要卡 / 时间线卡`
   - 客态详情 / 主态详情 / 草稿预览 detail tab 已开始统一到共享时间线卡组件，持续以客态卡片为视觉真值收口
   - 新建救助第一页 / 第二步已按 Figma `6:292 / 6:345` 收口新版结构，去掉旧的“相册导入 / 账本预览”偏题块，并贴回新版底部按钮图标与表单层级
   - 登记支持页面已完成 `案例卡 + 金额输入 + 称呼输入 + 上传区 + 备注区 + 底部固定提交按钮` 的结构版收口
   - 登记支持页面已移除 Figma 中不存在的 `支持时间` 字段，并补上页面级 loading / error 态
-  - 登记支持页面的 `记录开始时间` 已改用 `PublicDetailVM.rescueStartedAtLabel`，不再在页面层查找 `case_created`
+  - 登记支持页面的 `救助开始时间` 已改用 `PublicDetailVM.rescueStartedAtLabel`，不再在页面层查找 `case_created`
   - 处理支持登记页已完成 `待处理支持 / 手动登记支持` 双 tab 结构版，并跑通原生截图场景
   - 记账页已新建独立页面 `src/pages/rescue/expense/index.tsx`，完成 `公共凭证 -> 本次合计支出 -> 新增明细 -> 多条支出行 -> 底部固定主按钮` 的结构版，并接通主态详情页入口
   - 记账页已补 `公共凭证横向滚动查看 + 点击看大图 + 按 caseId / draftId 静默缓存未提交内容，并在再次进入时选择继续上次录入或新的录入`
@@ -151,18 +151,18 @@
   - 个案详情页现在只会在首次进入或子页面真实写入成功后刷新；从记账页无提交返回时不再整页重载
   - 项目内默认多行文本输入当前已统一成覆盖层 placeholder 实现，统一 `14px / 24px / #94A3B8 / 18px inset`，不再依赖系统原生 `Textarea placeholder`
   - 我的页已按 Figma `444:7259` 从占位页升级为正式入口页，当前提供 `chooseAvatar + nickname + 保存头像昵称` 的轻编辑入口
-  - 我的页头像 / 昵称已接 `getMyProfile / updateMyProfile`，头像会写成 `avatarAssetId` 并回流到个案详情 / 记录主页；本地 `profile-user:v1` 只作为离线兜底，且进页时会做本地到远端的补同步
+  - 我的页头像 / 昵称已接 `getMyProfile / updateMyProfile`，头像会写成 `avatarAssetId` 并回流到个案详情 / 档案主页；本地 `profile-user:v1` 只作为离线兜底，且进页时会做本地到远端的补同步
   - 使用说明已新增静态页面 `src/pages/profile/guide/index.tsx`，入口从“我的”页跳转，不再是 toast 占位
   - 我的支持登记页已按 Figma `446:7625` 新建，并优先读取 `getMySupportHistory` 远端 VM；当前已用真实 OPENID 聚合 confirmed 支持
   - 联系信息设置页已按 Figma `446:7828` 新建，并接 `user_profiles` 远端读写；微信二维码会上传为 CloudBase `cloud://` fileID
-  - 新建记录前当前会优先读取远端 `getMyProfile.hasContactProfile`，微信号或二维码任一存在即可通过前置校验；CloudBase 不可用时才回落本地校验
+  - 新建档案前当前会优先读取远端 `getMyProfile.hasContactProfile`，微信号或二维码任一存在即可通过前置校验；CloudBase 不可用时才回落本地校验
   - “查看联系方式”半弹层已改成滚动内容 + 固定底部操作，并按“仅二维码 / 仅微信号 / 两者都有”真实展示，不再补假二维码占位；运行时文案已去掉带支付指向的表述
-  - 所有已发布详情入口当前统一只传 `id`；详情页自动读取 owner 详情，当前用户是记录维护者时展示主态，不是 owner 时继续展示客态
+  - 所有已发布详情入口当前统一只传 `id`；详情页自动读取 owner 详情，当前用户是档案维护者时展示主态，不是 owner 时继续展示客态
   - 分享直达详情页时，左上角返回如果没有上一层页面栈，会 fallback 到 `发现` tab，避免外部用户进详情后没有回首页路由
   - 建档、预算、进展更新、联系方式和支持登记页已补统一键盘避让，输入框和吸底按钮会随键盘高度上移
-  - 草稿箱里的“记录支持”已改成直接进入 `support/review` 的 `手动登记支持` tab，不再走旧弹层
-  - 记录主页已按 Figma `442:6758` 新建，详情页“查看主页”已接真实页面，并已接 `getRescuerHomepage` 远端 VM；下方案例列表复用首页卡片组件，页面层聚合只作为 CloudBase 不可用时兜底
-  - 主态详情底部已改成默认“分享档案”大按钮 + 小“结束”按钮；点击结束后才进入“取消 + 右滑结束记录”确认态，滑到阈值后弹确认；正式结束记录后端链路仍待接入
+  - 草稿箱里的“手动登记支持”已改成直接进入 `support/review` 的 `手动登记支持` tab，不再走旧弹层
+  - 档案主页已按 Figma `442:6758` 新建，详情页“查看主页”已接真实页面，并已接 `getRescuerHomepage` 远端 VM；下方案例列表复用首页卡片组件，页面层聚合只作为 CloudBase 不可用时兜底
+  - 主态详情底部已改成默认“分享档案”大按钮 + 小“结束”按钮；点击结束后才进入“取消 + 右滑结束档案”确认态，滑到阈值后弹确认；正式结束档案后端链路仍待接入
   - 前端组件化治理已新增 `docs/frontend_component_system.md`，并落下 `src/components/ui` 基础组件目录与 `src/components/rescue` 业务组件 barrel；后续页面精修优先按该文档渐进迁移，不再只依赖 Figma 贴稿推进
 - 已有但还没完全吃满字段：
   - 工作台
@@ -175,7 +175,7 @@
 
 1. 按 `docs/alpha_test_plan.md` 跑 Alpha Round 0-4，优先找 P0 / P1 闭环问题
 2. 做真机与多账号回归：图片上传、键盘避让、分享冷启动返回、跨页金额一致性
-3. 接正式结束记录后端 action，避免主态底栏存在半成品动作
+3. 接正式结束档案后端 action，避免主态底栏存在半成品动作
 4. 补工作台提醒信息密度：待处理支持登记、首页资格、最近未更新
 5. 继续做 P0/P1 页面视觉精修，而不是新增 OCR / AI / 海报 / 批量能力
 
@@ -202,7 +202,7 @@
 | owner 权限链路 | `已可试跑` | 已用当前测试账号对他人案例验证 `getOwnerCaseDetail / publishCase / createManualSupportEntry / createProgressUpdate / createExpenseRecord / createBudgetAdjustment / reviewSupportEntry` 均返回 `FORBIDDEN` | 后续换测试账号时需重新绑定 / 重 seed |
 | 内容生产链路（记账 / 更新进展 / 追加预算） | `已可试跑` | 三页主态 `caseId` 路径已接 CloudBase 远端写入；状态图片 / 记账凭证上传回归已跑通；草稿 `draftId` 路径仍走本地 draft；CloudBase 不可用时保留页面层 local overlay 兜底，业务错误不回落；新记账已增加 `EXPENSE_EVIDENCE_REQUIRED` 口径；提交成功后会清理对应 `budget / status / expense` overlay key | 继续做更多真机回归 |
 | Profile / 支持足迹链路 | `已可试跑` | `getMyProfile / updateMyProfile / getMySupportHistory` 已接 CloudBase；头像现已走 `avatarAssetId` 资产链，二维码 asset 上传、真实 OPENID 支持足迹聚合、新建救助前置远端校验均已接通 | 继续补更多真机账号回归 |
-| 记录主页链路 | `已可试跑` | `getRescuerHomepage` 已接 CloudBase，可按 `rescuerId` 或 `caseId` 输出记录维护者公开资料和 published 案例列表 | 继续补统计口径精修和更多公开主页视觉细节 |
+| 档案主页链路 | `已可试跑` | `getRescuerHomepage` 已接 CloudBase，可按 `rescuerId` 或 `caseId` 输出档案维护者公开资料和 published 案例列表 | 继续补统计口径精修和更多公开主页视觉细节 |
 | 案例档案编辑链路 | `已可试跑` | `updateCaseProfile` 已接 CloudBase，主态 `caseId` 可远端更新 `animalName / coverFileID`，并写入 `case_cover` asset；本地展示覆盖降级为兜底，远端成功后会清理 `caseId + draftId` 的 title / cover 覆盖 | 继续补草稿远端编辑增强 |
 | 记录详情链路 | `已可试跑` | `getCaseRecordDetail` 已接 CloudBase，可按 `caseId + recordType + recordId` 回读支出 / 进展 / 预算 / 支持详情；支出明细结构化返回，图片最多 9 张，私有记录按 owner 权限控制；支出详情会返回 owner 编辑权限与修改历史 | 继续补前端从 storage 兜底逐步过渡到纯远端详情，并做真机编辑回归 |
 | Alpha 测试环境 | `已可试跑` | `npm run seed:alpha` 已可上传 `docs/alpha_seed_assets` 图片并调用 `seedMockCases` 播种，且会重置 8 个集合里的非 Alpha Seed 文档；当前开发环境已完成一次播种和 smoke 验证 | 体验版上传前先执行 `npm run preflight:alpha`；数据漂移时改跑 `npm run preflight:alpha:seed`，再按 `docs/alpha_test_plan.md` 的 Round 0-4 执行 |
@@ -227,12 +227,12 @@
 
 ### 迭代 2
 
-- 补正式结束记录后端 action
+- 补正式结束档案后端 action
 - 补工作台轻提醒与 badge 信息密度
 - 继续精修：
   - 发现页 / 客态详情 / 登记支持 / 处理支持登记
   - 记账页 / 更新进展页 / 追加预算页
-  - 我的页 / 支持足迹 / 联系信息 / 记录主页
+  - 我的页 / 支持足迹 / 联系信息 / 档案主页
 
 ---
 

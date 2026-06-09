@@ -204,7 +204,7 @@ function isDraftBootstrapEntry(entry: RescueCreateDraft["timeline"][number]) {
   return (
     entry.tone === "status" &&
     entry.title === "已创建基础档案，等待补充第一条进展" &&
-    entry.description === "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。"
+    entry.description === "完成封面、代号和事件简述后，就可以继续设定预算并进入档案页预览。"
   );
 }
 
@@ -217,7 +217,7 @@ function getPreviewOverviewProps(
 
   return {
     paragraphs: [
-      draft.summary || "这条记录的情况介绍待补充。",
+      draft.summary || "这份档案的情况介绍待补充。",
       `当前总预算为${formatCurrency(draft.budget || 0)}。`,
     ],
     expenseLabel: `-${formatCurrency(ledger.expense)}`,
@@ -594,7 +594,7 @@ export default function RescueCreatePreviewPage() {
       } catch {
         Taro.hideLoading();
         Taro.showToast({
-          title: "记录已保存在本机，暂未同步",
+          title: "档案已保存在本机，暂未同步",
           icon: "none",
         });
         return;
@@ -602,7 +602,7 @@ export default function RescueCreatePreviewPage() {
       Taro.hideLoading();
 
       Taro.showToast({
-        title: saved.status === "published" ? "记录已发布" : "记录已更新",
+        title: saved.status === "published" ? "档案已发布" : "档案已更新",
         icon: "none",
       });
 
@@ -684,7 +684,7 @@ export default function RescueCreatePreviewPage() {
 
   return (
     <PageShell className="rescue-preview-page">
-      <NavBar showBack title="记录管理" />
+      <NavBar showBack title="档案管理" />
 
       <RescueOwnerSummaryCard
         budgetLabel={formatCurrency(budget)}
@@ -746,7 +746,7 @@ export default function RescueCreatePreviewPage() {
 
       <DualActionFooter
         primaryIconName="arrowRight"
-        primaryLabel="发布记录"
+        primaryLabel="发布档案"
         secondaryLabel="保存草稿"
         onPrimary={handlePublish}
         onSecondary={handleSaveDraft}

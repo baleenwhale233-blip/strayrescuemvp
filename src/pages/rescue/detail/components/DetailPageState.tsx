@@ -18,7 +18,7 @@ export function DetailPageState({
 }) {
   return (
     <View className="detail-state">
-      <NavBar showBack title="记录明细" />
+      <NavBar showBack title="档案详情" />
       <View className="detail-state__content">
         <EmptyState
           className="detail-state__empty"

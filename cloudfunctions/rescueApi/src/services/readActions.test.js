@@ -60,7 +60,7 @@ function createService(overrides = {}) {
       overrides.getProfileByOpenid ||
       (async (openid) => ({
         openid,
-        displayName: "记录维护者",
+        displayName: "档案维护者",
       })),
     ok,
     queryCollection:

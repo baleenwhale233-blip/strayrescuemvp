@@ -429,7 +429,7 @@ export function createInitialDraft(): RescueCreateDraft {
         tone: "status",
         label: "状态更新",
         title: "已创建基础档案，等待补充第一条进展",
-        description: "完成封面、代号和事件简述后，就可以继续设定预算并进入记录页预览。",
+        description: "完成封面、代号和事件简述后，就可以继续设定预算并进入档案页预览。",
         timestamp: formatTimelineTimestamp(),
       },
     ],
@@ -533,7 +533,7 @@ export function appendEntryToDraft(draft: RescueCreateDraft, entry: RescueCreate
   if (entry.tone === "income") {
     return createSupportEntryOnDraft(normalizedDraft, {
       supporterUserId: `manual-supporter:${Date.now()}`,
-      supporterNameMasked: entry.title || "记录维护者手动补录",
+      supporterNameMasked: entry.title || "档案维护者手动补录",
       amount: entry.amount ?? 0,
       supportedAt: nowIso(),
       note: entry.description,

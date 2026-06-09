@@ -361,7 +361,7 @@ export function adaptLocalDraftToCanonical(
 
   const rescuer: CanonicalRescuer = {
     id: rescuerId,
-    name: draft.rescuerName || "当前记录维护者",
+    name: draft.rescuerName || "当前档案维护者",
     avatarUrl: draft.rescuerAvatarUrl,
     verifiedLevel: draft.rescuerVerifiedLevel || "wechat",
     joinedAt: draft.rescuerJoinedAt || createdAt,

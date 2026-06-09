@@ -23,12 +23,12 @@
 
 已经具备：
 
-- 发现页、我的记录 / 工作台、我的页
+- 发现页、我的档案 / 工作台、我的页
 - 主态 / 客态详情页
 - 三步建档流程
 - 登记一笔、处理登记、手动登记
 - 记账、更新进展、追加预算
-- 我的登记记录、联系信息设置、使用说明、记录主页
+- 我的登记记录、联系信息设置、使用说明、档案主页
 - canonical schema / selectors / repository / adapters / fixtures
 - CloudBase 开发环境读写链路和 `rescueApi` 云函数
 - Alpha seed、smoke manifest、发包前 preflight
@@ -39,7 +39,7 @@
 - 多账号登记 / 核实一致性
 - 分享冷启动返回
 - 键盘避让和页面视觉精修
-- 正式结束记录后端 action
+- 正式结束档案后端 action
 
 `localPresentation` 仍保留给草稿链路和 CloudBase 基础设施不可用时的本地兜底，不要在治理轮直接删除。残留职责见 [`docs/local_presentation_residual_checklist.md`](docs/local_presentation_residual_checklist.md)。
 

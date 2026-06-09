@@ -76,7 +76,7 @@
 - `src/runtime.js`：envelope、OPENID、ID / fileID 校验、通用查询、临时 URL 转换
 - `src/adapters/canonical.js`：CloudBase 文档到 canonical bundle 的映射与 support thread 聚合
 - `src/services/bundles.js`：`composeBundles / getBundleByCaseId / getCaseDocByCaseId`
-- `src/services/readActions.js`：首页、记录主页、案例搜索、owner 工作台、owner detail、支持足迹等只读 action
+- `src/services/readActions.js`：首页、档案主页、案例搜索、owner 工作台、owner detail、支持足迹等只读 action
 - `src/services/caseWrites.js`：owner bundle 权限校验、`updateCaseProfile / saveDraftCase / publishCase / touchCase`
 - `src/services/profile.js`：`getMyProfile / updateMyProfile / getProfileByOpenid`
 - `src/services/support.js`：支持登记、手动登记、核实与 support event/thread 投影

@@ -100,7 +100,7 @@ export default function SupportHistoryPage() {
           <EmptyState
             className="support-history-page__empty"
             title="还没有已确认支持"
-            description="登记支持后，等待记录维护者确认，就会出现在这里。"
+            description="登记支持后，等待档案维护者确认，就会出现在这里。"
           />
         )}
       </View>

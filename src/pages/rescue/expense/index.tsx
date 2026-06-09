@@ -223,7 +223,7 @@ function mapExpenseError(error: unknown) {
   }
 
   if (code === "FORBIDDEN") {
-    return "只有记录维护者可以修改";
+    return "只有档案维护者可以修改";
   }
 
   return "未能保存支出记录，请稍后重试";
@@ -569,7 +569,7 @@ export default function RescueExpensePage() {
           const evidenceFileIds = await resolveEditEvidenceFileIds();
           const didSyncRemote = await updateRemoteExpenseRecordByCaseId(caseId, {
             amount: total,
-            editReason: "记录维护者修改支出",
+            editReason: "档案维护者修改支出",
             evidenceFileIds,
             expenseItems: validLines.map((line) => ({
               description: line.description.trim(),
@@ -626,7 +626,7 @@ export default function RescueExpensePage() {
         } else {
           Taro.hideLoading();
           Taro.showToast({
-            title: "未找到这条记录，请返回后重试",
+            title: "未找到这份档案，请返回后重试",
             icon: "none",
           });
           return;

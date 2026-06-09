@@ -95,7 +95,7 @@ export const sampleCaseBundle: CanonicalCaseBundle = {
       currency: "CNY",
       supportSource: "donor_claim",
       supporterNameMasked: "李**",
-      message: "先登记一下，等记录维护者处理",
+      message: "先登记一下，等档案维护者处理",
       verificationStatus: "pending",
       assetIds: ["asset_support_002"],
       visibility: "private",
@@ -214,7 +214,7 @@ export const sampleCaseBundle: CanonicalCaseBundle = {
       amount: 60,
       currency: "CNY",
       supportedAt: "2026-03-29T13:30:00Z",
-      note: "先登记一下，等记录维护者处理",
+      note: "先登记一下，等档案维护者处理",
       screenshotItems: [
         {
           id: "support-evidence-002",

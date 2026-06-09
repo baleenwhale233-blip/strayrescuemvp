@@ -25,7 +25,7 @@ export default function RescuePage() {
       })
       .catch(() => {
         Taro.showToast({
-          title: "记录列表加载失败",
+          title: "档案列表加载失败",
           icon: "none",
         });
       });
@@ -62,7 +62,7 @@ export default function RescuePage() {
     if (!(await hasCompleteContactProfile())) {
       Taro.showModal({
         title: "先填写联系信息",
-        content: "公开记录前，需要让查看的人知道如何联系你和核对信息。",
+        content: "公开档案前，需要让查看的人知道如何联系你和核对信息。",
         confirmText: "去完善",
         cancelText: "稍后",
       }).then((result) => {
@@ -82,7 +82,7 @@ export default function RescuePage() {
 
   return (
     <PageShell className="rescue-page">
-      <NavBar title="我的记录" />
+      <NavBar title="我的档案" />
 
       <WorkbenchCreateAction onTap={handleCreate} />
       <WorkbenchProjectSections

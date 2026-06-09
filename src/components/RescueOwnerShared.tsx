@@ -170,7 +170,7 @@ export function RescueOwnerQuickActions({
             mode="aspectFit"
             src={ownerActionExpenseIcon}
           />
-          <Text className="rescue-owner-actions__primary-label">记录票据</Text>
+          <Text className="rescue-owner-actions__primary-label">记一笔支出</Text>
         </View>
         <Image
           className="rescue-owner-actions__chevron-primary"
@@ -240,7 +240,7 @@ export function RescueOwnerTabs({
         }`}
         onTap={() => onChange("overview")}
       >
-        <Text>记录摘要</Text>
+        <Text>档案摘要</Text>
       </View>
       <View
         className={`rescue-owner-tabs__item ${
@@ -248,7 +248,7 @@ export function RescueOwnerTabs({
         }`}
         onTap={() => onChange("detail")}
       >
-        <Text>记录详情</Text>
+        <Text>档案详情</Text>
       </View>
     </View>
   );
@@ -263,7 +263,7 @@ export function RescueOwnerOverview({
   return (
     <View className="rescue-owner-overview">
       <View className="rescue-owner-overview__about theme-card">
-        <Text className="rescue-owner-overview__title">关于这条记录</Text>
+        <Text className="rescue-owner-overview__title">关于这份档案</Text>
         {paragraphs.map((paragraph) => (
           <Text key={paragraph} className="rescue-owner-overview__paragraph">
             {paragraph}

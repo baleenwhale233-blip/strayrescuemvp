@@ -72,11 +72,11 @@ export function CreateBudgetForm({
 
       <HintActionFooter
         className="rescue-budget-page__footer"
-        hint="稍后你可以在“我的记录”里调整预估金额"
+        hint="稍后你可以在“我的档案”里调整预估金额"
         iconName="arrowRight"
         onTap={onNext}
       >
-        进入记录页
+        进入档案页
       </HintActionFooter>
     </>
   );

@@ -29,7 +29,7 @@ export function GuestDetail({
 
   return (
     <View className="detail-page detail-page--guest">
-      <NavBar showBack title="记录明细" />
+      <NavBar showBack title="档案详情" />
 
       <GuestHeroSection detail={detail} onCopyPublicCaseId={onCopyPublicCaseId} />
 

@@ -56,8 +56,8 @@ export default function RescueDetailPage() {
 
   const handleFinishRecord = async () => {
     const result = await Taro.showModal({
-      title: "结束记录？",
-      content: "请确认这条记录已经完成、已结案，或确实需要关闭。",
+      title: "结束档案？",
+      content: "请确认这份档案已经完成、已结案，或确实需要关闭。",
       confirmText: "确认结束",
       cancelText: "再等等",
     });
@@ -67,7 +67,7 @@ export default function RescueDetailPage() {
     }
 
     Taro.showToast({
-      title: "结束记录链路待接入",
+      title: "结束档案链路待接入",
       icon: "none",
     });
   };
@@ -77,7 +77,7 @@ export default function RescueDetailPage() {
       <PageShell key={reloadSeed} className="detail-page-shell">
         <DetailPageState
           loading
-          title="正在加载记录明细"
+          title="正在加载档案详情"
           description="正在整理头图、资金状态和最新进展，请稍等片刻。"
         />
       </PageShell>
@@ -88,8 +88,8 @@ export default function RescueDetailPage() {
     return (
       <PageShell key={reloadSeed} className="detail-page-shell">
         <DetailPageState
-          title="记录明细加载失败"
-          description="当前没能拿到这条记录的明细，你可以稍后重试一次。"
+          title="档案详情加载失败"
+          description="暂时没能加载这份档案的详情，你可以稍后重试一次。"
           actionText="重新加载"
           onAction={loadDetailPage}
         />

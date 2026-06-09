@@ -35,11 +35,11 @@ export default function RescuerHomePage() {
   if (!vm) {
     return (
       <PageShell className="rescuer-home-page">
-        <NavBar showBack title="记录主页" />
+        <NavBar showBack title="档案主页" />
         <EmptyState
           className="rescuer-home-page__empty-card"
-          description="可能是链接失效，或记录维护者资料暂时不可见。"
-          title="暂未找到记录维护者信息"
+          description="可能是链接失效，或档案维护者资料暂时不可见。"
+          title="暂未找到档案维护者信息"
         />
       </PageShell>
     );
@@ -47,7 +47,7 @@ export default function RescuerHomePage() {
 
   return (
     <PageShell className="rescuer-home-page">
-      <NavBar showBack title="记录主页" />
+      <NavBar showBack title="档案主页" />
 
       <SurfaceCard className="rescuer-home-page__profile">
         <Avatar
@@ -59,7 +59,7 @@ export default function RescuerHomePage() {
         <View className="rescuer-home-page__profile-copy">
           <Text className="rescuer-home-page__name">{vm.rescuer.name}</Text>
           <Text className="rescuer-home-page__meta">
-            已建立 {vm.cards.length || vm.rescuer.stats.publishedCaseCount} 份记录档案 ·{" "}
+            已建立 {vm.cards.length || vm.rescuer.stats.publishedCaseCount} 份救助档案 ·{" "}
             {vm.rescuer.stats.verifiedReceiptCount} 张已上传凭证
           </Text>
         </View>
@@ -77,8 +77,8 @@ export default function RescuerHomePage() {
         ) : (
           <EmptyState
             className="rescuer-home-page__empty-card"
-            description="公开后的救助记录会显示在这里，方便支持者连续查看。"
-            title="还没有公开记录档案"
+            description="公开后的救助档案会显示在这里，方便支持者连续查看。"
+            title="还没有公开档案"
           />
         )}
       </View>

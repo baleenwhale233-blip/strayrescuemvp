@@ -14,8 +14,8 @@ export function GuestTabs({
       className="detail-tabs"
       value={activeTab}
       items={[
-        { label: "记录摘要", value: "overview" },
-        { label: "记录详情", value: "detail" },
+        { label: "档案摘要", value: "overview" },
+        { label: "档案详情", value: "detail" },
       ]}
       onChange={(value) => onChange(value as DetailTab)}
     />

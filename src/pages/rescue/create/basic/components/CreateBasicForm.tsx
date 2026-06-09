@@ -73,7 +73,7 @@ export function CreateBasicForm({
       </View>
 
       <HintActionFooter
-        hint="所有内容都会保存在这条记录里，后续可继续补充明细和进展"
+        hint="所有内容都会保存在这份档案里，后续可继续补充明细和进展"
         iconName="arrowRight"
         onTap={onNext}
       >

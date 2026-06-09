@@ -93,7 +93,7 @@ export default function DiscoverPage() {
           <EmptyState
             className="discover-page__empty"
             iconName="fileText"
-            title="正在加载记录"
+            title="正在加载档案"
             description="正在整理可以公开查看的救助档案。"
           />
         ) : null}

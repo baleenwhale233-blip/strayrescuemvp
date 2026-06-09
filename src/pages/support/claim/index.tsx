@@ -232,7 +232,7 @@ export default function SupportClaimPage() {
         summary={{
           coverSrc: caseCoverSrc,
           publicCaseId: detail.publicCaseId,
-          rescueStartedAtLabel: `记录开始时间: ${getRescueStartedAtLabel(detail)}`,
+          rescueStartedAtLabel: `救助开始时间: ${getRescueStartedAtLabel(detail)}`,
           statusLabel: detail.statusLabel,
           title: detail.title,
         }}

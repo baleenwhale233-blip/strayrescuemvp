@@ -150,7 +150,7 @@ export default function RescueCreateBasicPage() {
       className="rescue-create-page"
       style={{ paddingBottom: `${164 + keyboardBottomInset}px` }}
     >
-      <NavBar showBack title="新建记录" onBack={handleBack} />
+      <NavBar showBack title="新建档案" onBack={handleBack} />
 
       <CreateBasicForm
         coverPath={coverPath}

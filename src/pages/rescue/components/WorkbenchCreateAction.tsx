@@ -9,7 +9,7 @@ export function WorkbenchCreateAction({ onTap }: { onTap: () => void }) {
       <View className="rescue-page__primary-action-icon">
         <AppIcon name="plusCircle" size={24} variant="inverse" />
       </View>
-      <Text>新建记录</Text>
+      <Text>新建档案</Text>
     </AppButton>
   );
 }

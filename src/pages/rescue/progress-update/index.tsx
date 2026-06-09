@@ -131,7 +131,7 @@ export default function RescueStatusUpdatePage() {
         title: draft.name || "未命名档案",
         statusLabel: draft.currentStatusLabel || "医疗处理中",
         publicCaseId: draft.publicCaseId || "待生成",
-        rescueStartedAtLabel: "记录开始时间: 待补充",
+        rescueStartedAtLabel: "救助开始时间: 待补充",
         coverImage: draft.coverPath || ownerAnimalFallback,
       };
     }
@@ -141,7 +141,7 @@ export default function RescueStatusUpdatePage() {
         title: detail.title,
         statusLabel: detail.statusLabel,
         publicCaseId: detail.publicCaseId,
-        rescueStartedAtLabel: `记录开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
+        rescueStartedAtLabel: `救助开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
         coverImage: detail.heroImageUrl || ownerAnimalFallback,
       };
     }
@@ -280,7 +280,7 @@ export default function RescueStatusUpdatePage() {
         } else {
           Taro.hideLoading();
           Taro.showToast({
-            title: "未找到这条记录，请返回后重试",
+            title: "未找到这份档案，请返回后重试",
             icon: "none",
           });
           return;
