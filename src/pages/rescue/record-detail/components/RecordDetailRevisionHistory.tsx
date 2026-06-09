@@ -1,6 +1,7 @@
 import { Text, View } from "@tarojs/components";
 import { SurfaceCard } from "../../../../components/ui";
 import type { CaseRecordDetailVM } from "../../../../domain/canonical/repository";
+import { getExpenseRevisionIndexLabel, getOrderedExpenseRevisions } from "../revisionHistory";
 import "./RecordDetailRevisionHistory.scss";
 
 type ExpenseRevision = NonNullable<CaseRecordDetailVM["revisionHistory"]>[number];
@@ -10,6 +11,8 @@ export function RecordDetailRevisionHistory({ revisions }: { revisions?: Expense
     return null;
   }
 
+  const orderedRevisions = getOrderedExpenseRevisions(revisions);
+
   return (
     <SurfaceCard className="record-detail-page__revision-card">
       <Text className="record-detail-page__revision-heading">修改记录</Text>
@@ -18,12 +21,12 @@ export function RecordDetailRevisionHistory({ revisions }: { revisions?: Expense
       </Text>
 
       <View className="record-detail-page__revision-list">
-        {revisions.map((revision, index) => (
+        {orderedRevisions.map((revision, index) => (
           <View key={revision.revisionId || index} className="record-detail-page__revision-item">
             <View className="record-detail-page__revision-meta">
               <Text className="record-detail-page__revision-time">{revision.editedAtLabel}</Text>
               <Text className="record-detail-page__revision-index">
-                第 {revisions.length - index} 次修改
+                {getExpenseRevisionIndexLabel(index)}
               </Text>
             </View>
 

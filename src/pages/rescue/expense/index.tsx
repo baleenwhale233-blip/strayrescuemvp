@@ -30,6 +30,7 @@ import {
   getExpenseEditSource,
   type ExpenseEditSource,
 } from "./expenseEditSource";
+import { getExpenseSuccessNavigation } from "./expenseSuccessNavigation";
 import { ExpenseCompactTotal } from "./components/ExpenseCompactTotal";
 import { ExpenseDetailsSection } from "./components/ExpenseDetailsSection";
 import { ExpenseEvidenceCard } from "./components/ExpenseEvidenceCard";
@@ -635,10 +636,12 @@ export default function RescueExpensePage() {
           Taro.removeStorageSync(cacheKey);
         }
         Taro.hideLoading();
+        const successNavigation = getExpenseSuccessNavigation(isEditMode);
         await showSuccessFeedback({
           title: isEditMode ? "支出修改已保存" : "支出已记入账本",
+          navigateBack: successNavigation.feedbackShouldNavigateBack,
         });
-        if (isEditMode) {
+        if (successNavigation.shouldReturnToRecordDetail) {
           Taro.navigateBack();
         }
       } catch (error) {
