@@ -27,7 +27,7 @@ function getStatusIconName(statusLabel: string): IconName {
 
 function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }) {
   const labelMap = {
-    complete: "记录较完整",
+    complete: "已上传多项记录",
     basic: "已有基础凭证",
     needs_attention: "待补凭证",
   } as const;

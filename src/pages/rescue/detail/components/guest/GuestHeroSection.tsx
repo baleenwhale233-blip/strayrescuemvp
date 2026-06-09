@@ -59,7 +59,7 @@ export function GuestHeroSection({
             size={14}
             variant="brand"
           />
-          <Text>记录较完整</Text>
+          <Text>已上传多项记录</Text>
         </View>
       </View>
     </View>

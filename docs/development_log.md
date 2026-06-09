@@ -3114,3 +3114,12 @@
 - 数据层说明：仅调整 `modeling` 的重复原因展示和 legacy fixture 文案，未新增 richer VM / richer mock，不改数据结构、repository 或 CloudBase 写链。
 - 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`build:weapp`、`git diff --check` 通过；构建仍只有既有图片体积与 no async chunks warning。
 - 下一步 / 遗留问题：需要真机看长按钮替换后的底栏宽度，以及“已确认支持合计 / 已确认支持”在小屏是否换行自然。
+
+## 2026-06-09 | UX 文案 | 凭证完整标签改为客观表达
+
+- 日期：2026-06-09
+- 改动主题：将发现卡和详情头图的 `记录较完整` 改为 `已上传多项记录`。
+- 为什么改：`记录较完整` 容易像平台对完整度作判断，`已上传多项记录` 更偏事实描述。
+- 改了什么：同步更新当前 `components/rescue` 卡片、旧组件残留和客态详情 hero 标签。
+- 影响范围：仅影响凭证完整状态的展示文案；不改判断逻辑、VM、selector、repository、CloudBase 或数据结构。
+- 下一步 / 遗留问题：真机确认该标签在发现卡和详情首屏不挤。
