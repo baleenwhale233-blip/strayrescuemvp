@@ -25,9 +25,9 @@ function getStatusEmoji(statusLabel: string) {
 
 function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }) {
   const labelMap = {
-    complete: "记录和凭证较齐",
+    complete: "记录较完整",
     basic: "已有基础凭证",
-    needs_attention: "还要补凭证",
+    needs_attention: "待补凭证",
   } as const;
 
   return (
@@ -93,7 +93,7 @@ export function DiscoverCaseCard({
 
         <View className="discover-card__copy-group">
           <Text className="discover-card__line">
-            <Text className="discover-card__line-label">关于我：</Text>
+            <Text className="discover-card__line-label">基本情况：</Text>
             <Text>{item.aboutSummary}</Text>
           </Text>
 

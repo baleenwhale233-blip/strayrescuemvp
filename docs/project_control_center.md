@@ -79,7 +79,7 @@
 
 | 页面 | 当前状态 | Figma 节点 | 依赖文档 | 下一步 |
 |---|---|---|---|---|
-| 记账页 | `已可试跑` | `441:4714` | `figma_progress_map` / `pending_field_contracts` | 主态 `caseId` 提交已接 `createExpenseRecord` 远端写入，真实凭证上传回归已跑通；已补顶部吸顶合计反馈，继续做真机验图和视觉精修 |
+| 记账页 | `已可试跑` | `441:4714` | `figma_progress_map` / `pending_field_contracts` | 主态 `caseId` 提交已接 `createExpenseRecord` 远端写入，凭证图上传回归已跑通；已补顶部吸顶合计反馈，继续做真机验图和视觉精修 |
 | 更新进展页 | `已可试跑` | `294:699` | `figma_progress_map` / `pending_field_contracts` | 主态 `caseId` 提交已接 `createProgressUpdate` 远端写入，真实图片上传回归已跑通；成功提示已统一为“进展已发布”，后续再接 AI 分发 |
 
 ### P1：闭环增强与身份页
@@ -197,7 +197,7 @@
 | 云函数 | `已联通开发环境` | `rescueApi` 已部署，入口已拆成 runtime / canonical adapter / bundle query / read actions / case writes / profile / support / records / record details / content writes / record assets 等 service 模块；`index.js` 仅保留 wiring、formatter、seed 和 handler 表 | 继续补真机回归；不要在 `index.js` 直接堆新业务 |
 | 数据集合 | `已联通开发环境` | 基础集合已创建，`cloud1` 已补 richer mock 数据，包含 owner / homepage 多案例与 support threads | 后续继续补内容生产页真实写入后的数据 |
 | 首页公开读链路 | `已可试跑` | 首页当前已能读到 `云朵 / 栗子 / 阿黄 / 团团 / 芝麻 / 小满` 等公开案例 | 保持可用，继续做详情读链路检查 |
-| 支持登记写链路 | `已可试跑` | `createSupportEntry` 已完成 CloudBase 远端写入验证，会写入 `support_entries`、私有 `evidence_assets`、`support_threads`，并生成私有 pending support event；真实凭证图上传、限流和重复凭证错误回归已跑通 | 继续补更多真机账号回归 |
+| 支持登记写链路 | `已可试跑` | `createSupportEntry` 已完成 CloudBase 远端写入验证，会写入 `support_entries`、私有 `evidence_assets`、`support_threads`，并生成私有 pending support event；凭证图上传、限流和重复凭证错误回归已跑通 | 继续补更多真机账号回归 |
 | 核实链路 | `已可试跑` | `reviewSupportEntry` 已完成 `pending -> confirmed / unmatched` 远端状态流转验证；确认后生成公开 support event，未匹配保持私有 rejected event；非 owner review 已验证返回 `FORBIDDEN` | 继续补成功态体验 |
 | owner 权限链路 | `已可试跑` | 已用当前测试账号对他人案例验证 `getOwnerCaseDetail / publishCase / createManualSupportEntry / createProgressUpdate / createExpenseRecord / createBudgetAdjustment / reviewSupportEntry` 均返回 `FORBIDDEN` | 后续换测试账号时需重新绑定 / 重 seed |
 | 内容生产链路（记账 / 更新进展 / 追加预算） | `已可试跑` | 三页主态 `caseId` 路径已接 CloudBase 远端写入；状态图片 / 记账凭证上传回归已跑通；草稿 `draftId` 路径仍走本地 draft；CloudBase 不可用时保留页面层 local overlay 兜底，业务错误不回落；新记账已增加 `EXPENSE_EVIDENCE_REQUIRED` 口径；提交成功后会清理对应 `budget / status / expense` overlay key | 继续做更多真机回归 |

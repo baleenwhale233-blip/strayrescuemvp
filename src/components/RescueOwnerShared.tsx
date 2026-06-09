@@ -280,7 +280,7 @@ export function RescueOwnerOverview({
               src={summaryExpenseIcon}
             />
           </View>
-          <Text className="rescue-owner-overview__metric-label">总支出</Text>
+          <Text className="rescue-owner-overview__metric-label">已确认支出</Text>
           <Text className="rescue-owner-overview__metric-value rescue-owner-overview__metric-value--expense">
             {expenseLabel}
           </Text>
@@ -294,7 +294,7 @@ export function RescueOwnerOverview({
               src={summaryIncomeIcon}
             />
           </View>
-          <Text className="rescue-owner-overview__metric-label">总收入</Text>
+          <Text className="rescue-owner-overview__metric-label">已确认支持</Text>
           <Text className="rescue-owner-overview__metric-value rescue-owner-overview__metric-value--income">
             {incomeLabel}
           </Text>

@@ -52,7 +52,7 @@ export function PendingSupportEntryList({
               variant="secondary"
               onTap={() => onUnmatched(entry.id, "duplicate_submission")}
             >
-              标记重复
+              标为重复
             </AppButton>
             <View className="support-review-page__actions-right">
               <AppButton
@@ -69,7 +69,7 @@ export function PendingSupportEntryList({
                 variant="primary"
                 onTap={() => onConfirm(entry.id)}
               >
-                确认记录
+                确认收到
               </AppButton>
             </View>
           </View>

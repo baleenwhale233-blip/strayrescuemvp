@@ -34,7 +34,7 @@ export function ProgressImageCard({
       />
 
       <NoticeBanner className="rescue-update-page__notice" iconName="info">
-        请至少上传一张照片，以确保护助信息真实性
+        请至少上传一张照片，方便查看者核对近况。
       </NoticeBanner>
     </SurfaceCard>
   );

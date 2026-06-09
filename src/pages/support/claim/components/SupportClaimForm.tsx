@@ -65,10 +65,10 @@ export function SupportClaimForm({
         <MoneyInput value={amount} onValueChange={onAmountChange} />
       </FormField>
 
-      <FormField className="support-claim__field" label="您的称呼">
+      <FormField className="support-claim__field" label="你的称呼">
         <Input
           className="support-claim__text-input"
-          placeholder="昵称 / 称呼"
+          placeholder="昵称或称呼"
           value={nickname}
           onInput={(event) => onNicknameChange(event.detail.value)}
         />
@@ -76,7 +76,7 @@ export function SupportClaimForm({
 
       <FormField
         className="support-claim__field support-claim__field--upload"
-        label="支持截图/凭证"
+        label="支持截图或凭证"
       >
         <UploadStrip
           addIconName="imagePlus"
@@ -102,7 +102,7 @@ export function SupportClaimForm({
       </FormField>
 
       <SubmitActionBar iconName="send" onTap={onSubmit}>
-        提交登记支持
+        登记支持
       </SubmitActionBar>
     </>
   );

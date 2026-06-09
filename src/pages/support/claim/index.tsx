@@ -28,7 +28,7 @@ function mapSupportError(error: unknown) {
   }
 
   if (code === "INVALID_SCREENSHOT_FILE_ID") {
-    return "凭证上传结果异常，请重新上传";
+    return "凭证没有上传成功，请重新选择后再试";
   }
 
   if (code === "SUPPORT_PROOF_UPLOAD_FAILED") {
@@ -43,7 +43,7 @@ function mapSupportError(error: unknown) {
     return "24 小时内最多登记 3 次";
   }
 
-  return "登记支持失败，请稍后重试";
+  return "未能登记支持，请稍后重试";
 }
 
 function getSupportClaimCover(detail: PublicDetailVM) {
@@ -91,7 +91,7 @@ export default function SupportClaimPage() {
       .catch(() => {
         setLoadStatus("error");
         Taro.showToast({
-          title: "案例加载失败",
+          title: "档案加载失败",
           icon: "none",
         });
       });
@@ -146,7 +146,7 @@ export default function SupportClaimPage() {
           className="support-claim__state"
           iconName="fileText"
           title="档案信息加载失败"
-          description="当前没能拿到档案信息，你可以返回上一页后稍后再试。"
+          description="暂时没能加载档案信息，你可以返回上一页后稍后再试。"
         />
       </PageShell>
     );
@@ -204,7 +204,7 @@ export default function SupportClaimPage() {
         Taro.hideLoading();
 
         await showSuccessFeedback({
-          title: "支持已登记，待处理",
+          title: "支持已登记，等待确认",
           delay: 900,
         });
       } catch (error) {

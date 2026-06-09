@@ -195,23 +195,23 @@ function mapExpenseError(error: unknown) {
   const code = error instanceof Error ? error.message : "";
 
   if (code === "EXPENSE_EVIDENCE_REQUIRED") {
-    return "请至少上传 1 张图片";
+    return "请至少上传 1 张凭证图片";
   }
 
   if (code === "INVALID_ASSET_FILE_ID") {
-    return "图片上传结果异常，请重新上传";
+    return "图片没有上传成功，请重新选择后再试";
   }
 
   if (code === "CASE_ASSET_UPLOAD_FAILED") {
-    return "凭证上传失败，请重试";
+    return "凭证上传失败，请检查网络后重试";
   }
 
   if (code === "EXPENSE_EDIT_REQUIRES_REMOTE" || code === "CLOUDBASE_NOT_CONFIGURED") {
-    return "当前网络下暂不能修改，请稍后重试";
+    return "暂时不能修改，请检查网络后重试";
   }
 
   if (code === "UNKNOWN_ACTION") {
-    return "请先部署新版云函数";
+    return "当前版本暂不支持修改，请稍后再试";
   }
 
   if (code === "EXPENSE_EDIT_EVIDENCE_RESELECT_REQUIRED") {
@@ -219,14 +219,14 @@ function mapExpenseError(error: unknown) {
   }
 
   if (code === "RECORD_NOT_FOUND") {
-    return "原支出记录不存在";
+    return "未找到原支出记录";
   }
 
   if (code === "FORBIDDEN") {
     return "只有记录维护者可以修改";
   }
 
-  return "记账保存失败";
+  return "未能保存支出记录，请稍后重试";
 }
 
 export default function RescueExpensePage() {
@@ -527,7 +527,7 @@ export default function RescueExpensePage() {
 
       if (!publicEvidenceImages.length) {
         Taro.showToast({
-          title: "请至少上传 1 张图片",
+          title: "请至少上传 1 张凭证图片",
           icon: "none",
         });
         return;
@@ -548,7 +548,7 @@ export default function RescueExpensePage() {
           if (!matchedDraft) {
             Taro.hideLoading();
             Taro.showToast({
-              title: "草稿上下文丢失",
+              title: "未找到草稿，请返回后重试",
               icon: "none",
             });
             return;
@@ -626,7 +626,7 @@ export default function RescueExpensePage() {
         } else {
           Taro.hideLoading();
           Taro.showToast({
-            title: "当前案例上下文缺失",
+            title: "未找到这条记录，请返回后重试",
             icon: "none",
           });
           return;
@@ -638,7 +638,7 @@ export default function RescueExpensePage() {
         Taro.hideLoading();
         const successNavigation = getExpenseSuccessNavigation(isEditMode);
         await showSuccessFeedback({
-          title: isEditMode ? "支出修改已保存" : "支出已记入账本",
+          title: isEditMode ? "支出修改已保存" : "支出记录已保存",
           navigateBack: successNavigation.feedbackShouldNavigateBack,
         });
         if (successNavigation.shouldReturnToRecordDetail) {
@@ -690,7 +690,7 @@ export default function RescueExpensePage() {
           iconName="arrowRight"
           onTap={handleSubmit}
         >
-          {isEditMode ? "保存修改" : "确认并挂载至账本"}
+          {isEditMode ? "保存修改" : "保存支出记录"}
         </AppButton>
       </BottomActionBar>
     </PageShell>

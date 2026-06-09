@@ -427,7 +427,7 @@
 
 | 前端用途 | 字段 | 建议来源 | 当前状态 | 备注 |
 |---|---|---|---|---|
-| 总计支持金额 | `summary.totalSupportedAmountLabel` | `getMySupportHistory()` | 远端已接 | 由真实 OPENID 下 confirmed support entries 聚合 |
+| 已确认支持合计 | `summary.totalSupportedAmountLabel` | `getMySupportHistory()` | 远端已接 | 由真实 OPENID 下 confirmed support entries 聚合 |
 | 记录列表 | `summary.supportCases[]` | `getMySupportHistory()` | 远端已接 | 每个 item 对应一个已确认支持过的案例 |
 | 动物名 | `supportCases[].animalName` | `getMySupportHistory()` | 远端已接 | |
 | 案例 id | `supportCases[].caseId` | `getMySupportHistory()` | 远端已接 | 点击后进入详情，由 owner 权限自动决定主态 / 客态 |

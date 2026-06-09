@@ -24,14 +24,14 @@ export function ManualSupportEntryForm({
       <FormField className="support-review-page__field" label="支持人称呼">
         <Input
           className="support-review-page__input"
-          placeholder="微信 ID / 昵称等"
+          placeholder="微信 ID、昵称等"
           value={supporter}
           onInput={(event) => onSupporterChange(event.detail.value)}
         />
       </FormField>
 
       <SubmitActionBar iconName="send" onTap={onSubmit}>
-        提交登记支持
+        登记支持
       </SubmitActionBar>
     </View>
   );

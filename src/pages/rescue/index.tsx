@@ -62,7 +62,7 @@ export default function RescuePage() {
     if (!(await hasCompleteContactProfile())) {
       Taro.showModal({
         title: "先填写联系信息",
-        content: "公开记录前，需要让查看的人知道如何联系您和核对信息。",
+        content: "公开记录前，需要让查看的人知道如何联系你和核对信息。",
         confirmText: "去完善",
         cancelText: "稍后",
       }).then((result) => {

@@ -104,14 +104,14 @@ export default function SupportReviewPage() {
         });
         Taro.hideLoading();
         await showSuccessFeedback({
-          title: "已处理完成",
+          title: "已确认支持",
           navigateBack: false,
         });
         await reloadDetail();
         setReloadSeed((value) => value + 1);
       } catch {
         Taro.hideLoading();
-        Taro.showToast({ title: "处理失败，请稍后重试", icon: "none" });
+        Taro.showToast({ title: "未能确认支持，请稍后重试", icon: "none" });
       }
     });
 
@@ -123,7 +123,7 @@ export default function SupportReviewPage() {
           entryId,
           status: "unmatched",
           reason,
-          note: reason === "duplicate_submission" ? "疑似重复提交" : "暂未匹配",
+          note: reason === "duplicate_submission" ? "重复登记" : "暂未匹配",
         });
         Taro.hideLoading();
         await showSuccessFeedback({
@@ -134,7 +134,7 @@ export default function SupportReviewPage() {
         setReloadSeed((value) => value + 1);
       } catch {
         Taro.hideLoading();
-        Taro.showToast({ title: "标记失败，请稍后重试", icon: "none" });
+        Taro.showToast({ title: "未能标记未匹配，请稍后重试", icon: "none" });
       }
     });
 
@@ -159,11 +159,11 @@ export default function SupportReviewPage() {
         setManualAmount("");
         setManualSupporter("");
         await showSuccessFeedback({
-          title: "支持已登记入账",
+          title: "已记入已确认支持",
         });
       } catch {
         Taro.hideLoading();
-        Taro.showToast({ title: "登记支持失败，请稍后重试", icon: "none" });
+        Taro.showToast({ title: "未能登记支持，请稍后重试", icon: "none" });
       }
     });
 

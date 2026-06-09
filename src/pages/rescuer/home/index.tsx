@@ -59,8 +59,8 @@ export default function RescuerHomePage() {
         <View className="rescuer-home-page__profile-copy">
           <Text className="rescuer-home-page__name">{vm.rescuer.name}</Text>
           <Text className="rescuer-home-page__meta">
-            已建立 {vm.cards.length || vm.rescuer.stats.publishedCaseCount} 份记录档案 · 上传{" "}
-            {vm.rescuer.stats.verifiedReceiptCount} 张真实凭证
+            已建立 {vm.cards.length || vm.rescuer.stats.publishedCaseCount} 份记录档案 ·{" "}
+            {vm.rescuer.stats.verifiedReceiptCount} 张已上传凭证
           </Text>
         </View>
       </SurfaceCard>

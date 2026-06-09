@@ -24,7 +24,7 @@ export function RenameSheet({
         <Text className="detail-rename-sheet__title">修改代号</Text>
 
         <View className="detail-rename-sheet__field">
-          <Text className="detail-rename-sheet__label">小家伙的代号</Text>
+          <Text className="detail-rename-sheet__label">动物代号</Text>
           <View className="detail-rename-sheet__input-card">
             <Input
               className="detail-rename-sheet__input"

@@ -574,7 +574,7 @@ function getSupportUnmatchedReasonLabel(reason?: SupportUnmatchedReason) {
     case "insufficient_screenshot":
       return "截图信息不足";
     case "duplicate_submission":
-      return "疑似重复提交";
+      return "重复登记";
     case "unrelated_record":
       return "疑似无关记录";
     case "other":

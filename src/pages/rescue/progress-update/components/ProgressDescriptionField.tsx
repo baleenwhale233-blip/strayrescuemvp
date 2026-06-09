@@ -14,7 +14,7 @@ export function ProgressDescriptionField({
     <FormField className="rescue-update-page__field" label="进展详情描述">
       <TextareaField
         className="rescue-update-page__textarea"
-        placeholder="请详细描述这条记录的最新进展"
+        placeholder="写清目前状态、处理结果或下一步安排"
         cursorSpacing={cursorSpacing}
         maxlength={800}
         value={value}

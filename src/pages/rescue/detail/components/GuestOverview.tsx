@@ -19,7 +19,7 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
   return (
     <View className="guest-tab-content">
       <SurfaceCard className="guest-section-card">
-        <Text className="guest-section-card__eyebrow">关于我</Text>
+        <Text className="guest-section-card__eyebrow">基本情况</Text>
         <View className="guest-section-card__paragraphs">
           {paragraphs.map((paragraph) => (
             <Text key={paragraph} className="guest-section-card__paragraph">
@@ -39,7 +39,7 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
               variant="danger"
             />
           </View>
-          <Text className="guest-metric-card__label">总支出</Text>
+          <Text className="guest-metric-card__label">已确认支出</Text>
           <Text className="guest-metric-card__value guest-metric-card__value--expense">
             {formatSignedAmount(detail.ledger.confirmedExpenseAmountLabel, "-")}
           </Text>
@@ -54,7 +54,7 @@ export function GuestOverview({ detail }: { detail: PublicDetailVM }) {
               variant="success"
             />
           </View>
-          <Text className="guest-metric-card__label">总收入</Text>
+          <Text className="guest-metric-card__label">已确认支持</Text>
           <Text className="guest-metric-card__value guest-metric-card__value--income">
             {formatSignedAmount(detail.ledger.supportedAmountLabel, "+")}
           </Text>

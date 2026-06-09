@@ -223,7 +223,7 @@ export default function RescueStatusUpdatePage() {
           if (!matchedDraft) {
             Taro.hideLoading();
             Taro.showToast({
-              title: "草稿上下文丢失",
+              title: "未找到草稿，请返回后重试",
               icon: "none",
             });
             return;
@@ -280,7 +280,7 @@ export default function RescueStatusUpdatePage() {
         } else {
           Taro.hideLoading();
           Taro.showToast({
-            title: "当前案例上下文缺失",
+            title: "未找到这条记录，请返回后重试",
             icon: "none",
           });
           return;
@@ -296,7 +296,7 @@ export default function RescueStatusUpdatePage() {
           title:
             error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED"
               ? "图片上传失败，请重试"
-              : "进展发布失败",
+              : "未能发布进展，请稍后重试",
           icon: "none",
         });
       }

@@ -74,7 +74,7 @@ export function useCaseProfileActions({
       } catch {
         Taro.hideLoading();
         Taro.showToast({
-          title: "代号更新失败",
+          title: "未能更新代号，请稍后重试",
           icon: "none",
         });
         return;
@@ -146,14 +146,14 @@ export function useCaseProfileActions({
         Taro.hideLoading();
 
         Taro.showToast({
-          title: "已更新头像",
+          title: "封面已更新",
           icon: "none",
         });
       } catch (error) {
         Taro.hideLoading();
         if (error instanceof Error && error.message === "CASE_ASSET_UPLOAD_FAILED") {
           Taro.showToast({
-            title: "头像上传失败",
+            title: "封面上传失败",
             icon: "none",
           });
         }

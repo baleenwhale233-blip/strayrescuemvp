@@ -16,7 +16,7 @@ export function ExpenseEvidenceCard({
     <SurfaceCard className="rescue-expense-page__evidence">
       <SectionHeader
         className="rescue-expense-page__section-copy"
-        description="请上传当次支出的所有相关凭证（最多9张）"
+        description="请上传当次支出的相关凭证，最多 9 张。"
         title="公共凭证"
       />
 
@@ -32,7 +32,7 @@ export function ExpenseEvidenceCard({
       />
 
       <NoticeBanner className="rescue-expense-page__note" iconName="info">
-        一组支出共享公共凭证。订单截图、支付凭证、物品或猫咪使用支出照片可统一在此上传，无需为每个明细重复操作。
+        一组支出可以共用这些凭证。订单截图、支付凭证、物品使用情况照片都可以放在这里，不用为每条明细重复上传。
       </NoticeBanner>
     </SurfaceCard>
   );

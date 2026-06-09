@@ -36,7 +36,7 @@ export function CreateBasicForm({
       <View className="rescue-create-page__upload-card">
         <UploadStrip
           addIcon={<AppIcon name="camera" size={24} variant="inverse" />}
-          addLabel="拍摄正脸清晰图作为档案封面"
+          addLabel="上传清晰照片作为档案封面"
           images={coverPath ? [coverPath] : []}
           maxImages={1}
           removeIconName="trash"
@@ -47,7 +47,7 @@ export function CreateBasicForm({
       </View>
 
       <View className="rescue-create-page__form-group">
-        <Text className="rescue-create-page__label">小家伙的代号</Text>
+        <Text className="rescue-create-page__label">动物代号</Text>
         <View className="rescue-create-page__input-card">
           <Input
             className="rescue-create-page__input"
@@ -61,7 +61,7 @@ export function CreateBasicForm({
       </View>
 
       <View className="rescue-create-page__form-group">
-        <Text className="rescue-create-page__label">一句话事件简述</Text>
+        <Text className="rescue-create-page__label">一句话情况说明</Text>
         <TextareaField
           className="rescue-create-page__textarea"
           placeholder="在哪发现的（不用太过具体）？它怎么了？"

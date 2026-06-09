@@ -152,7 +152,7 @@
 | `rescuer.name` | canonical / VM | 救助人昵称 | 已有，页面已接 | 后续接真实 user profile |
 | `rescuer.avatarUrl` | canonical / VM | 救助人头像 | 已有，页面已接 | 记录主页 VM 会优先按 `avatarAssetId` 从 bundle assets 解析头像 URL，再回退到直接 `avatarUrl` |
 | `rescuer.stats.publishedCaseCount` | canonical / VM | 已建立救助档案数 | 已有，页面已接 | 后续确认统计口径 |
-| `rescuer.stats.verifiedReceiptCount` | canonical / VM | 真实凭证数 | 已有，页面已接 | 后续确认是否含共享凭证 |
+| `rescuer.stats.verifiedReceiptCount` | canonical / VM | 已上传凭证数 | 已有，页面已接 | 后续确认是否含共享凭证；端内不使用“真实凭证”作为背书式展示 |
 | `rescuerCases[]` | 远端 VM | 该救助人的公开案例卡列表 | 远端已接 | `getRescuerHomepage.bundles` -> `HomepageCaseCardVM[]` |
 
 当前规则说明：
@@ -310,7 +310,7 @@
 - 页面结构已经按 Figma 收口到 `案例卡 → 金额 → 称呼 → 上传凭证 → 留言 → 底部提交`
 - `support/claim` 当前已改用 `PublicDetailVM.rescueStartedAtLabel`，不再在页面层查找公开时间线里的 `case_created`
 - `createSupportEntry` 已完成 CloudBase 开发环境远端验证：写入 `support_entries`、私有 `evidence_assets`、`support_threads`，同时生成私有 pending support event
-- 真实凭证图上传回归已跑通：`wx.cloud.uploadFile -> cloud:// fileID -> evidence_assets / support_entries.screenshotHashes`
+- 凭证图上传回归已跑通：`wx.cloud.uploadFile -> cloud:// fileID -> evidence_assets / support_entries.screenshotHashes`
 - `INVALID_AMOUNT / INVALID_SUPPORTED_AT / INVALID_SCREENSHOT_FILE_ID / DUPLICATE_SUPPORT_SCREENSHOT / SUPPORT_ENTRY_RATE_LIMIT_10_MIN` 等业务错误已完成远端回归，并保持不回落本地
 - 页面级 `loading / error` 态与原生截图场景已经跑通；本轮后端新增的是写入闭环约束，不新增页面展示字段
 

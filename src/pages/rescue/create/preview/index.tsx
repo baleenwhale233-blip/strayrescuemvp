@@ -217,7 +217,7 @@ function getPreviewOverviewProps(
 
   return {
     paragraphs: [
-      draft.summary || "等待补充这条记录的情况介绍。",
+      draft.summary || "这条记录的情况介绍待补充。",
       `当前总预算为${formatCurrency(draft.budget || 0)}。`,
     ],
     expenseLabel: `-${formatCurrency(ledger.expense)}`,
@@ -512,7 +512,7 @@ export default function RescueCreatePreviewPage() {
     setDraft(nextDraft);
     setActiveAction(null);
     Taro.showToast({
-      title: "已写入预览时间线",
+      title: "记录已添加到预览",
       icon: "none",
     });
   };
@@ -527,7 +527,7 @@ export default function RescueCreatePreviewPage() {
       } catch {
         Taro.hideLoading();
         Taro.showToast({
-          title: "草稿已本地保存，远端同步失败",
+          title: "草稿已保存在本机，暂未同步",
           icon: "none",
         });
         return;
@@ -594,7 +594,7 @@ export default function RescueCreatePreviewPage() {
       } catch {
         Taro.hideLoading();
         Taro.showToast({
-          title: "已本地发布，远端同步失败",
+          title: "记录已保存在本机，暂未同步",
           icon: "none",
         });
         return;
@@ -602,7 +602,7 @@ export default function RescueCreatePreviewPage() {
       Taro.hideLoading();
 
       Taro.showToast({
-        title: saved.status === "published" ? "记录已发布" : "已更新",
+        title: saved.status === "published" ? "记录已发布" : "记录已更新",
         icon: "none",
       });
 
@@ -674,7 +674,7 @@ export default function RescueCreatePreviewPage() {
 
       setDraft(nextDraft);
       Taro.showToast({
-        title: "已更新头像",
+        title: "封面已更新",
         icon: "none",
       });
     } catch {

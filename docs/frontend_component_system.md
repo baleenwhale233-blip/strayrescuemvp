@@ -460,7 +460,7 @@
 
 2026-05-30 支持足迹列表模板迁移：
 
-- `src/pages/profile/support-history/index.tsx` 的总计支持卡迁移到 `SurfaceCard`
+- `src/pages/profile/support-history/index.tsx` 的已确认支持合计卡迁移到 `SurfaceCard`
 - 支持登记列表项迁移到 `SurfaceCard`
 - 无记录空态迁移到 `EmptyState`
 - 保留原有 `loadMySupportHistory`、金额合计和客态详情跳转逻辑

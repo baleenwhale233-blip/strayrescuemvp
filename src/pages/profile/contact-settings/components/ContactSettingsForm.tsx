@@ -34,7 +34,7 @@ export function ContactSettingsForm({
           <SurfaceCard className="contact-settings-page__input-card">
             <Input
               className="contact-settings-page__input"
-              placeholder="请填写微信号"
+              placeholder="填写微信号"
               placeholderStyle="color:var(--color-text-tertiary);"
               value={wechatId}
               onInput={(event) => onWechatIdChange(event.detail.value)}
@@ -45,7 +45,7 @@ export function ContactSettingsForm({
         <FormField label="微信二维码（二选一即可）">
           <UploadStrip
             addIconName="imagePlus"
-            addLabel="添加照片"
+            addLabel="添加二维码"
             className="contact-settings-page__qr-upload"
             images={qrImagePath ? [qrImagePath] : []}
             maxImages={1}
@@ -57,7 +57,7 @@ export function ContactSettingsForm({
         <FormField label="备注（选填）">
           <TextareaField
             className="contact-settings-page__textarea"
-            placeholder="如果需要联系您，有什么要提前说明的"
+            placeholder="如果别人联系你，有什么要先说明？"
             cursorSpacing={cursorSpacing}
             maxlength={120}
             value={note}
@@ -71,7 +71,7 @@ export function ContactSettingsForm({
         iconName="arrowRight"
         onTap={onSubmit}
       >
-        保存
+        保存联系信息
       </SubmitActionBar>
     </>
   );

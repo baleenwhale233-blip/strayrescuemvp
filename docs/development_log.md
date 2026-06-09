@@ -3103,3 +3103,14 @@
 - 影响范围：仅影响联系方式半弹层展示和触摸交互；不改 `SupportSheetData`、selector、repository、CloudBase 或数据模型。
 - 验证结果：`typecheck`、`lint`、`format:check`、`build:weapp`、`git diff --check` 通过；构建仍只有既有图片体积和 no async chunks warning。
 - 下一步 / 遗留问题：需要真机确认长按二维码、复制微信号、点击关闭和下拉关闭都顺手。
+
+## 2026-06-09 | UX 文案 | 收口资金、凭证与支持登记文案
+
+- 日期：2026-06-09
+- 改动主题：按中文 UX Writing 审核结果收口端内高风险文案。
+- 为什么改：资金与凭证相关文案存在“总收入 / 真实凭证 / 挂载至账本”等容易误解或偏系统口径的表达，支持登记和联系方式也有少量称呼不一致。
+- 改了什么：资金摘要改为 `已确认支出 / 已确认支持`，凭证展示改成“已上传 / 记录较完整”口径，记账、预算、支持登记按钮和错误提示改得更短更具体；同步相关 IA、字段和进度文档。
+- 影响范围：影响发现、详情、记录主页、登记支持、处理支持登记、记账、更新进展、追加预算、建档、联系方式和支持足迹展示文案；现有页面兼容保持。
+- 数据层说明：仅调整 `modeling` 的重复原因展示和 legacy fixture 文案，未新增 richer VM / richer mock，不改数据结构、repository 或 CloudBase 写链。
+- 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`build:weapp`、`git diff --check` 通过；构建仍只有既有图片体积与 no async chunks warning。
+- 下一步 / 遗留问题：需要真机看长按钮替换后的底栏宽度，以及“已确认支持合计 / 已确认支持”在小屏是否换行自然。

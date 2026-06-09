@@ -105,7 +105,7 @@ export default function ContactSettingsPage() {
           });
           Taro.hideLoading();
           Taro.showToast({
-            title: "只保存在本机，请稍后再试",
+            title: "已保存在本机，稍后再同步",
             icon: "none",
           });
           return;
@@ -133,7 +133,7 @@ export default function ContactSettingsPage() {
             });
             Taro.hideLoading();
             Taro.showToast({
-              title: "联系方式已保存，二维码没传上去",
+              title: "联系方式已保存，二维码未同步",
               icon: "none",
             });
             return;
@@ -179,7 +179,7 @@ export default function ContactSettingsPage() {
             note: note.trim(),
           });
           Taro.showToast({
-            title: "联系方式已保存，二维码没传上去",
+            title: "联系方式已保存，二维码未同步",
             icon: "none",
           });
           return;
@@ -191,7 +191,7 @@ export default function ContactSettingsPage() {
           note: note.trim(),
         });
         Taro.showToast({
-          title: "只保存在本机，请稍后再试",
+          title: "已保存在本机，稍后再同步",
           icon: "none",
         });
         return;

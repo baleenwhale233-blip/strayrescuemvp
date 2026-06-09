@@ -17,7 +17,7 @@ export function PreviewRenameSheet({
   return (
     <PreviewSheetFrame title="修改代号" onClose={onClose}>
       <View className="rescue-preview__sheet-field">
-        <Text className="rescue-preview__sheet-label">小家伙的代号</Text>
+        <Text className="rescue-preview__sheet-label">动物代号</Text>
         <View className="rescue-preview__sheet-input-card">
           <Input
             className="rescue-preview__sheet-input"

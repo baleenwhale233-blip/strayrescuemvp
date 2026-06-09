@@ -18,7 +18,7 @@ export function GuestRescuerCard({
         <Text className="rescuer-card__name">{detail.rescuer.name}</Text>
         <Text className="rescuer-card__meta">
           已建立 {detail.rescuer.stats.publishedCaseCount} 份记录档案 ·{" "}
-          {detail.rescuer.stats.verifiedReceiptCount} 张真实凭证
+          {detail.rescuer.stats.verifiedReceiptCount} 张已上传凭证
         </Text>
       </View>
       {detail.rescuer.profileEntryEnabled ? (

@@ -55,14 +55,14 @@ export function BudgetUpdateForm({
             onValueChange={onBudgetChange}
           />
           <Text className="rescue-budget-update-page__hint">
-            当前已登记：{contextCard.supportedAmountLabel}
+            已确认支持：{contextCard.supportedAmountLabel}
           </Text>
         </FormField>
 
-        <FormField className="rescue-budget-update-page__field" label="追加原因/说明">
+        <FormField className="rescue-budget-update-page__field" label="追加原因">
           <TextareaField
             className="rescue-budget-update-page__textarea"
-            placeholder="请说明为什么要追加预算，如：病情反复需要额手术、住院时间延长等"
+            placeholder="说明为什么要追加预算，如：病情反复需要二次手术、住院时间延长等"
             cursorSpacing={cursorSpacing}
             maxlength={160}
             value={reason}
@@ -71,7 +71,7 @@ export function BudgetUpdateForm({
         </FormField>
 
         <NoticeBanner className="rescue-budget-update-page__notice" iconName="info">
-          预算追加后将自动生成一条进展动态，并在这条记录的时间轴中公示。
+          提交后会在时间轴新增一条预算调整记录。
         </NoticeBanner>
       </View>
 
@@ -80,7 +80,7 @@ export function BudgetUpdateForm({
         iconName="send"
         onTap={onSubmit}
       >
-        确认追加并更新时间线
+        更新预算
       </SubmitActionBar>
     </>
   );

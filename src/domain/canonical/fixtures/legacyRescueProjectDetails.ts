@@ -76,7 +76,7 @@ export const legacyRescueProjectDetails: LegacyRescueProjectDetail[] = [
     rescuer: {
       name: "阿岚",
       credential: "注册 126 天 · 已建立 3 份透明账本",
-      stats: "已上传 12 张真实医疗凭证 · 最近 24 小时更新 2 次",
+      stats: "已上传 12 张医疗凭证 · 最近 24 小时更新 2 次",
     },
     timeline: [
       {
