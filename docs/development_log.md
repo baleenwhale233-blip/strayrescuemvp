@@ -3027,3 +3027,13 @@
 - 影响范围：涉及 funding selector、首页卡 VM、详情/草稿资金指标和文档；新增 `confirmedExpenseAmountLabel` 作为首页卡 richer VM 展示字段，现有页面兼容保持，数据模型、repository 写链、CloudBase 和 fixtures 不变。
 - 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`git diff --check` 通过；`test:domain` 覆盖缺口金额、300 元尾差和已覆盖预算状态。
 - 下一步 / 遗留问题：需要真机看发现卡、客态详情资金卡和主态资金卡，确认金额较长时不挤。
+
+## 2026-06-09 | 主态详情 | 快捷动作区对齐上下组件
+
+- 日期：2026-06-09
+- 改动主题：收紧主态详情快捷动作区的横向留白。
+- 为什么改：动作区容器额外叠加了一层左右 padding，导致“记一笔支出”等按钮比上方资金卡和下方 tab 更窄，视觉上没有对齐。
+- 改了什么：去掉 `RescueOwnerQuickActions` 容器的额外横向 padding，让按钮外缘跟页面内容容器一致。
+- 影响范围：仅影响主态详情和草稿预览复用快捷动作区的视觉对齐；不改页面结构、交互、VM、数据模型、repository 或 CloudBase。
+- 验证结果：`format:check`、`build:weapp`、`git diff --check` 通过；构建仍只有既有图片体积和 no async chunks warning。
+- 下一步 / 遗留问题：需要在微信开发者工具里看 owner 详情和草稿预览首屏，确认按钮与上下组件边线一致。
