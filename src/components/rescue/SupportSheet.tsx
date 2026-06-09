@@ -1,4 +1,5 @@
 import { Image, ScrollView, Text, View } from "@tarojs/components";
+import { useRef, useState } from "react";
 import type { SupportSheetData } from "../../domain/canonical/types";
 import { AppIcon } from "../AppIcon";
 import { AppButton, SectionHeader } from "../ui";
@@ -12,6 +13,8 @@ type SupportSheetProps = {
   onSaveQrHint: () => void;
 };
 
+const DRAG_CLOSE_DISTANCE = 96;
+
 export function SupportSheet({
   visible,
   support,
@@ -19,6 +22,10 @@ export function SupportSheet({
   onCopyWechat,
   onSaveQrHint,
 }: SupportSheetProps) {
+  const dragStartYRef = useRef(0);
+  const [dragOffsetY, setDragOffsetY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
   if (!visible) {
     return null;
   }
@@ -50,6 +57,33 @@ export function SupportSheet({
     onClose();
   };
 
+  const handleDragStart = (event: any) => {
+    dragStartYRef.current = event.touches?.[0]?.clientY || 0;
+    setIsDragging(true);
+  };
+
+  const handleDragMove = (event: any) => {
+    if (!isDragging) {
+      return;
+    }
+
+    const currentY = event.touches?.[0]?.clientY || dragStartYRef.current;
+    const deltaY = Math.max(0, currentY - dragStartYRef.current);
+    setDragOffsetY(Math.min(deltaY, 180));
+  };
+
+  const handleDragEnd = () => {
+    if (dragOffsetY >= DRAG_CLOSE_DISTANCE) {
+      setIsDragging(false);
+      setDragOffsetY(0);
+      onClose();
+      return;
+    }
+
+    setIsDragging(false);
+    setDragOffsetY(0);
+  };
+
   return (
     <View
       className="support-sheet__overlay"
@@ -60,11 +94,30 @@ export function SupportSheet({
       <View
         className="support-sheet__panel"
         catchMove
+        style={{
+          transform: `translateY(${dragOffsetY}px)`,
+          transition: isDragging ? "none" : "transform 180ms ease-out",
+        }}
         onTap={(event) => event.stopPropagation()}
         onTouchMove={(event) => event.stopPropagation()}
       >
-        <View className="support-sheet__handle">
-          <View className="support-sheet__handle-bar" />
+        <View
+          className="support-sheet__header"
+          onTouchStart={handleDragStart}
+          onTouchMove={handleDragMove}
+          onTouchEnd={handleDragEnd}
+          onTouchCancel={handleDragEnd}
+        >
+          <View className="support-sheet__handle">
+            <View className="support-sheet__handle-bar" />
+          </View>
+
+          <View className="support-sheet__title-row">
+            <Text className="support-sheet__title">联系信息</Text>
+            <View className="support-sheet__close" onTap={onClose}>
+              <Text className="support-sheet__close-text">×</Text>
+            </View>
+          </View>
         </View>
 
         <ScrollView className="support-sheet__scroll" scrollY showScrollbar={false}>

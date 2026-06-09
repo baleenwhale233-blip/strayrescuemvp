@@ -3093,3 +3093,13 @@
 - 影响范围：不改变页面结构、交互、VM、selector、repository、CloudBase 或数据模型；只影响代码格式和本次开发版本上传。
 - 验证结果：`npm run preflight:alpha` 通过，覆盖安全检查、格式、lint、typecheck、domain tests 和 weapp build；上传包体总大小 `1,581,364` Byte。
 - 下一步 / 遗留问题：需要在微信公众平台确认开发版本备注和体验版二维码可用，再继续真机 happy path 回归。
+
+## 2026-06-09 | 联系方式 | 重做联系半弹层交互
+
+- 日期：2026-06-09
+- 改动主题：重做查看联系方式半弹层的高度、二维码尺寸、顶部抓手和关闭交互。
+- 为什么改：真机截图里二维码区过大、内容和底部按钮挤在一起，顶部也缺少清晰可拖拽/关闭区域，导致下拉关闭不顺手。
+- 改了什么：半弹层改为 82vh 内滚动抽屉，新增标题栏、关闭按钮和下拉关闭阈值；二维码缩小，说明、备注和底部主按钮改为不互相遮挡；同步 IA。
+- 影响范围：仅影响联系方式半弹层展示和触摸交互；不改 `SupportSheetData`、selector、repository、CloudBase 或数据模型。
+- 验证结果：`typecheck`、`lint`、`format:check`、`build:weapp`、`git diff --check` 通过；构建仍只有既有图片体积和 no async chunks warning。
+- 下一步 / 遗留问题：需要真机确认长按二维码、复制微信号、点击关闭和下拉关闭都顺手。
