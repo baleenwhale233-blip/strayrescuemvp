@@ -19,6 +19,24 @@ test("getPublicDetailVM only counts confirmed support into supportedAmount", () 
   assert.equal(vm.statusLabel, "医疗处理中");
 });
 
+test("getPublicDetailVM uses latest budget adjustment for target gap", () => {
+  const vm = getPublicDetailVM({
+    ...bundle,
+    case: {
+      ...bundle.case,
+      targetAmount: 3200,
+    },
+    supportEntries: bundle.supportEntries?.map((entry) =>
+      entry.status === "confirmed" ? { ...entry, amount: 3000 } : entry,
+    ),
+  });
+
+  assert.equal(vm.ledger.targetAmount, 4200);
+  assert.equal(vm.ledger.supportedAmount, 3000);
+  assert.equal(vm.ledger.remainingTargetAmount, 1200);
+  assert.equal(vm.ledger.progressPercent, 71);
+});
+
 test("getPublicDetailVM prefers case cover for hero image when available", () => {
   const vm = getPublicDetailVM(bundle);
 

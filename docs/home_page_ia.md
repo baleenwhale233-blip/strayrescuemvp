@@ -160,6 +160,8 @@
 
 **已确认登记离总预算还有多远。**
 
+这里的 `target_amount` 指预算调整后的当前总预算；如果 bundle 里同时有建档预算和预算调整记录，系统以当前总预算计算资金状态。
+
 1. 如果 `target_amount <= 0`
    - 显示：`预算待确认`
 2. 如果 `confirmed_support_amount >= target_amount`

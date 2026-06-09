@@ -89,6 +89,8 @@
 
 #### 当前状态提示规则
 
+这里的 `target_amount` 指预算调整后的当前总预算；资金提示、当前差额和进度条都必须用同一个当前总预算。
+
 - 如果 `target_amount <= 0`
   - 显示：`预算待确认`
 - 如果 `confirmed_support_amount >= target_amount`

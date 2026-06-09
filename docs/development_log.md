@@ -2938,3 +2938,13 @@
 - 影响范围：仅影响资金状态文案与推荐理由命中条件；当前差额、进度条、金额字段、VM 结构、CloudBase / repository 写链保持不变，未新增 richer VM / richer mock。
 - 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`git diff --check` 通过；domain tests 覆盖 300 命中、301 不命中。
 - 下一步 / 遗留问题：需要真机确认差额剩 300 时才显示“即将筹满”，差额 301 时仍显示“距离预算还差较多”。
+
+## 2026-06-09 | 资金表达 | 预算调整纳入筹满判断
+
+- 日期：2026-06-09
+- 改动主题：资金 ledger 统一使用预算调整后的当前总预算。
+- 为什么改：页面仍显示“即将筹满”，根因是部分卡片用初始预算或旧预算事件计算尾差，追加预算后会误判为只差 300 元以内。
+- 改了什么：`buildLedgerSnapshotFromStructured` 接入 budget events 并解析当前总预算，详情 VM、首页 / 记录主页资金状态与推荐理由共用同一预算口径；同步补首页、详情、主 IA 和字段契约说明。
+- 影响范围：涉及 canonical modeling、PublicDetailVM、首页卡 VM 和相关 domain tests；现有页面兼容保持，未新增 richer VM / richer mock，CloudBase / repository 写链不变。
+- 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`git diff --check` 通过；domain tests 覆盖预算调整后旧预算不误报“即将筹满”。
+- 下一步 / 遗留问题：需要真机刷新当前案例，确认预算调整后的差额大于 300 时显示“距离预算还差较多”。

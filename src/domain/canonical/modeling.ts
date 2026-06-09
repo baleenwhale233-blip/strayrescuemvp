@@ -354,8 +354,10 @@ export function buildLedgerSnapshotFromStructured(
   input: {
     expenseRecords: CanonicalExpenseRecord[];
     supportEntries: CanonicalSupportEntry[];
+    events?: CanonicalEvent[];
   },
 ): LedgerSnapshot {
+  const targetAmount = resolveTargetAmount(caseRecord, input.events ?? []);
   const confirmedExpenseAmount = input.expenseRecords
     .filter(
       (record) =>
@@ -369,14 +371,12 @@ export function buildLedgerSnapshotFromStructured(
     .filter((entry) => entry.status === "pending")
     .reduce((sum, entry) => sum + entry.amount, 0);
   const verifiedGapAmount = Math.max(confirmedExpenseAmount - supportedAmount, 0);
-  const remainingTargetAmount = Math.max(caseRecord.targetAmount - supportedAmount, 0);
+  const remainingTargetAmount = Math.max(targetAmount - supportedAmount, 0);
   const progressPercent =
-    caseRecord.targetAmount > 0
-      ? Math.min(Math.round((supportedAmount / caseRecord.targetAmount) * 100), 100)
-      : 0;
+    targetAmount > 0 ? Math.min(Math.round((supportedAmount / targetAmount) * 100), 100) : 0;
 
   return {
-    targetAmount: caseRecord.targetAmount,
+    targetAmount,
     confirmedExpenseAmount,
     supportedAmount,
     pendingSupportAmount,
@@ -384,6 +384,15 @@ export function buildLedgerSnapshotFromStructured(
     remainingTargetAmount,
     progressPercent,
   };
+}
+
+export function resolveTargetAmount(caseRecord: CanonicalCase, events: CanonicalEvent[]) {
+  const eventTargetAmount = events
+    .filter((event) => event.type === "budget_adjustment")
+    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))
+    .reduce((_targetAmount, event) => event.newTargetAmount, caseRecord.targetAmount);
+
+  return Math.max(caseRecord.targetAmount, eventTargetAmount);
 }
 
 export function getLatestStatusSummary(bundle: CanonicalCaseBundle) {
@@ -477,6 +486,7 @@ export function getFundingStatusSummary(bundle: CanonicalCaseBundle) {
   const ledger = buildLedgerSnapshotFromStructured(bundle.case, {
     expenseRecords: getStructuredExpenseRecords(bundle),
     supportEntries: getStructuredSupportEntries(bundle),
+    events: bundle.events,
   });
 
   if (ledger.targetAmount <= 0) {
@@ -498,6 +508,7 @@ export function getRecommendationReason(bundle: CanonicalCaseBundle) {
   const ledger = buildLedgerSnapshotFromStructured(bundle.case, {
     expenseRecords: getStructuredExpenseRecords(bundle),
     supportEntries: getStructuredSupportEntries(bundle),
+    events: bundle.events,
   });
   const now = Date.now();
   const lastPublicActivityAt = Date.parse(getLastPublicActivityAt(bundle));

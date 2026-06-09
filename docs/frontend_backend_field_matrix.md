@@ -79,11 +79,11 @@
 | Hero 图 | `heroImageUrl` | `PublicDetailVM` | 已有 | 顶部主图 |
 | 摘要 | `summary` | `PublicDetailVM` | 已有 | 当前代码仍在用 |
 | 更新时间 | `updatedAtLabel` | `PublicDetailVM` | 已有 | 详情页可复用 |
-| 总预算 | `ledger.targetAmount / targetAmountLabel` | `PublicDetailVM` | 已有 | 已格式化 |
+| 总预算 | `ledger.targetAmount / targetAmountLabel` | `PublicDetailVM` | 已有 | 已格式化；使用预算调整后的当前总预算 |
 | 已确认支出 | `ledger.confirmedExpenseAmount / confirmedExpenseAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费 |
 | 已确认支持 | `ledger.supportedAmount / supportedAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费 |
 | 垫付差额 | `ledger.verifiedGapAmount / verifiedGapAmountLabel` | `PublicDetailVM` | 已有 | 兼容字段，表示已确认支出 - 已确认支持 |
-| 当前差额 | `ledger.remainingTargetAmount / remainingTargetAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费，表示总预算 - 已确认支持 |
+| 当前差额 | `ledger.remainingTargetAmount / remainingTargetAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费，表示当前总预算 - 已确认支持 |
 | 支持摘要金额 | `supportSummary.confirmedSupportAmount / confirmedSupportAmountLabel` | `PublicDetailVM` | 已有 | 支持记录摘要 |
 | 待处理支持数 | `supportSummary.pendingSupportEntryCount` | `PublicDetailVM` | 已有 | 可接到摘要区 |
 | 未匹配支持数 | `supportSummary.unmatchedSupportEntryCount` | `PublicDetailVM` | 已有 | 当前页暂未消费 |
@@ -130,7 +130,7 @@
 | 目标金额 | `ledger.targetAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
 | 已确认垫付 | `ledger.confirmedExpenseAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
 | 已确认支持 | `ledger.supportedAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
-| 当前差额 | `ledger.remainingTargetAmountLabel` | `OwnerDetailVM` | 已有 | 已接，表示总预算 - 已确认支持 |
+| 当前差额 | `ledger.remainingTargetAmountLabel` | `OwnerDetailVM` | 已有 | 已接，表示当前总预算 - 已确认支持 |
 | 首页资格状态 | `homepageEligibilityStatus` | `OwnerDetailVM` | 已有 | 页面暂未消费 |
 | 首页资格原因 | `homepageEligibilityReason` | `OwnerDetailVM` | 已有 | 页面暂未消费 |
 | 待处理支持数 | `pendingSupportEntryCount` | `OwnerDetailVM` | 已有 | 页面暂未消费 |

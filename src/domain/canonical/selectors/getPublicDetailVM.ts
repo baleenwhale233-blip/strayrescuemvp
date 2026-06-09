@@ -2,11 +2,8 @@ import type {
   CanonicalAsset,
   CanonicalCase,
   CanonicalCaseBundle,
-  CanonicalExpenseEvent,
   CanonicalEvent,
   CanonicalRescuer,
-  CanonicalSupportEvent,
-  LedgerSnapshot,
   PublicDetailVM,
   PublicTimelineItemVM,
   StatusTone,
@@ -108,58 +105,6 @@ function getStatusTone(caseRecord: CanonicalCase): StatusTone {
   }
 
   return "active";
-}
-
-function getResolvedTargetAmount(caseRecord: CanonicalCase, events: CanonicalEvent[]) {
-  return events
-    .filter((event) => event.type === "budget_adjustment")
-    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))
-    .reduce((_targetAmount, event) => event.newTargetAmount, caseRecord.targetAmount);
-}
-
-function isCountableExpenseEvent(event: CanonicalEvent): event is CanonicalExpenseEvent {
-  return (
-    event.type === "expense" &&
-    (event.verificationStatus === "confirmed" || event.verificationStatus === "manual")
-  );
-}
-
-function isConfirmedSupportEvent(event: CanonicalEvent): event is CanonicalSupportEvent {
-  return event.type === "support" && event.verificationStatus === "confirmed";
-}
-
-function isPendingSupportEvent(event: CanonicalEvent): event is CanonicalSupportEvent {
-  return event.type === "support" && event.verificationStatus === "pending";
-}
-
-export function buildLedgerSnapshotFromEvents(
-  caseRecord: CanonicalCase,
-  events: CanonicalEvent[],
-): LedgerSnapshot {
-  const targetAmount = getResolvedTargetAmount(caseRecord, events);
-  const confirmedExpenseAmount = events
-    .filter(isCountableExpenseEvent)
-    .reduce((sum, event) => sum + event.amount, 0);
-  const supportedAmount = events
-    .filter(isConfirmedSupportEvent)
-    .reduce((sum, event) => sum + event.amount, 0);
-  const pendingSupportAmount = events
-    .filter(isPendingSupportEvent)
-    .reduce((sum, event) => sum + event.amount, 0);
-  const verifiedGapAmount = Math.max(confirmedExpenseAmount - supportedAmount, 0);
-  const remainingTargetAmount = Math.max(targetAmount - supportedAmount, 0);
-  const progressPercent =
-    targetAmount > 0 ? Math.min(Math.round((supportedAmount / targetAmount) * 100), 100) : 0;
-
-  return {
-    targetAmount,
-    confirmedExpenseAmount,
-    supportedAmount,
-    pendingSupportAmount,
-    verifiedGapAmount,
-    remainingTargetAmount,
-    progressPercent,
-  };
 }
 
 function eventToTimelineItemVM(
@@ -296,6 +241,7 @@ export function getPublicDetailVM(bundle: CanonicalCaseBundle): PublicDetailVM {
   const ledger = buildLedgerSnapshotFromStructured(bundle.case, {
     expenseRecords: getStructuredExpenseRecords(bundle),
     supportEntries: getStructuredSupportEntries(bundle),
+    events: bundle.events,
   });
   const timeline = getPublicTimeline(bundle, assetMap);
   const heroImageUrl =

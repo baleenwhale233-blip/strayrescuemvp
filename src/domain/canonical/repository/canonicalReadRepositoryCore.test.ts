@@ -233,6 +233,34 @@ test("homepage funding status stays far from budget when budget gap exceeds 300"
   assert.equal(card?.fundingStatusSummary, "距离预算还差较多");
 });
 
+test("homepage funding status uses latest budget adjustment as the budget", () => {
+  const adjustedBudgetBundle: CanonicalCaseBundle = {
+    ...publishedBundle,
+    case: {
+      ...publishedBundle.case,
+      targetAmount: 3200,
+    },
+    supportEntries: [
+      {
+        ...publishedBundle.supportEntries?.[0]!,
+        amount: 3000,
+      },
+    ],
+    supportThreads: [
+      {
+        ...publishedBundle.supportThreads?.[0]!,
+        totalConfirmedAmount: 3000,
+      },
+    ],
+  };
+
+  const [card] = getHomepageCaseCardVMsFromBundles([adjustedBudgetBundle]);
+
+  assert.equal(card?.fundingStatusSummary, "距离预算还差较多");
+  assert.equal(card?.progressPercent, 71);
+  assert.equal(card?.amountLabel, "¥3,000 / ¥4,200");
+});
+
 test("homepage funding status stays far from budget when confirmed support is low", () => {
   const highPressureBundle: CanonicalCaseBundle = {
     ...publishedBundle,
