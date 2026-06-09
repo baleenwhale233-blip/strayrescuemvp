@@ -3083,3 +3083,13 @@
 - 影响范围：现有页面兼容保持；新增 `SupportSheetData.contactNote` richer VM 字段并补 sample fixture / domain test，repository 写链和 CloudBase 存储结构不变。
 - 验证结果：`typecheck`、`test:domain`、`lint`、局部 Prettier、`build:weapp`、`git diff --check` 通过；全量 `format:check` 仍被既有 `src/pages/support/claim/index.tsx` 格式问题拦住。
 - 下一步 / 遗留问题：需要在微信开发者工具里看仅微信号、仅二维码和带备注三种联系弹层，确认内容高度更紧凑。
+
+## 2026-06-09 | 发包 | Alpha 0.1.0-alpha.8 体验版上传
+
+- 日期：2026-06-09
+- 改动主题：发包前修正登记支持页格式，并上传体验版 `0.1.0-alpha.8`。
+- 为什么改：体验版上传前需要完整跑通 `preflight:alpha`，并在微信开发者工具里写清本次版本号和更新内容。
+- 改了什么：仅格式化 `src/pages/support/claim/index.tsx` 的导入与条件判断换行；上传备注为“资金缺口口径收口，主客态入口自动识别，联系方式备注和支持登记文案优化”。
+- 影响范围：不改变页面结构、交互、VM、selector、repository、CloudBase 或数据模型；只影响代码格式和本次开发版本上传。
+- 验证结果：`npm run preflight:alpha` 通过，覆盖安全检查、格式、lint、typecheck、domain tests 和 weapp build；上传包体总大小 `1,581,364` Byte。
+- 下一步 / 遗留问题：需要在微信公众平台确认开发版本备注和体验版二维码可用，再继续真机 happy path 回归。

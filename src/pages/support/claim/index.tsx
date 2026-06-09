@@ -14,10 +14,7 @@ import {
 import { uploadSupportProofImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
 import { SupportClaimForm } from "./components/SupportClaimForm";
-import {
-  normalizeSupporterNameForSubmit,
-  resolveDefaultSupporterName,
-} from "./supporterIdentity";
+import { normalizeSupporterNameForSubmit, resolveDefaultSupporterName } from "./supporterIdentity";
 import "./index.scss";
 
 type ClaimLoadStatus = "loading" | "ready" | "error";
@@ -105,11 +102,7 @@ export default function SupportClaimPage() {
     defaultNameRequestRef.current = requestId;
     const localNickname = getStoredProfileNickname();
     const applyDefaultName = (nextName: string) => {
-      if (
-        requestId === defaultNameRequestRef.current &&
-        nextName &&
-        !nicknameDirtyRef.current
-      ) {
+      if (requestId === defaultNameRequestRef.current && nextName && !nicknameDirtyRef.current) {
         setNickname(nextName);
       }
     };
