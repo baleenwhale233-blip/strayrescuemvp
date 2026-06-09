@@ -62,15 +62,20 @@ function formatCurrency(value: number) {
 
 function getFundingCompareMetrics(input: { expenseAmount: number; supportAmount: number }) {
   const diff = input.expenseAmount - input.supportAmount;
-  const base = Math.max(input.expenseAmount, input.supportAmount, 1);
 
   return {
-    advanceProgressPercent: (input.expenseAmount / base) * 100,
-    supportProgressPercent: (input.supportAmount / base) * 100,
     thirdLabel: diff > 0 ? "缺口" : "结余",
     thirdValue: formatCurrency(Math.abs(diff)),
     thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),
   };
+}
+
+function getBudgetProgressPercent(input: { supportAmount: number; targetAmount: number }) {
+  if (input.targetAmount <= 0) {
+    return 0;
+  }
+
+  return Math.min(Math.round((input.supportAmount / input.targetAmount) * 100), 100);
 }
 
 function getDraftCover(draft: RescueCreateDraft) {
@@ -439,6 +444,10 @@ export default function RescueCreatePreviewPage() {
     expenseAmount: ledger.expense,
     supportAmount: ledger.income,
   });
+  const supportBudgetProgressPercent = getBudgetProgressPercent({
+    supportAmount: ledger.income,
+    targetAmount: budget,
+  });
 
   const handleSaveAction = (values: { title: string; description: string; amount: string }) => {
     if (!activeAction) {
@@ -680,12 +689,11 @@ export default function RescueCreatePreviewPage() {
       <RescueOwnerSummaryCard
         budgetLabel={formatCurrency(budget)}
         coverImage={getDraftCover(draft)}
-        advanceProgressPercent={fundingCompare.advanceProgressPercent}
         expenseLabel={formatCurrency(ledger.expense)}
         onCopy={() => {
           Taro.setClipboardData({ data: getDraftPublicCaseId(draft) });
         }}
-        progressPercent={fundingCompare.supportProgressPercent}
+        progressPercent={supportBudgetProgressPercent}
         publicCaseId={getDraftPublicCaseId(draft)}
         statusLabel={getDraftStatusLabel(draft)}
         supportLabel={formatCurrency(ledger.income)}

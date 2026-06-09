@@ -112,11 +112,8 @@ export function getTimelineAssetUrls(item: PublicTimelineItemVM) {
 
 export function getFundingCompareMetrics(input: { expenseAmount: number; supportAmount: number }) {
   const diff = input.expenseAmount - input.supportAmount;
-  const base = Math.max(input.expenseAmount, input.supportAmount, 1);
 
   return {
-    advanceProgressPercent: (input.expenseAmount / base) * 100,
-    supportProgressPercent: (input.supportAmount / base) * 100,
     thirdLabel: diff > 0 ? "缺口" : "结余",
     thirdValue: `¥${Math.abs(diff).toLocaleString("zh-CN")}`,
     thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),

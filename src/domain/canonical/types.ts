@@ -353,8 +353,6 @@ export type HomepageCaseCardVM = {
   targetAmountLabel: string;
   supportedAmountLabel: string;
   rescuerAdvanceAmountLabel: string;
-  supportedProgressPercent: number;
-  rescuerAdvanceProgressPercent: number;
 };
 
 export type DiscoverCardVM = {

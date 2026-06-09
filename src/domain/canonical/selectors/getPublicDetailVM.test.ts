@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { sampleCaseBundle } from "../fixtures/sampleCaseBundle";
-import { getDiscoverCardVM } from "./getDiscoverCardVM";
+import { getDiscoverCardVM, getHomepageCaseCardVM } from "./getDiscoverCardVM";
 import { getPublicDetailVM } from "./getPublicDetailVM";
 import { getWorkbenchVM } from "./getWorkbenchVM";
 import { getRecommendationReason } from "../modeling";
@@ -114,6 +114,14 @@ test("getDiscoverCardVM derives list-friendly card fields from canonical bundle"
   assert.equal(vm.caseId, "case_001");
   assert.equal(vm.amountLabel, "¥100 / ¥4,200");
   assert.equal(vm.latestTimelineSummary, "复查后需要进一步治疗，增加药费预算");
+});
+
+test("getHomepageCaseCardVM uses total budget as the funding progress track", () => {
+  const vm = getHomepageCaseCardVM(bundle);
+
+  assert.equal(vm.progressPercent, 2);
+  assert.equal(vm.amountLabel, "¥100 / ¥4,200");
+  assert.equal(vm.rescuerAdvanceAmountLabel, "¥180");
 });
 
 test("getRecommendationReason describes complete evidence in plain record-and-proof language", () => {

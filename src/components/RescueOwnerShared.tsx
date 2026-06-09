@@ -23,7 +23,6 @@ export type RescueOwnerSummaryCardProps = {
   publicCaseId: string;
   budgetLabel: string;
   progressPercent: number;
-  advanceProgressPercent?: number;
   expenseLabel: string;
   supportLabel: string;
   thirdLabel: string;
@@ -67,7 +66,6 @@ export function RescueOwnerSummaryCard({
   publicCaseId,
   budgetLabel,
   progressPercent,
-  advanceProgressPercent,
   expenseLabel,
   supportLabel,
   thirdLabel,
@@ -113,10 +111,6 @@ export function RescueOwnerSummaryCard({
       <View className="rescue-owner-card__ledger">
         <Text className="rescue-owner-card__budget">总预算 {budgetLabel}</Text>
         <View className="rescue-owner-card__progress">
-          <View
-            className="rescue-owner-card__progress-advance"
-            style={{ width: `${Math.min(advanceProgressPercent ?? 0, 100)}%` }}
-          />
           <View
             className="rescue-owner-card__progress-fill"
             style={{ width: `${Math.min(progressPercent, 100)}%` }}

@@ -114,16 +114,8 @@ export function DiscoverCaseCard({
 
         <View className="discover-card__progress">
           <View
-            className="discover-card__progress-advance"
-            style={{
-              width: getProgressWidth(
-                item.supportedProgressPercent + item.rescuerAdvanceProgressPercent,
-              ),
-            }}
-          />
-          <View
             className="discover-card__progress-fill"
-            style={{ width: getProgressWidth(item.supportedProgressPercent) }}
+            style={{ width: getProgressWidth(item.progressPercent) }}
           />
         </View>
 

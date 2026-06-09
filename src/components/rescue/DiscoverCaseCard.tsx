@@ -123,10 +123,7 @@ export function DiscoverCaseCard({
               value: item.rescuerAdvanceAmountLabel,
             },
           ]}
-          progressPercent={item.supportedProgressPercent}
-          secondaryProgressPercent={
-            item.supportedProgressPercent + item.rescuerAdvanceProgressPercent
-          }
+          progressPercent={item.progressPercent}
           statusLabel={item.fundingStatusSummary}
           statusTone={getFundingTone(item.fundingStatusSummary)}
           targetAmountLabel={item.targetAmountLabel}

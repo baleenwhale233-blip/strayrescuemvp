@@ -32,11 +32,6 @@ export function getHomepageCaseCardVM(bundle: CanonicalCaseBundle): HomepageCase
     publicDetail.ledger.confirmedExpenseAmount - publicDetail.ledger.supportedAmount,
     0,
   );
-  const fundedBaseAmount = Math.max(
-    publicDetail.ledger.confirmedExpenseAmount,
-    publicDetail.ledger.supportedAmount,
-    1,
-  );
 
   return {
     caseId: publicDetail.caseId,
@@ -60,14 +55,6 @@ export function getHomepageCaseCardVM(bundle: CanonicalCaseBundle): HomepageCase
     targetAmountLabel: publicDetail.ledger.targetAmountLabel,
     supportedAmountLabel: publicDetail.ledger.supportedAmountLabel,
     rescuerAdvanceAmountLabel: `¥${rescuerAdvanceAmount.toLocaleString("zh-CN")}`,
-    supportedProgressPercent: Math.min(
-      Math.round((publicDetail.ledger.supportedAmount / fundedBaseAmount) * 100),
-      100,
-    ),
-    rescuerAdvanceProgressPercent: Math.min(
-      Math.round((rescuerAdvanceAmount / fundedBaseAmount) * 100),
-      100,
-    ),
   };
 }
 

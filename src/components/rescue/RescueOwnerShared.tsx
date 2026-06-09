@@ -21,7 +21,6 @@ export type RescueOwnerSummaryCardProps = {
   publicCaseId: string;
   budgetLabel: string;
   progressPercent: number;
-  advanceProgressPercent?: number;
   expenseLabel: string;
   supportLabel: string;
   thirdLabel: string;
@@ -66,7 +65,6 @@ export function RescueOwnerSummaryCard({
   publicCaseId,
   budgetLabel,
   progressPercent,
-  advanceProgressPercent,
   expenseLabel,
   supportLabel,
   thirdLabel,
@@ -133,7 +131,6 @@ export function RescueOwnerSummaryCard({
           },
         ]}
         progressPercent={progressPercent}
-        secondaryProgressPercent={advanceProgressPercent}
         targetAmountLabel={budgetLabel}
         variant="owner"
       />

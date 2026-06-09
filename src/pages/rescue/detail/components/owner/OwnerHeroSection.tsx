@@ -25,12 +25,11 @@ export function OwnerHeroSection({
     <RescueOwnerSummaryCard
       budgetLabel={ownerDetail.ledger.targetAmountLabel}
       coverImage={getOwnerAnimalImage(publicDetail)}
-      advanceProgressPercent={fundingCompare.advanceProgressPercent}
       expenseLabel={ownerDetail.ledger.confirmedExpenseAmountLabel}
       onCopy={onCopy}
       onEditCover={onEditCover}
       onEditTitle={onEditTitle}
-      progressPercent={fundingCompare.supportProgressPercent}
+      progressPercent={ownerDetail.progressPercent}
       publicCaseId={ownerDetail.publicCaseId}
       statusLabel={ownerDetail.statusLabel}
       supportLabel={ownerDetail.ledger.supportedAmountLabel}
