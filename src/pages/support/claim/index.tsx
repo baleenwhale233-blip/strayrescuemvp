@@ -1,4 +1,4 @@
-import Taro, { useRouter } from "@tarojs/taro";
+import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
 import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
@@ -8,14 +8,20 @@ import { createSubmissionGuard } from "../../../utils/submissionGuard";
 import { showSuccessFeedback } from "../../../utils/successFeedback";
 import {
   createRemoteSupportEntryByCaseId,
+  loadMyProfile,
   loadPublicDetailVMByCaseId,
 } from "../../../domain/canonical/repository";
 import { uploadSupportProofImage } from "../../../domain/canonical/repository/cloudbaseClient";
 import type { PublicDetailVM } from "../../../domain/canonical/types";
 import { SupportClaimForm } from "./components/SupportClaimForm";
+import {
+  normalizeSupporterNameForSubmit,
+  resolveDefaultSupporterName,
+} from "./supporterIdentity";
 import "./index.scss";
 
 type ClaimLoadStatus = "loading" | "ready" | "error";
+const PROFILE_USER_KEY = "profile-user:v1";
 
 function mapSupportError(error: unknown) {
   const code = error instanceof Error ? error.message : "";
@@ -51,17 +57,30 @@ function getRescueStartedAtLabel(detail: PublicDetailVM) {
   return detail.rescueStartedAtLabel || detail.updatedAtLabel || "待补充";
 }
 
+function getStoredProfileNickname() {
+  const stored = Taro.getStorageSync(PROFILE_USER_KEY);
+
+  if (!stored || typeof stored !== "object") {
+    return "";
+  }
+
+  const candidate = stored as { nickName?: string };
+  return String(candidate.nickName || "").trim();
+}
+
 export default function SupportClaimPage() {
   const router = useRouter();
   const keyboardBottomInset = useKeyboardBottomInset();
   const caseId = router.params?.caseId || router.params?.id;
   const [amount, setAmount] = useState("");
-  const [nickname, setNickname] = useState("默认写入微信ID");
+  const [nickname, setNickname] = useState("");
   const [note, setNote] = useState("");
   const [imagePath, setImagePath] = useState("");
   const [detail, setDetail] = useState<PublicDetailVM | undefined>();
   const [loadStatus, setLoadStatus] = useState<ClaimLoadStatus>("loading");
   const [caseCoverSrc, setCaseCoverSrc] = useState<string>(animalProfileExact);
+  const nicknameDirtyRef = useRef(false);
+  const defaultNameRequestRef = useRef(0);
   const submitGuardRef = useRef(createSubmissionGuard());
 
   useEffect(() => {
@@ -80,6 +99,31 @@ export default function SupportClaimPage() {
         });
       });
   }, [caseId]);
+
+  useDidShow(() => {
+    const requestId = defaultNameRequestRef.current + 1;
+    defaultNameRequestRef.current = requestId;
+    const localNickname = getStoredProfileNickname();
+    const applyDefaultName = (nextName: string) => {
+      if (
+        requestId === defaultNameRequestRef.current &&
+        nextName &&
+        !nicknameDirtyRef.current
+      ) {
+        setNickname(nextName);
+      }
+    };
+
+    applyDefaultName(resolveDefaultSupporterName({ localNickname }));
+
+    loadMyProfile()
+      .then((profile) => {
+        applyDefaultName(resolveDefaultSupporterName({ localNickname, profile }));
+      })
+      .catch(() => {
+        // Keep the local nickname or empty field as fallback.
+      });
+  });
 
   if (loadStatus === "loading") {
     return (
@@ -157,7 +201,7 @@ export default function SupportClaimPage() {
           imagePath && (!uploaded || uploaded.isLocalFallback) ? [imagePath] : [];
 
         await createRemoteSupportEntryByCaseId(caseId, {
-          supporterNameMasked: nickname || "默认写入微信ID",
+          supporterNameMasked: normalizeSupporterNameForSubmit(nickname),
           amount: numericAmount,
           supportedAt: new Date().toISOString(),
           note,
@@ -204,7 +248,10 @@ export default function SupportClaimPage() {
         onImageAdd={handlePickImage}
         onImagePreview={handlePreviewImage}
         onImageRemove={() => setImagePath("")}
-        onNicknameChange={setNickname}
+        onNicknameChange={(value) => {
+          nicknameDirtyRef.current = true;
+          setNickname(value);
+        }}
         onNoteChange={setNote}
         onSubmit={handleSubmit}
       />

@@ -68,6 +68,7 @@ export function SupportClaimForm({
       <FormField className="support-claim__field" label="您的称呼">
         <Input
           className="support-claim__text-input"
+          placeholder="昵称 / 称呼"
           value={nickname}
           onInput={(event) => onNicknameChange(event.detail.value)}
         />

@@ -465,7 +465,7 @@
 | 当前案例 | `detail.title / publicCaseId / statusLabel / heroImageUrl` | `getPublicDetailVMByCaseId()` | 已有 | 页面已接 |
 | 救助开始时间 | `detail.rescueStartedAtLabel` | `getPublicDetailVMByCaseId()` | 已接稳定 VM | `PublicDetailVM` 统一输出，不再由页面层查找 `case_created` |
 | 金额 | `amount` | 本地输入 | 已有 | |
-| 称呼 | `nickname` | 本地输入 | 已有 | 现在默认“默认写入微信ID” |
+| 称呼 | `nickname` | `loadMyProfile().displayName / openid` + 本地输入 | 已有 | 页面显示时重新读取 profile，默认取“我的”页昵称，其次本机昵称 / OPENID 尾号；用户可覆盖，不再把联系方式微信号或提示文案写入提交 |
 | 留言 | `note` | 本地输入 | 已有 | |
 | 截图 | `imagePath` | 本地选择图片 | 已有 | |
 | 提交逻辑 | `createSupportEntry()` | remote repository / CloudBase `rescueApi` | 已可试跑 | 已完成远端写入验证；会写入 `support_entries`、私有 `evidence_assets`、`support_threads` 和私有 pending support event |

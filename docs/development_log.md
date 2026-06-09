@@ -24,6 +24,22 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-06-09 | 登记支持 | 称呼默认改为昵称优先
+
+- 为什么改：`wechatId` 是联系方式，不是“您的称呼”；登记支持页此前会把 `alpha_rescue_test` 这类联系微信号带入称呼输入框。
+- 改了什么：默认称呼优先级改为 `loadMyProfile().displayName -> 本机昵称 -> OPENID 尾号`，并改用 `useDidShow` 在页面显示时重新读取一次 profile；旧提示文案仍会被过滤。
+- 影响范围：仅影响 `support/claim` 的称呼默认值和提交前归一；不改支持登记后端身份归属，真实 `supporterOpenid` 仍由云函数记录。
+- 验证结果：`npm run typecheck` 通过；支持登记 helper 测试 4 条通过；相关文件 ESLint 通过；`npm run build:weapp` 通过。
+- 下一步 / 遗留问题：如果用户从未在“我的”页保存昵称，小程序仍只能用 OPENID 尾号兜底，不能静默获取微信昵称。
+
+## 2026-06-09 | 登记支持 | 称呼默认取当前微信身份
+
+- 为什么改：登记支持页把“默认写入微信ID”当成输入框真实值和提交兜底，支持登记可能写入一句提示文案。
+- 改了什么：新增支持者身份默认值 helper，进页优先取 `loadMyProfile().wechatId`，其次昵称、本机昵称和 OPENID 尾号；用户手动输入后不再被异步回填覆盖，且旧默认文案即使来自缓存 / profile 也会被过滤。
+- 影响范围：仅影响 `support/claim` 的“您的称呼”初始显示与 `supporterNameMasked` 提交值；后端仍继续记录真实 `supporterOpenid`，空称呼按既有后端兜底。
+- 验证结果：`npm run typecheck` 通过；`npm run build:weapp` 通过；新增支持登记 UI helper 测试单独通过。完整 `test:ui` 仍被既有 `appIconImports` 直引 lucide 规则拦住，和本次改动无关。
+- 下一步 / 遗留问题：微信小程序不能静默获取用户私人微信号，只有用户已在 profile 保存过微信号时才会直接使用该值。
+
 ## 2026-04-21 | 文档 | 同步架构重构后的 overlay 与 rescueApi 现状
 
 - 为什么改：

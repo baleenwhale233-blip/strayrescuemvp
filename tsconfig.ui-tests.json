@@ -17,6 +17,8 @@
     "src/pages/rescue/record-detail/recordDetailEditability.test.ts",
     "src/pages/rescue/record-detail/revisionHistory.ts",
     "src/pages/rescue/record-detail/revisionHistory.test.ts",
+    "src/pages/support/claim/supporterIdentity.ts",
+    "src/pages/support/claim/supporterIdentity.test.ts",
     "src/components/ui/appIconImports.test.ts",
     "src/components/ui/progressBarUtils.ts",
     "src/components/ui/progressBar.test.ts",
