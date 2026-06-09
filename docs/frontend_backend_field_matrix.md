@@ -83,7 +83,7 @@
 | 已确认支出 | `ledger.confirmedExpenseAmount / confirmedExpenseAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费 |
 | 已确认支持 | `ledger.supportedAmount / supportedAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费 |
 | 垫付差额 | `ledger.verifiedGapAmount / verifiedGapAmountLabel` | `PublicDetailVM` | 已有 | 兼容字段，表示已确认支出 - 已确认支持 |
-| 当前差额 | `ledger.remainingTargetAmount / remainingTargetAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费，表示当前总预算 - 已确认支持 |
+| 当前缺口 | `ledger.remainingTargetAmount / remainingTargetAmountLabel` | `PublicDetailVM` | 已有 | 当前代码已消费，表示当前总预算 - 已确认支持 |
 | 支持摘要金额 | `supportSummary.confirmedSupportAmount / confirmedSupportAmountLabel` | `PublicDetailVM` | 已有 | 支持记录摘要 |
 | 待处理支持数 | `supportSummary.pendingSupportEntryCount` | `PublicDetailVM` | 已有 | 可接到摘要区 |
 | 未匹配支持数 | `supportSummary.unmatchedSupportEntryCount` | `PublicDetailVM` | 已有 | 当前页暂未消费 |
@@ -100,7 +100,7 @@
 - `timeline` 当前已被页面按 `支出记录 / 状态更新 / 预算调整 / 已确认支持` 四类结构消费，并在缺项时做前端 mock 回退
 - 客态页已补 `loading / error` 页面态，但仍未新增独立数据字段
 - 客态详情页当前仍可能在本地 fallback 场景叠加展示覆盖：已发布主态的 `title / heroImageUrl` 可由 `updateCaseProfile` 远端正式回写，正式远端成功回包不再吃本机 overlay；本地 draft / local overlay 只作为兜底。状态文案也只在本地 fallback 场景下继续叠加本地状态更新记录里的最新状态
-- 资金区当前差额消费 `remainingTargetAmount` 语义；`verifiedGapAmount` 仅保留为垫付差额兼容字段
+- 资金区当前缺口消费 `remainingTargetAmount` 语义；`verifiedGapAmount` 仅保留为垫付差额兼容字段
 - 主按钮当前是“我要支持”
 - 产品内 SVG 图标已统一切到语义化 `AppIcon` + lucide 本地资产；状态 badge 和更新进展阶段选择不再使用 Figma exact SVG 或 emoji 图标
 
@@ -128,9 +128,9 @@
 | 当前阶段 | `statusLabel` | `OwnerDetailVM` | 已有 | 顶部卡片 |
 | 当前状态色 | `statusTone` | `OwnerDetailVM` | 已有 | 视觉状态 |
 | 目标金额 | `ledger.targetAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
-| 已确认垫付 | `ledger.confirmedExpenseAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
+| 已确认支出 | `ledger.confirmedExpenseAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
 | 已确认支持 | `ledger.supportedAmountLabel` | `OwnerDetailVM` | 已有 | 已接 |
-| 当前差额 | `ledger.remainingTargetAmountLabel` | `OwnerDetailVM` | 已有 | 已接，表示当前总预算 - 已确认支持 |
+| 当前缺口 | `ledger.remainingTargetAmountLabel` | `OwnerDetailVM` | 已有 | 已接，表示当前总预算 - 已确认支持 |
 | 首页资格状态 | `homepageEligibilityStatus` | `OwnerDetailVM` | 已有 | 页面暂未消费 |
 | 首页资格原因 | `homepageEligibilityReason` | `OwnerDetailVM` | 已有 | 页面暂未消费 |
 | 待处理支持数 | `pendingSupportEntryCount` | `OwnerDetailVM` | 已有 | 页面暂未消费 |

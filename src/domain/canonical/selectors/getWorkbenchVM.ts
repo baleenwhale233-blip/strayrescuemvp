@@ -41,7 +41,7 @@ function toWorkbenchCardVM(
     visibility: bundle.case.visibility,
     currentStatus: bundle.case.currentStatus,
     coverImageUrl: publicDetail.heroImageUrl,
-    targetAmountLabel: `目标 ${publicDetail.ledger.targetAmountLabel} · 已登记 ${publicDetail.ledger.supportedAmountLabel} · 差额 ${publicDetail.ledger.remainingTargetAmountLabel}`,
+    targetAmountLabel: `总预算 ${publicDetail.ledger.targetAmountLabel} · 已确认支持 ${publicDetail.ledger.supportedAmountLabel} · 当前缺口 ${publicDetail.ledger.remainingTargetAmountLabel}`,
     homepageEligibilityStatus: homepageEligibility.status,
     homepageEligibilityReason: homepageEligibility.reason,
     pendingSupportEntryCount,

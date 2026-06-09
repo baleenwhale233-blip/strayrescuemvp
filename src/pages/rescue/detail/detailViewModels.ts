@@ -12,14 +12,14 @@ export function getFundingStatusText(detail: PublicDetailVM) {
   }
 
   if (detail.ledger.remainingTargetAmount <= 0) {
-    return "已达总预算";
+    return "已覆盖预算";
   }
 
   if (detail.ledger.remainingTargetAmount <= 300) {
     return "即将筹满";
   }
 
-  return "距离预算还差较多";
+  return `当前缺口 ${detail.ledger.remainingTargetAmountLabel}`;
 }
 
 export function formatSignedAmount(amountLabel: string, sign: "+" | "-") {
@@ -116,8 +116,8 @@ export function getFundingCompareMetrics(input: { supportAmount: number; targetA
   const diff = input.targetAmount - input.supportAmount;
 
   return {
-    thirdLabel: diff > 0 ? "当前差额" : "预算结余",
-    thirdValue: `¥${Math.abs(diff).toLocaleString("zh-CN")}`,
+    thirdLabel: "当前缺口",
+    thirdValue: `¥${Math.max(diff, 0).toLocaleString("zh-CN")}`,
     thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),
   };
 }

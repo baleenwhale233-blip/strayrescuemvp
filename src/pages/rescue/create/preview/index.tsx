@@ -64,8 +64,8 @@ function getFundingCompareMetrics(input: { supportAmount: number; targetAmount: 
   const diff = input.targetAmount - input.supportAmount;
 
   return {
-    thirdLabel: diff > 0 ? "当前差额" : "预算结余",
-    thirdValue: formatCurrency(Math.abs(diff)),
+    thirdLabel: "当前缺口",
+    thirdValue: formatCurrency(Math.max(diff, 0)),
     thirdMode: diff > 0 ? ("gap" as const) : ("balance" as const),
   };
 }

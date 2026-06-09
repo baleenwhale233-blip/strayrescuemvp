@@ -120,7 +120,7 @@ export function RescueOwnerSummaryCard({
           <View className="rescue-owner-card__metric">
             <View className="rescue-owner-card__metric-label">
               <View className="rescue-owner-card__dot rescue-owner-card__dot--expense" />
-              <Text>已确认垫付</Text>
+              <Text>已确认支出</Text>
             </View>
             <Text>{expenseLabel}</Text>
           </View>

@@ -47,7 +47,7 @@ function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }
 }
 
 function getFundingToneClass(fundingStatusSummary: string) {
-  if (fundingStatusSummary === "已达总预算" || fundingStatusSummary === "预算待确认") {
+  if (fundingStatusSummary === "已覆盖预算" || fundingStatusSummary === "预算待确认") {
     return "discover-card__funding--covered";
   }
 
@@ -127,9 +127,9 @@ export function DiscoverCaseCard({
           </View>
           <View className="discover-card__ledger-meta-item discover-card__ledger-meta-item--end">
             <View className="discover-card__ledger-meta-dot discover-card__ledger-meta-dot--slate" />
-            <Text className="discover-card__ledger-meta-label">已确认垫付</Text>
+            <Text className="discover-card__ledger-meta-label">已确认支出</Text>
             <Text className="discover-card__ledger-meta-value">
-              {item.rescuerAdvanceAmountLabel}
+              {item.confirmedExpenseAmountLabel}
             </Text>
           </View>
         </View>

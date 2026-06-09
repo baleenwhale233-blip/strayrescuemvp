@@ -54,6 +54,7 @@ export function getHomepageCaseCardVM(bundle: CanonicalCaseBundle): HomepageCase
     amountLabel: `${publicDetail.ledger.supportedAmountLabel} / ${publicDetail.ledger.targetAmountLabel}`,
     targetAmountLabel: publicDetail.ledger.targetAmountLabel,
     supportedAmountLabel: publicDetail.ledger.supportedAmountLabel,
+    confirmedExpenseAmountLabel: publicDetail.ledger.confirmedExpenseAmountLabel,
     rescuerAdvanceAmountLabel: `¥${rescuerAdvanceAmount.toLocaleString("zh-CN")}`,
   };
 }

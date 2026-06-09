@@ -163,7 +163,7 @@ test("homepage richer card vm exposes funding status and eligibility", () => {
   assert.ok(firstCard);
   assert.equal(firstCard.publicCaseId, "JM482731");
   assert.equal(firstCard.homepageEligibilityStatus, "eligible");
-  assert.equal(firstCard.fundingStatusSummary, "距离预算还差较多");
+  assert.equal(firstCard.fundingStatusSummary, "当前缺口 ¥4,100");
   assert.equal(firstCard.aboutSummary, "发现时流口水严重，疑似口炎，精神差");
 });
 
@@ -186,7 +186,7 @@ test("homepage funding status is complete when confirmed support reaches total b
 
   const [card] = getHomepageCaseCardVMsFromBundles([coveredBundle]);
 
-  assert.equal(card?.fundingStatusSummary, "已达总预算");
+  assert.equal(card?.fundingStatusSummary, "已覆盖预算");
 });
 
 test("homepage funding status is almost complete when budget gap is within 300", () => {
@@ -230,7 +230,7 @@ test("homepage funding status stays far from budget when budget gap exceeds 300"
 
   const [card] = getHomepageCaseCardVMsFromBundles([belowThresholdBundle]);
 
-  assert.equal(card?.fundingStatusSummary, "距离预算还差较多");
+  assert.equal(card?.fundingStatusSummary, "当前缺口 ¥301");
 });
 
 test("homepage funding status uses latest budget adjustment as the budget", () => {
@@ -256,7 +256,7 @@ test("homepage funding status uses latest budget adjustment as the budget", () =
 
   const [card] = getHomepageCaseCardVMsFromBundles([adjustedBudgetBundle]);
 
-  assert.equal(card?.fundingStatusSummary, "距离预算还差较多");
+  assert.equal(card?.fundingStatusSummary, "当前缺口 ¥1,200");
   assert.equal(card?.progressPercent, 71);
   assert.equal(card?.amountLabel, "¥3,000 / ¥4,200");
 });
@@ -274,7 +274,7 @@ test("homepage funding status stays far from budget when confirmed support is lo
 
   const [card] = getHomepageCaseCardVMsFromBundles([highPressureBundle]);
 
-  assert.equal(card?.fundingStatusSummary, "距离预算还差较多");
+  assert.equal(card?.fundingStatusSummary, "当前缺口 ¥3,900");
 });
 
 test("support entries are grouped into threads", () => {

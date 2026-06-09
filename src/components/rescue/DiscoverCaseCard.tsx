@@ -50,7 +50,7 @@ function EvidenceLabel({ level }: { level: HomepageCaseCardVM["evidenceLevel"] }
 }
 
 function getFundingTone(fundingStatusSummary: string): RescueLedgerStatusTone {
-  if (fundingStatusSummary === "已达总预算" || fundingStatusSummary === "预算待确认") {
+  if (fundingStatusSummary === "已覆盖预算" || fundingStatusSummary === "预算待确认") {
     return "neutral";
   }
 
@@ -118,9 +118,9 @@ export function DiscoverCaseCard({
             },
             {
               align: "end",
-              label: "已确认垫付",
+              label: "已确认支出",
               tone: "pending",
-              value: item.rescuerAdvanceAmountLabel,
+              value: item.confirmedExpenseAmountLabel,
             },
           ]}
           progressPercent={item.progressPercent}

@@ -115,7 +115,7 @@ export function RescueOwnerSummaryCard({
         className="rescue-owner-card__ledger"
         metrics={[
           {
-            label: "已确认垫付",
+            label: "已确认支出",
             tone: "muted",
             value: expenseLabel,
           },

@@ -170,7 +170,7 @@ test("resolved read APIs fold budget and expense overlays into ledger and homepa
   assert.ok(homepageCard);
   assert.equal(homepageCard?.targetAmountLabel, "¥5,300");
   assert.equal(homepageCard?.amountLabel, "¥100 / ¥5,300");
-  assert.equal(homepageCard?.fundingStatusSummary, "距离预算还差较多");
+  assert.equal(homepageCard?.fundingStatusSummary, "当前缺口 ¥5,200");
 });
 
 test("local presentation can be disabled for formal remote read paths", () => {

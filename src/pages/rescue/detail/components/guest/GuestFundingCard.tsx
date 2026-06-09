@@ -18,7 +18,7 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
         className="detail-card__ledger"
         metrics={[
           {
-            label: "当前垫付",
+            label: "已确认支出",
             tone: "neutral",
             value: detail.ledger.confirmedExpenseAmountLabel,
           },
@@ -29,7 +29,7 @@ export function GuestFundingCard({ detail }: { detail: PublicDetailVM }) {
             valueTone: "brand",
           },
           {
-            label: "当前差额",
+            label: "当前缺口",
             tone: "danger",
             value: detail.ledger.remainingTargetAmountLabel,
             valueTone: "danger",

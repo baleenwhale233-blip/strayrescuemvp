@@ -161,7 +161,7 @@ test("getRecommendationReason describes complete evidence in plain record-and-pr
     },
   });
 
-  assert.equal(vm, "记录和凭证较齐，仍有缺口");
+  assert.equal(vm, "凭证较齐，当前缺口 ¥1,100");
 });
 
 test("getWorkbenchVM groups published and draft cases by visibility", () => {

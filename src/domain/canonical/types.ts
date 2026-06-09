@@ -352,6 +352,7 @@ export type HomepageCaseCardVM = {
   amountLabel: string;
   targetAmountLabel: string;
   supportedAmountLabel: string;
+  confirmedExpenseAmountLabel: string;
   rescuerAdvanceAmountLabel: string;
 };
 

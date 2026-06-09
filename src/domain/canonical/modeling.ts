@@ -494,14 +494,14 @@ export function getFundingStatusSummary(bundle: CanonicalCaseBundle) {
   }
 
   if (ledger.remainingTargetAmount <= 0) {
-    return "已达总预算";
+    return "已覆盖预算";
   }
 
   if (ledger.remainingTargetAmount <= 300) {
     return "即将筹满";
   }
 
-  return "距离预算还差较多";
+  return `当前缺口 ${formatCurrency(ledger.remainingTargetAmount)}`;
 }
 
 export function getRecommendationReason(bundle: CanonicalCaseBundle) {
@@ -515,7 +515,7 @@ export function getRecommendationReason(bundle: CanonicalCaseBundle) {
   const evidenceLevel = getCaseEvidenceLevel(bundle);
 
   if (ledger.confirmedExpenseAmount >= 1000 && ledger.verifiedGapAmount >= 500) {
-    return `已垫付 ${formatCurrency(ledger.confirmedExpenseAmount)}，仍待补位`;
+    return `救助人已垫付 ${formatCurrency(ledger.confirmedExpenseAmount)}`;
   }
 
   if (
@@ -523,15 +523,15 @@ export function getRecommendationReason(bundle: CanonicalCaseBundle) {
     now - lastPublicActivityAt <= RECOMMENDATION_WINDOW_MS &&
     ledger.remainingTargetAmount > 0
   ) {
-    return `刚更新病情，当前仍缺 ${formatCurrency(ledger.remainingTargetAmount)}`;
+    return `刚更新进展，当前缺口 ${formatCurrency(ledger.remainingTargetAmount)}`;
   }
 
   if (ledger.remainingTargetAmount > 0 && ledger.remainingTargetAmount <= 300) {
-    return `接近完成，只差最后 ${formatCurrency(ledger.remainingTargetAmount)}`;
+    return `即将筹满，只差 ${formatCurrency(ledger.remainingTargetAmount)}`;
   }
 
   if (evidenceLevel === "complete" && ledger.remainingTargetAmount > 0) {
-    return "记录和凭证较齐，仍有缺口";
+    return `凭证较齐，当前缺口 ${formatCurrency(ledger.remainingTargetAmount)}`;
   }
 
   return undefined;
