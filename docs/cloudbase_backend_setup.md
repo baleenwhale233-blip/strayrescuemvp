@@ -4,16 +4,16 @@
 
 ## 当前状态
 
-项目已经加入 CloudBase 接入骨架，并接到微信开发者工具中创建的 `cloud1` 环境。
+项目已经接上 CloudBase 骨架，并连到微信开发者工具里创建的 `cloud1` 环境。
 
-因此小程序现在是：
+小程序现在按下面规则跑：
 
-- 默认尝试 CloudBase 模式
+- 默认先尝试 CloudBase 模式
 - 当前环境 ID：`cloud1-9gl5sric0e5b386b`
 - 当前仓库内不记录真实小程序 AppID；本地调试请在开发者工具中使用你自己的真实 AppID
 - 如果 `src/config/cloudbase.ts` 里没有 `envId`，会自动回落到现有本地 repository
-- 如果云函数未部署或基础设施调用失败，也会回落本地 repository
-- 如果云函数返回业务错误，例如 `FORBIDDEN`、限流、重复截图，则不会回落本地，避免绕过权限
+- 如果云函数未部署或基础设施调用失败，会回落本地 repository
+- 如果云函数返回业务错误，例如 `FORBIDDEN`、限流、重复截图，不回落本地，避免绕过权限
 - 正式远端成功读链路现在不会再叠加本机 `localPresentation` overlay；本机 overlay 只保留给 CloudBase 不可用或基础设施失败时的本地兜底
 - P0-A 支持登记 / 核实链路已在 `cloud1-9gl5sric0e5b386b` 开发环境完成远端写入与状态流转验证
 - P0-B 状态更新 / 记账 / 预算调整的主态 `caseId` 写链路已在开发环境完成远端写入验证

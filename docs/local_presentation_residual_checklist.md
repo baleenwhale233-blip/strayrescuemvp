@@ -4,15 +4,15 @@
 
 用途：
 
-- 说明 `src/domain/canonical/repository/localPresentation.ts` 在当前分支里还承担哪些职责
-- 区分“当前必须保留给离线 / draft 的能力”和“后续可以继续删除或下沉的能力”
-- 避免以后只靠聊天记录判断某个 overlay 到底是不是还需要
+- 说明 `src/domain/canonical/repository/localPresentation.ts` 现在还在负责什么
+- 分清哪些能力还要留给离线 / draft，哪些后面可以删或下沉
+- 避免以后靠聊天记录猜某个 overlay 还要不要留
 
 ---
 
 ## 1. 当前结论
 
-当前 `localPresentation` 已经不再是“正式远端成功读链路的默认真值层”。
+现在 `localPresentation` 已经不是正式远端读成功后的默认真值层。
 
 已经完成的收口：
 
@@ -20,7 +20,7 @@
 - 已发布案例远端改名 / 换封面成功后，会清理 `title / cover` 本地覆盖
 - 主态远端写成功后，会清理 `budget / status / expense` 三类本地 overlay
 
-所以现在它剩余的主要作用是：
+它现在主要还做三件事：
 
 1. **草稿链路的本地展示与编辑**
 2. **CloudBase 不可用 / 基础设施失败时的本地兜底回显**
@@ -30,7 +30,7 @@
 
 ## 2. 必须保留
 
-下面这些能力，当前仍然是必要的，不建议直接删除。
+下面这些现在还不能直接删。
 
 ### A. draft 标题 / 封面展示覆盖
 
@@ -42,7 +42,7 @@
 - `resolvePresentedTitle`
 - `resolvePresentedCover`
 
-为什么必须保留：
+为什么要留：
 
 - 草稿预览页仍然是 `draftId` 本地链路
 - 草稿标题与封面修改并没有正式远端草稿编辑 API
@@ -70,7 +70,7 @@
 - `finalizeHomepageCaseCardPresentation`
 - `finalizeWorkbenchCaseCardPresentation`
 
-为什么必须保留：
+为什么要留：
 
 - 当前主态 `caseId` 写链仍允许在 CloudBase 不可用或基础设施失败时回落本地
 - 用户提交后需要在详情 / 工作台 / 时间线里立即看到结果
@@ -94,7 +94,7 @@
 - `getSavedDraftPresentation`
 - `resolveBundlePresentation` 中对 `savedDraft?.name / coverPath / currentStatus` 的消费
 
-为什么必须保留：
+为什么要留：
 
 - 某些已发布 case 仍会在本地保留 draft 影子
 - 当前代码还需要把本地 draft 的少量展示值映到 bundle 上，保证 UI 连续
@@ -110,7 +110,7 @@
 
 - `buildExpenseEvidenceItems`
 
-为什么必须保留：
+为什么要留：
 
 - 记账页在草稿 `draftId` 场景仍需要把本地图片路径转换成 `CanonicalEvidenceItem[]`
 
@@ -126,7 +126,7 @@
 
 ## 3. 已经收薄
 
-下面这些能力还在代码里，但已经不再是正式远端真值层。
+下面这些代码还在，但不再负责正式远端真值。
 
 ### A. 正式远端读链路的 overlay 注入
 
@@ -171,7 +171,7 @@
 
 ## 4. 后续可以继续删除
 
-这些不是“现在就该删”，但已经进入可计划移除状态。
+这些不是现在马上删，但可以开始排删除计划。
 
 ### 1. case 级 `title / cover` override storage
 
@@ -236,7 +236,7 @@
 
 ## 5. 暂时不要删
 
-下面这些，当前看起来“像是遗留物”，但现在删会直接伤到现有路径。
+下面这些看起来像遗留物，但现在删会伤到现有路径。
 
 ### 1. `resolvePresentedDraft`
 
@@ -277,6 +277,6 @@
 5. 等主态 case 级 overlay 全退场后，再考虑进一步收薄 `resolveBundlePresentation` / `finalize*Presentation`
 6. 草稿相关能力最后再动
 
-一句话：
+简单说：
 
 **case 级 overlay 可以继续收薄，draft 级 overlay 现在还不能急着删。**

@@ -2998,3 +2998,22 @@
 - 影响范围：影响详情页身份分流和已发布详情入口 URL；owner 权限仍由 `getOwnerCaseDetail` 校验，数据结构、接口和写链不变，未新增 richer VM / richer mock。
 - 验证结果：`typecheck`、targeted detail UI test、`test:domain`、`lint`、`format:check`、`build:weapp`、`git diff --check` 通过；`src` 和 `dist` 均未再检出 `mode=guest / mode=owner`。
 - 下一步 / 遗留问题：继续真机用 owner / 非 owner 分别从发现、我的记录、支持足迹、记录主页和分享卡片进入同一案例验证。
+
+## 2026-06-09 | 首页卡片 | 收紧资金指标金额间距
+
+- 日期：2026-06-09
+- 改动主题：首页 / 记录主页卡片的资金指标行改为标签和金额同组贴合。
+- 为什么改：`RescueLedgerSummary` compact 模式继承了通用 `space-between`，导致“已确认支持”和金额被拉到半行两端，看起来像不属于同一项。
+- 改了什么：compact 指标项改为内部 `flex-start + gap`，右侧指标只负责整体靠右，不再把单项 label / value 撑开。
+- 影响范围：仅影响发现卡和记录主页卡片的资金指标行排版；资金口径、VM、selector、CloudBase / repository 写链不变。
+- 验证结果：`build:weapp`、`format:check`、`git diff --check` 通过；构建仍只有既有图片体积和 no async chunks warning。
+- 下一步 / 遗留问题：需要在微信开发者工具里重新编译后看卡片，确认“已确认支持 ¥500”读成同一组。
+
+## 2026-06-09 | 文档 | 当前文档人话化
+
+- 日期：2026-06-09
+- 改动主题：按 `humanizer-zh` 清理当前项目文档里的 AI 腔和过度宣传表达。
+- 为什么改：现有 PRD、IA、优先级和说明文档里有不少“给 AI / Aha / 极致 / 完整闭环”这类不适合长期交接的说法，后续接手容易误读范围。
+- 改了什么：重写 PRD、建档 IA、客态详情简表和二级页面 IA；轻改总控、主 IA、页面 IA、字段表、组件系统、CloudBase、Alpha 测试和设计 token 的用途、目标、提示语。
+- 影响范围：只影响文档表述和过时范围澄清；不改代码、VM、selector、repository、CloudBase、fixtures 或数据结构。
+- 下一步 / 遗留问题：历史归档文档只保留原样背景；后续若重新启用旧 IA，应先按当前 MVP 口径单独整理。

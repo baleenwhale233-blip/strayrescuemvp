@@ -4,9 +4,9 @@
 
 用途：
 
-- 作为 README 之后的当前状态第一真相源
-- 用一份文档回答“项目现在做到哪一步了”
-- 统一前端、后端、页面优先级和下一步动作
+- README 之外，项目状态先看这里
+- 说明项目现在做到哪一步
+- 把前端、后端、页面优先级和下一步动作放到同一页
 
 阅读顺序建议：
 
@@ -29,7 +29,7 @@
 
 ### 当前阶段目标
 
-当前目标不是继续扩功能，而是先把已经接通的最小闭环跑稳：
+现在先别急着扩功能，先把已经接通的最小闭环跑稳：
 
 1. 发现入口、详情判断、联系与登记路径在真机里可理解
 2. 登记支持与处理支持登记在多账号下数据一致
@@ -39,13 +39,13 @@
 ### 当前阻塞项
 
 - `写进展更新` / `记账` / `追加预算` 的主态 `caseId` 路径已接 CloudBase 远端写链路；草稿 `draftId` 路径仍保持本地 draft 闭环
-- 正式远端成功读链路已经不再注入本机 `localPresentation` overlay；本地 overlay 只保留给草稿链路或 CloudBase 不可用 / 基础设施失败时的兜底
+- 正式远端读成功后，不再叠加本机 `localPresentation` overlay；本地 overlay 只留给草稿、CloudBase 不可用或基础设施失败时的兜底
 - 已发布案例的 `title / cover` 在远端编辑成功后会清理对应 `caseId + draftId` 覆盖；主态 `budget / status / expense` 在远端写成功后也会清理对应 overlay key，避免旧本机结果再次压过远端真值；页面层现在只调用 `recordCaseProfileLocalFallback / clearCaseProfileLocalFallback / recordCaseContentWriteLocalFallback / clearCaseContentWriteLocalFallback`，不再直接操作 raw overlay storage API
-- `localPresentation` 已拆成 storage / resolver / core：storage 负责本地 key 读写，resolver 只组装 `LocalPresentationSnapshot`，overlay 合成唯一实现收口到 `localPresentationCore` 纯函数，避免测试路径和生产路径漂移
+- `localPresentation` 已拆成 storage / resolver / core：storage 读写本地 key，resolver 组装 `LocalPresentationSnapshot`，overlay 合成集中到 `localPresentationCore` 纯函数，避免测试路径和生产路径越走越远
 - 联系方式完整性已改成“微信号 / 二维码任一即可”，且联系方式半弹层运行时文案已收口到“联系信息 / 查看联系方式 / 登记支持”；还需要一轮真机回归确认单渠道场景下都顺畅
 - 首页 / 详情 / 记录主页主图已统一 fallback 到“封面 -> face -> 最新公开进展图”，但仍要用真实远端数据再确认一次新建后发布案例的封面回读
 - 新记账已改成强制至少 1 张图片，历史无图记录按纯文本兼容；记账页已补顶部吸顶合计反馈，还需要真机确认图片上传、吸顶反馈和无图历史卡片展示
-- P0-B 三条写链路和 `support/review` 手动登记收入已完成开发环境自动化验证；基础成功提示已统一，AI 分发和更多真机账号回归仍未做
+- P0-B 三条写链路和 `support/review` 手动登记收入已完成开发环境自动化验证；基础成功提示已统一，更多真机账号回归仍未做
 - 支持登记写链路与核实链路已完成 CloudBase 开发环境远端闭环验证，包含 `pending -> confirmed / unmatched`
 - 主态详情底部已改为默认“分享档案”优先、小“结束”进入二段右滑确认；正式结束记录后端关闭 action 仍待接入
 - 分享直达详情页时，默认返回按钮已补无页面栈 fallback 到 `发现` tab；仍需真机从微信分享卡片冷启动验证
@@ -255,8 +255,8 @@
 
 原则：
 
-- **本文件必须永远是最新的**
-- 其他文档做分层补充，不再和本文件竞争“当前状态真相源”
+- 改到项目状态、优先级或范围时，先补这份文档
+- 其他文档只做分层补充，不和这份文档抢“当前状态”
 
 补充：
 
