@@ -28,7 +28,7 @@ export default function RescuerHomePage() {
 
   const handleOpenCase = (caseId: string) => {
     Taro.navigateTo({
-      url: `/pages/rescue/detail/index?id=${caseId}&mode=guest`,
+      url: `/pages/rescue/detail/index?id=${caseId}`,
     });
   };
 

@@ -327,11 +327,11 @@
 
 ### support/review 本轮补充说明
 
-- 页面已从单 tab 过渡到 `待确认认领 / 手动记一笔` 双 tab 结构
+- 页面已从单 tab 过渡到 `待处理支持 / 手动登记支持` 双 tab 结构
 - `pending` 与 `manual` 两个原生截图场景都已跑通
 - `reviewSupportEntry` 已完成 CloudBase 开发环境远端验证：`pending -> confirmed` 会更新 entry/thread 并生成公开 support event；`pending -> unmatched` 会更新 entry/thread 并保留私有 rejected event
-- `createManualSupportEntry` 已接入 `manual` tab：救助人手动记一笔会直接生成 confirmed support entry、重算 thread、投公开 `supportSource=manual_entry` 的 support event，回到主态详情可显示场外收入卡片
-- 核实与手动记一笔的非 owner `FORBIDDEN` 回归已完成
+- `createManualSupportEntry` 已接入 `manual` tab：救助人手动登记支持会直接生成 confirmed support entry、重算 thread、投公开 `supportSource=manual_entry` 的 support event，回到主态详情可显示已确认支持卡片
+- 核实与手动登记支持的非 owner `FORBIDDEN` 回归已完成
 - 当前支持核实主链路已可试跑，剩余缺口主要是更多真机账号回归和卡片细节
 
 ### 当前仍待补的交互字段
@@ -360,7 +360,7 @@
 | `draft.currentStatusLabel` | local draft / VM | 顶部状态 badge 文案 | 已有 | 继续复用，不需要新造 preview 状态字段 |
 | `draft.timeline[]` | local draft / VM | 草稿的状态/预算类时间线 | 已有 | 与支出/支持类记录一起拼成 preview detail tab |
 | `draft.expenseRecords[]` | canonical local draft | 草稿支出记录 | 已有 | 转成 `支出记录` 卡片即可 |
-| `draft.supportEntries[]` | canonical local draft | 草稿支持记录 | 已有 | 当前页只需消费已确认支持作为 `场外收入` 卡片 |
+| `draft.supportEntries[]` | canonical local draft | 草稿支持记录 | 已有 | 当前页只需消费已确认支持作为 `已确认支持` 卡片 |
 
 ### 当前规则说明
 

@@ -9,9 +9,11 @@ import {
 import type { PublicDetailVM, SupportSheetData } from "../../../../domain/canonical/types";
 import type { DetailLoadStatus } from "../types";
 
-type RescueDetailMode = "guest" | "owner";
+async function loadOwnerDetailSafely(caseId?: string) {
+  return loadOwnerDetailVMByCaseId(caseId).catch(() => undefined);
+}
 
-export function useRescueDetailData({ caseId, mode }: { caseId?: string; mode: RescueDetailMode }) {
+export function useRescueDetailData({ caseId }: { caseId?: string }) {
   const [reloadSeed, setReloadSeed] = useState(0);
   const [detailStatus, setDetailStatus] = useState<DetailLoadStatus>("loading");
   const [publicDetail, setPublicDetail] = useState<PublicDetailVM | undefined>();
@@ -24,7 +26,7 @@ export function useRescueDetailData({ caseId, mode }: { caseId?: string; mode: R
 
     return Promise.all([
       loadPublicDetailVMByCaseId(caseId),
-      mode === "owner" ? loadOwnerDetailVMByCaseId(caseId) : Promise.resolve(undefined),
+      loadOwnerDetailSafely(caseId),
       loadSupportSheetDataByCaseId(caseId),
     ])
       .then(([nextPublicDetail, nextOwnerDetail, nextSupportData]) => {

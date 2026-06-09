@@ -244,7 +244,7 @@ function createSupportService({
 
     const amount = Number(input?.amount || 0);
     const supporterNameMasked = String(input?.supporterNameMasked || "").trim() || "线下支持";
-    const note = input?.note || "救助人手动记一笔";
+    const note = input?.note || "救助人手动登记支持";
     const timestamp = nowIso();
     const supportedAt = input?.supportedAt || timestamp;
 

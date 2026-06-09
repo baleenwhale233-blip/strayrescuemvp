@@ -284,7 +284,7 @@ function projectSupportEntryToTimelineEntry(
   return {
     id: `timeline-${entry.id}`,
     tone: "income",
-    label: "场外收入",
+    label: "已确认支持",
     title: entry.supporterNameMasked || statusLabel,
     description: entry.note || statusLabel,
     timestamp: formatLocalTimestamp(entry.supportedAt),

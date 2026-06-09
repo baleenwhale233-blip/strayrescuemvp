@@ -276,7 +276,7 @@
 | 核实状态 | review action `status` | `supportEntries[].status` | `status` |
 | 未匹配原因 | `reason` | `supportEntries[].unmatchedReason` | `unmatchedReason` |
 | 未匹配备注 | `note` | `supportEntries[].unmatchedNote` | `unmatchedNote` |
-| 手动记一笔来源 | manual tab 提交 | confirmed support entry | `supportSource=manual_entry` |
+| 手动登记支持来源 | manual tab 提交 | confirmed support entry | `supportSource=manual_entry` |
 
 ### 5.2 云端字段与展示字段
 
@@ -313,9 +313,9 @@
 - 未匹配备注
   云端字段：`unmatchedNote`
   VM 字段：当前主要进 detail/review 展示
-- 手动记一笔来源
+- 手动登记支持来源
   云端字段：`supportSource=manual_entry`
-  VM 字段：timeline “场外收入”
+  VM 字段：timeline “已确认支持”
 
 ### 5.3 主要管理文件
 

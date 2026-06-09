@@ -97,7 +97,7 @@
 
 - 页面已经接了 `publicCaseId`
 - `summary` 当前在页面层被稳定拆成两段：`猫咪情况介绍` + `当前总预算为...`
-- `timeline` 当前已被页面按 `支出记录 / 状态更新 / 预算调整 / 场外收入` 四类结构消费，并在缺项时做前端 mock 回退
+- `timeline` 当前已被页面按 `支出记录 / 状态更新 / 预算调整 / 已确认支持` 四类结构消费，并在缺项时做前端 mock 回退
 - 客态页已补 `loading / error` 页面态，但仍未新增独立数据字段
 - 客态详情页当前仍可能在本地 fallback 场景叠加展示覆盖：已发布主态的 `title / heroImageUrl` 可由 `updateCaseProfile` 远端正式回写，正式远端成功回包不再吃本机 overlay；本地 draft / local overlay 只作为兜底。状态文案也只在本地 fallback 场景下继续叠加本地状态更新记录里的最新状态
 - 资金区当前差额消费 `remainingTargetAmount` 语义；`verifiedGapAmount` 仅保留为垫付差额兼容字段
@@ -121,7 +121,7 @@
 
 | 前端用途 | 字段 | 来源 | 当前状态 | 备注 |
 |---|---|---|---|---|
-| 内部案例 id | `caseId` | `OwnerDetailVM` | 已有 | 主态路由核心 |
+| 内部案例 id | `caseId` | `OwnerDetailVM` | 已有 | 详情页主键，主客态身份不再由路由参数指定 |
 | 案例号 | `publicCaseId` | `OwnerDetailVM` | 已有 | 已接到页面 |
 | 标题 | `title` | `OwnerDetailVM` | 已有 | 动物名 |
 | 导航标题 | `navTitle` | `OwnerDetailVM` | 已有 | 当前固定“救助记录管理” |
@@ -146,6 +146,7 @@
 ### 当前注意事项
 
 - 主态详情页的核实入口统一使用 `/pages/support/review/index`
+- 已发布详情入口统一只携带 `id`；详情页自动尝试读取 owner VM，成功展示主态，失败展示客态
 - 主态详情页这轮已改成：**首次进入必加载；从子页面返回只有真实写入成功后才刷新**，不再因为进入记账页后无提交返回而整页重载
 - 客态详情里的“查看主页”当前已接 `/pages/rescuer/home/index?rescuerId=...`，并由 `PublicDetailVM.rescuer.profileEntryEnabled` 控制显隐
 - 主态详情底部默认优先展示“分享档案”，点击小“结束”后才显示“右滑结束记录”确认态；滑动和二次确认已有，确认后仍未调用后端关闭案例 action
@@ -168,7 +169,7 @@
 |---|---|---|---|---|
 | 救助人信息 | `rescuer.*` | `getRescuerHomepage` | 远端已接 | 当前按 `rescuerId` 或 `caseId` 查询；头像优先从 `avatarAssetId` 对应 asset URL 解析 |
 | 公开案例列表 | `cards[]` | `getRescuerHomepage.bundles` -> `HomepageCaseCardVM[]` | 远端已接 | 下方卡片复用首页卡片组件 |
-| 案例卡点击 | `caseId` | `HomepageCaseCardVM.caseId` | 页面层已接 | 点击进入客态救助档案 |
+| 案例卡点击 | `caseId` | `HomepageCaseCardVM.caseId` | 页面层已接 | 点击进入详情，由 owner 权限自动决定主态 / 客态 |
 
 ### 当前注意事项
 
@@ -263,7 +264,7 @@
 | 摘要 | `draft.summary` | `RescueCreateDraft` | 已有 | 摘要 tab 的“关于我”卡片 |
 | 草稿时间线 | `draft.timeline[]` | `RescueCreateDraft` | 已有 | 状态更新 / 预算调整类记录 |
 | 草稿支出 | `draft.expenseRecords[]` | `RescueCreateDraft` | 已有 | 转成 `支出记录` 卡片 |
-| 草稿支持 | `draft.supportEntries[]` | `RescueCreateDraft` | 已有 | 已确认支持可转成 `场外收入` 卡片 |
+| 草稿支持 | `draft.supportEntries[]` | `RescueCreateDraft` | 已有 | 已确认支持可转成 `已确认支持` 卡片 |
 | 草稿账本汇总 | `calculateDraftLedger()` | 本地 VM / helper | 已有 | 输出 `expense / income / balance / pending` |
 | 保存草稿 | `persistDraft(\"draft\")` | draft repository | 已有 | 当前页已接 |
 | 发布救助 | `persistDraft(\"published\")` + `saveRemoteDraftCase()` | draft / remote repository | 已有 | 当前页已接 |
@@ -429,7 +430,7 @@
 | 总计支持金额 | `summary.totalSupportedAmountLabel` | `getMySupportHistory()` | 远端已接 | 由真实 OPENID 下 confirmed support entries 聚合 |
 | 记录列表 | `summary.supportCases[]` | `getMySupportHistory()` | 远端已接 | 每个 item 对应一个已确认支持过的案例 |
 | 动物名 | `supportCases[].animalName` | `getMySupportHistory()` | 远端已接 | |
-| 案例 id | `supportCases[].caseId` | `getMySupportHistory()` | 远端已接 | 点击后进入客态救助档案 |
+| 案例 id | `supportCases[].caseId` | `getMySupportHistory()` | 远端已接 | 点击后进入详情，由 owner 权限自动决定主态 / 客态 |
 | 我的累计支持金额 | `supportCases[].myTotalSupportedAmountLabel` | `getMySupportHistory()` | 远端已接 | 只统计已被救助人确认的支持 |
 | 动物封面 | `supportCases[].animalCoverImageUrl` | `getMySupportHistory()` | 远端已接 | |
 
@@ -481,7 +482,7 @@
 | 单条 entry 状态 | `thread.entries[].status / amountLabel / note / latestEntryAtLabel` | `SupportThreadSummaryVM` | 已有 | |
 | 确认动作 | `reviewSupportEntry(status=confirmed)` | remote repository / CloudBase `rescueApi` | 已可试跑 | 已完成远端验证，会更新 entry/thread 并生成公开 support event |
 | 未匹配动作 | `reviewSupportEntry(status=unmatched)` | remote repository / CloudBase `rescueApi` | 已可试跑 | 已完成远端验证，会更新 entry/thread 并保留私有 rejected support event |
-| 手动记一笔 | `createManualSupportEntry` | remote repository / CloudBase `rescueApi` | 已可试跑 | 已完成远端验证，会直接生成 confirmed support entry 和公开 `supportSource=manual_entry` support event |
+| 手动登记支持 | `createManualSupportEntry` | remote repository / CloudBase `rescueApi` | 已可试跑 | 已完成远端验证，会直接生成 confirmed support entry 和公开 `supportSource=manual_entry` support event |
 
 ### 当前注意事项
 
@@ -508,15 +509,15 @@
 | 单条 entry 状态 | `thread.entries[].status / amountLabel / note / latestEntryAtLabel` | `SupportThreadSummaryVM` | 已有 | pending 卡片已接 |
 | 确认动作 | `reviewSupportEntry(status=confirmed)` | draft / remote repository | 已可试跑 | CloudBase 远端状态流转已验通 |
 | 未匹配动作 | `reviewSupportEntry(status=unmatched)` | draft / remote repository | 已可试跑 | CloudBase 远端状态流转已验通 |
-| 手动记一笔金额 | `manualAmount` | 本地输入 -> `createManualSupportEntry.amount` | 已可试跑 | 提交后直接写 confirmed support entry |
-| 手动记一笔支持者称呼 | `manualSupporter` | 本地输入 -> `createManualSupportEntry.supporterNameMasked` | 已可试跑 | 提交后作为场外收入卡片标题来源 |
+| 手动登记支持金额 | `manualAmount` | 本地输入 -> `createManualSupportEntry.amount` | 已可试跑 | 提交后直接写 confirmed support entry |
+| 手动登记支持者称呼 | `manualSupporter` | 本地输入 -> `createManualSupportEntry.supporterNameMasked` | 已可试跑 | 提交后作为已确认支持卡片标题来源 |
 
 ### support/review 当前注意事项
 
-- `support/review` 这轮已完成 `待确认认领 / 手动记一笔` 双 tab 页壳
-- `support/review` 的 pending 主链路已完成 `pending -> confirmed / unmatched` 远端验证；`manual` tab 已接 `createManualSupportEntry`，提交后回主态详情可显示场外收入卡片
-- `support/review` 的 owner 权限回归已跑通：非 owner review 和手动记一笔都会返回 `FORBIDDEN`
-- 左侧 tab 文案在不同 Figma 节点间存在“待确认认领 / 待确认支持”口径差异，后续需统一
+- `support/review` 这轮已完成 `待处理支持 / 手动登记支持` 双 tab 页壳
+- `support/review` 的 pending 主链路已完成 `pending -> confirmed / unmatched` 远端验证；`manual` tab 已接 `createManualSupportEntry`，提交后回主态详情可显示已确认支持卡片
+- `support/review` 的 owner 权限回归已跑通：非 owner review 和手动登记支持都会返回 `FORBIDDEN`
+- 左侧 tab 当前统一到“待处理支持 / 手动登记支持”，后续视觉贴稿时继续保持这个口径
 
 ---
 

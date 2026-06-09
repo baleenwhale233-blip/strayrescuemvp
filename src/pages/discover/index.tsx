@@ -34,9 +34,9 @@ export default function DiscoverPage() {
       });
   });
 
-  const goToGuestDetail = (caseId: string) => {
+  const goToDetail = (caseId: string) => {
     Taro.navigateTo({
-      url: `/pages/rescue/detail/index?id=${caseId}&mode=guest`,
+      url: `/pages/rescue/detail/index?id=${caseId}`,
     });
   };
 
@@ -61,7 +61,7 @@ export default function DiscoverPage() {
       return;
     }
 
-    goToGuestDetail(bundle.case.id);
+    goToDetail(bundle.case.id);
   };
 
   return (
@@ -99,11 +99,7 @@ export default function DiscoverPage() {
         ) : null}
 
         {cards.map((item) => (
-          <DiscoverCaseCard
-            key={item.caseId}
-            item={item}
-            onTap={() => goToGuestDetail(item.caseId)}
-          />
+          <DiscoverCaseCard key={item.caseId} item={item} onTap={() => goToDetail(item.caseId)} />
         ))}
       </View>
     </PageShell>

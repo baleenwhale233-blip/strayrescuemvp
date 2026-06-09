@@ -187,7 +187,7 @@ function buildPreviewTimelineEntries(draft: RescueCreateDraft): PreviewTimelineE
     .map((entry, index) => ({
       id: `support-${entry.id}`,
       tone: "income" as const,
-      label: "场外收入",
+      label: "已确认支持",
       title: `${entry.supporterNameMasked || "支持者"} 的支持登记`,
       description: entry.note ? `备注：${entry.note}` : undefined,
       timestamp: formatTimelineTimestamp(new Date(entry.supportedAt)),
@@ -256,7 +256,7 @@ function toPreviewTimelineItems(draft: RescueCreateDraft): RescueOwnerTimelineIt
             : "status",
     badgeLabel:
       entry.tone === "income"
-        ? "场外收入"
+        ? "已确认支持"
         : entry.tone === "budget"
           ? "预算调整"
           : entry.tone === "expense"
@@ -392,7 +392,7 @@ export default function RescueCreatePreviewPage() {
 
       if (nextDraft.status === "published") {
         Taro.redirectTo({
-          url: `/pages/rescue/detail/index?id=${nextDraft.id}&mode=owner&source=custom`,
+          url: `/pages/rescue/detail/index?id=${nextDraft.id}`,
         });
         return;
       }

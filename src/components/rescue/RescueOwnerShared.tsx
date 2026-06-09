@@ -203,8 +203,8 @@ export function RescueOwnerQuickActions({
             />
           </View>
           <View className="rescue-owner-actions__card-copy">
-            <Text className="rescue-owner-actions__card-title">记场外收入</Text>
-            <Text className="rescue-owner-actions__card-subtitle">审核支持者私下转账</Text>
+            <Text className="rescue-owner-actions__card-title">处理支持登记</Text>
+            <Text className="rescue-owner-actions__card-subtitle">核对线下转账或外部支持</Text>
           </View>
         </SurfaceCard>
 

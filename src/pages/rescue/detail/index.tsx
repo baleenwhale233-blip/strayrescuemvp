@@ -15,7 +15,6 @@ import "./index.scss";
 export default function RescueDetailPage() {
   const router = useRouter();
   const [supportOpen, setSupportOpen] = useState(false);
-  const mode = router.params?.mode === "guest" ? "guest" : "owner";
   const initialOwnerTab = router.params?.tab === "detail" ? "detail" : "overview";
   const caseId = router.params?.id;
   const { runGuestActionWithLock } = useGuestActionLock();
@@ -30,7 +29,6 @@ export default function RescueDetailPage() {
     loadDetailPage,
   } = useRescueDetailData({
     caseId,
-    mode,
   });
 
   useRescueDetailShare({
@@ -102,7 +100,23 @@ export default function RescueDetailPage() {
   return (
     <PageShell key={reloadSeed} className="detail-page-shell">
       <PageMeta pageStyle={supportOpen ? "overflow: hidden;" : "overflow: visible;"} />
-      {mode === "guest" ? (
+      {ownerDetail ? (
+        <OwnerDetail
+          initialTab={initialOwnerTab}
+          onBudget={() => navigateToCaseAction("/pages/rescue/budget-update/index")}
+          onChangeCover={handleChangeCover}
+          onCopyPublicCaseId={() => {
+            Taro.setClipboardData({ data: ownerDetail.publicCaseId });
+          }}
+          onExpense={() => navigateToCaseAction("/pages/rescue/expense/index")}
+          onFinishRecord={handleFinishRecord}
+          onIncome={() => navigateToCaseAction("/pages/support/review/index")}
+          onRenameTitle={handleRenameTitle}
+          onStatus={() => navigateToCaseAction("/pages/rescue/progress-update/index")}
+          ownerDetail={ownerDetail}
+          publicDetail={publicDetail}
+        />
+      ) : (
         <GuestDetail
           detail={publicDetail}
           onCopyPublicCaseId={() => {
@@ -130,23 +144,7 @@ export default function RescueDetailPage() {
             )
           }
         />
-      ) : ownerDetail ? (
-        <OwnerDetail
-          initialTab={initialOwnerTab}
-          onBudget={() => navigateToCaseAction("/pages/rescue/budget-update/index")}
-          onChangeCover={handleChangeCover}
-          onCopyPublicCaseId={() => {
-            Taro.setClipboardData({ data: ownerDetail.publicCaseId });
-          }}
-          onExpense={() => navigateToCaseAction("/pages/rescue/expense/index")}
-          onFinishRecord={handleFinishRecord}
-          onIncome={() => navigateToCaseAction("/pages/support/review/index")}
-          onRenameTitle={handleRenameTitle}
-          onStatus={() => navigateToCaseAction("/pages/rescue/progress-update/index")}
-          ownerDetail={ownerDetail}
-          publicDetail={publicDetail}
-        />
-      ) : null}
+      )}
 
       {supportData ? (
         <SupportSheet

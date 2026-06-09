@@ -23,7 +23,7 @@ export function toOwnerActionTimelineEntry(input: {
   const labelMap: Record<Exclude<OwnerDetailActionKey, "copy">, string> = {
     receipt: "支出记录",
     update: "状态更新",
-    income: "场外收入",
+    income: "已确认支持",
     budget: "预算调整",
   };
 

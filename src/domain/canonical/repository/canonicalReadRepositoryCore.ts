@@ -70,7 +70,7 @@ export type OwnerDetailVM = {
 const quickActions: OwnerDetailVM["quickActions"] = [
   { key: "receipt", label: "记一笔支出", icon: "camera" },
   { key: "update", label: "写进展更新", icon: "fileText" },
-  { key: "income", label: "记场外收入", icon: "handCoins" },
+  { key: "income", label: "处理支持登记", icon: "handCoins" },
   { key: "budget", label: "追加预算", icon: "plusCircle" },
   { key: "copy", label: "生成文案", icon: "sparkles" },
 ];

@@ -3,6 +3,7 @@ import guestHeroCat from "../../../assets/detail/guest-hero-cat.png";
 import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
 import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import type { PublicDetailVM, PublicTimelineItemVM } from "../../../domain/canonical/types";
+export { getSharePath } from "./detailSharePath";
 import { isOwnerEditableTimelineRecord } from "./ownerTimelineEditability";
 
 export function getFundingStatusText(detail: PublicDetailVM) {
@@ -66,7 +67,7 @@ export function getTimelinePrimaryLabel(item: PublicTimelineItemVM) {
     case "expense":
       return "支出记录";
     case "support":
-      return "场外收入";
+      return "已确认支持";
     case "budget_adjustment":
       return "预算调整";
     default:
@@ -127,11 +128,6 @@ export function getShareTitle(detail?: PublicDetailVM) {
   }
 
   return `${detail.title}当前${detail.statusLabel}，看看这份透明记录档案`;
-}
-
-export function getSharePath(detail?: PublicDetailVM, caseId?: string) {
-  const targetCaseId = detail?.caseId || caseId || "";
-  return `/pages/rescue/detail/index?id=${targetCaseId}&mode=guest`;
 }
 
 export function getOwnerOverviewProps(detail: PublicDetailVM) {

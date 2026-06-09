@@ -90,8 +90,8 @@
 | 我的页正式版 | `设计部分还原` | `444:7259` | `figma_progress_map` / `pending_field_contracts` | 已从占位页升级成正式入口页；头像昵称现已改成 `chooseAvatar + nickname + 保存` 的轻编辑链路，支持足迹 / 联系方式设置 / 使用说明入口均已接真实页面 |
 | 我的支持登记 | `页面骨架已在` | `446:7625` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并优先读取 `getMySupportHistory` 远端 VM，按真实 OPENID 聚合 confirmed 支持；继续做视觉精修 |
 | 联系信息设置 | `页面骨架已在` | `446:7828` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getMyProfile / updateMyProfile`；微信二维码会上传为 CloudBase fileID 并落到 `user_profiles.paymentQrAssetId`；新建记录前置校验已改为远端 `hasContactProfile` 优先、本地兜底，且口径为“微信号 / 二维码任一即可” |
-| 记录主页 | `已可试跑` | `442:6758` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getRescuerHomepage` 远端 VM；顶部记录维护者信息和公开案例列表由 CloudBase 输出，页面层聚合仅作兜底；继续做细节贴稿 |
-| 手动登记 | `已可试跑` | `441:4498` | `figma_progress_map` / `pending_field_contracts` | 已在 `support/review` manual tab 接 `createManualSupportEntry` 远端写入，提交后回主态详情可显示场外收入卡片；继续补细节视觉和多账号回归 |
+| 记录主页 | `已可试跑` | `442:6758` | `figma_progress_map` / `pending_field_contracts` | 已新建页面并接 `getRescuerHomepage` 远端 VM；顶部记录维护者信息和公开案例列表由 CloudBase 输出，案例点击沿用详情自动 owner 识别；继续做细节贴稿 |
+| 手动登记 | `已可试跑` | `441:4498` | `figma_progress_map` / `pending_field_contracts` | 已在 `support/review` manual tab 接 `createManualSupportEntry` 远端写入，提交后回主态详情可显示已确认支持卡片；继续补细节视觉和多账号回归 |
 
 ### P2：流程增强页
 
@@ -157,9 +157,10 @@
   - 联系信息设置页已按 Figma `446:7828` 新建，并接 `user_profiles` 远端读写；微信二维码会上传为 CloudBase `cloud://` fileID
   - 新建记录前当前会优先读取远端 `getMyProfile.hasContactProfile`，微信号或二维码任一存在即可通过前置校验；CloudBase 不可用时才回落本地校验
   - “查看联系方式”半弹层已改成滚动内容 + 固定底部操作，并按“仅二维码 / 仅微信号 / 两者都有”真实展示，不再补假二维码占位；运行时文案已去掉带支付指向的表述
+  - 所有已发布详情入口当前统一只传 `id`；详情页自动读取 owner 详情，当前用户是记录维护者时展示主态，不是 owner 时继续展示客态
   - 分享直达详情页时，左上角返回如果没有上一层页面栈，会 fallback 到 `发现` tab，避免外部用户进详情后没有回首页路由
   - 建档、预算、进展更新、联系方式和支持登记页已补统一键盘避让，输入框和吸底按钮会随键盘高度上移
-  - 草稿箱里的“记录支持”已改成直接进入 `support/review` 的 `手动登记` tab，不再走旧弹层
+  - 草稿箱里的“记录支持”已改成直接进入 `support/review` 的 `手动登记支持` tab，不再走旧弹层
   - 记录主页已按 Figma `442:6758` 新建，详情页“查看主页”已接真实页面，并已接 `getRescuerHomepage` 远端 VM；下方案例列表复用首页卡片组件，页面层聚合只作为 CloudBase 不可用时兜底
   - 主态详情底部已改成默认“分享档案”大按钮 + 小“结束”按钮；点击结束后才进入“取消 + 右滑结束记录”确认态，滑到阈值后弹确认；正式结束记录后端链路仍待接入
   - 前端组件化治理已新增 `docs/frontend_component_system.md`，并落下 `src/components/ui` 基础组件目录与 `src/components/rescue` 业务组件 barrel；后续页面精修优先按该文档渐进迁移，不再只依赖 Figma 贴稿推进

@@ -41,7 +41,7 @@ export default function RescuePage() {
     }
 
     Taro.navigateTo({
-      url: `/pages/rescue/detail/index?id=${card.caseId}&mode=owner`,
+      url: `/pages/rescue/detail/index?id=${card.caseId}`,
     });
   };
 

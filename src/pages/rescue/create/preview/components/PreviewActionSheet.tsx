@@ -20,11 +20,11 @@ const ACTION_SHEET_COPY = {
     amountLabel: "",
   },
   income: {
-    title: "记录场外收入",
-    titlePlaceholder: "如：线下登记已到账",
+    title: "手动登记支持",
+    titlePlaceholder: "如：线下支持已确认",
     descriptionPlaceholder: "可补充来源、留言或对账说明",
     amountPlaceholder: "200.00",
-    amountLabel: "收入金额",
+    amountLabel: "支持金额",
   },
   budget: {
     title: "修改预算",

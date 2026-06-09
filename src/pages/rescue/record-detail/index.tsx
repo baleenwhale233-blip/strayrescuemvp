@@ -71,7 +71,7 @@ function mapRemoteRecordToReadonly(
           ? "状态更新"
           : record.recordType === "budget_adjustment"
             ? "预算调整"
-            : "场外收入",
+            : "已确认支持",
     timestamp: record.occurredAtLabel,
     title: record.title,
     description: record.description,

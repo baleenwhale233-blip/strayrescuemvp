@@ -70,7 +70,7 @@
 | 记录主页 | `442:6758`（`446:7511` 内） | [`src/pages/rescuer/home/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescuer/home/index.tsx) | 已可试跑 | 78% - 86% | 已新建顶部记录维护者信息区和公开案例列表，详情页“查看主页”已接入；当前已接 `getRescuerHomepage` 远端 VM，头像优先读取 `avatarAssetId` 资产链，下方案例列表复用首页卡片组件，剩余主要是统计口径和局部视觉精修 |
 | 登记支持 | `322:2005`（`446:7512` 内） | [`src/pages/support/claim/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/claim/index.tsx) | 部分完成 | 86% - 92% | 结构、字段顺序、底部提交栏、主要 exact 图标、原生截图验图和案例卡 `记录开始时间` 已接稳定 `rescueStartedAtLabel` VM；`createSupportEntry` 远端写入已验通，剩余主要是细节视觉精修 |
 | 处理支持登记-待处理 | `319:1382`（`446:7512` 内） | [`src/pages/support/review/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/review/index.tsx) | 部分完成 | 78% - 84% | 双 tab 结构和 pending 卡片列表已在，且原生截图已跑通；`reviewSupportEntry` 的 `confirmed / unmatched` 远端状态流转和非 owner 权限回归已验通，剩余主要是卡片视觉精修 |
-| 处理支持登记-手动登记支持 | `441:4498`（`446:7512` 内） | [`src/pages/support/review/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/review/index.tsx) | 部分完成 | 58% - 66% | 已有 tab 内结构页壳并跑通 manual 原生截图场景；`createManualSupportEntry` 远端写入已接通，提交后回主态详情可形成场外收入卡片，剩余主要是视觉精修 |
+| 处理支持登记-手动登记支持 | `441:4498`（`446:7512` 内） | [`src/pages/support/review/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/support/review/index.tsx) | 部分完成 | 58% - 66% | 已有 tab 内结构页壳并跑通 manual 原生截图场景；`createManualSupportEntry` 远端写入已接通，提交后回主态详情可形成已确认支持卡片，剩余主要是视觉精修 |
 | 追加预算 | `6:999`（`446:7512` 内） | [`src/pages/rescue/budget-update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/budget-update/index.tsx) | 已可试跑 | 66% - 74% | 已完成 `动物卡 / 新预估总金额 / 当前已登记 / 追加原因 / 提示卡 / 固定底部主按钮` 的结构与主态/草稿统一入口；主态 `caseId` 已接 `createBudgetAdjustment` 远端写入，剩余主要是成功态反馈与节点级细节精修 |
 | 记录票据 | `441:4714`（`446:7512` 内） | [`src/pages/rescue/expense/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/expense/index.tsx) | 已可试跑 | 71% - 79% | 已完成 `公共凭证 / 合计 / 新增明细 / 倒序明细 / 固定底部主按钮` 的结构与多轮精修；主态 `caseId` 已接 `createExpenseRecord` 远端写入，真实凭证上传回归已跑通，剩余主要是成功态反馈和局部视觉细修 |
 | 更新进展 | `294:699`（`446:7512` 内） | [`src/pages/rescue/progress-update/index.tsx`](/Users/yang/Documents/New%20project/stray-rescue-mvp/src/pages/rescue/progress-update/index.tsx) | 已可试跑 | 71% - 79% | 已完成 `动物卡 / 阶段 chip / 详情 textarea / 图片记录 / 底部取消+发布` 的结构与主态/草稿统一入口；主态 `caseId` 已接 `createProgressUpdate` 远端写入，真实图片上传回归已跑通，剩余主要是成功态反馈与节点级视觉精修 |
@@ -102,7 +102,7 @@
 其中客态详情页当前已完成的关键收口包括：
 
 - `记录摘要 / 记录详情` 双态结构
-- `支出记录 / 状态更新 / 预算调整 / 场外收入` 四类详情卡稳定展示
+- `支出记录 / 状态更新 / 预算调整 / 已确认支持` 四类详情卡稳定展示
 - 运行态 `loading / error` 页面态
 - 关键图标切换到 Figma exact 资产
 

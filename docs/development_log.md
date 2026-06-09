@@ -2958,3 +2958,43 @@
 - 影响范围：仅影响展示文案和文档命名；现有页面兼容保持，未新增 richer VM / richer mock，CloudBase / repository 写链和数据结构不变。
 - 验证结果：`typecheck`、`test:domain`、`lint`、`format:check`、`git diff --check` 通过。
 - 下一步 / 遗留问题：需要真机确认长文案在详情底栏、处理页 tab 和 owner 快捷卡上不拥挤。
+
+## 2026-06-09 | 发现页 | owner 点击首页案例进入主态
+
+- 日期：2026-06-09
+- 改动主题：发现页进入详情不再强制 `mode=guest`，详情页新增自动模式识别 owner。
+- 为什么改：记录维护者从首页点击自己的公开案例时被强制看到客态，无法顺手进入主态管理；同时旧编译产物仍可能显示旧登记文案。
+- 改了什么：发现页点击 / 搜索跳转去掉 `mode=guest`；详情页在自动模式下尝试读取 owner VM，成功则展示主态，失败则回客态；owner 快捷卡和 VM action 文案补齐为“处理支持登记”；重新执行 `build:weapp` 刷新 `dist`。
+- 影响范围：影响发现页到详情页的入口模式、详情页数据加载分支和 owner 快捷动作展示；现有外部分享仍显式客态，CloudBase / repository 写链和数据结构不变，未新增 richer VM / richer mock。
+- 验证结果：`typecheck`、`test:domain`、`build:weapp` 通过。
+- 下一步 / 遗留问题：需要真机用栗子 owner 账号从发现页点击一次，确认展示主态；再用非 owner 账号点击同案例，确认仍展示客态。
+
+## 2026-06-09 | 分享入口 | 分享链接也自动识别 owner
+
+- 日期：2026-06-09
+- 改动主题：去掉分享路径里的强制 `mode=guest`，让 owner 打开外部分享卡片时也能进入主态。
+- 为什么改：分享链接只是外部入口，不应让记录维护者自己的账号失去管理视角；非 owner 仍可通过自动模式回落客态。
+- 改了什么：`getSharePath` 改为只携带 `id`，详情页沿用自动 owner 识别；补充 detail view model 测试，并同步详情 IA 与总控说明。
+- 影响范围：影响分享卡片打开详情的入口模式；现有非 owner 外部查看仍展示客态，CloudBase / repository 写链和数据结构不变，未新增 richer VM / richer mock。
+- 验证结果：`typecheck`、targeted detail UI test、`test:domain`、`lint`、`format:check`、`build:weapp` 和 `git diff --check` 通过；`build:weapp` 仍仅有既有图片体积与 no async chunks warning。
+- 下一步 / 遗留问题：需要真机分别用 owner 与非 owner 从微信分享卡片冷启动验证。
+
+## 2026-06-09 | 公开入口 | 记录主页自动主态与支持文案收口
+
+- 日期：2026-06-09
+- 改动主题：记录主页公开案例点击也走详情自动模式，并把残留“场外收入 / 手动记一笔”展示收口到“已确认支持 / 手动登记支持”。
+- 为什么改：公开入口不应让记录维护者自己的账号失去主态；支持登记相关文案需要保持直白一致。
+- 改了什么：记录主页跳详情去掉 `mode=guest`；草稿预览、详情时间线、记录详情、local draft/repository label 与云函数 fallback 文案改为支持登记口径；同步 IA、字段矩阵、Alpha 测试计划和 UI inventory。
+- 影响范围：影响公开记录主页入口、支持类时间线/详情卡展示和云函数 fallback 标题；现有页面兼容保持，未新增 richer VM / richer mock，数据结构和接口不变。
+- 验证结果：`typecheck`、targeted detail UI test、`test:domain`、`lint`、`format:check`、`build:weapp`、`git diff --check` 通过；`test:domain` 通过，数据层 label 改动不影响既有页面兼容。
+- 下一步 / 遗留问题：仍需真机用 owner / 非 owner 分别从发现、记录主页和分享卡片进入栗子详情验证主客态切换。
+
+## 2026-06-09 | 详情入口 | 删除主客态路由参数
+
+- 日期：2026-06-09
+- 改动主题：详情页不再消费 `mode=guest / mode=owner`，所有已发布详情入口统一只传 `id`。
+- 为什么改：主客态应该由后端 owner 权限判断，不应由入口路由参数指定；统一入口能减少公开分享、发现、记录主页和支持足迹之间的分叉。
+- 改了什么：详情页改为始终尝试读取 owner VM，成功展示主态，失败展示客态；我的记录、支持足迹和草稿发布后跳转去掉 `mode` 参数；同步详情 IA、首页 IA、字段矩阵和总控。
+- 影响范围：影响详情页身份分流和已发布详情入口 URL；owner 权限仍由 `getOwnerCaseDetail` 校验，数据结构、接口和写链不变，未新增 richer VM / richer mock。
+- 验证结果：`typecheck`、targeted detail UI test、`test:domain`、`lint`、`format:check`、`build:weapp`、`git diff --check` 通过；`src` 和 `dist` 均未再检出 `mode=guest / mode=owner`。
+- 下一步 / 遗留问题：继续真机用 owner / 非 owner 分别从发现、我的记录、支持足迹、记录主页和分享卡片进入同一案例验证。
