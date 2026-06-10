@@ -40,6 +40,14 @@
 - 验证结果：`format:check / lint / typecheck / test:domain / build:weapp` 均通过；`dist/assets` 只剩 6 张 tabbar 小图，`dist` 总体积约 771,608 bytes，未发现超过 200K 的文件。
 - 下一步 / 遗留问题：如果后续 QA 设计截图仍需要固定照片，应改成测试流程临时注入远端图片，而不是重新 import 到主包。
 
+## 2026-06-10 | 发包质量 | 排除误扫项目根目录
+
+- 为什么改：本地 `dist` 已低于主包阈值且只剩 tabbar 图片，但 DevTools 质量扫描仍显示未通过，疑似把项目根目录的 QA 截图、源码、云函数依赖和根级配置文件算进主包。
+- 改了什么：在本机 `project.config.json` 的 `packOptions.ignore` 中排除非小程序包目录和根级开发文件；该文件当前为 skip-worktree，本轮不把本机 appid 写入 Git diff。
+- 影响范围：只影响微信开发者工具上传 / 扫描候选文件；不改构建产物、页面逻辑、数据模型、repository、selector 或 CloudBase action。
+- 验证结果：`npm run build:weapp` 通过；按 `dist` 计算约 773,798 bytes，按项目根套用 ignore 计算约 776,876 bytes，候选资源仍只剩 tabbar 小图。
+- 下一步 / 遗留问题：若 DevTools 仍红，需要确认工具当前打开的项目路径和扫描时间，避免扫到旧窗口或旧构建缓存。
+
 ## 2026-06-09 | 登记支持 | 称呼默认改为昵称优先
 
 - 为什么改：`wechatId` 是联系方式，不是“您的称呼”；登记支持页此前会把 `alpha_rescue_test` 这类联系微信号带入称呼输入框。
