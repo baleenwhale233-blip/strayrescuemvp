@@ -251,9 +251,7 @@ export async function loadPublicDetailVMByCaseId(
   );
 }
 
-export async function loadViewerCaseDetailVMByCaseId(
-  caseId?: string,
-): Promise<ViewerCaseDetailVM> {
+export async function loadViewerCaseDetailVMByCaseId(caseId?: string): Promise<ViewerCaseDetailVM> {
   return withRemoteFallback(
     async () => {
       let payload: ViewerCaseDetailPayload;

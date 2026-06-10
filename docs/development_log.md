@@ -32,6 +32,14 @@
 - 验证结果：`node --test cloudfunctions/rescueApi/src/services/readActions.test.js`、`npm run typecheck`、`npm run test:domain`、`npm run lint`、`npm run build:weapp` 均通过；`test:domain` 受影响但已通过。
 - 下一步 / 遗留问题：首页和工作台远端仍会组装完整 bundle，若真机后台刷新仍卡，下一步应做首页/工作台轻量读 action 或远端分页。
 
+## 2026-06-10 | 发包 | Alpha 0.1.0-alpha.9 体验版上传
+
+- 为什么改：新版 `rescueApi` 已部署，需要把首屏加载优化、发现页缓存和详情读链路合并一起发到体验版。
+- 改了什么：发包前格式化 `remote/readRepository.ts` 并上传开发版本 `0.1.0-alpha.9`，备注为“首屏加载优化，发现页缓存，详情读链路合并”。
+- 影响范围：影响本次微信开发者工具体验版上传记录和一处代码格式；不改变页面交互、数据模型、selector、repository 语义或 CloudBase schema。
+- 验证结果：`npm run preflight:alpha` 通过；微信开发者工具 CLI 上传成功，包体总大小 `755,114` Byte。
+- 下一步 / 遗留问题：需要在微信公众平台确认开发版本已设为体验版，并用真机复测发现页首屏与详情打开速度。
+
 ## 2026-06-10 | 发包质量 | 收口主包体积与按需注入扫描项
 
 - 为什么改：微信开发者工具代码质量扫描提示主包尺寸、组件按需注入和图片资源体积未通过，影响 Alpha 体验版发包前质量门槛。
