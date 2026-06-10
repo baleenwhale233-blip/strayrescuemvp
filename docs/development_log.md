@@ -24,6 +24,14 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-06-10 | 首屏性能 | 缓存发现页并合并详情读链路
+
+- 为什么改：发现页每次进页都等待远端列表，详情页还会重复请求公开详情、owner 详情和联系方式数据，打开和跳转时容易出现 CloudBase 读链路卡顿。
+- 改了什么：发现页增加上次卡片文本缓存并后台刷新；新增 `getCaseDetailForViewer` 云函数 action 与 `loadViewerCaseDetailVMByCaseId`，详情页一次读出 `publicDetail / ownerDetail / supportData`。
+- 影响范围：影响发现页首屏加载体验、详情页首屏读链路和 remote repository 导出；现有公开详情、owner 详情、联系方式旧接口保持兼容，不新增 richer mock。
+- 验证结果：`node --test cloudfunctions/rescueApi/src/services/readActions.test.js`、`npm run typecheck`、`npm run test:domain`、`npm run lint`、`npm run build:weapp` 均通过；`test:domain` 受影响但已通过。
+- 下一步 / 遗留问题：首页和工作台远端仍会组装完整 bundle，若真机后台刷新仍卡，下一步应做首页/工作台轻量读 action 或远端分页。
+
 ## 2026-06-10 | 发包质量 | 收口主包体积与按需注入扫描项
 
 - 为什么改：微信开发者工具代码质量扫描提示主包尺寸、组件按需注入和图片资源体积未通过，影响 Alpha 体验版发包前质量门槛。

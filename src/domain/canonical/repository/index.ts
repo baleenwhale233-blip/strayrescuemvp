@@ -35,6 +35,7 @@ export {
   loadMySupportHistory,
   loadRescuerHomepageVM,
   loadCaseRecordDetail,
+  loadViewerCaseDetailVMByCaseId,
   updateRemoteMyProfile,
   updateRemoteCaseProfileByCaseId,
   createRemoteSupportEntryByCaseId,
@@ -64,6 +65,7 @@ export type {
   UpdateCaseProfileInput,
   UpdateExpenseRecordInput,
   UpdateMyProfileInput,
+  ViewerCaseDetailVM,
 } from "./remoteRepository";
 
 export { buildExpenseEvidenceItems } from "./localPresentation";

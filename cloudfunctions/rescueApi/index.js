@@ -137,6 +137,7 @@ const {
 });
 const {
   getCaseDetail,
+  getCaseDetailForViewer,
   getMySupportHistory,
   getOwnerCaseDetail,
   getOwnerWorkbench,
@@ -195,6 +196,7 @@ const handlers = {
   getRescuerHomepage,
   searchCaseByPublicId: (_, input) => searchCaseByPublicId(input),
   getCaseDetail: (_, input) => getCaseDetail(input),
+  getCaseDetailForViewer,
   getOwnerWorkbench: (openid) => getOwnerWorkbench(openid),
   getOwnerCaseDetail,
   getMyProfile,

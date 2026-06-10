@@ -7,6 +7,7 @@ export {
   loadPublicDetailVMByCaseId,
   loadRescuerHomepageVM,
   loadSupportSheetDataByCaseId,
+  loadViewerCaseDetailVMByCaseId,
   loadWorkbenchVMForCurrentUser,
   searchCaseByPublicIdExact,
 } from "./remote/readRepository";
@@ -39,4 +40,5 @@ export type {
   UpdateCaseProfileInput,
   UpdateExpenseRecordInput,
   UpdateMyProfileInput,
+  ViewerCaseDetailVM,
 } from "./remote/types";

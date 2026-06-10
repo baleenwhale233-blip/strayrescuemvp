@@ -1,4 +1,10 @@
-import type { CanonicalRescuer, HomepageCaseCardVM } from "../../types";
+import type {
+  CanonicalRescuer,
+  HomepageCaseCardVM,
+  PublicDetailVM,
+  SupportSheetData,
+} from "../../types";
+import type { OwnerDetailVM } from "../canonicalReadRepositoryCore";
 
 export type MyProfileVM = {
   openid?: string;
@@ -33,6 +39,13 @@ export type RescuerHomepageVM = {
   rescuer: Pick<CanonicalRescuer, "id" | "name" | "avatarUrl" | "stats">;
   cards: HomepageCaseCardVM[];
   profileEntryEnabled: boolean;
+};
+
+export type ViewerCaseDetailVM = {
+  publicDetail?: PublicDetailVM;
+  ownerDetail?: OwnerDetailVM;
+  supportData?: SupportSheetData;
+  viewerIsOwner: boolean;
 };
 
 export type CaseRecordDetailVM = {

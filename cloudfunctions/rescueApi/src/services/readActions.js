@@ -161,6 +161,15 @@ function createReadActionsService({
     return ok({ bundle: await getBundleByCaseId(input?.caseId) });
   }
 
+  async function getCaseDetailForViewer(openid, input) {
+    const bundle = await getBundleByCaseId(input?.caseId);
+
+    return ok({
+      bundle,
+      viewerIsOwner: Boolean(bundle?.case?.rescuerId && bundle.case.rescuerId === openid),
+    });
+  }
+
   async function getOwnerWorkbench(openid) {
     const caseDocs = await queryCollection(collections.cases, {
       rescuerOpenid: openid,
@@ -186,6 +195,7 @@ function createReadActionsService({
 
   return {
     getCaseDetail,
+    getCaseDetailForViewer,
     getMySupportHistory,
     getOwnerCaseDetail,
     getOwnerWorkbench,

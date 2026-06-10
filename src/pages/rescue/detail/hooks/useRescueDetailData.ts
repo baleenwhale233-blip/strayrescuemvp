@@ -1,17 +1,11 @@
 import Taro, { useDidShow } from "@tarojs/taro";
 import { useState } from "react";
 import {
-  loadOwnerDetailVMByCaseId,
-  loadPublicDetailVMByCaseId,
-  loadSupportSheetDataByCaseId,
+  loadViewerCaseDetailVMByCaseId,
   type OwnerDetailVM,
 } from "../../../../domain/canonical/repository";
 import type { PublicDetailVM, SupportSheetData } from "../../../../domain/canonical/types";
 import type { DetailLoadStatus } from "../types";
-
-async function loadOwnerDetailSafely(caseId?: string) {
-  return loadOwnerDetailVMByCaseId(caseId).catch(() => undefined);
-}
 
 export function useRescueDetailData({ caseId }: { caseId?: string }) {
   const [reloadSeed, setReloadSeed] = useState(0);
@@ -24,15 +18,13 @@ export function useRescueDetailData({ caseId }: { caseId?: string }) {
     setDetailStatus("loading");
     setReloadSeed((value) => value + 1);
 
-    return Promise.all([
-      loadPublicDetailVMByCaseId(caseId),
-      loadOwnerDetailSafely(caseId),
-      loadSupportSheetDataByCaseId(caseId),
-    ])
-      .then(([nextPublicDetail, nextOwnerDetail, nextSupportData]) => {
+    return loadViewerCaseDetailVMByCaseId(caseId)
+      .then((vm) => {
+        const nextPublicDetail = vm.publicDetail;
+
         setPublicDetail(nextPublicDetail);
-        setOwnerDetail(nextOwnerDetail);
-        setSupportData(nextSupportData);
+        setOwnerDetail(vm.ownerDetail);
+        setSupportData(vm.supportData);
         setDetailStatus(nextPublicDetail ? "ready" : "error");
       })
       .catch(() => {

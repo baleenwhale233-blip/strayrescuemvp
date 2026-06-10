@@ -14,6 +14,7 @@ import {
   getSupportSheetDataByCaseIdFromBundles,
   getWorkbenchVMFromBundles,
 } from "../canonicalReadRepositoryCore";
+import { buildSupportSheetCopy } from "../../contactProfileSemantics";
 import { getHomepageCaseCardVM } from "../../selectors/getDiscoverCardVM";
 import { callRescueApi, canUseCloudBase } from "../cloudbaseClient";
 import {
@@ -33,7 +34,7 @@ import type {
   WorkbenchVM,
 } from "../../types";
 import type { OwnerDetailVM } from "../canonicalReadRepositoryCore";
-import { withRemoteFallback } from "./fallback";
+import { getRemoteErrorCode, withRemoteFallback } from "./fallback";
 import {
   buildMySupportHistoryFromDetails,
   buildRescuerHomepageVMFromBundles,
@@ -44,6 +45,7 @@ import type {
   MyProfileVM,
   MySupportHistoryVM,
   RescuerHomepageVM,
+  ViewerCaseDetailVM,
 } from "./types";
 
 type BundlesPayload = {
@@ -57,6 +59,11 @@ type RescuerHomepagePayload = {
 
 type BundlePayload = {
   bundle?: CanonicalCaseBundle;
+};
+
+type ViewerCaseDetailPayload = {
+  bundle?: CanonicalCaseBundle;
+  viewerIsOwner?: boolean;
 };
 
 type ProfilePayload = {
@@ -115,11 +122,46 @@ function finalizeRemoteOwnerDetailPresentation(detail: OwnerDetailVM | undefined
   });
 }
 
+function buildSupportSheetDataFromPublicDetail(
+  detail: PublicDetailVM | undefined,
+): SupportSheetData | undefined {
+  if (!detail) {
+    return undefined;
+  }
+
+  return {
+    wechatId: detail.rescuer.wechatId,
+    contactNote: detail.rescuer.contactNote,
+    paymentQrUrl: detail.rescuer.paymentQrUrl,
+    ...buildSupportSheetCopy({
+      wechatId: detail.rescuer.wechatId,
+      paymentQrUrl: detail.rescuer.paymentQrUrl,
+    }),
+  };
+}
+
 function finalizeRemoteWorkbenchCaseCardPresentation(card: WorkbenchCaseCardVM) {
   return finalizeWorkbenchCaseCardPresentation(card, {
     caseId: card.caseId,
     applyLocalOverlays: false,
   });
+}
+
+async function loadViewerCaseDetailVMViaExistingReads(
+  caseId?: string,
+): Promise<ViewerCaseDetailVM> {
+  const [publicDetail, ownerDetail, supportData] = await Promise.all([
+    loadPublicDetailVMByCaseId(caseId),
+    loadOwnerDetailVMByCaseId(caseId).catch(() => undefined),
+    loadSupportSheetDataByCaseId(caseId),
+  ]);
+
+  return {
+    publicDetail,
+    ownerDetail,
+    supportData,
+    viewerIsOwner: Boolean(ownerDetail),
+  };
 }
 
 export async function loadHomepageCaseCardVMs(): Promise<HomepageCaseCardVM[]> {
@@ -205,6 +247,62 @@ export async function loadPublicDetailVMByCaseId(
       );
     },
     () => getPublicDetailVMByCaseId(caseId),
+    getRemoteFallbackOptions(),
+  );
+}
+
+export async function loadViewerCaseDetailVMByCaseId(
+  caseId?: string,
+): Promise<ViewerCaseDetailVM> {
+  return withRemoteFallback(
+    async () => {
+      let payload: ViewerCaseDetailPayload;
+
+      try {
+        payload = await callRescueApi<ViewerCaseDetailPayload>("getCaseDetailForViewer", {
+          caseId,
+        });
+      } catch (error) {
+        if (getRemoteErrorCode(error) === "UNKNOWN_ACTION") {
+          return loadViewerCaseDetailVMViaExistingReads(caseId);
+        }
+
+        throw error;
+      }
+
+      const { bundle, viewerIsOwner } = payload;
+      const resolvedBundle = bundle ? resolveRemoteBundlesCanonical([bundle])[0] : undefined;
+      const publicDetail = resolvedBundle
+        ? finalizeRemotePublicDetailPresentation(
+            getPublicDetailVMByCaseIdFromBundles([resolvedBundle], caseId),
+            { caseId },
+          )
+        : undefined;
+      const ownerDetail =
+        resolvedBundle && viewerIsOwner
+          ? finalizeRemoteOwnerDetailPresentation(
+              getOwnerDetailVMByCaseIdFromBundles([resolvedBundle], caseId),
+            )
+          : undefined;
+
+      return {
+        publicDetail,
+        ownerDetail,
+        supportData: buildSupportSheetDataFromPublicDetail(publicDetail),
+        viewerIsOwner: Boolean(viewerIsOwner),
+      };
+    },
+    () => {
+      const publicDetail = getPublicDetailVMByCaseId(caseId);
+      const ownerDetail = getOwnerDetailVMByCaseId(caseId);
+
+      return {
+        publicDetail,
+        ownerDetail,
+        supportData: getSupportSheetDataByCaseId(caseId),
+        viewerIsOwner: Boolean(ownerDetail),
+      };
+    },
     getRemoteFallbackOptions(),
   );
 }

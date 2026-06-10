@@ -236,3 +236,27 @@ test("read actions enforce owner-only case detail access", async () => {
     },
   );
 });
+
+test("read actions return viewer ownership with a single case detail bundle", async () => {
+  const { service } = createService({
+    getBundleByCaseId: async () => ({
+      case: {
+        id: "case_1",
+        rescuerId: "owner_1",
+      },
+    }),
+  });
+
+  const ownerResult = await service.getCaseDetailForViewer("owner_1", {
+    caseId: "case_1",
+  });
+  const guestResult = await service.getCaseDetailForViewer("viewer_1", {
+    caseId: "case_1",
+  });
+
+  assert.equal(ownerResult.ok, true);
+  assert.equal(ownerResult.data.viewerIsOwner, true);
+  assert.equal(ownerResult.data.bundle.case.id, "case_1");
+  assert.equal(guestResult.ok, true);
+  assert.equal(guestResult.data.viewerIsOwner, false);
+});

@@ -12,22 +12,62 @@ import {
 } from "../../domain/canonical/repository";
 import "./index.scss";
 
+const HOMEPAGE_CARD_CACHE_KEY = "discover-homepage-cards:v1";
+
+function isHomepageCaseCardVM(value: unknown): value is HomepageCaseCardVM {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<HomepageCaseCardVM>;
+
+  return Boolean(candidate.caseId && candidate.publicCaseId && candidate.title);
+}
+
+function stripVolatileImageUrls(card: HomepageCaseCardVM): HomepageCaseCardVM {
+  return {
+    ...card,
+    coverImageUrl: "",
+  };
+}
+
+function getCachedHomepageCards() {
+  const stored = Taro.getStorageSync(HOMEPAGE_CARD_CACHE_KEY);
+
+  return Array.isArray(stored) ? stored.filter(isHomepageCaseCardVM) : [];
+}
+
+function saveHomepageCardCache(nextCards: HomepageCaseCardVM[]) {
+  Taro.setStorageSync(HOMEPAGE_CARD_CACHE_KEY, nextCards.map(stripVolatileImageUrls));
+}
+
 export default function DiscoverPage() {
   const [keyword, setKeyword] = useState("");
   const [cards, setCards] = useState<HomepageCaseCardVM[]>([]);
   const [loading, setLoading] = useState(true);
 
   useDidShow(() => {
-    setLoading(true);
+    const cachedCards = getCachedHomepageCards();
+
+    if (cachedCards.length) {
+      setCards(cachedCards);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
     loadHomepageCaseCardVMs()
       .then((nextCards) => {
         setCards(nextCards);
+        saveHomepageCardCache(nextCards);
       })
       .catch(() => {
-        Taro.showToast({
-          title: "案例列表加载失败",
-          icon: "none",
-        });
+        if (!cachedCards.length) {
+          Taro.showToast({
+            title: "案例列表加载失败",
+            icon: "none",
+          });
+        }
       })
       .finally(() => {
         setLoading(false);
