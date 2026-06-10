@@ -56,6 +56,7 @@ import trashMuted from "../assets/lucide/trash-muted.svg";
 import trendingUpInfo from "../assets/lucide/trendingUp-info.svg";
 import userDefault from "../assets/lucide/user-default.svg";
 import walletCardsWarning from "../assets/lucide/walletCards-warning.svg";
+import xMuted from "../assets/lucide/x-muted.svg";
 
 export type IconName =
   | "arrowRight"
@@ -93,7 +94,8 @@ export type IconName =
   | "trash"
   | "trendingUp"
   | "user"
-  | "walletCards";
+  | "walletCards"
+  | "x";
 
 export type IconVariant =
   | "default"
@@ -236,6 +238,9 @@ const iconMap: Record<IconName, Partial<Record<IconVariant, string>>> = {
   },
   walletCards: {
     warning: walletCardsWarning,
+  },
+  x: {
+    muted: xMuted,
   },
 };
 

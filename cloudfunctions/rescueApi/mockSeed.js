@@ -96,6 +96,12 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
     visibility: "private",
     uploadedByOpenid: ownerOpenid,
   });
+  const otherRescuerPaymentQrAssetId = addAsset("profile_qr_xiaoman", {
+    assetId: "profile_seed_rescuer_other_001_payment_qr",
+    kind: "payment_qr",
+    visibility: "private",
+    uploadedByOpenid: "seed_rescuer_other_001",
+  });
 
   const profiles = [
     {
@@ -115,11 +121,13 @@ function buildMockSeedData({ ownerOpenid, ownerProfile = {}, alphaAssetFileIDs =
     {
       _id: "seed_rescuer_other_001",
       openid: "seed_rescuer_other_001",
-      displayName: "阿宁",
+      displayName: "阿宁（小满救助）",
       avatarUrl: "",
       verifiedLevel: "wechat",
       joinedAt: "2025-11-22T11:30:00.000Z",
-      wechatId: "aning_rescue",
+      wechatId: "xiaoman_rescue_qa",
+      paymentQrAssetId: otherRescuerPaymentQrAssetId,
+      contactNote: "加好友请备注“小满 JM520106”，说明是从档案页看到的；晚上 8 点后回复会慢一点。",
       stats: {
         publishedCaseCount: 2,
         verifiedReceiptCount: 9,

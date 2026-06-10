@@ -24,6 +24,23 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-06-10 | 联系方式 | 修正联系弹层滚动与小满 QA 联系信息
+
+- 为什么改：真机截图里联系方式弹层关闭按钮像文字叉号，内容区不能稳定滚动，底部按钮会遮住备注；小满档案缺少完整联系 mock，不方便后续 QA 覆盖非 owner 联系场景。
+- 改了什么：`components/rescue/SupportSheet` 改用 `IconButton + AppIcon(x)`，抽屉设为明确 `82vh` flex 高度，滚动区单独接管 touchmove；清掉旧根目录重复 `SupportSheet` 残留；Alpha seed 给小满维护者补微信名称、微信号、联系备注和专用测试二维码素材。
+- 影响范围：影响查看联系方式半弹层展示/滚动交互、Alpha seed mock 和测试素材数量；现有页面兼容保持，不新增 richer VM，新增 richer mock。
+- 数据层说明：涉及 `mockSeed` 与 Alpha fixture 素材，CloudBase schema、repository、selector 和正式写链不变；重新 `seed:alpha` 后小满 `JM520106` 会读到完整联系方式。
+- 验证结果：`format:check`、`lint`、`typecheck`、`test:domain`、`test:ui`、`build:weapp` 通过；`test:domain` 已通过 62 项。
+- 下一步 / 遗留问题：需要在微信开发者工具或真机重新 seed 后打开小满客态详情，手动确认弹层滚动、关闭按钮、长按二维码和底部按钮都顺手。
+
+## 2026-06-10 | 组件清理 | 删除未引用旧页面组件与静态资产
+
+- 为什么改：排查发现页面入口没有未注册旧页，但改版后根目录仍保留旧业务组件 / 兼容包装，且有多批无引用旧贴图和 SVG，容易让后续误判还有旧页面在用。
+- 改了什么：删除 `src/components` 根目录旧 `DiscoverCaseCard / RescueOwnerShared / RescueTimelineShared / SupportSheet / SectionHeader / TextareaWithOverlayPlaceholder` 及对应样式，并删除无引用旧静态资产；保留当前活跃的 `components/rescue` 与 `components/ui`。
+- 影响范围：只影响未引用组件和无引用静态资产；`src/app.config.ts` 页面入口与现有路由不变，不改数据模型、repository、selector 或 VM。
+- 验证结果：页面注册扫描无未注册旧页，无未引用资产；`npm run typecheck`、`npm run lint`、`npm run test:ui`（17/17）和 `npm run build:weapp` 通过，build 仅有既有 `punycode` warning。
+- 下一步 / 遗留问题：后续继续组件迁移时，迁完同步跑未引用扫描，避免再留下兼容壳。
+
 ## 2026-06-10 | 首屏性能 | 缓存发现页并合并详情读链路
 
 - 为什么改：发现页每次进页都等待远端列表，详情页还会重复请求公开详情、owner 详情和联系方式数据，打开和跳转时容易出现 CloudBase 读链路卡顿。

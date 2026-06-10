@@ -68,6 +68,7 @@ const proofAssets = [
   ["support_ahuang_confirmed", "工地师傅支持", "1200"],
   ["support_xiaoman_confirmed", "邻居阿姨支持", "500"],
   ["profile_qr_owner", "测试联系二维码", ""],
+  ["profile_qr_xiaoman", "小满联系二维码", ""],
 ];
 
 function escapeXml(value) {
@@ -125,7 +126,7 @@ function animalSvg([_key, name, subtitle, primary, secondary]) {
 }
 
 function proofSvg([key, title, amount]) {
-  const isQr = key === "profile_qr_owner";
+  const isQr = key.startsWith("profile_qr_");
   return `
 <svg width="1024" height="768" viewBox="0 0 1024 768" xmlns="http://www.w3.org/2000/svg">
   <rect width="1024" height="768" rx="36" fill="#f8fafc"/>

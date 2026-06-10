@@ -271,7 +271,7 @@ npm run seed:alpha
 该脚本会：
 
 - 生成 / 使用 `docs/alpha_seed_assets/*.png`
-- 上传 28 张 Alpha 测试图片到 CloudBase Storage
+- 上传 29 张 Alpha 测试图片到 CloudBase Storage
 - 调用 `rescueApi.seedMockCases`
 - 以 `cleanupMode=reset_alpha_environment` 重置 `user_profiles / rescue_cases / case_events / expense_records / support_entries / support_threads / evidence_assets / shared_evidence_groups`
 - 写入演示救助人、公开案例、草稿案例、支持记录、支出记录、进展记录和 `evidence_assets`

@@ -2,7 +2,7 @@ import { Image, ScrollView, Text, View } from "@tarojs/components";
 import { useRef, useState } from "react";
 import type { SupportSheetData } from "../../domain/canonical/types";
 import { AppIcon } from "../AppIcon";
-import { AppButton, SectionHeader } from "../ui";
+import { AppButton, IconButton, SectionHeader } from "../ui";
 import "./SupportSheet.scss";
 
 type SupportSheetProps = {
@@ -93,13 +93,11 @@ export function SupportSheet({
     >
       <View
         className="support-sheet__panel"
-        catchMove
         style={{
           transform: `translateY(${dragOffsetY}px)`,
           transition: isDragging ? "none" : "transform 180ms ease-out",
         }}
         onTap={(event) => event.stopPropagation()}
-        onTouchMove={(event) => event.stopPropagation()}
       >
         <View
           className="support-sheet__header"
@@ -114,13 +112,24 @@ export function SupportSheet({
 
           <View className="support-sheet__title-row">
             <Text className="support-sheet__title">联系信息</Text>
-            <View className="support-sheet__close" onTap={onClose}>
-              <Text className="support-sheet__close-text">×</Text>
-            </View>
+            <IconButton
+              className="support-sheet__close"
+              iconName="x"
+              iconVariant="muted"
+              label="关闭"
+              onTap={onClose}
+              size="md"
+              variant="soft"
+            />
           </View>
         </View>
 
-        <ScrollView className="support-sheet__scroll" scrollY showScrollbar={false}>
+        <ScrollView
+          className="support-sheet__scroll"
+          scrollY
+          showScrollbar={false}
+          onTouchMove={(event) => event.stopPropagation()}
+        >
           <View className="support-sheet__content">
             <View className="support-sheet__tip">
               <AppIcon className="support-sheet__tip-icon" name="info" size={16} variant="brand" />
