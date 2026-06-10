@@ -11,8 +11,6 @@ import {
   clearCaseContentWriteLocalFallback,
   recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
-import qaCatImage from "../../../assets/rescue-expense/qa-cat.png";
-import qaReceiptImage from "../../../assets/rescue-expense/qa-receipt.png";
 import {
   createRemoteExpenseRecordByCaseId,
   formatTimelineTimestamp,
@@ -360,7 +358,7 @@ export default function RescueExpensePage() {
     }
 
     if (qaPreset === "design") {
-      setPublicEvidenceImages([qaReceiptImage, qaCatImage, qaCatImage]);
+      setPublicEvidenceImages([]);
       setExpenseLines(buildDesignPresetLines());
       return;
     }

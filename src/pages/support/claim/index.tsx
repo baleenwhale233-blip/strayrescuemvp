@@ -1,6 +1,5 @@
 import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useEffect, useRef, useState } from "react";
-import animalProfileExact from "../../../assets/support-claim/animal-profile-exact.png";
 import { NavBar } from "../../../components/NavBar";
 import { EmptyState, PageShell } from "../../../components/ui";
 import { useKeyboardBottomInset } from "../../../components/useKeyboardBottomInset";
@@ -47,7 +46,7 @@ function mapSupportError(error: unknown) {
 }
 
 function getSupportClaimCover(detail: PublicDetailVM) {
-  return detail.heroImageUrl || animalProfileExact;
+  return detail.heroImageUrl || "";
 }
 
 function getRescueStartedAtLabel(detail: PublicDetailVM) {
@@ -75,7 +74,7 @@ export default function SupportClaimPage() {
   const [imagePath, setImagePath] = useState("");
   const [detail, setDetail] = useState<PublicDetailVM | undefined>();
   const [loadStatus, setLoadStatus] = useState<ClaimLoadStatus>("loading");
-  const [caseCoverSrc, setCaseCoverSrc] = useState<string>(animalProfileExact);
+  const [caseCoverSrc, setCaseCoverSrc] = useState<string>("");
   const nicknameDirtyRef = useRef(false);
   const defaultNameRequestRef = useRef(0);
   const submitGuardRef = useRef(createSubmissionGuard());
@@ -85,7 +84,7 @@ export default function SupportClaimPage() {
     loadPublicDetailVMByCaseId(caseId)
       .then((nextDetail) => {
         setDetail(nextDetail);
-        setCaseCoverSrc(nextDetail ? getSupportClaimCover(nextDetail) : animalProfileExact);
+        setCaseCoverSrc(nextDetail ? getSupportClaimCover(nextDetail) : "");
         setLoadStatus(nextDetail ? "ready" : "error");
       })
       .catch(() => {
@@ -237,7 +236,7 @@ export default function SupportClaimPage() {
           title: detail.title,
         }}
         onAmountChange={setAmount}
-        onCoverError={() => setCaseCoverSrc(animalProfileExact)}
+        onCoverError={() => setCaseCoverSrc("")}
         onImageAdd={handlePickImage}
         onImagePreview={handlePreviewImage}
         onImageRemove={() => setImagePath("")}

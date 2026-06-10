@@ -5,6 +5,7 @@
   overflow: hidden;
   margin-right: calc(-1 * var(--layout-page-padding-x));
   margin-left: calc(-1 * var(--layout-page-padding-x));
+  background: linear-gradient(135deg, var(--color-bg-muted), var(--color-bg-card));
 }
 
 .guest-hero__image,

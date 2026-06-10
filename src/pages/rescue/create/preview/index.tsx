@@ -13,8 +13,6 @@ import {
   RescueOwnerTimeline,
   type RescueOwnerTimelineItem,
 } from "../../../../components/rescue";
-import coverFallback from "../../../../assets/detail/guest-hero-cat.png";
-import ownerAnimalFallback from "../../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   calculateDraftLedger,
   appendDraftEntry,
@@ -79,7 +77,7 @@ function getBudgetProgressPercent(input: { supportAmount: number; targetAmount: 
 }
 
 function getDraftCover(draft: RescueCreateDraft) {
-  return draft.coverPath || ownerAnimalFallback || coverFallback;
+  return draft.coverPath || "";
 }
 
 function getDraftPublicCaseId(draft: RescueCreateDraft) {
@@ -502,7 +500,9 @@ export default function RescueCreatePreviewPage() {
         amount: activeAction === "expense" || activeAction === "income" ? numericAmount : undefined,
         imageUrls:
           activeAction === "status" || activeAction === "expense"
-            ? [draft.coverPath || coverFallback]
+            ? draft.coverPath
+              ? [draft.coverPath]
+              : []
             : undefined,
       });
 

@@ -18,6 +18,10 @@
   box-shadow: var(--shadow-card-strong);
 }
 
+.rescue-budget-page__avatar-placeholder {
+  background: linear-gradient(135deg, var(--color-bg-muted), var(--color-bg-card));
+}
+
 .rescue-budget-page__name {
   color: var(--color-text-primary);
   font-size: var(--font-size-heading-md);

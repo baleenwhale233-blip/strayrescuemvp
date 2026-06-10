@@ -1,7 +1,4 @@
 import type { RescueOwnerTimelineItem } from "../../../components/rescue";
-import guestHeroCat from "../../../assets/detail/guest-hero-cat.png";
-import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
-import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import type { PublicDetailVM, PublicTimelineItemVM } from "../../../domain/canonical/types";
 export { getSharePath } from "./detailSharePath";
 import { isOwnerEditableTimelineRecord } from "./ownerTimelineEditability";
@@ -89,15 +86,15 @@ export function parseBudgetAdjustment(item: PublicTimelineItemVM) {
 }
 
 export function getHeroImage(detail: PublicDetailVM) {
-  return detail.heroImageUrl || guestHeroCat;
+  return detail.heroImageUrl;
 }
 
 export function getOwnerAnimalImage(detail: PublicDetailVM) {
-  return detail.heroImageUrl || ownerAnimalFallback;
+  return detail.heroImageUrl;
 }
 
 export function getRescuerAvatar(detail: PublicDetailVM) {
-  return detail.rescuer.avatarUrl || rescuerAvatar;
+  return detail.rescuer.avatarUrl;
 }
 
 export function getLatestOverviewImage(detail: PublicDetailVM, item?: PublicTimelineItemVM) {

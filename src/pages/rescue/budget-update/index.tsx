@@ -9,7 +9,6 @@ import {
   clearCaseContentWriteLocalFallback,
   recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
-import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   calculateDraftLedger,
   createRemoteBudgetAdjustmentByCaseId,
@@ -123,7 +122,7 @@ export default function RescueBudgetUpdatePage() {
         statusLabel: draft.currentStatusLabel || "医疗处理中",
         publicCaseId: draft.publicCaseId || "待生成",
         rescueStartedAtLabel: "救助开始时间: 待补充",
-        coverImage: draft.coverPath || ownerAnimalFallback,
+        coverImage: draft.coverPath || "",
         supportedAmountLabel: formatCurrency(calculateDraftLedger(draft).income),
         previousBudget: draft.budget || 0,
       };
@@ -135,7 +134,7 @@ export default function RescueBudgetUpdatePage() {
         statusLabel: detail.statusLabel,
         publicCaseId: detail.publicCaseId,
         rescueStartedAtLabel: `救助开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
-        coverImage: detail.heroImageUrl || ownerAnimalFallback,
+        coverImage: detail.heroImageUrl,
         supportedAmountLabel: detail.supportSummary.confirmedSupportAmountLabel,
         previousBudget: detail.ledger.targetAmount,
       };

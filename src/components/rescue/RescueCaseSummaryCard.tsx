@@ -5,7 +5,7 @@ import "./RescueCaseSummaryCard.scss";
 
 type RescueCaseSummaryCardProps = {
   className?: string;
-  coverSrc: string;
+  coverSrc?: string;
   mediaVariant?: "plain" | "framed";
   onCoverError?: () => void;
   publicCaseId: string;
@@ -33,12 +33,16 @@ export function RescueCaseSummaryCard({
       )}
     >
       <View className="rescue-case-summary-card__media">
-        <Image
-          className="rescue-case-summary-card__image"
-          mode="aspectFill"
-          src={coverSrc}
-          onError={onCoverError}
-        />
+        {coverSrc ? (
+          <Image
+            className="rescue-case-summary-card__image"
+            mode="aspectFill"
+            src={coverSrc}
+            onError={onCoverError}
+          />
+        ) : (
+          <View className="rescue-case-summary-card__placeholder" />
+        )}
       </View>
       <View className="rescue-case-summary-card__copy">
         <View className="rescue-case-summary-card__head">

@@ -40,6 +40,10 @@
   border-radius: var(--radius-sm);
 }
 
+.rescue-owner-card__cover-placeholder {
+  background: linear-gradient(135deg, var(--color-bg-muted), var(--color-bg-card));
+}
+
 .rescue-owner-card__copy {
   flex: 1;
   min-width: 0;

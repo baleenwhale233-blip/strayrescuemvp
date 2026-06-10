@@ -12,6 +12,8 @@
     "showShadowRootInWxmlPanel": false,
     "useStaticServer": false,
     "useLanDebug": false,
+    "minified": true,
+    "uploadWithSourceMap": false,
     "showES6CompileOption": false,
     "compileHotReLoad": true,
     "checkInvalidKey": true,

@@ -3,7 +3,6 @@ import { AppIcon } from "../../../components/AppIcon";
 import { Avatar, EmptyState, ListEntry, SectionHeader } from "../../../components/ui";
 import { getStandardCaseStatusLabel } from "../../../domain/canonical/modeling";
 import type { WorkbenchCaseCardVM } from "../../../domain/canonical/types";
-import fallbackCoverImage from "../../../assets/detail/guest-hero-cat.png";
 import "./WorkbenchProjectSections.scss";
 
 const WORKBENCH_STATUS_LABELS = new Set([
@@ -65,13 +64,7 @@ function WorkbenchProjectListItem({
   return (
     <ListEntry
       className={`project-list-item${notice ? " project-list-item--with-notice" : ""}`}
-      leading={
-        <Avatar
-          className="project-list-item__avatar"
-          fallbackSrc={fallbackCoverImage}
-          src={project.coverImageUrl}
-        />
-      }
+      leading={<Avatar className="project-list-item__avatar" src={project.coverImageUrl} />}
       notice={notice}
       onTap={() => onTap(project)}
       subtitle={!compact ? getProjectSubtitle(project) : undefined}

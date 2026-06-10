@@ -17,6 +17,10 @@ export default defineConfig({
   compiler: {
     type: "webpack5",
   },
+  jsMinimizer: "terser",
+  terser: {
+    enable: true,
+  },
   alias: {
     "@": path.resolve(__dirname, "..", "src"),
   },

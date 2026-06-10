@@ -11,7 +11,6 @@ import {
   clearCaseContentWriteLocalFallback,
   recordCaseContentWriteLocalFallback,
 } from "../../../domain/canonical/repository";
-import ownerAnimalFallback from "../../../assets/rescue-detail/owner/animal-card-cat.png";
 import {
   createRemoteProgressUpdateByCaseId,
   getCurrentDraft,
@@ -132,7 +131,7 @@ export default function RescueStatusUpdatePage() {
         statusLabel: draft.currentStatusLabel || "医疗处理中",
         publicCaseId: draft.publicCaseId || "待生成",
         rescueStartedAtLabel: "救助开始时间: 待补充",
-        coverImage: draft.coverPath || ownerAnimalFallback,
+        coverImage: draft.coverPath || "",
       };
     }
 
@@ -142,7 +141,7 @@ export default function RescueStatusUpdatePage() {
         statusLabel: detail.statusLabel,
         publicCaseId: detail.publicCaseId,
         rescueStartedAtLabel: `救助开始时间: ${detail.rescueStartedAtLabel || "待补充"}`,
-        coverImage: detail.heroImageUrl || ownerAnimalFallback,
+        coverImage: detail.heroImageUrl,
       };
     }
 

@@ -10,7 +10,7 @@ import {
 import "./BudgetUpdateForm.scss";
 
 export interface BudgetUpdateContextCard {
-  coverImage: string;
+  coverImage?: string;
   previousBudget: number;
   publicCaseId: string;
   rescueStartedAtLabel: string;

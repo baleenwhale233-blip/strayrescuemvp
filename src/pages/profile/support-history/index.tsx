@@ -11,7 +11,6 @@ import {
   SectionHeader,
   SurfaceCard,
 } from "../../../components/ui";
-import fallbackCoverImage from "../../../assets/detail/guest-hero-cat.png";
 import { loadMySupportHistory } from "../../../domain/canonical/repository";
 import "./index.scss";
 
@@ -37,7 +36,7 @@ export default function SupportHistoryPage() {
           (summary?.supportCases || []).map((item) => ({
             caseId: item.caseId,
             title: item.animalName,
-            coverImageUrl: item.animalCoverImageUrl || fallbackCoverImage,
+            coverImageUrl: item.animalCoverImageUrl,
             amount: item.myTotalSupportedAmount,
             amountLabel: item.myTotalSupportedAmountLabel,
           })),
@@ -76,13 +75,7 @@ export default function SupportHistoryPage() {
             <ListEntry
               key={item.caseId}
               className="support-history-page__item"
-              leading={
-                <Avatar
-                  className="support-history-page__avatar"
-                  fallbackSrc={fallbackCoverImage}
-                  src={item.coverImageUrl}
-                />
-              }
+              leading={<Avatar className="support-history-page__avatar" src={item.coverImageUrl} />}
               onTap={() => handleOpenCase(item.caseId)}
               subtitle={`已确认支持 ${item.amountLabel}`}
               title={item.title}

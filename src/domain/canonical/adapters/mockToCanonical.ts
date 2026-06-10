@@ -1,8 +1,3 @@
-import coverImage from "../../../assets/detail/guest-hero-cat.png";
-import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
-import timelineReceipt from "../../../assets/detail/timeline-receipt.png";
-import timelineStatus from "../../../assets/detail/timeline-status-cat.jpg";
-import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import { createCasePublicId } from "../modeling";
 import { getSavedDrafts, type RescueCreateDraft } from "../repository/localDraftPersistence";
 import type {
@@ -29,6 +24,8 @@ import {
   type LegacyRescueProjectDetail as RescueProjectDetail,
   type LegacyStatusTone as StatusTone,
 } from "../fixtures/legacyRescueProjectDetails";
+
+const EMPTY_ASSET_URL = "";
 
 function formatIndex(index: number) {
   return `${index + 1}`.padStart(3, "0");
@@ -85,7 +82,7 @@ function createDefaultRescuer(detail: RescueProjectDetail, index: number): Canon
     id: rescuerId,
     name: detail.rescuer.name,
     avatarAssetId: `${rescuerId}_avatar`,
-    avatarUrl: rescuerAvatar,
+    avatarUrl: EMPTY_ASSET_URL,
     verifiedLevel: "realname",
     joinedAt: "2026-03-01T10:00:00Z",
     wechatId: detail.support.wechatId,
@@ -109,22 +106,22 @@ function createBaseAssets(caseId: string, rescuer: CanonicalRescuer): CanonicalA
     {
       id: rescuer.paymentQrAssetId!,
       kind: "payment_qr",
-      originalUrl: coverImage,
-      thumbnailUrl: coverImage,
+      originalUrl: EMPTY_ASSET_URL,
+      thumbnailUrl: EMPTY_ASSET_URL,
     },
     {
       id: `${caseId}_cover`,
       kind: "case_cover",
-      originalUrl: coverImage,
-      watermarkedUrl: coverImage,
-      thumbnailUrl: coverImage,
+      originalUrl: EMPTY_ASSET_URL,
+      watermarkedUrl: EMPTY_ASSET_URL,
+      thumbnailUrl: EMPTY_ASSET_URL,
     },
     {
       id: `${caseId}_face`,
       kind: "animal_face",
-      originalUrl: coverImage,
-      watermarkedUrl: coverImage,
-      thumbnailUrl: coverImage,
+      originalUrl: EMPTY_ASSET_URL,
+      watermarkedUrl: EMPTY_ASSET_URL,
+      thumbnailUrl: EMPTY_ASSET_URL,
     },
   ];
 }
@@ -181,16 +178,16 @@ export function adaptRescueProjectDetailMockToCanonical(
         {
           id: receiptAssetId,
           kind: "receipt",
-          originalUrl: timelineReceipt,
-          watermarkedUrl: timelineReceipt,
-          thumbnailUrl: timelineReceipt,
+          originalUrl: EMPTY_ASSET_URL,
+          watermarkedUrl: EMPTY_ASSET_URL,
+          thumbnailUrl: EMPTY_ASSET_URL,
         },
         {
           id: treatmentAssetId,
           kind: "progress_photo",
-          originalUrl: timelineTreatment,
-          watermarkedUrl: timelineTreatment,
-          thumbnailUrl: timelineTreatment,
+          originalUrl: EMPTY_ASSET_URL,
+          watermarkedUrl: EMPTY_ASSET_URL,
+          thumbnailUrl: EMPTY_ASSET_URL,
         },
       );
 
@@ -250,9 +247,9 @@ export function adaptRescueProjectDetailMockToCanonical(
     assets.push({
       id: progressAssetId,
       kind: "progress_photo",
-      originalUrl: timelineStatus,
-      watermarkedUrl: timelineStatus,
-      thumbnailUrl: timelineStatus,
+      originalUrl: EMPTY_ASSET_URL,
+      watermarkedUrl: EMPTY_ASSET_URL,
+      thumbnailUrl: EMPTY_ASSET_URL,
     });
 
     const event: CanonicalProgressUpdateEvent = {
@@ -377,16 +374,16 @@ export function adaptLocalDraftToCanonical(
     {
       id: baseAssetId,
       kind: "case_cover",
-      originalUrl: draft.coverPath || coverImage,
-      watermarkedUrl: draft.coverPath || coverImage,
-      thumbnailUrl: draft.coverPath || coverImage,
+      originalUrl: draft.coverPath || EMPTY_ASSET_URL,
+      watermarkedUrl: draft.coverPath || EMPTY_ASSET_URL,
+      thumbnailUrl: draft.coverPath || EMPTY_ASSET_URL,
     },
     {
       id: `${caseId}_face`,
       kind: "animal_face",
-      originalUrl: draft.coverPath || coverImage,
-      watermarkedUrl: draft.coverPath || coverImage,
-      thumbnailUrl: draft.coverPath || coverImage,
+      originalUrl: draft.coverPath || EMPTY_ASSET_URL,
+      watermarkedUrl: draft.coverPath || EMPTY_ASSET_URL,
+      thumbnailUrl: draft.coverPath || EMPTY_ASSET_URL,
     },
     ...(rescuer.avatarUrl
       ? [
@@ -401,8 +398,8 @@ export function adaptLocalDraftToCanonical(
     {
       id: rescuer.paymentQrAssetId!,
       kind: "payment_qr",
-      originalUrl: draft.paymentQrUrl || coverImage,
-      thumbnailUrl: draft.paymentQrUrl || coverImage,
+      originalUrl: draft.paymentQrUrl || EMPTY_ASSET_URL,
+      thumbnailUrl: draft.paymentQrUrl || EMPTY_ASSET_URL,
     },
   ];
 

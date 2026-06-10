@@ -31,9 +31,11 @@ export function GuestHeroSection({
   detail: PublicDetailVM;
   onCopyPublicCaseId: () => void;
 }) {
+  const heroImage = getHeroImage(detail);
+
   return (
     <View className="guest-hero">
-      <Image className="guest-hero__image" mode="aspectFill" src={getHeroImage(detail)} />
+      {heroImage ? <Image className="guest-hero__image" mode="aspectFill" src={heroImage} /> : null}
       <View className="guest-hero__mask" />
       <View className="guest-hero__content">
         <View className="guest-hero__status">

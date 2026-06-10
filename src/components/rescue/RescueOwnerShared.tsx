@@ -15,7 +15,7 @@ export type RescueOwnerMetricMode = "balance" | "gap";
 export type RescueOwnerTimelineKind = "expense" | "status" | "budget" | "income";
 
 export type RescueOwnerSummaryCardProps = {
-  coverImage: string;
+  coverImage?: string;
   title: string;
   statusLabel: string;
   publicCaseId: string;
@@ -78,7 +78,11 @@ export function RescueOwnerSummaryCard({
     <SurfaceCard className="rescue-owner-card">
       <View className="rescue-owner-card__top">
         <View className="rescue-owner-card__cover-wrap" onTap={onEditCover}>
-          <Image className="rescue-owner-card__cover" mode="aspectFill" src={coverImage} />
+          {coverImage ? (
+            <Image className="rescue-owner-card__cover" mode="aspectFill" src={coverImage} />
+          ) : (
+            <View className="rescue-owner-card__cover rescue-owner-card__cover-placeholder" />
+          )}
         </View>
         <View className="rescue-owner-card__copy">
           <View className="rescue-owner-card__title-row">

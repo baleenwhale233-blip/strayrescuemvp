@@ -4,7 +4,6 @@ import { useState } from "react";
 import { DiscoverCaseCard } from "../../../components/rescue";
 import { Avatar, EmptyState, PageShell, SurfaceCard } from "../../../components/ui";
 import { NavBar } from "../../../components/NavBar";
-import rescuerAvatarFallback from "../../../assets/detail/rescuer-avatar.png";
 import {
   loadRescuerHomepageVM,
   type RescuerHomepageVM,
@@ -50,12 +49,7 @@ export default function RescuerHomePage() {
       <NavBar showBack title="档案主页" />
 
       <SurfaceCard className="rescuer-home-page__profile">
-        <Avatar
-          className="rescuer-home-page__avatar"
-          fallbackSrc={rescuerAvatarFallback}
-          src={vm.rescuer.avatarUrl}
-          variant="raised"
-        />
+        <Avatar className="rescuer-home-page__avatar" src={vm.rescuer.avatarUrl} variant="raised" />
         <View className="rescuer-home-page__profile-copy">
           <Text className="rescuer-home-page__name">{vm.rescuer.name}</Text>
           <Text className="rescuer-home-page__meta">

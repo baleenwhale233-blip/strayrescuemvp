@@ -1,5 +1,4 @@
 import { Image, Text, View } from "@tarojs/components";
-import coverFallback from "../../../../../assets/detail/guest-hero-cat.png";
 import {
   HintActionFooter,
   MoneyInput,
@@ -34,11 +33,11 @@ export function CreateBudgetForm({
 
       <View className="rescue-budget-page__profile">
         <View className="rescue-budget-page__avatar-wrap">
-          <Image
-            className="rescue-budget-page__avatar"
-            mode="aspectFill"
-            src={coverPath || coverFallback}
-          />
+          {coverPath ? (
+            <Image className="rescue-budget-page__avatar" mode="aspectFill" src={coverPath} />
+          ) : (
+            <View className="rescue-budget-page__avatar rescue-budget-page__avatar-placeholder" />
+          )}
         </View>
         <Text className="rescue-budget-page__name">{name || "未命名档案"}</Text>
       </View>

@@ -32,6 +32,14 @@
 - 验证结果：`npm run typecheck` 与 `npm run build:weapp` 通过；`dist` 总文件体积约 900,836 bytes，最大图片资源为 66,900 bytes，`app.json` 已输出 `lazyCodeLoading`。
 - 下一步 / 遗留问题：如果真机扫描仍提示主包接近阈值，再考虑把非 tab 功能页迁入分包；本轮先不改路由结构。
 
+## 2026-06-10 | 发包质量 | 移除主包业务照片 fallback
+
+- 为什么改：代码质量扫描仍把本地业务照片算进主包；真实案例图片应来自 CloudBase fileID / 临时 URL，不应靠前端静态 import。
+- 改了什么：去掉 legacy mock、详情、建档、记账、支持登记、工作台和档案主页里的本地业务图 fallback，改用运行时远端图片或无图占位；同时显式开启 Taro terser 和私有 DevTools 压缩设置。
+- 影响范围：只影响无远端图片时的兜底展示与 QA 设计预设图片；现有远端页面兼容，不新增 richer VM / richer mock，不改 repository、selector、types 或 CloudBase action。
+- 验证结果：`format:check / lint / typecheck / test:domain / build:weapp` 均通过；`dist/assets` 只剩 6 张 tabbar 小图，`dist` 总体积约 771,608 bytes，未发现超过 200K 的文件。
+- 下一步 / 遗留问题：如果后续 QA 设计截图仍需要固定照片，应改成测试流程临时注入远端图片，而不是重新 import 到主包。
+
 ## 2026-06-09 | 登记支持 | 称呼默认改为昵称优先
 
 - 为什么改：`wechatId` 是联系方式，不是“您的称呼”；登记支持页此前会把 `alpha_rescue_test` 这类联系微信号带入称呼输入框。
