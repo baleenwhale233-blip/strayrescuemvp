@@ -1,7 +1,7 @@
 import coverImage from "../../../assets/detail/guest-hero-cat.png";
 import rescuerAvatar from "../../../assets/detail/rescuer-avatar.png";
 import timelineReceipt from "../../../assets/detail/timeline-receipt.png";
-import timelineStatus from "../../../assets/detail/timeline-status-cat.png";
+import timelineStatus from "../../../assets/detail/timeline-status-cat.jpg";
 import timelineTreatment from "../../../assets/detail/timeline-treatment.png";
 import { createCasePublicId } from "../modeling";
 import { getSavedDrafts, type RescueCreateDraft } from "../repository/localDraftPersistence";

@@ -18,6 +18,7 @@ export default defineAppConfig({
     "pages/profile/contact-settings/index",
     "pages/profile/guide/index",
   ],
+  lazyCodeLoading: "requiredComponents",
   window: {
     navigationStyle: "custom",
     backgroundColor: "#F5F4F3",

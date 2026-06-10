@@ -24,6 +24,14 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-06-10 | 发包质量 | 收口主包体积与按需注入扫描项
+
+- 为什么改：微信开发者工具代码质量扫描提示主包尺寸、组件按需注入和图片资源体积未通过，影响 Alpha 体验版发包前质量门槛。
+- 改了什么：开启 `lazyCodeLoading: requiredComponents`，将本机 DevTools 上传设置改为压缩且不带 source map，并把 372K 的 `timeline-status-cat.png` 转为 67K JPEG 后更新引用。
+- 影响范围：仅影响小程序构建输出、本机上传配置和 mock/fallback 时间线图片资源；不改页面交互、数据模型、repository、selector 或 CloudBase action。
+- 验证结果：`npm run typecheck` 与 `npm run build:weapp` 通过；`dist` 总文件体积约 900,836 bytes，最大图片资源为 66,900 bytes，`app.json` 已输出 `lazyCodeLoading`。
+- 下一步 / 遗留问题：如果真机扫描仍提示主包接近阈值，再考虑把非 tab 功能页迁入分包；本轮先不改路由结构。
+
 ## 2026-06-09 | 登记支持 | 称呼默认改为昵称优先
 
 - 为什么改：`wechatId` 是联系方式，不是“您的称呼”；登记支持页此前会把 `alpha_rescue_test` 这类联系微信号带入称呼输入框。
