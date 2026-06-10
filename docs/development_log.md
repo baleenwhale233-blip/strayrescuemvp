@@ -24,6 +24,14 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-06-10 | CloudBase | 部署并重播种小满联系方式
+
+- 为什么改：真机仍显示旧 `aning_rescue` 且没有二维码，说明上一轮只改了本地 seed 源，云端 `rescueApi` 与 Alpha 数据还没更新。
+- 改了什么：用单文件临时包重新部署 `rescueApi` 到 `cloud1-9gl5sric0e5b386b`，随后执行 `npm run seed:alpha` 上传 29 张素材并重置 Alpha 数据。
+- 影响范围：只影响 CloudBase 开发环境运行时代码和 Alpha seed 数据；仓库 schema、正式页面代码、selector、repository 接口不变。
+- 验证结果：部署返回 `rescueApi success=true filesCount=3 packSize=23.3 KB`；`seed:alpha` 返回 `uploadCount=29`；真实云调用确认小满返回 `xiaoman_rescue_qa`、联系备注和 `profile_qr_xiaoman.png` 临时 URL。
+- 下一步 / 遗留问题：已打开的小满详情页需要重新进入或刷新，才能用最新远端数据重建联系方式弹层。
+
 ## 2026-06-10 | 联系方式 | 修正联系弹层滚动与小满 QA 联系信息
 
 - 为什么改：真机截图里联系方式弹层关闭按钮像文字叉号，内容区不能稳定滚动，底部按钮会遮住备注；小满档案缺少完整联系 mock，不方便后续 QA 覆盖非 owner 联系场景。
