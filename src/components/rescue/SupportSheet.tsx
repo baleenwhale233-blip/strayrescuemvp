@@ -34,6 +34,8 @@ export function SupportSheet({
   const hasPaymentQr = Boolean(support.paymentQrUrl?.trim());
   const contactNote = support.contactNote?.trim();
   const hasContactNote = Boolean(contactNote);
+  const directTip = support.directTip.trim();
+  const hasDirectTip = Boolean(directTip);
 
   const handleCopyWechat = async () => {
     if (!hasWechatId) {
@@ -173,12 +175,15 @@ export function SupportSheet({
                 <View className="support-sheet__contact-note-card">
                   <Text className="support-sheet__contact-note-text">{contactNote}</Text>
                 </View>
+                {hasDirectTip ? (
+                  <Text className="support-sheet__note-text">{directTip}</Text>
+                ) : null}
               </View>
+            ) : hasDirectTip ? (
+              <Text className="support-sheet__note-text support-sheet__note-text--standalone">
+                {directTip}
+              </Text>
             ) : null}
-
-            <View className="support-sheet__note-card">
-              <Text className="support-sheet__note-text">{support.directTip}</Text>
-            </View>
           </View>
         </ScrollView>
 

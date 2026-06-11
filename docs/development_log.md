@@ -24,6 +24,14 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-06-10 | 联系方式 | 备注下方提示去掉灰底
+
+- 为什么改：联系方式弹层底部提示被做成灰底圆角块，视觉上像独立卡片，也和“联系备注”信息层级割裂。
+- 改了什么：将 `directTip` 移到联系备注下方，改成左对齐辅助句；删除 `support-sheet__note-card` 灰底容器样式，只保留无背景小字。
+- 影响范围：仅影响 `SupportSheet` 联系方式弹层的备注区视觉层级和提示位置；不改页面数据、VM、selector、repository 或 CloudBase 数据。
+- 验证结果：`npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run test:ui`、`npm run build:weapp` 通过；构建仅保留既有 `punycode` warning。
+- 下一步 / 遗留问题：需要在微信开发者工具或真机重新打开小满联系方式弹层，确认提示已贴在备注下方且无灰底。
+
 ## 2026-06-10 | CloudBase | 部署并重播种小满联系方式
 
 - 为什么改：真机仍显示旧 `aning_rescue` 且没有二维码，说明上一轮只改了本地 seed 源，云端 `rescueApi` 与 Alpha 数据还没更新。
