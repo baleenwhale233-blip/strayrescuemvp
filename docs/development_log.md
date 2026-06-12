@@ -24,6 +24,14 @@
 - 下一步 / 遗留问题：
 ```
 
+## 2026-06-12 | 分享入口 | 恢复详情页自定义分享回调
+
+- 为什么改：真机分享卡片退回默认页面截图，且自定义标题也未出现，说明微信没有稳定调用详情页分享回调。
+- 改了什么：给 `pages/rescue/detail` 页面配置补 `enableShareAppMessage: true`，让 Taro 构建时注册微信分享能力；现有标题与 `publicDetail.heroImageUrl` 取图逻辑保持不变。
+- 影响范围：仅影响详情页微信好友分享卡片的标题、路径和图片回调注册；不改 VM、selector、repository、CloudBase schema 或数据写链。
+- 验证结果：`npm run typecheck` 与 `npm run build:weapp` 通过；构建产物 `dist/pages/rescue/detail/index.js` 已输出 `enableShareAppMessage:!0` 与页面分享注册。
+- 下一步 / 遗留问题：需要体验版或真机重新分享栗子，确认卡片恢复自定义标题，并在远端封面可用时展示当前档案图片。
+
 ## 2026-06-10 | 联系方式 | 备注下方提示去掉灰底
 
 - 为什么改：联系方式弹层底部提示被做成灰底圆角块，视觉上像独立卡片，也和“联系备注”信息层级割裂。
